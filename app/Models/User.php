@@ -3,12 +3,15 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
+    /** @use HasFactory<UserFactory>  */
     use HasFactory, Notifiable;
 
     /**
@@ -17,8 +20,12 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+
+        'last_name',
+        'first_name',
+        'phone',
         'email',
+        'role_id',
         'password',
     ];
 
@@ -43,5 +50,13 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    public function hasRole($role): bool
+    {
+        return $this->role_id === $role;
+    }
+    public function getRolename(): string
+    {
+        return Role::find($this->role_id)->name;
     }
 }

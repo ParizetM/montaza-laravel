@@ -20,12 +20,13 @@
 
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
+                @if (Auth::check())
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
                             <div>
                                 @if(Auth::check())
-                                    {{ Auth::user()->name }}
+                                {{ Auth::user()->first_name }} {{ Auth::user()->last_name }}
                                 @endif
                             </div>
 
@@ -38,7 +39,7 @@
                     </x-slot>
 
                     <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')">
+                        <x-dropdown-link :href="route('profile.edit', [ 'id' => Auth::user()->id ])">
                             {{ __('Profile') }}
                         </x-dropdown-link>
 
@@ -52,8 +53,19 @@
                                 {{ __('Log Out') }}
                             </x-dropdown-link>
                         </form>
+                        @if (Auth::user()->role_id == '1')
+
+                        <x-dropdown-link :href="route('profile.index')">
+                            {{ __('utilisateurs') }}
+                        </x-dropdown-link>
+                        @endif
                     </x-slot>
                 </x-dropdown>
+                @else
+                <a href="{{ route('login') }}" class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
+                    {{ __('Log in') }}
+                </a>
+                @endif
             </div>
 
             <!-- Hamburger -->
@@ -71,22 +83,27 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
+            <!-- Navigation Links -->
+            @if (Auth::check())
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
             <div class="px-4">
                 @if(Auth::check())
-                <div class="font-medium text-base text-gray-800 dark:text-gray-200">{{ Auth::user()->name }}</div>
+                <div class="font-medium text-base text-gray-800 dark:text-gray-200">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</div>
                 <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
                 @endif
             </div>
 
             <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile.edit')">
+                <!-- Account Management -->
+                @if (Auth::check())
+                <x-responsive-nav-link :href="route('profile.edit', [ 'id' => Auth::user()->id ])">
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
 
@@ -100,6 +117,11 @@
                         {{ __('Log Out') }}
                     </x-responsive-nav-link>
                 </form>
+                @else
+                <x-responsive-nav-link :href="route('login')">
+                    {{ __('Log in') }}
+                </x-responsive-nav-link>
+                @endif
             </div>
         </div>
     </div>
