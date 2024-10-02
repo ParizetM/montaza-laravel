@@ -24,7 +24,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Preparation',
         ]);
         Role::factory()->create([
-            'name' => 'Magazinier',
+            'name' => 'Magasinier',
         ]);
         User::factory()->create([
             'last_name' => 'Admin',

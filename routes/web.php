@@ -16,7 +16,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/{id}', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::patch('/profile-admin', [ProfileController::class, 'updateAdmin'])->name('profile.update_admin');
-    Route::delete('/profile/{user}', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::delete('/profile/{user}/delete', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/profile/{user}/restore', [ProfileController::class, 'restore'])->name('profile.restore');
 });
 Route::middleware('CheckRole:1')->group(function () {
     Route::get('/profiles', [ProfileController::class, 'index'])->name('profile.index');

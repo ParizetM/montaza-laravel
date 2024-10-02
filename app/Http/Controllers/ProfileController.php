@@ -74,7 +74,7 @@ class ProfileController extends Controller
         $user = User::findOrFail($request->id);
         $user->update($request->only(['first_name', 'last_name', 'phone', 'email']));
 
-        return Redirect::route('profile.edit', ['id' => $user->id])->with('status', 'profile modifié');
+        return Redirect::route('profile.edit', ['id' => $user->id])->with('status', 'profil de modifié');
     }
     public function updateAdmin(Request $request): RedirectResponse
     {
@@ -82,21 +82,33 @@ class ProfileController extends Controller
         $user = User::findOrFail($request->id);
         $user->update($request->only(['role_id']));
 
-        return Redirect::route('profile.edit', ['id' => $user->id])->with('status', 'profile modifié');
+        return Redirect::route('profile.edit', ['id' => $user->id])->with('status', 'profil modifié');
     }
 
     /**
-     * Delete the user's account.
+     * Summary of destroy
+     * @param \App\Models\User $user
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(User $user): RedirectResponse
     {
-        if ($user->deleted_at === null) {
-            $user->delete();
-            \Log::info("User {$user->id} deleted.");
-            return Redirect::route('profile.index')->with('status', "compte $user->first_name $user->last_name supprimé");
-        } else {
+        $user = User::findOrFail($user->id);
+        $user->delete();
+        return Redirect::route('profile.index')->with('status', "compte $user->first_name $user->last_name supprimé");
+    }
+    /**
+     * Summary of restore
+     * @param int $int
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function restore(int $int): RedirectResponse
+    {
+        $user = User::withTrashed()->findOrFail($int);
+        if ($user->trashed()) {
             $user->restore();
-            return Redirect::route('profile.edit', ['id' => $user->id])->with('status', 'compte restauré');
+            return Redirect::route('profile.index')->with('status', "Compte $user->first_name $user->last_name restauré");
+        } else {
+            return Redirect::route('profile.index')->with('status', "Compte $user->first_name $user->last_name n'est pas supprimé");
         }
     }
 }

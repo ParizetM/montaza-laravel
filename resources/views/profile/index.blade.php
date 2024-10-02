@@ -12,11 +12,12 @@
             </div>
             <div class="mt-4 sm:mt-0 flex flex-col sm:flex-row items-start sm:items-center">
                 <label for="Toggle1"
-                    class="inline-flex items-center space-x-4 cursor-pointer dark:text-gray-100 text-gray-800 mr-4">
+                    class="inline-flex items-center space-x-4 cursor-pointer dark:text-gray-100 text-gray-800 mr-4 mb-1">
                     <span class="whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">Afficher les comptes
                         supprimé</span>
                     <span class="relative">
-                        <input id="Toggle1" type="checkbox" class="hidden peer" onchange="toggleDeletedProfiles(this)" {{ request()->get('show_deleted') ? 'checked' : '' }}>
+                        <input id="Toggle1" type="checkbox" class="hidden peer" onchange="toggleDeletedProfiles(this)"
+                            {{ request()->get('show_deleted') ? 'checked' : '' }}>
                         <div
                             class="w-10 h-6 rounded-full shadow-inner bg-gray-400 dark:bg-gray-600 peer-checked:bg-violet-400 peer-checked:dark:bg-violet-600">
                         </div>
@@ -71,9 +72,10 @@
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody class="{{ request()->get('show_deleted') ? 'bg-gray-100 dark:bg-gray-900' : 'bg-white dark:bg-gray-800' }} divide-y divide-gray-200 dark:divide-gray-700">
+                            <tbody
+                                class="{{ request()->get('show_deleted') ? 'bg-gray-100 dark:bg-gray-900' : 'bg-white dark:bg-gray-800' }} divide-y divide-gray-200 dark:divide-gray-700">
                                 @foreach ($users as $user)
-                                    <tr >
+                                    <tr>
                                         <td
                                             class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-200">
                                             {{ $user->first_name }} {{ $user->last_name }}
@@ -91,8 +93,18 @@
                                             {{ $user->role->name }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <a href="{{ route('profile.edit', ['id' => $user]) }}"
-                                                class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-600">Modifier</a>
+                                            @if ($user->deleted_at)
+                                                <form method="GET" action="{{ route('profile.restore', $user) }}"
+                                                    class="inline-block">
+                                                    @csrf
+                                                    @method('GET')
+                                                    <button type="submit"
+                                                        class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-600">Restaurer</button>
+                                                </form>
+                                            @else
+                                                <a href="{{ route('profile.edit', ['id' => $user]) }}"
+                                                    class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-600">Modifier</a>
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach
