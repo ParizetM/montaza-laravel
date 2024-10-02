@@ -52,6 +52,6 @@ class RegisteredUserController extends Controller
             'role_id'=> $request->role_id,
             'password' => Hash::make($password),
         ]);
-        return redirect(route('dashboard', absolute: false));
+        return redirect(route('profile.index', absolute: false))->with('status','Utilisateur créé avec succès');
     }
 }
