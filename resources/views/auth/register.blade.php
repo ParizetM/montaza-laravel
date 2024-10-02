@@ -70,7 +70,7 @@
                 <!-- Role -->
                 <div class="mt-4">
                     <x-input-label for="role_id" :value="__('Role')" />
-                    <select id="role_id" name="role_id" class="block mt-1 w-full" required>
+                    <select id="role_id" name="role_id" class="block mt-1 w-full select" required>
                         @foreach ($roles as $role)
                             <option value="{{ $role->id }}" {{ old('role_id') == $role->id ? 'selected' : '' }}>
                                 {{ $role->name }}

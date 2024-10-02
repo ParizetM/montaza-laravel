@@ -3,7 +3,7 @@
         <div class="text-center pt-6 ">
             <h1 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Bienvenue</h1>
             <a href="{{ url('/dashboard') }}"
-                class="bg-white dark:bg-gray-800 px-6 py-3 rounded-full text-lg font-medium text-gray-900 dark:text-gray-100">
+                class="btn bg-white dark:bg-gray-800 rounded-full p-4 text-base">
                 @if (Auth::check())
                     {{ __('Dashboard') }}
                 @else

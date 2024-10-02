@@ -16,6 +16,50 @@
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+            @if (session('status'))
+    <div id="flash-message" class="fixed top-0 left-1/2 transform -translate-x-1/2 -translate-y-full bg-green-500 text-white p-4 rounded shadow-lg z-50 transition-transform duration-500 ease-in-out">
+        <div class="container mx-auto flex justify-between items-center">
+            <span>{{ session('status') }}</span>
+            <button onclick="hideFlashMessage()" class="text-white font-bold ml-3">X</button>
+        </div>
+    </div>
+
+    <script>
+        // Fonction pour afficher le message avec une transition de glissement
+        function showFlashMessage() {
+            const flashMessage = document.getElementById('flash-message');
+            flashMessage.classList.remove('-translate-y-full'); // Enlève la classe pour montrer l'élément
+            flashMessage.classList.add('translate-y-0'); // Ajoute la classe pour faire le glissement
+        }
+
+        // Fonction pour masquer le message avec une transition
+        function hideFlashMessage() {
+            const flashMessage = document.getElementById('flash-message');
+            flashMessage.classList.remove('translate-y-0'); // Enlève la classe pour cacher l'élément
+            flashMessage.classList.add('-translate-y-full'); // Ajoute la classe pour remonter le message
+        }
+
+        // Montre le message après un court délai pour l'animation
+        window.onload = function() {
+            showFlashMessage();
+
+            // Masque le message après 5 secondes
+            setTimeout(function() {
+                hideFlashMessage();
+            }, 5000); // 5000 millisecondes = 5 secondes
+        };
+    </script>
+@endif
+
+
+        @if (session('error'))
+            <div class="fixed top-0 left-1/2 transform -translate-x-1/2 bg-red-500 text-white p-4 rounded shadow-lg z-50 mt-4">
+                <div class="container mx-auto flex justify-between items-center">
+                    <span>{{ session('error') }}</span>
+                    <button onclick="this.parentElement.parentElement.remove()" class="text-white font-bold ml-3">X</button>
+                </div>
+            </div>
+        @endif
             @include('layouts.navigation')
 
             <!-- Page Heading -->
@@ -33,4 +77,6 @@
             </main>
         </div>
     </body>
+
 </html>
+

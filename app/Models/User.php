@@ -6,13 +6,19 @@ namespace App\Models;
 
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Role;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+
 
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory>  */
     use HasFactory, Notifiable;
+    use SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -21,6 +27,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
 
+        'id',
         'last_name',
         'first_name',
         'phone',
@@ -40,23 +47,20 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
+     * Summary of hasRole
+     * @param int $role
+     * @return bool
      */
-    protected function casts(): array
+    public function hasRole(int $role_id): bool
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->role_id == $role_id;
     }
-    public function hasRole($role): bool
+    /**
+     * Summary of role
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Role, \App\Models\User>
+     */
+    public function role(): BelongsTo
     {
-        return $this->role_id === $role;
-    }
-    public function getRolename(): string
-    {
-        return Role::find($this->role_id)->name;
+        return $this->belongsTo(Role::class, 'role_id');
     }
 }

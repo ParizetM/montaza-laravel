@@ -15,10 +15,11 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/profile/{id}', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::patch('/profile-admin', [ProfileController::class, 'updateAdmin'])->name('profile.update_admin');
+    Route::delete('/profile/{user}', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 Route::middleware('CheckRole:1')->group(function () {
+    Route::get('/profiles', [ProfileController::class, 'index'])->name('profile.index');
 });
-Route::get('/profiles', [ProfileController::class,'index'])->name('profile.index');
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

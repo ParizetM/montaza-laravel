@@ -4,7 +4,7 @@
             {{ __('Profile') }}
         </h2>
         <p class="text-sm text-gray-600 dark:text-gray-400">
-            {{ $user->getRoleName() }}
+            {{ $user->role->name }}
         </p>
     </x-slot>
 
@@ -21,7 +21,7 @@
                     @include('profile.partials.update-password-form')
                 </div>
             </div>
-            @if (Auth::user()->role_id == '1')
+            @if (Auth::user()->role_id == '1' && Auth::user()->id != $user->id)
             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                 <div class="max-w-xl">
                     @include('profile.partials.delete-user-form')

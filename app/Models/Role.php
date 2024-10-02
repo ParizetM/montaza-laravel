@@ -5,6 +5,7 @@ namespace App\Models;
 use Database\Factories\RoleFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Role extends Model
 {
@@ -16,10 +17,15 @@ class Role extends Model
     /**
      * Get all of the users for the Role
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\User>
      */
-    public function users()
+    public function users(): HasMany
     {
         return $this->hasMany(User::class);
+    }
+    public function getIdFromName(string $name): ?int
+    {
+        $role = $this->where('name', $name)->first();
+        return $role ? $role->id : null;
     }
 }

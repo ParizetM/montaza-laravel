@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Role;
 use Auth;
 use Closure;
 use Illuminate\Http\Request;
@@ -15,13 +16,13 @@ class CheckRole
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      *
      */
-    public function handle(Request $request, Closure $next,$role_id): Response
+    public function handle(Request $request, Closure $next,int $role_id): Response
     {
         if (!Auth::check()) {
             return redirect('login');
         }
-        $user = Auth::user();
-        if ($user->hasRole($role_id)) {
+
+        if (Auth::user()->hasRole($role_id)) {
             return $next($request);
         } else {
             return redirect('Dashboard');
