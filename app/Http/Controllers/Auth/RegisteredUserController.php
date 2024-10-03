@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Entite;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
@@ -21,8 +22,10 @@ class RegisteredUserController extends Controller
     public function create(): View
     {
         $roles = Role::all();
+        $entites = Entite::all();
         return view("auth.register", [
             'roles' => $roles,
+            'entites' => $entites,
         ]);
     }
 

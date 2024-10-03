@@ -48,7 +48,7 @@ class User extends Authenticatable
 
     /**
      * Summary of hasRole
-     * @param int $role
+     * @param int $role_id
      * @return bool
      */
     public function hasRole(int $role_id): bool

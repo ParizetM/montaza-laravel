@@ -11,10 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('roles', function (Blueprint $table) {
+        Schema::create('entites', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->timestamps();
+        });
+        Schema::create('roles', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->foreignId('entite_id')->constrained();
+            $table->timestamps();
+            $table->softDeletes();
         });
         Schema::create('users', function (Blueprint $table) {
             $table->id();
@@ -52,6 +59,7 @@ return new class extends Migration
     {
         Schema::dropIfExists('users');
         Schema::dropIfExists('roles');
+        Schema::dropIfExists('entites');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
     }

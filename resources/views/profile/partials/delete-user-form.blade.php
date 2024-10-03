@@ -12,28 +12,21 @@
         @csrf
         @method('patch')
         <input type="hidden" name="id" value="{{ $user->id }}">
-        <select id="role_id" name="role_id" class="block mt-1 w-full select" required>
-            @foreach ($roles as $role)
-                <option value="{{ $role->id }}"
-                    {{ (old('role_id') == $role->id ? 'selected' : $user->role_id == $role->id) ? 'selected' : '' }}>
-                    {{ $role->name }}
-                </option>
-            @endforeach
-        </select>
+        <x-select-id_role :entites="$entites" :user="$user" />
         <x-input-error :messages="$errors->get('role_id')" class="mt-2" />
         <button type="submit" class="btn">{{ __('Save') }}</button>
     </form>
     <header>
         <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-            {{ __('Delete Account') }}
+            {{ __('Désactiver le compte') }}
         </h2>
         <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.') }}
+            {{ __('Une fois ce compte désactivé, la connexion y sera impossible') }}
         </p>
     </header>
 
     <x-danger-button x-data=""
-        x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')">{{ __('Delete Account') }}</x-danger-button>
+        x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')">{{ __('Désactiver') }}</x-danger-button>
 
     <x-modal name="confirm-user-deletion" :show="$errors->userDeletion->isNotEmpty()" focusable>
         <form method="post" action="{{ route('profile.destroy', $user) }}" class="p-6">
@@ -52,7 +45,7 @@
                 </x-secondary-button>
 
                 <x-danger-button class="ms-3">
-                    {{ __('Delete Account') }}
+                    {{ __('Désactiver le compte') }}
                 </x-danger-button>
             </div>
         </form>

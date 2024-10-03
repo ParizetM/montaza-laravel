@@ -70,13 +70,7 @@
                 <!-- Role -->
                 <div class="mt-4">
                     <x-input-label for="role_id" :value="__('Role')" />
-                    <select id="role_id" name="role_id" class="block mt-1 w-full select" required>
-                        @foreach ($roles as $role)
-                            <option value="{{ $role->id }}" {{ old('role_id') == $role->id ? 'selected' : '' }}>
-                                {{ $role->name }}
-                            </option>
-                        @endforeach
-                    </select>
+                    <x-select-id_role :entites="$entites"/>
                     <x-input-error :messages="$errors->get('role_id')" class="mt-2" />
                 </div>
                 <div class="flex items-center justify-center mt-4">

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use App\Models\Role;
+use App\Models\Entite;
 
 class ProfileController extends Controller
 {
@@ -59,9 +60,11 @@ class ProfileController extends Controller
             abort(404);
         }
         $roles = Role::all();
+        $entites = Entite::all();
         return view('profile.edit', [
             'user' => $user,
             'roles' => $roles,
+            'entites' => $entites
         ]);
     }
 
@@ -74,7 +77,7 @@ class ProfileController extends Controller
         $user = User::findOrFail($request->id);
         $user->update($request->only(['first_name', 'last_name', 'phone', 'email']));
 
-        return Redirect::route('profile.edit', ['id' => $user->id])->with('status', 'profil de modifié');
+        return Redirect::route('profile.edit', ['id' => $user->id])->with('status', "Profil de $user->first_name $user->last_name modifié");
     }
     public function updateAdmin(Request $request): RedirectResponse
     {
@@ -82,7 +85,7 @@ class ProfileController extends Controller
         $user = User::findOrFail($request->id);
         $user->update($request->only(['role_id']));
 
-        return Redirect::route('profile.edit', ['id' => $user->id])->with('status', 'profil modifié');
+        return Redirect::route('profile.edit', ['id' => $user->id])->with('status', 'Profil modifié');
     }
 
     /**
@@ -94,7 +97,7 @@ class ProfileController extends Controller
     {
         $user = User::findOrFail($user->id);
         $user->delete();
-        return Redirect::route('profile.index')->with('status', "compte $user->first_name $user->last_name supprimé");
+        return Redirect::route('profile.index')->with('status', "Compte $user->first_name $user->last_name désactivé");
     }
     /**
      * Summary of restore
@@ -108,7 +111,7 @@ class ProfileController extends Controller
             $user->restore();
             return Redirect::route('profile.index')->with('status', "Compte $user->first_name $user->last_name restauré");
         } else {
-            return Redirect::route('profile.index')->with('status', "Compte $user->first_name $user->last_name n'est pas supprimé");
+            return Redirect::route('profile.index')->with('status', "Compte $user->first_name $user->last_name n'est pas désactivé");
         }
     }
 }
