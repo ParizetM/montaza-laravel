@@ -52,12 +52,12 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
-    public function edit(int $id): View
+    public function edit(int $id = 0): View
     {
 
         $user = User::findOrFail($id);
-        if (Auth::user()->role_id != 1 && $user->id != Auth::id()) {
-            abort(404);
+        if (Auth::user()->hasPermission('gerer_les_utilisateurs') == false && Auth::user()->id != $user->id) {
+            abort(403);
         }
         $roles = Role::all();
         $entites = Entite::all();
@@ -75,6 +75,9 @@ class ProfileController extends Controller
     {
         /** @var \App\Models\User $user */
         $user = User::findOrFail($request->id);
+        if (Auth::user()->hasPermission('gerer_les_utilisateurs') == false && Auth::user()->id != $user->id) {
+            abort(403);
+        }
         $user->update($request->only(['first_name', 'last_name', 'phone', 'email']));
 
         return Redirect::route('profile.edit', ['id' => $user->id])->with('status', "Profil de $user->first_name $user->last_name modifié");

@@ -21,6 +21,9 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
+        if (Auth::user()->hasPermission('gerer_les_utilisateurs') == false) {
+            abort(403);
+        }
         $roles = Role::all();
         $entites = Entite::all();
         return view("auth.register", [

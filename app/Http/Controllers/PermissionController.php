@@ -4,15 +4,31 @@ namespace App\Http\Controllers;
 
 use App\Models\Permission;
 use Illuminate\Http\Request;
+use App\Models\Role;
+use App\Models\Entite;
+use Illuminate\View\View;
 
 class PermissionController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(int $id = 0): View
     {
-        //
+        if ($id != 0) {
+            $role = Role::findOrFail($id);
+            return view('permissions.index', [
+                'permissions' => Permission::all(),
+                'roles' => Role::all(),
+                'entites' => Entite::all(),
+                'role' => $role,
+            ]);
+        }
+        return view('permissions.index', [
+            'permissions' => Permission::all(),
+            'roles' => Role::all(),
+            'entites' => Entite::all(),
+        ]);
     }
 
     /**

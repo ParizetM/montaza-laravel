@@ -67,4 +67,8 @@ class User extends Authenticatable
     {
         return $this->role->permissions ?? collect(); // Si pas de rôle, renvoie une collection vide
     }
+    public function hasPermission(string $permission): bool
+    {
+        return $this->permissions()->contains('name', $permission);
+    }
 }

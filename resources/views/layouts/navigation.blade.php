@@ -57,11 +57,17 @@
                                     {{ __('Log Out') }}
                                 </x-dropdown-link>
                             </form>
-                            @if (Auth::user()->role_id == '1')
+                            @if (Auth::user()->hasPermission('gerer_les_utilisateurs'))
                                 <x-dropdown-link :href="route('profile.index')">
                                     {{ __('utilisateurs') }}
                                 </x-dropdown-link>
                             @endif
+                            @if(Auth::user()->hasPermission('gerer_les_permissions'))
+                                <x-dropdown-link :href="route('permissions')">
+                                    {{ __('Permissions') }}
+                                </x-dropdown-link>
+                            @endif
+
                         </x-slot>
                     </x-dropdown>
                 @else
