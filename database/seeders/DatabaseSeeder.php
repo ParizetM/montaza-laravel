@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Entite;
 use App\Models\Role;
 use App\Models\User;
+use App\Models\Permission;
 use Hash;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -16,6 +17,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $permissions = [
+            'gerer_les_utilisateurs',
+            'gerer_les_permissions',
+        ];
+        foreach ($permissions as $permission) {
+            Permission::factory()->create([
+                'name' => $permission,
+            ]);
+        }
         // User::factory(10)->create();
         Entite::factory()->create([
             'name' => 'Atlantis Montaza',
@@ -27,10 +37,13 @@ class DatabaseSeeder extends Seeder
             'name' => 'AMB',
         ]);
 
-        Role::factory()->create([
+        $Gerant = Role::factory()->create([
             'name' => 'Gerant',
             'entite_id' => 1,
         ]);
+        $Gerant->permissions()->sync(Permission::all());
+
+
         Role::factory()->create([
             'name' => 'Responsable Ressources Humaines',
             'entite_id' => 1,
@@ -111,6 +124,16 @@ class DatabaseSeeder extends Seeder
             'phone' => '06 30 31 32 13',
             'email' => 'harry.bimbo@atlantisventilation.fr',
             'password' => Hash::make('Hbimbo' . date('Y')), // Replace 'password' with a secure password
+            'role_id' => 5,
+            'updated_at' => now(),
+            'created_at' => now(),
+        ]);
+        User::factory()->create([
+            'last_name' => 'EVANNO',
+            'first_name' => 'Mélanie',
+            'phone' => '06 30 31 32 13',
+            'email' => 'melanie.evanno@atlantisventilation.fr',
+            'password' => Hash::make('Mevanno' . date('Y')), // Replace 'password' with a secure password
             'role_id' => 5,
             'updated_at' => now(),
             'created_at' => now(),

@@ -30,8 +30,7 @@
                 <form method="GET" action="{{ route('profile.index') }}" class="mr-4 sm:mr-0 sm:flex-grow">
                     <input type="text" name="search" placeholder="Rechercher..."
                         class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <button type="submit"
-                        class=" ml-2 btn">
+                    <button type="submit" class=" ml-2 btn">
                         {{ __('Rechercher') }}
                     </button>
                 </form>
@@ -107,11 +106,13 @@
                                                     @csrf
                                                     @method('GET')
                                                     <button type="submit"
-                                                        class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-600">Restaurer</button>
+                                                        class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-600"><x-icon size="2" type="restore" class="icons ml-2" /></button>
                                                 </form>
                                             @else
                                                 <a href="{{ route('profile.edit', ['id' => $user]) }}"
-                                                    class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-600">Modifier</a>
+                                                    class="">
+                                                    <x-icon size="2" type="edit" class="icons ml-2" />
+                                                </a>
                                             @endif
                                         </td>
                                     </tr>

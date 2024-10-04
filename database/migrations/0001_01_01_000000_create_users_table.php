@@ -23,6 +23,19 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+        Schema::create('permissions', function (Blueprint $table) {
+            $table->id();
+            $table->string('name')->unique();
+            $table->timestamps();
+        });
+
+        Schema::create('permission_role', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('role_id')->constrained()->onDelete('cascade');
+            $table->foreignId('permission_id')->constrained()->onDelete('cascade');
+            $table->timestamps();
+        });
+
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('last_name');
@@ -58,7 +71,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('users');
+        Schema::dropIfExists('permission_role');
         Schema::dropIfExists('roles');
+        Schema::dropIfExists('permissions');
         Schema::dropIfExists('entites');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');

@@ -12,7 +12,7 @@
         @csrf
         @method('patch')
         <input type="hidden" name="id" value="{{ $user->id }}">
-        <x-select-id_role :entites="$entites" :user="$user" />
+        <x-select_id_role :entites="$entites" :user="$user" />
         <x-input-error :messages="$errors->get('role_id')" class="mt-2" />
         <button type="submit" class="btn">{{ __('Save') }}</button>
     </form>

@@ -63,4 +63,8 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class, 'role_id');
     }
+    public function permissions()
+    {
+        return $this->role->permissions ?? collect(); // Si pas de rôle, renvoie une collection vide
+    }
 }
