@@ -17,7 +17,7 @@ class CheckPermission
     {
         $user = $request->user();
 
-        if (!$user || !$user->permissions()->contains('name', $permission)) {
+        if (! $user || ! $user->permissions()->contains('name', $permission)) {
             abort(403);
         }
 

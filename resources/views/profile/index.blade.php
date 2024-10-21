@@ -10,7 +10,7 @@
                     {{ __('Liste des profils utilisateur ') }}
                 </p>
             </div>
-            <div class="mt-4 sm:mt-0 flex flex-col sm:flex-row items-start sm:items-center">
+            <div class="mt-4 sm:mt-0 flex flex-col sm:flex-row items-start sm:items-center mx-auto">
                 <label for="Toggle1"
                     class="inline-flex items-center space-x-4 cursor-pointer dark:text-gray-100 text-gray-800 mr-4 mb-1">
                     <span class="whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">Afficher les comptes
@@ -27,7 +27,7 @@
                     </span>
                 </label>
 
-                <form method="GET" action="{{ route('profile.index') }}" class="mr-4 sm:mr-0 sm:flex-grow">
+                <form method="GET" action="{{ route('profile.index') }}" class="mr-4 mb-1 sm:mr-0 sm:flex-grow">
                     <input type="text" name="search" placeholder="Rechercher..."
                         class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     <button type="submit" class=" ml-2 btn">

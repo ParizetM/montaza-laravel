@@ -9,13 +9,17 @@ use Illuminate\View\Component;
 class select_id_role extends Component
 {
     public $entites;
+
     public $class;
+
     public $selected_role;
+
     public $onchange;
+
     /**
      * Create a new component instance.
      */
-    public function __construct(array $entites, $class = null,$selected_role = null ,$onchange = null)
+    public function __construct(array $entites, $class = null, $selected_role = null, $onchange = null)
     {
         $this->entites = $entites;
         $this->class = $class;

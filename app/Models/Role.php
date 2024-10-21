@@ -5,18 +5,19 @@ namespace App\Models;
 use Database\Factories\RoleFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use App\Models\Entite;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Role extends Model
 {
     /** @use HasFactory<RoleFactory>  */
     use HasFactory;
+
     protected $fillable = [
-        "name",
+        'name',
     ];
+
     /**
      * Get all of the users for the Role
      *
@@ -26,15 +27,19 @@ class Role extends Model
     {
         return $this->hasMany(User::class);
     }
+
     public function entite(): BelongsTo
     {
         return $this->belongsTo(Entite::class, 'entite_id');
     }
+
     public function getIdFromName(string $name): ?int
     {
         $role = $this->where('name', $name)->first();
+
         return $role ? $role->id : null;
     }
+
     public function permissions(): BelongsToMany
     {
         return $this->belongsToMany(Permission::class);

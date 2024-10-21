@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Role;
 use Auth;
 use Closure;
 use Illuminate\Http\Request;
@@ -14,11 +13,10 @@ class CheckRole
      * Handle an incoming request.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     *
      */
-    public function handle(Request $request, Closure $next,int $role_id): Response
+    public function handle(Request $request, Closure $next, int $role_id): Response
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return redirect('login');
         }
 

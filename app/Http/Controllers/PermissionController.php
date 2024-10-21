@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Permission;
-use Illuminate\Http\Request;
-use App\Models\Role;
 use App\Models\Entite;
+use App\Models\Permission;
+use App\Models\Role;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class PermissionController extends Controller
@@ -13,21 +13,19 @@ class PermissionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(int $id = 0): View
+    public function index($role = 0): View
     {
-        if ($id != 0) {
-            $role = Role::findOrFail($id);
-            return view('permissions.index', [
-                'permissions' => Permission::all(),
-                'roles' => Role::all(),
-                'entites' => Entite::all(),
-                'role' => $role,
-            ]);
+        if ($role != 0) {
+            $role = Role::findOrFail($role);
+        } else {
+            $role = Role::findOrFail(1);
         }
+
         return view('permissions.index', [
             'permissions' => Permission::all(),
             'roles' => Role::all(),
             'entites' => Entite::all(),
+            'role' => $role,
         ]);
     }
 
@@ -58,9 +56,21 @@ class PermissionController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Permission $permission)
+    public function edit(Request $request)
     {
-        //
+        $role_id = $request->role_id;
+        $role = Role::findOrFail($role_id);
+        // Detach all permissions first
+        $role->permissions()->detach();
+
+        // Attach the selected permissions
+        foreach ($request->all() as $key => $value) {
+            if ($key != '_token' && $key != 'role_id' && $key != '_method') {
+                $role->permissions()->attach($value);
+            }
+        }
+
+        return redirect()->route('permissions.index', ['role' => $role])->with('status', 'Permissions mises à jour');
     }
 
     /**

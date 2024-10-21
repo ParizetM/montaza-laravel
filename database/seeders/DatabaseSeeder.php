@@ -3,9 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\Entite;
+use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
-use App\Models\Permission;
 use Hash;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -43,7 +43,6 @@ class DatabaseSeeder extends Seeder
         ]);
         $Gerant->permissions()->sync(Permission::all());
 
-
         Role::factory()->create([
             'name' => 'Responsable Ressources Humaines',
             'entite_id' => 1,
@@ -79,7 +78,7 @@ class DatabaseSeeder extends Seeder
             'first_name' => 'Goran',
             'phone' => '06 88 84 88 53',
             'email' => 'goran.josipovic@atlantismontaza.fr',
-            'password' => Hash::make('Gjosipovic' . date('Y')),
+            'password' => Hash::make('Gjosipovic'.date('Y')),
             'role_id' => 1,
             'updated_at' => now(),
             'created_at' => now(),
@@ -90,7 +89,7 @@ class DatabaseSeeder extends Seeder
             'first_name' => 'Sylvie',
             'phone' => '02 40 17 65 45',
             'email' => 'sylvie.nicol@atlantismontaza.fr',
-            'password' => Hash::make('Snicol' . date('Y')), // Replace 'password' with a secure password
+            'password' => Hash::make('Snicol'.date('Y')), // Replace 'password' with a secure password
             'role_id' => 2,
             'updated_at' => now(),
             'created_at' => now(),
@@ -101,7 +100,7 @@ class DatabaseSeeder extends Seeder
             'first_name' => 'Janie',
             'phone' => '02 40 17 65 62',
             'email' => 'janie.agasse@atlantismontaza.fr',
-            'password' => Hash::make('Jagasse' . date('Y')), // Replace 'password' with a secure password
+            'password' => Hash::make('Jagasse'.date('Y')), // Replace 'password' with a secure password
             'role_id' => 3,
             'updated_at' => now(),
             'created_at' => now(),
@@ -112,7 +111,7 @@ class DatabaseSeeder extends Seeder
             'first_name' => 'Stefan',
             'phone' => '06 76 81 08 82',
             'email' => 'stefan.avramov@amb.bg',
-            'password' => Hash::make('Savramov' . date('Y')), // Replace 'password' with a secure password
+            'password' => Hash::make('Savramov'.date('Y')), // Replace 'password' with a secure password
             'role_id' => 6,
             'updated_at' => now(),
             'created_at' => now(),
@@ -123,7 +122,7 @@ class DatabaseSeeder extends Seeder
             'first_name' => 'Harri',
             'phone' => '06 30 31 32 13',
             'email' => 'harry.bimbo@atlantisventilation.fr',
-            'password' => Hash::make('Hbimbo' . date('Y')), // Replace 'password' with a secure password
+            'password' => Hash::make('Hbimbo'.date('Y')), // Replace 'password' with a secure password
             'role_id' => 5,
             'updated_at' => now(),
             'created_at' => now(),
@@ -132,8 +131,8 @@ class DatabaseSeeder extends Seeder
             'last_name' => 'EVANNO',
             'first_name' => 'Mélanie',
             'phone' => '06 30 31 32 13',
-            'email' => 'melanie.evanno@atlantisventilation.fr',
-            'password' => Hash::make('Mevanno' . date('Y')), // Replace 'password' with a secure password
+            'email' => 'melanie.evanno@atlantismontaza.fr',
+            'password' => Hash::make('Mevanno'.date('Y')), // Replace 'password' with a secure password
             'role_id' => 5,
             'updated_at' => now(),
             'created_at' => now(),

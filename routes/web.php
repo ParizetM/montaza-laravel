@@ -1,10 +1,9 @@
 <?php
 
+use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
-use App\Http\Controllers\PermissionController;
 use Illuminate\Support\Facades\Route;
-
 
 Route::get('/', function () {
     return view('welcome');
@@ -14,7 +13,7 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 Route::get('/dashboard/paillettes', function () {
-    return view('dashboard' , ['paillettes' => 'oui']);
+    return view('dashboard', ['paillettes' => 'oui']);
 })->middleware(['auth', 'verified'])->name('dashboard.paillettes');
 
 Route::middleware('auth')->group(function () {
@@ -31,11 +30,9 @@ Route::middleware('permission:gerer_les_utilisateurs')->group(function () {
 });
 Route::middleware('permission:gerer_les_permissions')->group(function () {
     Route::get('/permissions', [PermissionController::class, 'index'])->name('permissions');
-    Route::get('/permissions/{id}', [PermissionController::class, 'index'])->name('permissions.index');
+    Route::get('/permissions/{role}', [PermissionController::class, 'index'])->name('permissions.index');
     Route::post('/permission/role/create', [RoleController::class, 'store'])->name('permissions.role.store');
-    Route::post('/permissions/edit', [PermissionController::class, 'edit'])->name('permissions.edit');
-
-
+    Route::put('/permissions/edit', [PermissionController::class, 'edit'])->name('permissions.edit');
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

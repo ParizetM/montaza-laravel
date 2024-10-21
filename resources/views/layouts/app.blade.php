@@ -30,6 +30,7 @@
             const flashMessage = document.getElementById('flash-message');
             flashMessage.classList.remove('-translate-y-full'); // Enlève la classe pour montrer l'élément
             flashMessage.classList.add('translate-y-0'); // Ajoute la classe pour faire le glissement
+            flashMessage.classList.add('shadow-lg'); // Ajoute une ombre pour le rendre plus visible
         }
 
         // Fonction pour masquer le message avec une transition
@@ -37,6 +38,8 @@
             const flashMessage = document.getElementById('flash-message');
             flashMessage.classList.remove('translate-y-0'); // Enlève la classe pour cacher l'élément
             flashMessage.classList.add('-translate-y-full'); // Ajoute la classe pour remonter le message
+            flashMessage.classList.remove('shadow-lg'); // Enlève l'ombre pour le rendre moins visible
+
         }
 
         // Montre le message après un court délai pour l'animation
@@ -64,8 +67,11 @@
 
             <!-- Page Heading -->
             @isset($header)
-                <header class="bg-white dark:bg-gray-800 shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                <header class="bg-white dark:bg-gray-800 shadow flex ">
+                    <a href="{{ url()->previous() }}" onclick="window.history.go(-1); return false;" class="block p-4 sm:p-6 lg:p-8 px-1.5 hover:bg-gray-100 hover:dark:bg-gray-700">
+                        <x-icon size="1" type="arrow_back" class="fill-gray-500 dark:fill-gray-300" />
+                    </a>
+                    <div class="w-5/6 ml-0 py-6 px-4 sm:px-6 lg:px-8">
                         {{ $header }}
                     </div>
                 </header>

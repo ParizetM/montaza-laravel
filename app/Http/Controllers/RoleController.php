@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Entite;
 use App\Models\Role;
 use Illuminate\Http\Request;
 
@@ -42,7 +41,7 @@ class RoleController extends Controller
             return redirect()->back()->withErrors(['role_name' => 'Un rôle avec ce nom existe déjà.'])->withInput();
         }
 
-        $role = new Role();
+        $role = new Role;
         $role->name = $request->role_name;
         $role->entite_id = $request->entite_id;
         $role->save();

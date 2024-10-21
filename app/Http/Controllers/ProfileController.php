@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\Entite;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
-use App\Models\Role;
-use App\Models\Entite;
 
 class ProfileController extends Controller
 {
@@ -20,10 +20,11 @@ class ProfileController extends Controller
         $show_deleted = $request->input('show_deleted');
         if ($show_deleted) {
             $users = User::onlyTrashed()->get();
+
             return view(
                 'profile.index',
                 [
-                    'users' => $users
+                    'users' => $users,
                 ]
             );
         } else {
@@ -44,11 +45,12 @@ class ProfileController extends Controller
             return view(
                 'profile.index',
                 [
-                    'users' => $users
+                    'users' => $users,
                 ]
             );
         }
     }
+
     /**
      * Display the user's profile form.
      */
@@ -61,10 +63,11 @@ class ProfileController extends Controller
         }
         $roles = Role::all();
         $entites = Entite::all();
+
         return view('profile.edit', [
             'user' => $user,
             'roles' => $roles,
-            'entites' => $entites
+            'entites' => $entites,
         ]);
     }
 
@@ -82,6 +85,7 @@ class ProfileController extends Controller
 
         return Redirect::route('profile.edit', ['id' => $user->id])->with('status', "Profil de $user->first_name $user->last_name modifié");
     }
+
     public function updateAdmin(Request $request): RedirectResponse
     {
         /** @var \App\Models\User $user */
@@ -93,25 +97,24 @@ class ProfileController extends Controller
 
     /**
      * Summary of destroy
-     * @param \App\Models\User $user
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(User $user): RedirectResponse
     {
         $user = User::findOrFail($user->id);
         $user->delete();
+
         return Redirect::route('profile.index')->with('status', "Compte $user->first_name $user->last_name désactivé");
     }
+
     /**
      * Summary of restore
-     * @param int $int
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function restore(int $int): RedirectResponse
     {
         $user = User::withTrashed()->findOrFail($int);
         if ($user->trashed()) {
             $user->restore();
+
             return Redirect::route('profile.index')->with('status', "Compte $user->first_name $user->last_name restauré");
         } else {
             return Redirect::route('profile.index')->with('status', "Compte $user->first_name $user->last_name n'est pas désactivé");
