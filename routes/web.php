@@ -17,7 +17,6 @@ Route::get('/dashboard/paillettes', function () {
 })->middleware(['auth', 'verified'])->name('dashboard.paillettes');
 
 Route::middleware('auth')->group(function () {
-
     Route::get('/profile/{id}', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::patch('/profile-admin', [ProfileController::class, 'updateAdmin'])->name('profile.update_admin');

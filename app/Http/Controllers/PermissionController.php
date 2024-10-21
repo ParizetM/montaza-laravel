@@ -15,7 +15,7 @@ class PermissionController extends Controller
      */
     public function index($role = 0): View
     {
-        if ($role != 0) {
+        if ($role !== 0) {
             $role = Role::findOrFail($role);
         } else {
             $role = Role::findOrFail(1);
@@ -32,26 +32,23 @@ class PermissionController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
-    {
-        //
-    }
+    // public function create()
+    // {
+    // }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+    // /**
+    //  * Store a newly created resource in storage.
+    //  */
+    // public function store(Request $request)
+    // {
+    // }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Permission $permission)
-    {
-        //
-    }
+    // /**
+    //  * Display the specified resource.
+    //  */
+    // public function show(Permission $permission)
+    // {
+    // }
 
     /**
      * Show the form for editing the specified resource.
@@ -65,7 +62,7 @@ class PermissionController extends Controller
 
         // Attach the selected permissions
         foreach ($request->all() as $key => $value) {
-            if ($key != '_token' && $key != 'role_id' && $key != '_method') {
+            if ($key !== '_token' && $key !== 'role_id' && $key !== '_method') {
                 $role->permissions()->attach($value);
             }
         }
@@ -76,16 +73,14 @@ class PermissionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Permission $permission)
-    {
-        //
-    }
+    // public function update(Request $request, Permission $permission)
+    // {
+    // }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Permission $permission)
-    {
-        //
-    }
+    // /**
+    //  * Remove the specified resource from storage.
+    //  */
+    // public function destroy(Permission $permission)
+    // {
+    // }
 }

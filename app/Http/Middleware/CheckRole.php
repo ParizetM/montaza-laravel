@@ -22,8 +22,7 @@ class CheckRole
 
         if (Auth::user()->hasRole($role_id)) {
             return $next($request);
-        } else {
-            return redirect('Dashboard');
         }
+        return redirect('Dashboard');
     }
 }

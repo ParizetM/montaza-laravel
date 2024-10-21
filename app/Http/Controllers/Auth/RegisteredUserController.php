@@ -10,7 +10,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
@@ -20,7 +19,7 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        if (Auth::user()->hasPermission('gerer_les_utilisateurs') == false) {
+        if (Auth::user()->hasPermission('gerer_les_utilisateurs') === false) {
             abort(403);
         }
         $roles = Role::all();
@@ -50,7 +49,7 @@ class RegisteredUserController extends Controller
 
         $password = strtoupper(substr($request->first_name, 0, 1)).strtolower($request->last_name).date('Y');
 
-        $user = User::create([
+        User::create([
             'last_name' => $request->last_name,
             'first_name' => $request->first_name,
             'phone' => $request->phone,
