@@ -90,7 +90,7 @@ class ProfileController extends Controller
         $user = User::findOrFail($request->id);
         $user->update($request->only(['role_id']));
 
-        return Redirect::route('profile.edit', ['id' => $user->id])->with('status', 'Profil modifié');
+        return Redirect::back()->with('status', 'Profil modifié');
     }
 
     /**

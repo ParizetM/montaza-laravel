@@ -1,20 +1,6 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
-
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                {{ __('Permissions') }}
-            </h2>
-
-            <div class="mt-4 sm:mt-0 flex flex-col sm:flex-row items-start sm:items-center">
-
-                <button type="button" class="btn-select-right" x-data=""
-                    x-on:click.prevent="$dispatch('open-modal', 'create-role-modal')">
-                    Créer un Poste
-                </button>
-                <x-modals.create_role :entites="$entites" />
-            </div>
-        </div>
+    <x-slot name="header_nav">
+        @include('permissions.navigation')
     </x-slot>
 
     <div class="py-12">
@@ -63,6 +49,7 @@
                                     Mettre à jour les permissions
                                 </button>
                             </div>
+                        </div>
                     </form>
                 </div>
             </div>

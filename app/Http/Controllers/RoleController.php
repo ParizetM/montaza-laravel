@@ -2,18 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Role;
 use Illuminate\Http\Request;
+use App\Models\Entite;
+use App\Models\Role;
 
 class RoleController extends Controller
 {
-    // /**
-    //  * Display a listing of the resource.
-    //  */
-    // public function index()
-    // {
-    //     //
-    // }
+    /**
+     * Display a listing of the resource.
+     */
+    public function index($role = 0)
+    {
+        if ($role !== 0) {
+            $role = Role::findOrFail($role);
+        } else {
+            $role = Role::findOrFail(1);
+        }
+        $roles = Role::all();
+        $entites = Entite::all();
+        $users = $role->users()->get();
+        return view('roles.index', [
+            'roles' => $roles,
+            'entites' => $entites,
+            'role' => $role,
+            'users' => $users,
+    ]);
+    }
 
     // /**
     //  * Show the form for creating a new resource.
@@ -46,7 +60,7 @@ class RoleController extends Controller
         $role->entite_id = $request->entite_id;
         $role->save();
 
-        return redirect()->route('register')->with('status', 'Rôle créé avec succès.');
+        return redirect()->back()->with('status', 'Rôle créé avec succès.');
     }
 
     // /**
@@ -65,13 +79,13 @@ class RoleController extends Controller
     //     //
     // }
 
-    // /**
-    //  * Update the specified resource in storage.
-    //  */
-    // public function update(Request $request, Role $role)
-    // {
-    //     //
-    // }
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Role $role)
+    {
+
+    }
 
     // /**
     //  * Remove the specified resource from storage.

@@ -5,7 +5,7 @@ parameters:
     paths:
         - app/
 
-    level: 7
+    level: 9
 
     excludePaths:
         - %currentWorkingDirectory%/app/Http/Controllers/Auth/VerifyEmailController.php

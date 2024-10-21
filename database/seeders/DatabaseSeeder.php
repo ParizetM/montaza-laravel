@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
         $permissions = [
             'gerer_les_utilisateurs',
             'gerer_les_permissions',
+            'gerer_les_postes',
         ];
         foreach ($permissions as $permission) {
             Permission::factory()->create([
@@ -47,6 +48,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Responsable Ressources Humaines',
             'entite_id' => 1,
         ]);
+
         Role::factory()->create([
             'name' => 'Secrétaire',
             'entite_id' => 1,
@@ -62,6 +64,10 @@ class DatabaseSeeder extends Seeder
         Role::factory()->create([
             'name' => 'Assistant Technique',
             'entite_id' => 3,
+        ]);
+        Role::factory()->create([
+            'name' => 'Assistante chargée d\'affaires',
+            'entite_id' => 1,
         ]);
         User::factory()->create([
             'last_name' => 'Admin',
@@ -133,7 +139,7 @@ class DatabaseSeeder extends Seeder
             'phone' => '06 30 31 32 13',
             'email' => 'melanie.evanno@atlantismontaza.fr',
             'password' => Hash::make('Mevanno'.date('Y')), // Replace 'password' with a secure password
-            'role_id' => 5,
+            'role_id' => 7,
             'updated_at' => now(),
             'created_at' => now(),
         ]);

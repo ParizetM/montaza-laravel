@@ -22,4 +22,7 @@ select:focus {
   .icons {
     @apply fill-gray-500 dark:fill-gray-300 hover:fill-gray-700 dark:hover:fill-gray-500;
   }
+  .icons-no_hover {
+    @apply fill-gray-500 dark:fill-gray-300;
+  }
 }

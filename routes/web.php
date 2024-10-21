@@ -22,16 +22,21 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile-admin', [ProfileController::class, 'updateAdmin'])->name('profile.update_admin');
     Route::delete('/profile/{user}/delete', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/profile/{user}/restore', [ProfileController::class, 'restore'])->name('profile.restore');
-});
-Route::middleware('permission:gerer_les_utilisateurs')->group(function () {
-    Route::get('/profiles', [ProfileController::class, 'index'])->name('profile.index');
-    Route::post('/profile/create', [RoleController::class, 'store'])->name('role.store');
-});
-Route::middleware('permission:gerer_les_permissions')->group(function () {
-    Route::get('/permissions', [PermissionController::class, 'index'])->name('permissions');
-    Route::get('/permissions/{role}', [PermissionController::class, 'index'])->name('permissions.index');
-    Route::post('/permission/role/create', [RoleController::class, 'store'])->name('permissions.role.store');
-    Route::put('/permissions/edit', [PermissionController::class, 'edit'])->name('permissions.edit');
-});
 
-require __DIR__.'/auth.php';
+    Route::middleware('permission:gerer_les_utilisateurs')->group(function () {
+        Route::get('/profiles', [ProfileController::class, 'index'])->name('profile.index');
+        Route::post('/profile/create', [RoleController::class, 'store'])->name('role.store');
+    });
+    Route::middleware('permission:gerer_les_permissions')->group(function () {
+        Route::get('/permissions', [PermissionController::class, 'index'])->name('permissions');
+        Route::get('/permissions/{role}', [PermissionController::class, 'index'])->name('permissions.index');
+        Route::post('/permission/role/create', [RoleController::class, 'store'])->name('permissions.role.store');
+        Route::put('/permissions/edit', [PermissionController::class, 'edit'])->name('permissions.edit');
+    });
+    Route::middleware('permission:gerer_les_postes')->group(function () {
+        Route::get('/postes', [RoleController::class, 'index'])->name('roles');
+        Route::get('/postes/{role}', [RoleController::class, 'index'])->name('roles.index');
+        Route::get('/postes/{role}/edit', [RoleController::class, 'edit'])->name('roles.edit');
+    });
+});
+require __DIR__ . '/auth.php';

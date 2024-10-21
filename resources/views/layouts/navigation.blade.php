@@ -62,9 +62,9 @@
                                     {{ __('utilisateurs') }}
                                 </x-dropdown-link>
                             @endif
-                            @if(Auth::user()->hasPermission('gerer_les_permissions'))
+                            @if (Auth::user()->hasPermission('gerer_les_permissions') || Auth::user()->hasPermission('gerer_les_postes'))
                                 <x-dropdown-link :href="route('permissions')">
-                                    {{ __('Permissions') }}
+                                    {{ __('Permissions et Postes') }}
                                 </x-dropdown-link>
                             @endif
 
@@ -132,10 +132,26 @@
                             {{ __('Log Out') }}
                         </x-responsive-nav-link>
                     </form>
-                    @if (Auth::user()->role_id == '1')
+                    @if (Auth::user()->hasPermission('gerer_les_utilisateurs'))
                         <x-responsive-nav-link :href="route('profile.index')">
                             {{ __('utilisateurs') }}
                         </x-responsive-nav-link>
+                    @endif
+                    @if (Auth::user()->hasPermission('gerer_les_permissions') && Auth::user()->hasPermission('gerer_les_postes'))
+                        <x-responsive-nav-link :href="route('permissions')">
+                            {{ __('Permissions et Postes') }}
+                        </x-responsive-nav-link>
+                    @else
+                        @if (Auth::user()->hasPermission('gerer_les_permissions'))
+                            <x-responsive-nav-link :href="route('permissions')">
+                                {{ __('Permissions') }}
+                            </x-responsive-nav-link>
+                        @endif
+                        @if (Auth::user()->hasPermission('gerer_les_postes'))
+                            <x-responsive-nav-link :href="route('postes')">
+                                {{ __('Postes') }}
+                            </x-responsive-nav-link>
+                        @endif
                     @endif
                 @else
                     <x-responsive-nav-link :href="route('login')">

@@ -35,6 +35,7 @@
                 {{ __('Retour') }}
             </a>
         </div>
+        <a href="{{ route('welcome') }}" class="text-blue-500 hover:text-blue-700 underline">retour à l'accueil</a>
 
     </div>
 </body>
