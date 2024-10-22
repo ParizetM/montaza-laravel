@@ -59,10 +59,10 @@ class User extends Authenticatable
      */
     public function role(): BelongsTo
     {
-        return $this->belongsTo(Role::class, 'role_id');
+        return $this->belongsTo(related: Role::class, foreignKey: 'role_id');
     }
 
-    public function permissions()
+    public function permissions(): mixed
     {
         return $this->role->permissions ?? collect(); // Si pas de rôle, renvoie une collection vide
     }

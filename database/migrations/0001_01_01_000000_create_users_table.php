@@ -20,6 +20,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->foreignId('entite_id')->constrained();
+            $table->boolean('undeletable')->default(false);
             $table->timestamps();
             $table->softDeletes();
         });

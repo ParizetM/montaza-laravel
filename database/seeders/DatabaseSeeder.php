@@ -41,6 +41,7 @@ class DatabaseSeeder extends Seeder
         $Gerant = Role::factory()->create([
             'name' => 'Gerant',
             'entite_id' => 1,
+            'undeletable' => true,
         ]);
         $Gerant->permissions()->sync(Permission::all());
 

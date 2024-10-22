@@ -37,6 +37,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/postes', [RoleController::class, 'index'])->name('roles');
         Route::get('/postes/{role}', [RoleController::class, 'index'])->name('roles.index');
         Route::get('/postes/{role}/edit', [RoleController::class, 'edit'])->name('roles.edit');
+        Route::patch('/postes/{role}/update', [RoleController::class, 'update'])->name('roles.update');
+        Route::delete('/postes/{role}/delete', [RoleController::class, 'destroy'])->name('roles.destroy');
+        Route::patch('/postes/{role}/restore', [RoleController::class, 'restore'])->name('roles.restore');
     });
 });
 require __DIR__ . '/auth.php';

@@ -25,4 +25,10 @@ select:focus {
   .icons-no_hover {
     @apply fill-gray-500 dark:fill-gray-300;
   }
+.text-input:disabled {
+    @apply dark:bg-[#1b2533] bg-[#fcfcfd] border-none dark:text-[#636c79] text-[#d7d8db]; /* Dark mode */
 }
+
+
+}
+
