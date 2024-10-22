@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
+{{-- Vérifie si l'utilisateur est connecté et s'il n'a pas de poste --}}
+@if (Auth::check())
+    @if (!Auth::user()->role)
+        {{ Auth::logout() }}
+        <script>
+            window.location.href = "{{ route('login') }}";
+        </script>
+    @endif
+@endif
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -74,7 +84,7 @@
         @isset($header)
             <header class="bg-white dark:bg-gray-800 shadow flex ">
                 <a href="{{ url()->previous() }}" onclick="window.history.go(-1); return false;"
-                    class="block p-4 sm:p-6 lg:p-8 px-1.5 hover:bg-gray-100 hover:dark:bg-gray-700">
+                    class="flex px-1.5 hover:bg-gray-100 hover:dark:bg-gray-700 items-center">
                     <x-icon size="1" type="arrow_back" class="fill-gray-500 dark:fill-gray-300" />
                 </a>
                 <div class="w-5/6 ml-0 py-6 px-4 sm:px-6 lg:px-8">
@@ -85,7 +95,7 @@
         @isset($header_nav)
             <header class="bg-white dark:bg-gray-800 shadow flex ">
                 <a href="{{ url()->previous() }}" onclick="window.history.go(-1); return false;"
-                    class="block p-4 sm:p-6 lg:p-8 px-1.5 hover:bg-gray-100 hover:dark:bg-gray-700">
+                    class="flex p-4 sm:p-6 lg:p-8 px-1.5 hover:bg-gray-100 hover:dark:bg-gray-700 items-center">
                     <x-icon size="1" type="arrow_back" class="fill-gray-500 dark:fill-gray-300" />
                 </a>
                 <div class="w-5/6 ml-0 mt-10 px-4 sm:px-6 lg:px-8">

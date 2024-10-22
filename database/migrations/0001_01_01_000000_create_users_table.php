@@ -65,6 +65,15 @@ return new class extends Migration
             $table->longText('payload');
             $table->integer('last_activity')->index();
         });
+        Schema::create('notifications', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('role_id')->constrained()->onDelete('cascade');
+            $table->string('type');
+            $table->text('data');
+            $table->boolean('read')->default(false);
+            $table->timestamps();
+            $table->softDeletes();
+        });
     }
 
     /**
@@ -72,6 +81,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('notifications');
         Schema::dropIfExists('users');
         Schema::dropIfExists('permission_role');
         Schema::dropIfExists('roles');

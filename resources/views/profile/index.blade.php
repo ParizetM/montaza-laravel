@@ -82,6 +82,12 @@
                                         <td
                                             class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-200">
                                             {{ $user->first_name }} {{ $user->last_name }}
+                                            @if ($user->role->trashed())
+                                                <div class="flex">
+                                                    <x-icon size="1" class="icons-no_hover fill-red-500 dark:fill-red-400 mr-1 mt-0.5" />
+                                                    <p class="text-red-500 dark:text-red-400">Compte inutilisable</p>
+                                                </div>
+                                            @endif
                                         </td>
                                         <td
                                             class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
@@ -98,6 +104,12 @@
                                         <td
                                             class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                             {{ $user->role->name }}
+                                            @if ($user->role->trashed())
+                                                <div class="flex">
+                                                    <x-icon size="1" class="icons-no_hover fill-red-500 dark:fill-red-400 mr-1 mt-0.5" />
+                                                    <p class="text-red-500 dark:text-red-400">Le poste a été désactivé</p>
+                                                </div>
+                                                    @endif
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             @if ($user->deleted_at)
@@ -106,15 +118,16 @@
                                                     @csrf
                                                     @method('GET')
                                                     <button type="submit"
-                                                        class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-600"><x-icon size="2" type="restore" class="icons ml-2" /></button>
+                                                        class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-600"><x-icon
+                                                            size="2" type="restore" class="icons ml-2" /></button>
                                                 </form>
                                             @else
-                                                <a href="{{ route('profile.edit', ['id' => $user]) }}"
-                                                    class="">
+                                                <a href="{{ route('profile.edit', ['id' => $user]) }}" class="">
                                                     <x-icon size="2" type="edit" class="icons ml-2" />
                                                 </a>
                                             @endif
                                         </td>
+
                                     </tr>
                                 @endforeach
                             </tbody>

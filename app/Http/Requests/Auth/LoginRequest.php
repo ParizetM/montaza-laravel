@@ -49,6 +49,13 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        if (!Auth::user()->role) {
+            Auth::logout();
+            throw ValidationException::withMessages([
+            'email' => trans('Connnexin impossible'),
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 

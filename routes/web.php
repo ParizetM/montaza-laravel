@@ -3,6 +3,7 @@
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -41,5 +42,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/postes/{role}/delete', [RoleController::class, 'destroy'])->name('roles.destroy');
         Route::patch('/postes/{role}/restore', [RoleController::class, 'restore'])->name('roles.restore');
     });
+    Route::patch('/notifications/{id}/lu', [NotificationController::class, 'lu'])->name('notifications.lu');
+
 });
 require __DIR__ . '/auth.php';

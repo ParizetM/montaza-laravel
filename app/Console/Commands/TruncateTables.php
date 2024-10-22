@@ -18,6 +18,12 @@ class TruncateTables extends Command
         $tables = DB::select('SHOW TABLES');
         foreach ($tables as $table) {
             $tableName = $table->{"Tables_in_" . env('DB_DATABASE')}; // Récupère le nom de la table
+
+            // Sauter la table migrations
+            if ($tableName === 'migrations') {
+                continue;
+            }
+
             DB::table($tableName)->truncate();
             $this->info("Table '{$tableName}' vidée.");
         }

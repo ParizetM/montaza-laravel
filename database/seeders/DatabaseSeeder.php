@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Entite;
+use App\Models\Notification;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
@@ -144,5 +145,7 @@ class DatabaseSeeder extends Seeder
             'updated_at' => now(),
             'created_at' => now(),
         ]);
+
+        Notification::factory()->times(100)->create();
     }
 }

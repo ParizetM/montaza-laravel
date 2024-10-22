@@ -19,6 +19,9 @@ select:focus {
 .btn-select-right {
     @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-r-md rounded-l-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 active:bg-indigo-700 focus:outline-none focus:border-indigo-700 focus:ring focus:ring-indigo-200 disabled:opacity-25 transition;
 }
+.btn-select-top-right {
+    @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-t-md rounded-b-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 active:bg-indigo-700 focus:outline-none focus:border-indigo-700 focus:ring focus:ring-indigo-200 disabled:opacity-25 transition;
+}
   .icons {
     @apply fill-gray-500 dark:fill-gray-300 hover:fill-gray-700 dark:hover:fill-gray-500;
   }

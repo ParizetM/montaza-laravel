@@ -18,6 +18,11 @@ class ResetTables extends Command
         $tables = DB::select('SHOW TABLES');
         foreach ($tables as $table) {
             $tableName = $table->{"Tables_in_" . env('DB_DATABASE')}; // Récupère le nom de la table
+
+            if ($tableName === 'migrations') {
+                continue; // Ignorer la table migrations
+            }
+
             DB::table($tableName)->truncate();
             $this->info("Table '{$tableName}' vidée.");
         }
@@ -28,6 +33,5 @@ class ResetTables extends Command
         $this->info('Toutes les tables ont été vidées.');
         $this->call('db:seed');
         $this->info('Toutes les tables ont été réinitialisé.');
-
     }
 }
