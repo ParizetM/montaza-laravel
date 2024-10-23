@@ -28,14 +28,23 @@ class AppServiceProvider extends ServiceProvider
                         ->orderBy('created_at', 'desc')
                         ->take(20)
                         ->get();
-                    $view->with('notifications', $notifications);
+                    $view->with('_notifications', $notifications);
+                    $notifications_count = Notification::where('role_id', Auth::user()->role_id)
+                        ->where('read', false)
+                        ->count();
+                    $view->with('_notifications_count', $notifications_count);
                     $notificationsSystem = Notification::where('role_id', Auth::user()->role_id)
                         ->where('read', false)
                         ->where('type', 'system')
                         ->orderBy('created_at', 'desc')
                         ->take(20)
                         ->get();
-                    $view->with('notificationsSystem', $notificationsSystem);
+                    $view->with('_notificationsSystem', $notificationsSystem);
+                    $notificationsSystem_count = Notification::where('role_id', Auth::user()->role_id)
+                        ->where('read', false)
+                        ->where('type', 'system')
+                        ->count();
+                    $view->with('_notificationsSystem_count', $notificationsSystem_count);
                 }
             }
         );

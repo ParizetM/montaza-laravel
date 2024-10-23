@@ -3,35 +3,60 @@
 @tailwind utilities;
 
 @layer components {
-  .btn {
-    @apply mt-4 sm:mt-0 inline-flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-md font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 active:bg-indigo-700 focus:outline-none focus:border-indigo-700 focus:ring focus:ring-indigo-200 disabled:opacity-25 transition;
-  }
-  .select {
-    @apply block w-full px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-md font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 active:bg-indigo-700 disabled:opacity-25 transition;
-  }
-.select-left {
-    @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-l-md rounded-r-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 active:bg-indigo-700 focus:outline-none disabled:opacity-25 transition;
-}
-select:focus {
-    outline: none;
-    box-shadow: none; /* Pour enlever toute ombre lors du focus */
-}
-.btn-select-right {
-    @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-r-md rounded-l-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 active:bg-indigo-700 focus:outline-none focus:border-indigo-700 focus:ring focus:ring-indigo-200 disabled:opacity-25 transition;
-}
-.btn-select-top-right {
-    @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-t-md rounded-b-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 active:bg-indigo-700 focus:outline-none focus:border-indigo-700 focus:ring focus:ring-indigo-200 disabled:opacity-25 transition;
-}
-  .icons {
-    @apply fill-gray-500 dark:fill-gray-300 hover:fill-gray-700 dark:hover:fill-gray-500;
-  }
-  .icons-no_hover {
-    @apply fill-gray-500 dark:fill-gray-300;
-  }
-.text-input:disabled {
-    @apply dark:bg-[#1b2533] bg-[#fcfcfd] border-none dark:text-[#636c79] text-[#d7d8db]; /* Dark mode */
-}
+    .btn {
+        @apply mt-4 sm:mt-0 inline-flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-md font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 active:bg-indigo-700 focus:outline-none focus:border-indigo-700 focus:ring focus:ring-indigo-200 disabled:opacity-25 transition;
+    }
+
+    .select {
+        @apply block w-full px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-md font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 active:bg-indigo-700 disabled:opacity-25 transition;
+    }
+
+    .select-left {
+        @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-l-md rounded-r-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 active:bg-indigo-700 focus:outline-none disabled:opacity-25 transition;
+    }
+
+    select:focus {
+        outline: none;
+        box-shadow: none;
+        /* Pour enlever toute ombre lors du focus */
+    }
+
+    .btn-select-right {
+        @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-r-md rounded-l-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 active:bg-indigo-700 focus:outline-none focus:border-indigo-700 focus:ring focus:ring-indigo-200 disabled:opacity-25 transition;
+    }
+
+    .btn-select-top-right {
+        @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-t-md rounded-b-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 active:bg-indigo-700 focus:outline-none focus:border-indigo-700 focus:ring focus:ring-indigo-200 disabled:opacity-25 transition;
+    }
+
+    .btn-select-top-left {
+        @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-t-md rounded-b-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 active:bg-indigo-700 focus:outline-none focus:border-indigo-700 focus:ring focus:ring-indigo-200 disabled:opacity-25 transition;
+    }
+
+    .btn-select-bottom-right {
+        @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-b-md rounded-t-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 active:bg-indigo-700 focus:outline-none focus:border-indigo-700 focus:ring focus:ring-indigo-200 disabled:opacity-25 transition;
+    }
+
+    .btn-select-bottom-left {
+        @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-b-md rounded-t-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 active:bg-indigo-700 focus:outline-none focus:border-indigo-700 focus:ring focus:ring-indigo-200 disabled:opacity-25 transition;
+    }
+
+    .btn-select-square {
+        @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 active:bg-indigo-700 focus:outline-none focus:border-indigo-700 focus:ring focus:ring-indigo-200 disabled:opacity-25 transition;
+    }
+
+    .icons {
+        @apply fill-gray-500 dark:fill-gray-300 hover:fill-gray-700 dark:hover:fill-gray-500;
+    }
+
+    .icons-no_hover {
+        @apply fill-gray-500 dark:fill-gray-300;
+    }
+
+    .text-input:disabled {
+        @apply dark:bg-[#1b2533] bg-[#fcfcfd] border-none dark:text-[#636c79] text-[#d7d8db];
+        /* Dark mode */
+    }
 
 
 }
-

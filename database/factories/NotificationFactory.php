@@ -15,11 +15,12 @@ class NotificationFactory extends Factory
             'role_id' => $this->faker->numberBetween(1, 4),
             'type' => 'system',
             'data' => json_encode([
-                'title' => $this->faker->sentence,
+                'title' => $this->faker->sentence(6,  true),
                 'message' => $this->faker->paragraph,
-                'action' => $this->faker->word,
+                'action' => $this->faker->randomElement(['Action requise', '']),
             ]),
-            'read' => $this->faker->boolean,
+            'read' => false,
+            'created_at' => $this->faker->dateTimeThisYear,
         ];
     }
 }

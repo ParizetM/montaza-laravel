@@ -27,9 +27,9 @@
                             x-on:click.prevent="$dispatch('open-modal', 'notifications-modal')"
                             class="relative inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
                             <x-icon type="bell" :size="1.5" class="icons" />
-                            @if ($notifications->count() > 0)
+                            @if ($_notifications->count() > 0)
                                 <span
-                                    class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">{{ $notifications->count() }}</span>
+                                    class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">{{ $_notifications_count }}</span>
                             @endif
                         </button>
 
@@ -131,8 +131,18 @@
                                 {{ Auth::user()->last_name }}</div>
                             <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
                         </div>
-                        <div class="">
-                            <x-icon :size="1.5" type="bell" class="icons float-right" />
+                        <div>
+                            <div class="float-right">
+                                <a href="{{ route('notifications.index') }}"
+                                    class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
+
+                                    <x-icon :size="1.5" type="bell" class="icons " />
+                                    @if ($_notifications->count() > 0)
+                                        <span
+                                            class="relative bottom-3 right-4 inline-flex items-center justify-center px-1.5 py-1 text-xs font-semibold leading-none text-red-100 bg-red-600 rounded-full">{{ $_notifications->count() }}</span>
+                                    @endif
+                                </a>
+                            </div>
                         </div>
                     </div>
                 @endif
@@ -186,3 +196,28 @@
         </div>
     </div>
 </nav>
+<script>
+    function markAsRead(notificationId) {
+        document.getElementById(`notification-${notificationId}`);
+        notificationElement;
+        fetch(`/notifications/${notificationId}/lu`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        }).then(response => {
+            if (response.ok) {
+                // Optionally, you can update the UI to reflect the notification as read
+                console.log('Notification marked as read');
+                // Remove the notification element from the DOM
+
+            } else {
+                console.error('Failed to mark notification as read');
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+        });
+
+    }
+</script>

@@ -4,21 +4,60 @@ namespace App\Http\Controllers;
 
 use App\Models\Notification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
 
 class NotificationController extends Controller
 {
-    public function lu(Notification $notification)
+    public function lu(int $id)
     {
-        $notification->update(['read' => true]);
-        return redirect()->back()->with('notification', 'Notification lue');
+        $notification = Notification::findOrFail($id);
+        $notification->update(attributes: ['read' => true]);
     }
     /**
      * Display a listing of the resource.
      */
-    // public function index()
-    // {
-    //     //
-    // }
+    public function index(Request $request)
+    {
+
+
+        if ($request->ajax()) {
+            $allNotifications = Auth::user()->notifications()->orderBy('created_at', 'desc')->paginate(10);
+
+            // Séparer les notifications non lues et lues et le type
+            $notifications = $allNotifications->where('read', false);
+            $notificationsSystem = $notifications->where('type', 'system');
+            $notifications_readed = $allNotifications->where('read', true)->sortByDesc('updated_at');
+            if ($request->tab == 'tab1') {
+                $notificationsRendu = $notifications;
+                $specifyType = true;
+            } else if ($request->tab == 'tab2') {
+                $notificationsRendu = $notificationsSystem;
+                $specifyType = false;
+
+            } else if ($request->tab == 'tab3') {
+                $notificationsRendu = $notifications_readed;
+                $specifyType = true;
+            }
+            return view('notifications.partials._notifications', [
+                'notifications' => $notificationsRendu,
+                'specifyType' => $specifyType
+            ])->render();
+        }
+        $allNotifications = Auth::user()->notifications()->orderBy('created_at', 'desc')->paginate(10);
+
+        // Séparer les notifications non lues et lues et le type
+        $notifications = $allNotifications->where('read', false);
+        $notificationsSystem = $notifications->where('type', 'system');
+        $notifications_readed = $allNotifications->where('read', true)->sortByDesc('updated_at');
+        return view('notifications.index', [
+            'notifications' => $notifications,
+            'notificationsSystem' => $notificationsSystem,
+            'notifications_readed' => $notifications_readed,
+        ]);
+    }
+
+
 
     // /**
     //  * Show the form for creating a new resource.

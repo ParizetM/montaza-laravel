@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\Models\Notification;
 
 class Role extends Model
 {
@@ -44,5 +46,21 @@ class Role extends Model
     public function permissions(): BelongsToMany
     {
         return $this->belongsToMany(Permission::class);
+    }
+    public function hasPermission(string $permission): bool
+    {
+        return $this->permissions->contains('name', $permission);
+    }
+    public function hasPermissions(array $permissions): bool
+    {
+        return $this->permissions->whereIn('name', $permissions)->count() === count($permissions);
+    }
+    public function hasAnyPermission(array $permissions): bool
+    {
+        return $this->permissions->whereIn('name', $permissions)->count() > 0;
+    }
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(Notification::class);
     }
 }

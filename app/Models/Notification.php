@@ -6,6 +6,8 @@ use Database\Factories\NotificationFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Role;
+
 
 
 class Notification extends Model

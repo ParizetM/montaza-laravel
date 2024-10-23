@@ -40,7 +40,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $Gerant = Role::factory()->create([
-            'name' => 'Gerant',
+            'name' => 'Gérant',
             'entite_id' => 1,
             'undeletable' => true,
         ]);
@@ -146,6 +146,6 @@ class DatabaseSeeder extends Seeder
             'created_at' => now(),
         ]);
 
-        Notification::factory()->times(100)->create();
+        Notification::factory()->times(1000)->create();
     }
 }

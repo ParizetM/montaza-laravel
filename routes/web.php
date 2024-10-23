@@ -42,7 +42,8 @@ Route::middleware('auth')->group(function () {
         Route::delete('/postes/{role}/delete', [RoleController::class, 'destroy'])->name('roles.destroy');
         Route::patch('/postes/{role}/restore', [RoleController::class, 'restore'])->name('roles.restore');
     });
-    Route::patch('/notifications/{id}/lu', [NotificationController::class, 'lu'])->name('notifications.lu');
-
+    Route::post('/notifications/{id}/lu', [NotificationController::class, 'lu'])->name('notifications.lu');
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notification/{id}', [NotificationController::class, 'index'])->name('notifications.detail');
 });
 require __DIR__ . '/auth.php';

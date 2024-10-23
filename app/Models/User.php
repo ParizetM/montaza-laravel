@@ -71,4 +71,8 @@ class User extends Authenticatable
     {
         return $this->permissions()->contains('name', $permission);
     }
+    public function notifications()
+    {
+        return $this->role->hasMany(Notification::class);
+    }
 }
