@@ -18,29 +18,28 @@
                                         {{ __('Notifications') }}
                                     </h2>
                                     <div class="mt-4">
-                                        @if (session('notification'))
-                                            <div class="bg-green-500 text-white p-2 rounded mb-4">
-                                                {{ session('notification') }}
-                                            </div>
-                                        @endif
                                         <ul class="flex border-b">
                                             <li class="mr-1">
                                                 <a @click.prevent="activeTab = 'tab1'"
                                                     :class="activeTab === 'tab1' ? 'border-b-2 border-blue-500 text-blue-500' :
                                                         'text-gray-500'"
                                                     class="inline-block py-2 px-4" href="#">Tout
-                                                    <span
+                                                    @if ($_notifications->count() > 0)
+                                                    <span id="notifications-count"
                                                         class="relative bottom-2 right-4 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">{{ $_notifications_count }}</span>
-                                                </a>
+                                                    @endif
+                                                    </a>
                                             </li>
                                             <li class="mr-1">
                                                 <a @click.prevent="activeTab = 'tab2'"
                                                     :class="activeTab === 'tab2' ? 'border-b-2 border-blue-500 text-blue-500' :
                                                         'text-gray-500'"
                                                     class="inline-block py-2 pl-4" href="#">Système
-                                                    <span
+                                                    @if ($_notificationsSystem_count > 0)
+                                                    <span id="notifications-system-count"
                                                         class="relative bottom-2 right-4 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">{{ $_notificationsSystem_count }}</span>
-                                                </a>
+                                                    @endif
+                                                    </a>
                                             </li>
                                             <li class="mr-1">
                                                 <a class="inline-block py-2 px-4" href="{{ route('notifications.lus') }}">Lu</a>

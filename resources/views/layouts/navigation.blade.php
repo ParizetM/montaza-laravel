@@ -138,7 +138,7 @@
 
                                     <x-icon :size="1.5" type="bell" class="icons " />
                                     @if ($_notifications->count() > 0)
-                                        <span
+                                        <span id="notifications-count"
                                             class="relative bottom-3 right-4 inline-flex items-center justify-center px-1.5 py-1 text-xs font-semibold leading-none text-red-100 bg-red-600 rounded-full">{{ $_notifications->count() }}</span>
                                     @endif
                                 </a>
@@ -198,6 +198,24 @@
 </nav>
 <script>
     function marquerCommeLu(notificationId) {
+
+        const notificationCountElements = document.querySelectorAll('#notifications-count');
+        notificationCountElements.forEach(notificationCountElement => {
+            let count = parseInt(notificationCountElement.textContent);
+            if (!isNaN(count) && count > 0) {
+            notificationCountElement.textContent = count - 1;
+            }
+        });
+        const notificationElement = document.getElementById(`notification-${notificationId}`);
+        if (notificationElement && notificationElement.classList.contains('system')) {
+            const notificationSystemCountElements = document.querySelectorAll('#notifications-system-count');
+            notificationSystemCountElements.forEach(notificationSystemCountElement => {
+                let count = parseInt(notificationSystemCountElement.textContent);
+                if (!isNaN(count) && count > 0) {
+                    notificationSystemCountElement.textContent = count - 1;
+                }
+            });
+        }
         while (document.getElementById(`notification-${notificationId}`)) {
             document.getElementById(`notification-${notificationId}`).remove();
         }
