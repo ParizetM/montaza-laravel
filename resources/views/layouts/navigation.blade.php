@@ -197,9 +197,10 @@
     </div>
 </nav>
 <script>
-    function markAsRead(notificationId) {
-        document.getElementById(`notification-${notificationId}`);
-        notificationElement;
+    function marquerCommeLu(notificationId) {
+        while (document.getElementById(`notification-${notificationId}`)) {
+            document.getElementById(`notification-${notificationId}`).remove();
+        }
         fetch(`/notifications/${notificationId}/lu`, {
             method: 'POST',
             headers: {
@@ -210,10 +211,30 @@
             if (response.ok) {
                 // Optionally, you can update the UI to reflect the notification as read
                 console.log('Notification marked as read');
-                // Remove the notification element from the DOM
 
             } else {
                 console.error('Failed to mark notification as read');
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+        });
+
+    }
+    function marquerCommeNonLu(notificationId) {
+        document.getElementById(`notification-${notificationId}`).remove();
+        fetch(`/notifications/${notificationId}/non-lu`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        }).then(response => {
+            if (response.ok) {
+                // Optionally, you can update the UI to reflect the notification as read
+                console.log('Notification marked as unread');
+
+            } else {
+                console.error('Failed to mark notification as unread');
             }
         }).catch(error => {
             console.error('Error:', error);

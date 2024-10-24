@@ -40,9 +40,15 @@
                 <button type="button" class="btn-select-square" title="transférer">
                     <x-icon type="send" size="1" class=" icons-no_hover" />
                 </button>
-                    <button type="button" class="btn-select-bottom-right" onclick="markAsRead('{{ $notification->id }}')">
+                @if (!$notification->read)
+                    <button type="button" class="btn-select-bottom-right" onclick="marquerCommeLu({{ $notification->id }})" title="Marquer comme Lu">
                         <x-icon type="read" size="1" class="icons-no_hover" />
                     </button>
+                    @else
+                    <button type="button" class="btn-select-bottom-right" onclick="marquerCommeNonLu({{ $notification->id }})" title="Marquer comme non-lu">
+                        <x-icon type="unread" size="1" class="icons-no_hover" />
+                    </button>
+                @endif
             </div>
         </td>
     </tr>

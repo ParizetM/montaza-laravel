@@ -146,6 +146,6 @@ class DatabaseSeeder extends Seeder
             'created_at' => now(),
         ]);
 
-        Notification::factory()->times(1000)->create();
+        Notification::factory()->times(100)->create();
     }
 }

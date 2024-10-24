@@ -12,7 +12,7 @@ class NotificationFactory extends Factory
     public function definition()
     {
         return [
-            'role_id' => $this->faker->numberBetween(1, 4),
+            'role_id' => $this->faker->numberBetween(1, 7),
             'type' => 'system',
             'data' => json_encode([
                 'title' => $this->faker->sentence(6,  true),
