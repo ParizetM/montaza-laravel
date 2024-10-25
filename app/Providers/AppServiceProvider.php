@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Entite;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Auth;
@@ -31,6 +32,8 @@ class AppServiceProvider extends ServiceProvider
                     $view->with('_notificationsSystem', $notificationsSystem);
                     $notificationsSystem_count = Auth::user()->notifications()->where('read', false)->where('type', 'system')->count();
                     $view->with('_notificationsSystem_count', $notificationsSystem_count);
+                    $entites = Entite::all();
+                    $view->with('_entites', $entites);
                 }
             }
         );

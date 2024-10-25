@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\Entite;
 use App\Models\Role;
 use Illuminate\Http\RedirectResponse;
+use App\Models\notification;
+use Auth;
+use Route;
 
 class RoleController extends Controller
 {
@@ -19,13 +22,13 @@ class RoleController extends Controller
         $entites = Entite::with(['roles' => function ($query) {
             $query->withTrashed(); // Inclure les rôles supprimés
         }])->get();
-                $users = $role->users()->get();
+        $users = $role->users()->get();
         return view('roles.index', [
             'roles' => $roles,
             'entites' => $entites,
             'role' => $role,
             'users' => $users,
-    ]);
+        ]);
     }
 
     // /**
@@ -114,7 +117,25 @@ class RoleController extends Controller
         }
 
         $role->delete();
+        if ($role->users()) {
+            $userRole_id = Auth::user()->role->id;
+            $role_cible = Role::withTrashed()->findOrFail($userRole_id);
+            $messsage = 'Le poste <strong>' . $role->name . '</strong> a été désactivé par ' . Auth::user()->first_name .' '. Auth::user()->last_name . ', les utilisateurs affectés à ce poste ont été déconnectés :';
+            foreach ($role->users as $user) {
+                $messsage .= '<br/> - ' . $user->first_name . ' ' . $user->last_name;
+            }
+            Notification::createNotification(
+                $role_cible,
+                'system',
+                'Poste désactivé',
+                $messsage,
+                'Voir le poste désactivé',
+                "roles.index",
+                ['role' => $role->id],
+                'Voir le poste désactivé'
+            );
 
+        }
         return redirect()->back()->with('status', 'Poste désactivé avec succès.');
     }
     /**

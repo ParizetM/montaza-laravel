@@ -15,11 +15,23 @@ class NotificationController extends Controller
         $notification->update(['read' => true]);
         return redirect()->back();
     }
+
+    public function luAll(string $type = null)
+    {
+        if ($type) {
+
+            Auth::user()->notifications()->where('type', $type)->update(['read' => true]);
+        } else {
+            Auth::user()->notifications()->update(['read' => true]);
+        }
+        return redirect()->back();
+    }
+
     public function nonLu(int $id)
     {
         $notification = Notification::findOrFail($id);
         $notification->update(['read' => false]);
-        return redirect()->back();
+        return redirect()->route('notifications.index');
     }
     /**
      * Display a listing of the resource.
@@ -63,6 +75,14 @@ class NotificationController extends Controller
         // dd($notifications); // Debugging statement removed
         return view('notifications.lus', [
             'notifications_readed' => $notifications_readed,
+        ]);
+    }
+    public function detail(int $id)
+    {
+        $notification = Notification::findOrFail($id);
+        $notification->update(['read' => true]);
+        return view('notifications.detail', [
+            'notification' => $notification
         ]);
     }
 

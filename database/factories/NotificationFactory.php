@@ -17,7 +17,7 @@ class NotificationFactory extends Factory
             'data' => json_encode([
                 'title' => $this->faker->sentence(6,  true),
                 'message' => $this->faker->paragraph,
-                'action' => $this->faker->randomElement(['Action requise', '']),
+                'action_requise' => $this->faker->randomElement(['Action requise', '']),
             ]),
             'read' => false,
             'created_at' => $this->faker->dateTimeThisYear,

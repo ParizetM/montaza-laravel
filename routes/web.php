@@ -43,9 +43,10 @@ Route::middleware('auth')->group(function () {
         Route::patch('/postes/{role}/restore', [RoleController::class, 'restore'])->name('roles.restore');
     });
     Route::post('/notifications/{id}/lu', [NotificationController::class, 'lu'])->name('notifications.lu');
+    Route::post('/notifications/lu-all', [NotificationController::class, 'luAll'])->name('notifications.luall');
     Route::post('/notifications/{id}/non-lu', [NotificationController::class, 'nonLu'])->name('notifications.nonlu');
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::get('/notifications/lus', [NotificationController::class, 'indexLus'])->name('notifications.lus');
-    Route::get('/notification/{id}', [NotificationController::class, 'index'])->name('notifications.detail');
+    Route::get('/notification/{id}', [NotificationController::class, 'detail'])->name('notifications.detail');
 });
 require __DIR__ . '/auth.php';
