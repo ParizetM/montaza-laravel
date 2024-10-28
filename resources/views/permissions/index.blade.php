@@ -40,7 +40,9 @@
                                                     }
                                                 } @endphp>
                                         <label for="permission-{{ $permission->id }}"
-                                            class="text-gray-900 dark:text-gray-100">{{ $permission->name }}</label>
+                                            class="text-gray-900 dark:text-gray-100">{{ str_replace('_', ' ', $permission->name) }}
+                                            <small class="text-gray-500 dark:text-gray-400"><br/>{{ $permission->description }}</small>
+                                        </label>
                                     </div>
                                 @endforeach
                             </div>

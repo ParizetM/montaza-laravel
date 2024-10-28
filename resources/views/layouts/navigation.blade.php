@@ -81,7 +81,11 @@
                                     {{ __('Permissions et Postes') }}
                                 </x-dropdown-link>
                             @endif
-
+                            @if (Auth::user()->hasPermission('voir_historique'))
+                                <x-dropdown-link :href="route('model_changes.index')">
+                                    {{ __('Historique') }}
+                                </x-dropdown-link>
+                            @endif
                         </x-slot>
                     </x-dropdown>
                     <x-modals.notifications />
@@ -185,6 +189,11 @@
                                 {{ __('Postes') }}
                             </x-responsive-nav-link>
                         @endif
+                    @endif
+                    @if (Auth::user()->hasPermission('voir_historique'))
+                        <x-responsive-nav-link :href="route('model_changes.index')">
+                            {{ __('Historique') }}
+                        </x-responsive-nav-link>
                     @endif
                 @else
                     <x-responsive-nav-link :href="route('login')">

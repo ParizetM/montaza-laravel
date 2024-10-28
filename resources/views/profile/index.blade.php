@@ -17,7 +17,7 @@
                         supprimé</span>
                     <span class="relative">
                         <input id="Toggle1" type="checkbox" class="hidden peer" onchange="toggleDeletedProfiles(this)"
-                            {{ request()->get('show_deleted') ? 'checked' : '' }}>
+                            {{ request()->get('show_deleted') ? 'checked' : '' }} />
                         <div
                             class="w-10 h-6 rounded-full shadow-inner bg-gray-400 dark:bg-gray-600 peer-checked:bg-violet-400 peer-checked:dark:bg-violet-600">
                         </div>
@@ -28,7 +28,7 @@
                 </label>
 
                 <form method="GET" action="{{ route('profile.index') }}" class="mr-4 mb-1 sm:mr-0 sm:flex-grow">
-                    <input type="text" name="search" placeholder="Rechercher..."
+                    <input type="text" name="search" placeholder="Rechercher..." value="{{ request('search') }}"
                         class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     <button type="submit" class=" ml-2 btn">
                         {{ __('Rechercher') }}
@@ -84,7 +84,8 @@
                                             {{ $user->first_name }} {{ $user->last_name }}
                                             @if ($user->role->trashed())
                                                 <div class="flex">
-                                                    <x-icon size="1" class="icons-no_hover fill-red-500 dark:fill-red-400 mr-1 mt-0.5" />
+                                                    <x-icon size="1"
+                                                        class="icons-no_hover fill-red-500 dark:fill-red-400 mr-1 mt-0.5" />
                                                     <p class="text-red-500 dark:text-red-400">Compte inutilisable</p>
                                                 </div>
                                             @endif
@@ -106,10 +107,12 @@
                                             {{ $user->role->name }}
                                             @if ($user->role->trashed())
                                                 <div class="flex">
-                                                    <x-icon size="1" class="icons-no_hover fill-red-500 dark:fill-red-400 mr-1 mt-0.5" />
-                                                    <p class="text-red-500 dark:text-red-400">Le poste a été désactivé</p>
+                                                    <x-icon size="1"
+                                                        class="icons-no_hover fill-red-500 dark:fill-red-400 mr-1 mt-0.5" />
+                                                    <p class="text-red-500 dark:text-red-400">Le poste a été désactivé
+                                                    </p>
                                                 </div>
-                                                    @endif
+                                            @endif
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             @if ($user->deleted_at)
@@ -122,7 +125,8 @@
                                                             size="2" type="restore" class="icons ml-2" /></button>
                                                 </form>
                                             @else
-                                                <a href="{{ route('profile.edit', ['id' => $user]) }}" class="" title="modfier">
+                                                <a href="{{ route('profile.edit', ['id' => $user]) }}" class=""
+                                                    title="modfier">
                                                     <x-icon size="2" type="edit" class="icons ml-2" />
                                                 </a>
                                             @endif

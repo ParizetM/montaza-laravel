@@ -4,6 +4,7 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ModelChangeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -48,6 +49,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::get('/notifications/lus', [NotificationController::class, 'indexLus'])->name('notifications.lus');
     Route::get('/notification/{id}', [NotificationController::class, 'detail'])->name('notifications.detail');
-    Route::post('/notifications/transfer',[NotificationController::class, 'transfer'])->name('notifications.transfer');
+    Route::post('/notifications/transfer', [NotificationController::class, 'transfer'])->name('notifications.transfer');
+
+    Route::middleware('permission:voir_historique')->group(function () {
+        Route::get('/logs', [ModelChangeController::class, 'index'])->name('model_changes.index');
+    });
 });
 require __DIR__ . '/auth.php';

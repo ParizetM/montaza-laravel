@@ -19,13 +19,15 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $permissions = [
-            'gerer_les_utilisateurs',
-            'gerer_les_permissions',
-            'gerer_les_postes',
+            'gerer_les_utilisateurs' => 'Gérer les utilisateurs',
+            'gerer_les_permissions' => 'Gérer les permissions',
+            'gerer_les_postes' => 'Gérer les postes',
+            'voir_historique' => 'Voir l\'historique',
         ];
-        foreach ($permissions as $permission) {
+        foreach ($permissions as $permission => $description) {
             Permission::factory()->create([
-                'name' => $permission,
+            'name' => $permission,
+            'description' => $description,
             ]);
         }
         // User::factory(10)->create();
