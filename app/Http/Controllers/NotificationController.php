@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Notification;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -84,6 +85,14 @@ class NotificationController extends Controller
         return view('notifications.detail', [
             'notification' => $notification
         ]);
+    }
+    public function transfer(Request $request)
+    {
+        $id = $request->role_id_notif;
+        $notification_id = $request->notification_id;
+        $notification = Notification::findOrFail($notification_id);
+        $notification->update(['role_id' => $id]);
+        return redirect()->back();
     }
 
 

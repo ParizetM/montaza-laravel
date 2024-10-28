@@ -4,7 +4,7 @@
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
             <div>
                 <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                    {{ __('Profils') }}
+                    {{ __('Utilisateurs') }}
                 </h2>
                 <p class="text-sm text-gray-600 dark:text-gray-400">
                     {{ __('Liste des profils utilisateur ') }}
@@ -122,7 +122,7 @@
                                                             size="2" type="restore" class="icons ml-2" /></button>
                                                 </form>
                                             @else
-                                                <a href="{{ route('profile.edit', ['id' => $user]) }}" class="">
+                                                <a href="{{ route('profile.edit', ['id' => $user]) }}" class="" title="modfier">
                                                     <x-icon size="2" type="edit" class="icons ml-2" />
                                                 </a>
                                             @endif
