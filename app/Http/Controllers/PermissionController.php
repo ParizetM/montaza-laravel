@@ -7,6 +7,8 @@ use App\Models\Permission;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Auth;
+use App\Models\ModelChange;
 
 class PermissionController extends Controller
 {
@@ -58,6 +60,13 @@ class PermissionController extends Controller
         $role_id = $request->role_id;
         $role = Role::findOrFail($role_id);
         // Detach all permissions first
+        // $permissions_avant['role'] = '';
+        // $permissions_avant = array_merge($permissions_avant, $role->permissions()->get()->toArray());
+        $permissions_avant_get = $role->permissions()->get();
+        $permissions_avant_array = $permissions_avant_get->pluck('name')->toArray();
+        $permissions_avant_string = implode(',<br/>', $permissions_avant_array);
+        $permissions_avant['role'] = '';
+        $permissions_avant['permissions'] = $permissions_avant_string;
         $role->permissions()->detach();
 
         // Attach the selected permissions
@@ -66,6 +75,22 @@ class PermissionController extends Controller
                 $role->permissions()->attach($value);
             }
         }
+        // $permission_apres = array_merge(['role' => $role->name], $role->permissions()->get()->toArray());
+        $permission_apres_get = $role->permissions()->get();
+        $permission_apres_array = $permission_apres_get->pluck('name')->toArray();
+        $permission_apres_string = implode(',<br/>', $permission_apres_array);
+        $permission_apres['role'] = $role->name;
+        $permission_apres['permissions'] = $permission_apres_string;
+        $event = 'updating'; // Define the event type
+
+        ModelChange::create([
+            'user_id' => Auth::id(),
+            'model_type' => 'Permissions',
+            'model_id' => 0,
+            'before' => $permissions_avant,
+            'after' => $permission_apres,
+            'event' => $event,
+        ]);
 
         return redirect()->route('permissions.index', ['role' => $role])->with('status', 'Permissions mises à jour');
     }

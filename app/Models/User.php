@@ -53,6 +53,9 @@ class User extends Authenticatable
 
         // Enregistrer avant la mise à jour d'un modèle
         static::updating(function ($model) {
+            if ($model->isDirty('remember_token')) {
+            return;
+            }
             self::logChange($model, 'updating');
         });
 

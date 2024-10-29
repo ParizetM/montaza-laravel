@@ -10,7 +10,7 @@ class TruncateTables extends Command
     protected $signature = 'db:truncate-tables';
     protected $description = 'Vide toutes les tables de la base de données';
 
-    public function handle()
+    public function handle(): void
     {
         // Désactiver les contraintes de clé étrangère
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');

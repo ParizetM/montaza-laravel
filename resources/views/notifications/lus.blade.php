@@ -26,7 +26,7 @@
                                     <ul class="flex border-b">
                                         <li class="mr-1">
                                             <a href="{{ route('notifications.index', ['activeTab' => 'tab1']) }}"
-                                                class="inline-block py-2 px-4">Tout
+                                                class="inline-block py-2 px-4 text-gray-500">Tout
                                                 @if ($_notifications_count > 0)
                                                     <span
                                                         class="relative bottom-2 right-4 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">{{ $_notifications_count }}</span>
@@ -35,7 +35,7 @@
                                         </li>
                                         <li class="mr-1">
                                             <a href="{{ route('notifications.index', ['activeTab' => 'tab2']) }}"
-                                                class="inline-block py-2 pl-4">Système
+                                                class="inline-block py-2 pl-4 text-gray-500">Système
                                                 @if ($_notificationsSystem_count > 0)
                                                     <span
                                                         class="relative bottom-2 right-4 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">{{ $_notificationsSystem_count }}</span>

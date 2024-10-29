@@ -15,28 +15,28 @@
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
 
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                {{ __('Historique') }}
+                {!! __('Historique') !!}
             </h2>
             <div class="mt-4 sm:mt-0 flex flex-col sm:flex-row items-start sm:items-center ">
 
-                <form method="GET" action="{{ route('model_changes.index') }}" class="mr-4 mb-1 sm:mr-0 flex flex-col sm:flex-row items-start sm:items-center">
-                    <input type="text" name="search" placeholder="Rechercher..." value="{{ request('search') }}"
+                <form method="GET" action="{!! route('model_changes.index') !!}" class="mr-4 mb-1 sm:mr-0 flex flex-col sm:flex-row items-start sm:items-center">
+                    <input type="text" name="search" placeholder="Rechercher..." value="{!! request('search') !!}"
                         class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
 
                     <div class="flex items-center my-1">
-                        <label for="start_date" class="mx-4 text-gray-900 dark:text-gray-100">{{ __('Après le ') }}</label>
-                        <input type="date" name="start_date" onblur="updateDateInputs(this)" id="start_date" value="{{ old('start_date', request('start_date')) }}" class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <label for="start_date" class="mx-4 text-gray-900 dark:text-gray-100">{!! __('Après le ') !!}</label>
+                        <input type="date" name="start_date" onblur="updateDateInputs(this)" id="start_date" value="{!! old('start_date', request('start_date')) !!}" class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     </div>
                     <div class="flex items-center ml-4 my-1 ">
-                        <label for="end_date" class="mr-2 text-gray-900 dark:text-gray-100">{{ __('Avant le') }}</label>
-                        <input type="date" name="end_date" onblur="updateDateInputs(this)" id="end_date" value="{{ old('end_date', request('end_date')) }}" class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <label for="end_date" class="mr-2 text-gray-900 dark:text-gray-100">{!! __('Avant le') !!}</label>
+                        <input type="date" name="end_date" onblur="updateDateInputs(this)" id="end_date" value="{!! old('end_date', request('end_date')) !!}" class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     </div>
                     <div class="flex items-center ml-4 my-1 ">
-                        <label for="nombre" class="mr-2 text-gray-900 dark:text-gray-100">{{ __('Quantité') }}</label>
-                        <input type="number" name="nombre" id="nombre" value="{{ old('nombre', request('nombre', 50)) }}" class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <label for="nombre" class="mr-2 text-gray-900 dark:text-gray-100">{!! __('Quantité') !!}</label>
+                        <input type="number" name="nombre" id="nombre" value="{!! old('nombre', request('nombre', 50)) !!}" class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     </div>
                     <button type="submit" class="ml-2 btn sm:mt-0 md:mt-0 lg:mt-0">
-                        {{ __('Rechercher') }}
+                        {!! __('Rechercher') !!}
                     </button>
                 </form>
             </div>
@@ -71,7 +71,7 @@
                                 </tr>
                             </thead>
                             <tbody
-                                class="{{ request()->get('show_deleted') ? 'bg-gray-100 dark:bg-gray-900' : 'bg-white dark:bg-gray-800' }} divide-y divide-gray-200 dark:divide-gray-700">
+                                class="{!! request()->get('show_deleted') ? 'bg-gray-100 dark:bg-gray-900' : 'bg-white dark:bg-gray-800' !!} divide-y divide-gray-200 dark:divide-gray-700">
                                 @foreach ($modelChanges as $change)
                                     @php
                                         $before = $change->before;
@@ -140,29 +140,29 @@
                                     <tr>
                                         <td
                                             class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-200">
-                                            {{ $change->user->first_name ?? 'N/A' }}
-                                            {{ $change->user->last_name ?? '' }}
+                                            {!! $change->user->first_name ?? 'N/A' !!}
+                                            {!! $change->user->last_name ?? '' !!}
                                         </td>
                                         <td
                                             class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                            {{ $change->model_type }}
+                                            {!! $change->model_type !!}
                                         </td>
                                         <td
-                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 flex">
+                                            class="px-6 py-4 text-sm text-gray-500 dark:text-gray-300 flex">
                                             @if ($change->before == 'custom')
-                                                {{ $change->after }}
+                                                {!! $change->after !!}
                                             @elseif (is_array($change->before) && is_array($change->after))
                                                 <table>
                                                     @foreach ($change->before as $key => $value)
-                                                        @if ($change->after[$key] != $value && !in_array($key, ['created_at', 'updated_at']))
+                                                        @if ($change->after[$key] != $value && !in_array($key, $ommited_keys))
                                                             @php
                                                                 $value = $value === null ? 'null' : $value;
                                                             @endphp
                                                             <tr>
-                                                                <td><strong>{{ $key }} :</strong></td>
-                                                                <td class="flex">{{ $value }}<x-icon
+                                                                <td><strong>{!! $key !!} :</strong></td>
+                                                                <td class="flex">{!! $value !!}<x-icon
                                                                         size="1" type="arrow_forward"
-                                                                        class="icons-no_hover mt-1" />{{ $change->after[$key] == null ? 'N/A' : $change->after[$key] }}
+                                                                        class="icons-no_hover mt-1" />{!! $change->after[$key] == null ? 'N/A' : $change->after[$key] !!}
                                                                 </td>
                                                             </tr>
                                                         @endif
@@ -176,10 +176,10 @@
                                                                 $value = $value === null ? 'null' : $value;
                                                             @endphp
                                                             <tr>
-                                                                <td><strong>{{ $key }} :</strong></td>
-                                                                <td class="flex">{{ $value }}<x-icon
+                                                                <td><strong>{!! $key !!} :</strong></td>
+                                                                <td class="flex">{!! $value !!}<x-icon
                                                                         size="1" type="arrow_forward"
-                                                                        class="icons-no_hover mt-1" />{{ $change->after == null ? 'N/A' : $change->after }}
+                                                                        class="icons-no_hover mt-1" />{!! $change->after == null ? 'N/A' : $change->after !!}
                                                                 </td>
                                                             </tr>
                                                         @endif
@@ -193,11 +193,11 @@
                                                                 $value = $value === null ? 'null' : $value;
                                                             @endphp
                                                             <tr>
-                                                                <td><strong>{{ $key }} :</strong></td>
+                                                                <td><strong>{!! $key !!} :</strong></td>
                                                                 <td class="flex">
-                                                                    {{ $change->before == null ? 'N/A' : $change->before }}<x-icon
+                                                                    {!! $change->before == null ? 'N/A' : $change->before !!}<x-icon
                                                                         size="1" type="arrow_forward"
-                                                                        class="icons-no_hover mt-1" />{{ $value }}
+                                                                        class="icons-no_hover mt-1" />{!! $value !!}
                                                                 </td>
                                                             </tr>
                                                         @endif
@@ -207,18 +207,18 @@
                                                 @if ($change->before === null && $change->after === null)
                                                     N/A
                                                 @else
-                                                    {{ $change->before === null ? 'N/A' : $change->before }}
+                                                    {!! $change->before === null ? 'N/A' : $change->before !!}
                                                     @if (!($change->before === null && $change->after === null))
                                                         <x-icon size="1" type="arrow_forward"
                                                             class="icons-no_hover mt-1" />
                                                     @endif
-                                                    {{ $change->after === null ? 'N/A' : $change->after }}
+                                                    {!! $change->after === null ? 'N/A' : $change->after !!}
                                                 @endif
                                             @endif
                                         </td>
                                         <td
                                             class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                            {{ $change->event }}
+                                            {!! $change->event !!}
                                         </td>
                                     </tr>
                                 @endforeach

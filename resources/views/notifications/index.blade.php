@@ -37,12 +37,12 @@
                                                     class="inline-block py-2 pl-4" href="#">Système
                                                     @if ($_notificationsSystem_count > 0)
                                                     <span id="notifications-system-count"
-                                                        class="relative bottom-2 right-4 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">{{ $_notificationsSystem_count }}</span>
+                                                        class=" relative bottom-2 right-4 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">{{ $_notificationsSystem_count }}</span>
                                                     @endif
                                                     </a>
                                             </li>
                                             <li class="mr-1">
-                                                <a class="inline-block py-2 px-4" href="{{ route('notifications.lus') }}">Lu</a>
+                                                <a class="inline-block py-2 px-4 text-gray-500" href="{{ route('notifications.lus') }}">Lu</a>
                                             </li>
                                         </ul>
                                         <div>

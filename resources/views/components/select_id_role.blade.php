@@ -1,4 +1,4 @@
-<select id="role_id" name="{{ isset($name) ? $name : 'role_id' }}" class="block w-full {{ isset($class) ? $class : 'select' }}" required title="Role"
+<select id="{{ isset($id) ? $id : 'role_id' }}" name="{{ isset($name) ? $name : 'role_id' }}" class="block w-full {{ isset($class) ? $class : 'select' }}" required title="Role"
     @isset($onchange) onchange="{{ $onchange }}" @endisset>
     @isset($placeholder)
         <option value="" disabled selected>{{ $placeholder }}</option>

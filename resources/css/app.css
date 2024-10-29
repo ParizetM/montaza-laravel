@@ -57,6 +57,10 @@
         @apply dark:bg-[#1b2533] bg-[#fcfcfd] border-none dark:text-[#636c79] text-[#d7d8db];
         /* Dark mode */
     }
-
-
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        @apply dark:invert;
+    }
+    ::-webkit-inner-spin-button,::-webkit-outer-spin-button{
+            @apply dark:invert;
+        }
 }

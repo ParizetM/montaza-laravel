@@ -9,7 +9,6 @@
         @if ($notifications && $notifications->count() > 0)
             @php
                 $firstNotificationreaded = $notifications->first()->read ?? null;
-
             @endphp
             @if (!$firstNotificationreaded)
                 @if (!isset($specifyType))

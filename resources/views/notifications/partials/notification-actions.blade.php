@@ -46,7 +46,7 @@
                     <input type="hidden" name="notification_id" value="{{ $notification->id }}">
                     <x-input-label for="role_id_notif" :value="__('Sélectionner le rôle à qui transférer')" />
                     <x-select_id_role :entites="$_entites" :selected_role="$notification->role->id" class="select"
-                        name="role_id_notif" />
+                        name="role_id_notif" id="role_id_notif" />
                     </select>
                     <x-input-error :messages="$errors->get('role_id_notif')" class="mt-2" />
                 </div>
