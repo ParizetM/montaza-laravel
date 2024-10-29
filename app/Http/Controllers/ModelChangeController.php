@@ -22,32 +22,32 @@ class ModelChangeController extends Controller
             $modelChanges = ModelChange::query();
 
             if ($search) {
-            $modelChanges->whereHas('user', function ($query) use ($search) {
-                $query->where('first_name', 'like', '%' . $search . '%')
-                  ->orWhere('last_name', 'like', '%' . $search . '%');
-            })
-            ->orWhere('model_type', 'like', '%' . $search . '%')
-            ->orWhere('model_id', 'like', '%' . $search . '%')
-            ->orWhere('before', 'like', '%' . $search . '%')
-            ->orWhere('after', 'like', '%' . $search . '%')
-            ->orWhere('event', 'like', '%' . $search . '%');
+                $modelChanges->whereHas('user', function ($query) use ($search) {
+                    $query->where('first_name', 'like', '%' . $search . '%')
+                        ->orWhere('last_name', 'like', '%' . $search . '%');
+                })
+                    ->orWhere('model_type', 'like', '%' . $search . '%')
+                    ->orWhere('model_id', 'like', '%' . $search . '%')
+                    ->orWhere('before', 'like', '%' . $search . '%')
+                    ->orWhere('after', 'like', '%' . $search . '%')
+                    ->orWhere('event', 'like', '%' . $search . '%');
             }
 
             if ($start_date) {
-            $modelChanges->where('created_at', '>=', $start_date);
+                $modelChanges->where('created_at', '>=', $start_date);
             }
 
             if ($end_date) {
-            $modelChanges->where('created_at', '<=', $end_date);
+                $modelChanges->where('created_at', '<=', $end_date);
             }
 
             $modelChanges = $modelChanges->orderBy('created_at', 'desc')
-                         ->take(50)
-                         ->get();
+                ->take(50)
+                ->get();
         } else {
             $modelChanges = ModelChange::orderBy('created_at', 'desc')
-            ->take($nombre)
-            ->get();
+                ->take($nombre)
+                ->get();
         }
 
         return view('model_changes.index', ['modelChanges' => $modelChanges]);

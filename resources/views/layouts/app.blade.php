@@ -24,6 +24,7 @@
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
 </head>
 
 <body class="font-sans antialiased">
@@ -109,5 +110,16 @@
             {{ $slot }}
         </main>
     </div>
+    <script>
+        function updateDateInputs(input) {
+    // Parcourir chaque input
+        // Vérifier si la valeur correspond au format 00XX-XX-XX
+        const regex = /^00(\d{2})-(\d{2})-(\d{2})$/;
+        if (regex.test(input.value)) {
+            // Remplacer 00 par 20 dans l'année
+            input.value = input.value.replace(regex, '20$1-$2-$3');
+        }
+}
+    </script>
 </body>
 </html>

@@ -25,11 +25,11 @@
 
                     <div class="flex items-center my-1">
                         <label for="start_date" class="mx-4 text-gray-900 dark:text-gray-100">{{ __('Après le ') }}</label>
-                        <input type="date" name="start_date" id="start_date" value="{{ old('start_date', request('start_date')) }}" class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <input type="date" name="start_date" onblur="updateDateInputs(this)" id="start_date" value="{{ old('start_date', request('start_date')) }}" class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     </div>
                     <div class="flex items-center ml-4 my-1 ">
                         <label for="end_date" class="mr-2 text-gray-900 dark:text-gray-100">{{ __('Avant le') }}</label>
-                        <input type="date" name="end_date" id="end_date" value="{{ old('end_date', request('end_date')) }}" class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <input type="date" name="end_date" onblur="updateDateInputs(this)" id="end_date" value="{{ old('end_date', request('end_date')) }}" class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     </div>
                     <div class="flex items-center ml-4 my-1 ">
                         <label for="nombre" class="mr-2 text-gray-900 dark:text-gray-100">{{ __('Quantité') }}</label>
@@ -122,15 +122,15 @@
                                         }
                                         if ($event === 'creating') {
                                             $before = ' ';
-                                            $event = 'crée le ' . $change->created_at->format('d/m/Y à H:i');
+                                            $event = 'Créé le ' . $change->created_at->format('d/m/Y à H:i') . '.';
                                         }
                                         if ($event === 'updating') {
-                                            $event = 'modifié le ' . $change->created_at->format('d/m/Y à H:i');
+                                            $event = 'Modifié le ' . $change->created_at->format('d/m/Y à H:i') . '.';
                                         }
                                         if ($event === 'deleting') {
                                             $before = ' ';
                                             unset($after['deleted_at']);
-                                            $event = 'supprimé le ' . $change->created_at->format('d/m/Y à H:i');
+                                            $event = 'Supprimé le ' . $change->created_at->format('d/m/Y à H:i') . '.';
                                         }
 
                                         $change->event = $event;
