@@ -23,14 +23,15 @@ class AppServiceProvider extends ServiceProvider
         View::composer(
             '*',
             function ($view) {
-                if (Auth::check()) {
-                    $notifications = Auth::user()->notifications()->where('read', false)->orderBy('created_at', 'desc')->take(10)->get();
+                $user = Auth::user();
+                if ($user) {
+                    $notifications = $user->notifications()->where('read', false)->orderBy('created_at', 'desc')->take(10)->get();
                     $view->with('_notifications', $notifications);
-                    $notifications_count = Auth::user()->notifications()->where('read', false)->count();
+                    $notifications_count = $user->notifications()->where('read', false)->count();
                     $view->with('_notifications_count', $notifications_count);
-                    $notificationsSystem = Auth::user()->notifications()->where('read', false)->where('type', 'system')->orderBy('created_at', 'desc')->take(10)->get();
+                    $notificationsSystem = $user->notifications()->where('read', false)->where('type', 'system')->orderBy('created_at', 'desc')->take(10)->get();
                     $view->with('_notificationsSystem', $notificationsSystem);
-                    $notificationsSystem_count = Auth::user()->notifications()->where('read', false)->where('type', 'system')->count();
+                    $notificationsSystem_count = $user->notifications()->where('read', false)->where('type', 'system')->count();
                     $view->with('_notificationsSystem_count', $notificationsSystem_count);
                     $entites = Entite::all();
                     $view->with('_entites', $entites);

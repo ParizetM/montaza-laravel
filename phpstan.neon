@@ -11,4 +11,5 @@ parameters:
         - %currentWorkingDirectory%/app/Http/Controllers/Auth/VerifyEmailController.php
         - %currentWorkingDirectory%/app/Http/Requests/Auth/LoginRequest.php
         - %currentWorkingDirectory%/app/Http/Requests/ProfileUpdateRequest.php
+        - %currentWorkingDirectory%/app/resources/views/components/*
 

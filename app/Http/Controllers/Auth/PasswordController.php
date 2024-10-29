@@ -19,8 +19,11 @@ class PasswordController extends Controller
             'current_password' => ['required', 'current_password'],
             'password' => ['required', Password::defaults(), 'confirmed'],
         ]);
-
-        $request->user()->update([
+        $user = $request->user();
+        if ($user === null) {
+            return back()->withErrors(['current_password' => 'L’utilisateur n’est pas authentifié.']);
+        }
+        $user->update([
             'password' => Hash::make($validated['password']),
         ]);
 

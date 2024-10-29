@@ -16,11 +16,12 @@ class CheckRole
      */
     public function handle(Request $request, Closure $next, int $role_id): Response
     {
-        if (! Auth::check()) {
+        $user = Auth::user();
+        if (! $user) {
             return redirect('login');
         }
 
-        if (Auth::user()->hasRole($role_id)) {
+        if ($user->hasRole($role_id)) {
             return $next($request);
         }
         return redirect('Dashboard');

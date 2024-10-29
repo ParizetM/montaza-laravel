@@ -5,17 +5,19 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Entite;
 use App\Models\Role;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
-use App\Models\notification;
+use App\Models\Notification;
 use Auth;
 use Route;
+use Illuminate\View\View;
 
 class RoleController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index($role = 0)
+    public function index(int $role = 0): View
     {
         $role = Role::withTrashed()->findOrFail($role ?: 1);
         $roles = Role::withTrashed()->get();
@@ -42,7 +44,7 @@ class RoleController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $request->validate([
             'role_name' => 'required|string|max:255',
@@ -56,10 +58,14 @@ class RoleController extends Controller
         if ($existingRole) {
             return redirect()->back()->withErrors(['role_name' => 'Un poste avec ce nom existe déjà.'])->withInput();
         }
-
+        $new_role_name = $request->role_name;
+        $new_entite_id = $request->entite_id;
+        if (!is_string($new_role_name) || !is_int($new_entite_id)) {
+            return redirect()->back()->withErrors(['role_name' => 'Le nom du poste doit être une chaîne de caractères et l\'entité doit être un entier.'])->withInput();
+        }
         $role = new Role();
-        $role->name = $request->role_name;
-        $role->entite_id = $request->entite_id;
+        $role->name = $new_role_name;
+        $role->entite_id = $new_entite_id;
         $role->save();
 
         return redirect()->back()->with('status', 'Poste créé avec succès.');
@@ -84,7 +90,7 @@ class RoleController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Role $role)
+    public function update(Request $request, Role $role): RedirectResponse
     {
         $request->validate([
             'role_name' => 'required|string|max:255',
@@ -99,9 +105,13 @@ class RoleController extends Controller
         if ($existingRole) {
             return redirect()->back()->withErrors(['role_name' => 'Un poste avec ce nom existe déjà.'])->withInput();
         }
-
-        $role->name = $request->role_name;
-        $role->entite_id = $request->entite_id;
+        $new_role_name = $request->role_name;
+        $new_entite_id = $request->entite_id;
+        if (!is_string($new_role_name) || !is_int($new_entite_id)) {
+            return redirect()->back()->withErrors(['role_name' => 'Le nom du poste doit être une chaîne de caractères et l\'entité doit être un entier.'])->withInput();
+        }
+        $role->name = $new_role_name;
+        $role->entite_id = $new_entite_id;
         $role->save();
 
         return redirect()->back()->with('status', 'Poste mis à jour avec succès.');
@@ -110,40 +120,44 @@ class RoleController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Role $role)
+    public function destroy(Role $role): RedirectResponse
     {
         if ($role->undeletable) {
             return redirect()->back()->withErrors(['role' => 'Ce poste ne peut pas être désactivé.']);
         }
 
         $role->delete();
-        if ($role->users()) {
-            $userRole_id = Auth::user()->role->id;
-            $role_cible = Role::withTrashed()->findOrFail($userRole_id);
-            $messsage = 'Le poste <strong>' . $role->name . '</strong> a été désactivé par ' . Auth::user()->first_name .' '. Auth::user()->last_name . ', les utilisateurs affectés à ce poste ont été déconnectés :';
-            foreach ($role->users as $user) {
-                $messsage .= '<br/> - ' . $user->first_name . ' ' . $user->last_name;
-            }
-            Notification::createNotification(
-                $role_cible,
-                'system',
-                'Poste désactivé',
-                $messsage,
-                'Voir le poste désactivé',
-                "roles.index",
-                ['role' => $role->id],
-                'Voir le poste désactivé'
-            );
-
+        $auth_user = Auth::user();
+        if (!$auth_user) {
+            return redirect()->back()->withErrors(['role' => 'Utilisateur non authentifié.']);
         }
+        $userRole_id = $auth_user->getRole();
+        $role_cible = Role::withTrashed()->findOrFail($userRole_id);
+        $messsage = 'Le poste <strong>' . $role->name . '</strong> a été désactivé par ' . $auth_user->getName() . ', les utilisateurs affectés à ce poste ont été déconnectés :';
+        foreach ($role->users as $user) {
+            $messsage .= '<br/> - ' . $user->first_name . ' ' . $user->last_name;
+        }
+        Notification::createNotification(
+            $role_cible,
+            'system',
+            'Poste désactivé',
+            $messsage,
+            'Voir le poste désactivé',
+            "roles.index",
+            ['role' => $role->id],
+            'Voir le poste désactivé'
+        );
         return redirect()->back()->with('status', 'Poste désactivé avec succès.');
     }
     /**
      * Restore the specified resource from storage.
      */
-    public function restore($id): RedirectResponse
+    public function restore(int $id): RedirectResponse
     {
         $role = Role::withTrashed()->findOrFail($id);
+        if (!($role instanceof Role)) {
+            return redirect()->back()->withErrors(['role' => 'Poste introuvable.']);
+        }
         $role->restore();
 
         return redirect()->back()->with('status', 'Poste activé avec succès.');

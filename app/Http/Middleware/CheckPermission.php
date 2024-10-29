@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use App\Models\User;
 
 class CheckPermission
 {
@@ -13,11 +14,13 @@ class CheckPermission
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next, $permission): Response
+    public function handle(Request $request, Closure $next, string $permission): Response
     {
         $user = $request->user();
-
-        if (! $user || ! $user->permissions()->contains('name', $permission)) {
+        if (!($user instanceof User)) {
+            abort(403);
+        }
+        if (!is_string($permission) ||!$user->permissions()->contains('name', $permission)) {
             abort(403);
         }
 

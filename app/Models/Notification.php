@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Role;
-use Route;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Notification extends Model
 {
@@ -15,17 +15,18 @@ class Notification extends Model
     use HasFactory;
     use SoftDeletes;
     /**
-     * Description de la fonction.
-     *
-     * @param \App\Models\Role $role role cible de la notification.
-     * @param string $type type de notification ex: system en anglais.
-     * @param string $title titre de la notification.
-     * @param string $message message de la notification.
-     * @param string $action_requise action requise pour la notification si nul pas d'action requise.
-     * @param \Route|null $route route à suivre pour l'action requise.
-     * @param string $label label du bouton pour l'action requise.
+     * Summary of createNotification
+     * @param \App\Models\Role $role
+     * @param string $type
+     * @param string $title
+     * @param string $message
+     * @param string $action_requise
+     * @param string $route_nom
+     * @param array<string, mixed> $route_data
+     * @param string $label
+     * @return \App\Models\Notification
      */
-    public static function createNotification(Role $role, string $type, string $title, string $message = null, string $action_requise = null, string $route_nom = null,array $route_data = null, string $label = 'aller voir')
+    public static function createNotification(Role $role, string $type, string $title, string $message = null, string $action_requise = null, string $route_nom = null,array $route_data = null, string $label = 'aller voir'): Notification
     {
         $notification = new self();
         $notification->role_id = $role->id;
@@ -49,24 +50,25 @@ class Notification extends Model
                 'label' => $label
             ];
         }
-
-        $notification->data = json_encode($data);
+        $notification->data = json_encode($data) ?: '';
         $notification->read = false;
         $notification->save();
         return $notification;
     }
-    /**
-     * Summary of fillable
-     * @var array
-     */
+
     protected $fillable = [
         'role_id',
         'type',
         'data',
         'read',
     ];
-    public function role()
+    /**
+     * Summary of role
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Role,Notification>
+     */
+    public function role(): BelongsTo
     {
+        /** @var BelongsTo<\App\Models\Role,Notification> */
         return $this->belongsTo(Role::class);
     }
 }

@@ -17,9 +17,13 @@ class RegisteredUserController extends Controller
     /**
      * Display the registration view.
      */
-    public function create(): View
+    public function create(): RedirectResponse|View
     {
-        if (Auth::user()->hasPermission('gerer_les_utilisateurs') === false) {
+        $user = Auth::user();
+        if ($user === null) {
+            return back()->withErrors(['current_password' => 'L’utilisateur n’est pas authentifié.']);
+        }
+        if ($user->hasPermission('gerer_les_utilisateurs') === false) {
             abort(403);
         }
         $roles = Role::all();
@@ -46,8 +50,12 @@ class RegisteredUserController extends Controller
             'role_id' => ['required', 'integer'],
             // 'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
-
-        $password = strtoupper(substr($request->first_name, 0, 1)).strtolower($request->last_name).date('Y');
+        $first_name = $request->first_name;
+        $last_name = $request->last_name;
+        if (!is_string($first_name) || !is_string($last_name)) {
+            return back()->withErrors(['invalid_input' => 'Le prénom ou le nom doivent être des chaînes de caractères.']);
+        }
+        $password = strtoupper(substr($first_name, 0, 1)).strtolower($last_name).date('Y');
 
         User::create([
             'last_name' => $request->last_name,

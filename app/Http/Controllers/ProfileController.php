@@ -11,12 +11,17 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use function Laravel\Prompts\search;
 
 class ProfileController extends Controller
 {
     public function index(Request $request): View
     {
         $search = $request->input('search');
+        if (!is_string($search)) {
+            $search = '';
+        }
+
         $show_deleted = $request->input('show_deleted');
         if ($show_deleted) {
             $users = User::onlyTrashed()->get();
@@ -31,16 +36,16 @@ class ProfileController extends Controller
         // Rechercher des utilisateurs en fonction du terme de recherche (si fourni)
         $users = User::query()
             ->when($search, function ($query, $search) {
-            $query->where('first_name', 'like', "%{$search}%")
-                ->orWhere('last_name', 'like', "%{$search}%")
-                ->orWhere('email', 'like', "%{$search}%")
-                ->orWhere('phone', 'like', "%{$search}%")
-                ->orWhereHas('role', function ($query) use ($search) {
-                $query->withTrashed()->where('name', 'like', "%{$search}%");
-                });
+                $query->where('first_name', 'like', "%{$search}%")
+                    ->orWhere('last_name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%")
+                    ->orWhereHas('role', function ($query) use ($search) {
+                        $query->withTrashed()->where('name', 'like', "%{$search}%");
+                    });
             })
             ->with(['role' => function ($query) {
-            $query->withTrashed(); // Ensure the role relationship includes trashed roles
+                $query->withTrashed(); // Ensure the role relationship includes trashed roles
             }])
             ->get();
 
@@ -55,10 +60,16 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
-    public function edit(int $id = 0): View
+    public function edit(int $id = 0): View|RedirectResponse
     {
         $user = User::findOrFail($id);
-        if (Auth::user()->hasPermission('gerer_les_utilisateurs') === false && Auth::user()->id !== $user->id) {
+
+        $auth_user = Auth::user();
+        if (!$auth_user) {
+            return Redirect::route('login');
+        }
+
+        if ($auth_user->hasPermission('gerer_les_utilisateurs') === false && $auth_user->id !== $user->id) {
             abort(403);
         }
         $roles = Role::all();
@@ -78,7 +89,11 @@ class ProfileController extends Controller
     {
         /** @var \App\Models\User $user */
         $user = User::findOrFail($request->id);
-        if (Auth::user()->hasPermission('gerer_les_utilisateurs') === false && Auth::user()->id !== $user->id) {
+        $auth_user = Auth::user();
+        if (!$auth_user) {
+            return Redirect::route('login');
+        }
+        if ($auth_user->hasPermission('gerer_les_utilisateurs') === false && $auth_user->id !== $user->id) {
             abort(403);
         }
         $user->update($request->only(['first_name', 'last_name', 'phone', 'email']));

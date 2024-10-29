@@ -9,13 +9,14 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
 use App\Models\ModelChange;
+use Illuminate\Http\RedirectResponse;
 
 class PermissionController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index($role = 0): View
+    public function index(int $role = 0): View
     {
         if ($role !== 0) {
             $role = Role::findOrFail($role);
@@ -55,13 +56,14 @@ class PermissionController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Request $request)
+    public function edit(Request $request): RedirectResponse
     {
         $role_id = $request->role_id;
         $role = Role::findOrFail($role_id);
-        // Detach all permissions first
-        // $permissions_avant['role'] = '';
-        // $permissions_avant = array_merge($permissions_avant, $role->permissions()->get()->toArray());
+        if (!($role instanceof Role)) {
+            return redirect()->route('permissions.index', ['role' => $role])->with('error', 'Rôle introuvable');
+
+        }
         $permissions_avant_get = $role->permissions()->get();
         $permissions_avant_array = $permissions_avant_get->pluck('name')->toArray();
         $permissions_avant_string = implode(',<br/>', $permissions_avant_array);
