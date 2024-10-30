@@ -8,16 +8,23 @@ use Illuminate\View\Component;
 
 class select_id_role extends Component
 {
-    public $entites;
+    /**
+     * @var array<int, mixed>
+     */
+    public array $entites;
 
-    public $class;
+    public string|null $class;
 
-    public $selected_role;
+    public string|null $selected_role;
 
-    public $onchange;
+    public bool|null $onchange;
 
     /**
-     * Create a new component instance.
+     * Summary of __construct
+     * @param array<int, mixed> $entites
+     * @param string $class
+     * @param string $selected_role
+     * @param bool $onchange
      */
     public function __construct(array $entites, $class = null, $selected_role = null, $onchange = null)
     {

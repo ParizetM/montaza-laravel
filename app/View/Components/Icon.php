@@ -6,20 +6,20 @@ use Illuminate\View\Component;
 
 class Icon extends Component
 {
-    public $size;
+    public int $size;
 
-    public $type;
+    public string $type;
 
-    public $class;
+    public string|null $class;
 
     /**
      * Summary of __construct
      *
-     * @param  mixed  $size
-     * @param  mixed  $type
-     * @param  mixed  $class
+     * @param  int  $size
+     * @param  string  $type
+     * @param  string|null  $class
      */
-    public function __construct($size = '6', $type = 'error_icon', $class = null)
+    public function __construct($size = 6, $type = 'error_icon', $class = null)
     {
         $this->size = $size; // Taille par défaut à 6
         $this->type = $type;
