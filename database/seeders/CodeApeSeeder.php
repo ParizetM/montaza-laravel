@@ -25,7 +25,6 @@ class CodeApeSeeder extends Seeder
 
         foreach ($csv as $record) {
             $record = str_getcsv($record[0], ';');
-            echo $record['0'] . ' - ' . $record['1'] . PHP_EOL;
             CodeApe::create([
             'code' => $record['0'],
             'nom' => $record['1'],

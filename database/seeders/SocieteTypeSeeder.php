@@ -14,9 +14,9 @@ class SocieteTypeSeeder extends Seeder
     public function run(): void
     {
         DB::table('societe_types')->insert([
-            ['name' => 'Client'],
-            ['name' => 'Fournisseur'],
-            ['name' => 'Client et Fournisseur'],
+            ['nom' => 'Client'],
+            ['nom' => 'Fournisseur'],
+            ['nom' => 'Client et Fournisseur'],
         ]);
     }
 }

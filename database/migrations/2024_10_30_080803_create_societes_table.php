@@ -50,13 +50,14 @@ return new class extends Migration
             $table->foreignId('societe_id')->constrained('societes');
             $table->softDeletes();
         });
-        Schema::create('contacts', function (Blueprint $table) {
+        Schema::create('societe_contacts', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
             $table->string(column: 'nom', length: 100);
             $table->string(column: 'prenom', length: 100);
             $table->string(column: 'email', length: 100);
-            $table->string(column: 'telephone', length: 20);
+            $table->string(column: 'telephone_fixe', length: 20);
+            $table->string(column: 'telephone_portable', length: 20);
             $table->foreignId('etablissement_id')->constrained('etablissements');
             $table->softDeletes();
         });
@@ -68,7 +69,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('contacts');
+        Schema::dropIfExists('societe_contacts');
         Schema::dropIfExists('etablissements');
         Schema::dropIfExists('societes');
         Schema::dropIfExists('code_apes');

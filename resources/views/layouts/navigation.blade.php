@@ -12,9 +12,17 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
+                    @if (Auth::check())
+                        <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                            {{ __('Dashboard') }}
+                        </x-nav-link>
+
+                        @if (Auth::user()->hasPermission('gerer_les_societes'))
+                            <x-nav-link :href="route('societes.index')" :active="request()->routeIs('societes.index')">
+                                {{ __('Société') }}
+                            </x-nav-link>
+                        @endif
+                    @endif
                 </div>
             </div>
 
@@ -121,6 +129,11 @@
                 <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                     {{ __('Dashboard') }}
                 </x-responsive-nav-link>
+                @if (Auth::user()->hasPermission('gerer_les_societes'))
+                    <x-responsive-nav-link :href="route('societes.index')" :active="request()->routeIs('societes.index')">
+                        {{ __('Société') }}
+                    </x-responsive-nav-link>
+                @endif
             @endif
         </div>
 
@@ -212,7 +225,7 @@
         notificationCountElements.forEach(notificationCountElement => {
             let count = parseInt(notificationCountElement.textContent);
             if (!isNaN(count) && count > 0) {
-            notificationCountElement.textContent = count - 1;
+                notificationCountElement.textContent = count - 1;
             }
         });
         const notificationElement = document.getElementById(`notification-${notificationId}`);
@@ -247,6 +260,7 @@
         });
 
     }
+
     function marquerCommeNonLu(notificationId) {
         document.getElementById(`notification-${notificationId}`).remove();
         fetch(`/notifications/${notificationId}/non-lu`, {

@@ -5,6 +5,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ModelChangeController;
+use App\Http\Controllers\SocieteController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -53,6 +54,17 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('permission:voir_historique')->group(function () {
         Route::get('/logs', [ModelChangeController::class, 'index'])->name('model_changes.index');
+    });
+    Route::middleware('permission:gerer_les_societes')->group(function () {
+        Route::get('/societes', [SocieteController::class, 'index'])->name('societes.index');
+        Route::get('/societe/create', [SocieteController::class, 'create'])->name('societes.create');
+        Route::post('/societe/store', [SocieteController::class, 'store'])->name('societes.store');
+        Route::get('/societe/{societe}', [SocieteController::class, 'show'])->name('societes.show');
+        Route::get('/societe/{societe}/edit', [SocieteController::class, 'edit'])->name('societes.edit');
+        Route::patch('/societe/{societe}/update', [SocieteController::class, 'update'])->name('societes.update');
+        Route::delete('/societe/{societe}/delete', [SocieteController::class, 'destroy'])->name('societes.destroy');
+        Route::patch('/societe/{societe}/restore', [SocieteController::class, 'restore'])->name('societes.restore');
+
     });
 });
 require __DIR__ . '/auth.php';

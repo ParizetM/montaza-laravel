@@ -6,6 +6,7 @@ use App\Models\Entite;
 use App\Models\Notification;
 use App\Models\Permission;
 use App\Models\Role;
+use App\Models\SocieteContact;
 use App\Models\User;
 use Hash;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -19,10 +20,11 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $permissions = [
-            'gerer_les_utilisateurs' => 'Gérer les utilisateurs',
-            'gerer_les_permissions' => 'Gérer les permissions',
-            'gerer_les_postes' => 'Gérer les postes',
-            'voir_historique' => 'Voir l\'historique',
+            'gerer_les_utilisateurs' => 'Consulter, créer, modifier et désactiver des utilisateurs',
+            'gerer_les_permissions' => 'consulter, créer, modifier et supprimer les permissions des postes',
+            'gerer_les_postes' => 'Consulter, créer, modifier et désactiver les postes',
+            'voir_historique' => 'Consulter l\'historique des modifications des données',
+            'gerer_les_societes' => 'Consulter, créer, modifier et désactiver les sociétés',
         ];
         foreach ($permissions as $permission => $description) {
             Permission::factory()->create([
@@ -151,5 +153,7 @@ class DatabaseSeeder extends Seeder
         Notification::factory()->times(100)->create();
         $this->call(FormeJuridiqueSeeder::class);
         $this->call(CodeApeSeeder::class);
+        $this->call(SocieteTypeSeeder::class);
+        SocieteContact::factory()->times(10)->create();
     }
 }
