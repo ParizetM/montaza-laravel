@@ -14,7 +14,6 @@ class ModelChange extends Model
     protected $fillable = [
         'user_id',
         'model_type',
-        'model_id',
         'before',
         'after',
         'event',

@@ -73,7 +73,6 @@ class User extends Authenticatable
         ModelChange::create([
             'user_id' => Auth::id(),
             'model_type' => 'Utilisateurs',
-            'model_id' => $model->getKey(),
             'before' => $model->getOriginal(),
             'after' => $model->getAttributes(),
             'event' => $event,

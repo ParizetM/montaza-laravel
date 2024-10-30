@@ -149,5 +149,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Notification::factory()->times(100)->create();
+        $this->call(FormeJuridiqueSeeder::class);
+        $this->call(CodeApeSeeder::class);
     }
 }

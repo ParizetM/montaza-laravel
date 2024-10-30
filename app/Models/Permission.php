@@ -37,7 +37,6 @@ class Permission extends Model
         ModelChange::create([
             'user_id' => Auth::id(),
             'model_type' => 'Permissions',
-            'model_id' => $model->getKey(),
             'before' => $model->getOriginal(),
             'after' => $model->getAttributes(),
             'event' => $event,
