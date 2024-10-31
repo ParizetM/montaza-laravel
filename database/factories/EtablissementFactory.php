@@ -16,8 +16,17 @@ class EtablissementFactory extends Factory
      */
     public function definition(): array
     {
-        $societe = \App\Models\Societe::factory()->create();
+        if ($this->faker->boolean) {
+            $societe = \App\Models\Societe::factory()->create();
+        } else {
+            if (!\App\Models\Societe::exists()) {
+                $societe = \App\Models\Societe::factory()->create();
+            } else {
+                $societe = \App\Models\Societe::inRandomOrder()->first();
+            }
+        }
         return [
+
             'adresse' => $this->faker->buildingNumber . ' ' . $this->faker->streetName,
             'nom' => $this->faker->randomElement([
                 'dépôt',

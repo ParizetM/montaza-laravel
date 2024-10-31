@@ -155,6 +155,6 @@ class DatabaseSeeder extends Seeder
         $this->call(FormeJuridiqueSeeder::class);
         $this->call(CodeApeSeeder::class);
         $this->call(SocieteTypeSeeder::class);
-        SocieteContact::factory()->times(10)->create();
+        SocieteContact::factory()->times(100)->create();
     }
 }

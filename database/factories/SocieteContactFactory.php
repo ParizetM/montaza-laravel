@@ -16,13 +16,23 @@ class SocieteContactFactory extends Factory
      */
     public function definition(): array
     {
+        if ($this->faker->boolean) {
+            $etablissement = \App\Models\Etablissement::factory()->create();
+        } else {
+            if (!\App\Models\Etablissement::exists()) {
+                $etablissement = \App\Models\Etablissement::factory()->create();
+            } else {
+                $etablissement = \App\Models\Etablissement::inRandomOrder()->first();
+            }
+        }
         return [
+
             'nom' => $this->faker->lastName(),
             'prenom' => $this->faker->firstName(),
             'email' => $this->faker->unique()->safeEmail(),
             'telephone_fixe' => '02' . $this->faker->numerify('########'),
             'telephone_portable' => '06' . $this->faker->numerify('########'),
-            'etablissement_id' => \App\Models\Etablissement::factory(),
+            'etablissement_id' => $etablissement->id,
         ];
     }
 }

@@ -10,10 +10,38 @@ class SocieteController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $societes = Societe::all()->load('formeJuridique', 'codeApe', 'societeType')
-            ->sortBy('societe_type_id');
+
+    $search = $request->input('search');
+    $nombre = $request->input('nombre') ?? 50;
+    if (!is_int($nombre)) {
+        $nombre = 50;
+    }
+
+    if ($search) {
+        $societes = Societe::query();
+
+        if ($search) {
+            $societes->where('raison_sociale', 'like', '%' . $search . '%')
+                ->orWhereHas('formeJuridique', function ($query) use ($search) {
+                    $query->where('nom', 'like', '%' . $search . '%');
+                })
+                ->orWhereHas('codeApe', function ($query) use ($search) {
+                    $query->where('code', 'like', '%' . $search . '%');
+                })
+                ->orWhereHas('societeType', function ($query) use ($search) {
+                    $query->where('nom', 'like', '%' . $search . '%');
+                });
+        }
+        $societes = $societes->orderBy('societe_type_id')
+            ->take(50)
+            ->get();
+    } else {
+        $societes = Societe::orderBy('societe_type_id')
+            ->take($nombre)
+            ->get();
+    }
         return view('societes.index', compact('societes'));
     }
 

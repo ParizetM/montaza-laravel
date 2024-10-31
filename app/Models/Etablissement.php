@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\SocieteContact;
+
 
 class Etablissement extends Model
 {
@@ -23,6 +26,10 @@ class Etablissement extends Model
     public function pays(): BelongsTo
     {
         return $this->belongsTo(Pays::class, 'pay_id');
+    }
+    public function societeContacts(): HasMany
+    {
+        return $this->hasMany(SocieteContact::class);
     }
 
 }

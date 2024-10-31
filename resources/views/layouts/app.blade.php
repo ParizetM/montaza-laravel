@@ -145,6 +145,9 @@
             flashMessage.classList.remove('translate-y-0'); // Enlève la classe pour cacher l'élément
             flashMessage.classList.add('-translate-y-full'); // Ajoute la classe pour remonter le message
             flashMessage.classList.remove('shadow-lg'); // Enlève l'ombre pour le rendre moins visible
+            setTimeout(function() {
+                flashMessage.remove();
+            }, 500); // Délai pour permettre la transition avant de supprimer l'élément
 
         }
     </script>
