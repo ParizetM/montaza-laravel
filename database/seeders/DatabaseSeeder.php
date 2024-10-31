@@ -151,6 +151,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Notification::factory()->times(100)->create();
+        $this->call(PaysSeeder::class);
         $this->call(FormeJuridiqueSeeder::class);
         $this->call(CodeApeSeeder::class);
         $this->call(SocieteTypeSeeder::class);

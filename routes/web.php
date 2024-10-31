@@ -57,6 +57,8 @@ Route::middleware('auth')->group(function () {
     });
     Route::middleware('permission:gerer_les_societes')->group(function () {
         Route::get('/societes', [SocieteController::class, 'index'])->name('societes.index');
+        Route::get('/societes/client', [SocieteController::class, 'indexClient'])->name('societes.index_client');
+        Route::get('/societes/fournisseur', [SocieteController::class, 'indexFournisseur'])->name('societes.index_fournisseur');
         Route::get('/societe/create', [SocieteController::class, 'create'])->name('societes.create');
         Route::post('/societe/store', [SocieteController::class, 'store'])->name('societes.store');
         Route::get('/societe/{societe}', [SocieteController::class, 'show'])->name('societes.show');

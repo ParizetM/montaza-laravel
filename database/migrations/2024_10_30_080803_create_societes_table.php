@@ -11,6 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::create('pays', function (Blueprint $table) {
+            $table->id();
+            $table->timestamps();
+            $table->string(column: 'nom', length: 100);
+        });
         Schema::create('forme_juridiques', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
@@ -37,6 +42,7 @@ return new class extends Migration
             $table->foreignId('code_ape_id')->constrained('code_apes');
             $table->foreignId('societe_type_id')->constrained('societe_types');
             $table->string('site_web', length: 100)->nullable();
+            $table->string('numero_tva', length: 100);
             $table->softDeletes();
         });
         Schema::create('etablissements', function (Blueprint $table) {
@@ -46,6 +52,8 @@ return new class extends Migration
             $table->string(column: 'adresse', length: 100);
             $table->string(column: 'code_postal', length: 10);
             $table->string(column: 'ville', length: 100);
+            $table->string(column: 'region', length: 100);
+            $table->foreignId('pay_id')->constrained('pays');
             $table->string('siret', length: 14);
             $table->foreignId('societe_id')->constrained('societes');
             $table->softDeletes();
@@ -75,5 +83,6 @@ return new class extends Migration
         Schema::dropIfExists('code_apes');
         Schema::dropIfExists('forme_juridiques');
         Schema::dropIfExists('societe_types');
+        Schema::dropIfExists('pays');
     }
 };

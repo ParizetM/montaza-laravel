@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\FormeJuridique;
 use App\Models\CodeApe;
 use App\Models\SocieteType;
+use App\Models\Etablissement;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
 
 class Societe extends Model
 {
@@ -32,5 +35,9 @@ class Societe extends Model
     public function societeType(): BelongsTo
     {
         return $this->belongsTo(SocieteType::class, 'societe_type_id');
+    }
+    public function etablissements(): HasMany
+    {
+        return $this->hasMany(Etablissement::class);
     }
 }

@@ -14,7 +14,7 @@
                     <div class="flex items-center ml-4 my-1 ">
                         <label for="nombre"
                             class="mr-2 text-gray-900 dark:text-gray-100">{!! __('Quantité') !!}</label>
-                        <input type="number" name="nombre" id="nombre" value="{!! old('nombre', request('nombre', 50)) !!}"
+                        <input type="number" name="nombre" id="nombre" value="{!! old('nombre', request('nombre', 20)) !!}"
                             class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     </div>
                     <button type="submit" class="ml-2 btn sm:mt-0 md:mt-0 lg:mt-0">
@@ -58,19 +58,70 @@
                                             {!! $societe->societeType->nom !!}
                                         </td>
                                         <td class="block py-3 px-4">
-                                                <x-icon :size="1" type="arrow_back" class="float-right -rotate-90 mr-5" />
+                                            <x-icon :size="1" type="arrow_back"
+                                                class="float-right -rotate-90 mr-5" />
                                         </td>
                                     </tr>
                                     <tr id="details-{{ $societe->id }}" class="hidden">
-                                        <td colspan="3" class="bg-gray-100 dark:bg-gray-900 rounded-r-md rounded-l-md rounded-t-none">
-                                            <div class="p-4">
-                                                <p><strong>{!! __('Adresse:') !!}</strong> {!! $societe->adresse !!}
-                                                </p>
-                                                <p><strong>{!! __('Téléphone:') !!}</strong> {!! $societe->telephone !!}
-                                                </p>
-                                                <p><strong>{!! __('Email:') !!}</strong> {!! $societe->email !!}
-                                                </p>
-                                                <!-- Add more details as needed -->
+                                        <td colspan="3"
+                                            class="bg-gray-100 dark:bg-gray-900 rounded-r-md rounded-l-md rounded-t-none">
+                                            <div class="grid grid-cols-2">
+                                                <div class="p-4">
+                                                    <x-Copiable_text titre="Siren : " text="{{ $societe->siren }}" />
+                                                    <x-Copiable_text titre="Forme juridique : "
+                                                        text="{{ $societe->formeJuridique->code }}" />
+                                                    <x-Copiable_text titre="Code APE : "
+                                                        text="{{ $societe->codeApe->code }}" />
+                                                    <x-Copiable_text titre="N° de TVA intra. : "
+                                                        text="{{ $societe->numero_tva }}" />
+                                                    <!-- Add more details as needed -->
+                                                </div>
+                                                <div class="">
+                                                    <table class="min-w-full">
+                                                        <tbody>
+                                                            @foreach ($societe->etablissements as $etablissement)
+                                                                <tr class="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800"
+                                                                    onclick="document.getElementById('details-{{ $societe->id }}-{{ $etablissement->id }}').classList.toggle('hidden')">
+                                                                    <td class="text-left py-3 px-4">
+                                                                        {!! $etablissement->nom !!}
+                                                                    </td>
+                                                                    <td class="block py-3 px-4">
+                                                                        <x-icon :size="1" type="arrow_back"
+                                                                            class="float-right -rotate-90 mr-5" />
+                                                                    </td>
+                                                                </tr>
+                                                                <tr id="details-{{ $societe->id }}-{{ $etablissement->id }}"
+                                                                    class="hidden">
+                                                                    <td colspan="3"
+                                                                        class="bg-gray-100 dark:bg-gray-900 rounded-r-md rounded-l-md rounded-t-none">
+                                                                        <div class="grid ">
+                                                                            <div class="p-4">
+                                                                                <x-Copiable_text titre="Adresse : "
+                                                                                    text="{{ $etablissement->adresse }}" />
+                                                                                <x-Copiable_text titre="Code postal : "
+                                                                                    text="{{ $etablissement->code_postal }}" />
+                                                                                <x-Copiable_text titre="Ville : "
+                                                                                    text="{{ $etablissement->ville }}" />
+                                                                                <x-Copiable_text titre="Région : "
+                                                                                    text="{{ $etablissement->region }}" />
+                                                                                <x-Copiable_text titre="Pays : "
+                                                                                    text="{{ $etablissement->pays->nom }}" />
+                                                                                <x-Copiable_text titre="Siret : "
+                                                                                    text="{{ $etablissement->siret }}" />
+                                                                            </div>
+                                                                            <div class="p-4">
+                                                                                <button type="button" class="btn mb-4 dark:bg-gray-800"
+                                                                                    title="Contacts"
+                                                                                    x-data=""
+                                                                                    x-on:click.prevent="$dispatch('open-modal', 'cotacts-modal-{{ $etablissement->id }}')">
+                                                                                    <x-icon :size="1.5" type="contact" class="icons-no_hover " />
+                                                                                 </button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                </div>
+
                                             </div>
                                         </td>
                                     </tr>
@@ -79,8 +130,15 @@
                         </table>
                     </div>
                 </div>
+                </td>
+                </tr>
+                @endforeach
+                </tbody>
+                </table>
             </div>
         </div>
+    </div>
+    </div>
     </div>
 
 
