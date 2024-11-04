@@ -7,8 +7,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\SocieteContact;
+use Database\Factories\EtablissementFactory;
 
-
+/**
+ * Summary of Etablissement
+ */
 class Etablissement extends Model
 {
     /** @use HasFactory<EtablissementFactory> */
@@ -23,12 +26,23 @@ class Etablissement extends Model
         'societe_id',
         'siret'
     ];
+
+    /**
+     * Summary of pays
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Pays, Etablissement>
+     */
     public function pays(): BelongsTo
     {
+        /** @var BelongsTo<Pays, Etablissement> */
         return $this->belongsTo(Pays::class, 'pay_id');
     }
+    /**
+     * Summary of societe
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<SocieteContact, Etablissement>
+     */
     public function societeContacts(): HasMany
     {
+        /** @var HasMany<SocieteContact, Etablissement> */
         return $this->hasMany(SocieteContact::class);
     }
 

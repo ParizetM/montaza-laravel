@@ -161,7 +161,7 @@ class User extends Authenticatable
      * Summary of getRole
      * @return \App\Models\Role
      */
-    public function getRole(): ?Role
+    public function getRole(): Role
     {
         return $this->role;
     }

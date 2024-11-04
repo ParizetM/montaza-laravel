@@ -4,25 +4,24 @@ namespace App\Http\Controllers;
 
 use App\Models\Societe;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class SocieteController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(Request $request): View
     {
-
-    $search = $request->input('search');
-    $nombre = $request->input('nombre') ?? 50;
-    if (!is_int($nombre)) {
-        $nombre = 50;
-    }
-
-    if ($search) {
-        $societes = Societe::query();
+        $search = $request->input('search') ?? '';
+        $nombre = $request->input('nombre') ?? 50;
+        if (!is_int($nombre)) {
+            $nombre = 50;
+        }
 
         if ($search) {
+            $societes = Societe::query();
+
             $societes->where('raison_sociale', 'like', '%' . $search . '%')
                 ->orWhereHas('formeJuridique', function ($query) use ($search) {
                     $query->where('nom', 'like', '%' . $search . '%');
@@ -33,15 +32,15 @@ class SocieteController extends Controller
                 ->orWhereHas('societeType', function ($query) use ($search) {
                     $query->where('nom', 'like', '%' . $search . '%');
                 });
+
+            $societes = $societes->orderBy('societe_type_id')
+                ->take(50)
+                ->get();
+        } else {
+            $societes = Societe::orderBy('societe_type_id')
+                ->take($nombre)
+                ->get();
         }
-        $societes = $societes->orderBy('societe_type_id')
-            ->take(50)
-            ->get();
-    } else {
-        $societes = Societe::orderBy('societe_type_id')
-            ->take($nombre)
-            ->get();
-    }
         return view('societes.index', compact('societes'));
     }
 

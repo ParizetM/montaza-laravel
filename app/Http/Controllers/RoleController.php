@@ -131,8 +131,8 @@ class RoleController extends Controller
         if (!$auth_user) {
             return redirect()->back()->withErrors(['role' => 'Utilisateur non authentifié.']);
         }
-        $userRole_id = $auth_user->getRole();
-        $role_cible = Role::withTrashed()->findOrFail($userRole_id);
+        $userRole = $auth_user->getRole();
+        $role_cible = Role::withTrashed()->findOrFail($userRole->id);
         $messsage = 'Le poste <strong>' . $role->name . '</strong> a été désactivé par ' . $auth_user->getName() . ', les utilisateurs affectés à ce poste ont été déconnectés :';
         foreach ($role->users as $user) {
             $messsage .= '<br/> - ' . $user->first_name . ' ' . $user->last_name;
