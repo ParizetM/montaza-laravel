@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Societe;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Cache;
 
 class SocieteController extends Controller
 {
@@ -13,36 +14,39 @@ class SocieteController extends Controller
      */
     public function index(Request $request): View
     {
-        $search = $request->input('search') ?? '';
-        $nombre = $request->input('nombre') ?? 50;
-        if (!is_int($nombre)) {
-            $nombre = 50;
-        }
+        $search = $request->input('search', ''); // Valeur par défaut si non défini
+        $nombre = intval($request->input('nombre', 20)); // Conversion sécurisée en entier
 
-        if ($search) {
-            $societes = Societe::query();
+        // Définir une clé de cache unique pour cette requête
+        $cacheKey = 'societes_' . md5($search . $nombre); // Utilise une combinaison unique de la recherche et de la quantité
 
-            $societes->where('raison_sociale', 'like', '%' . $search . '%')
-                ->orWhereHas('formeJuridique', function ($query) use ($search) {
-                    $query->where('nom', 'like', '%' . $search . '%');
-                })
-                ->orWhereHas('codeApe', function ($query) use ($search) {
-                    $query->where('code', 'like', '%' . $search . '%');
-                })
-                ->orWhereHas('societeType', function ($query) use ($search) {
-                    $query->where('nom', 'like', '%' . $search . '%');
+        // Vérifier si les résultats sont en cache
+        $societes = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($search, $nombre) {
+            $query = Societe::with(['societeType', 'formeJuridique', 'codeApe', 'etablissements.societeContacts']);
+
+            // Si un terme de recherche est fourni
+            if (!empty($search)) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('raison_sociale', 'like', '%' . $search . '%')
+                        ->orWhereHas('formeJuridique', function ($subQuery) use ($search) {
+                            $subQuery->where('nom', 'like', '%' . $search . '%');
+                        })
+                        ->orWhereHas('codeApe', function ($subQuery) use ($search) {
+                            $subQuery->where('code', 'like', '%' . $search . '%');
+                        })
+                        ->orWhereHas('societeType', function ($subQuery) use ($search) {
+                            $subQuery->where('nom', 'like', '%' . $search . '%');
+                        });
                 });
+            }
 
-            $societes = $societes->orderBy('societe_type_id')
-                ->take(50)
-                ->get();
-        } else {
-            $societes = Societe::orderBy('societe_type_id')
-                ->take($nombre)
-                ->get();
-        }
+            // Ajout d'un tri et d'une pagination
+            return $query->orderBy('societe_type_id')->paginate($nombre);
+        });
+
         return view('societes.index', compact('societes'));
     }
+
 
     // /**
     //  * Show the form for creating a new resource.

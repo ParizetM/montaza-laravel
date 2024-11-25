@@ -13,11 +13,11 @@ class ResetTables extends Command
     public function handle(): void
     {
         // Désactiver les contraintes de clé étrangère
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::statement('SET session_replication_role = replica;');
 
-        $tables = DB::select('SHOW TABLES');
+        $tables = DB::select("SELECT tablename FROM pg_tables WHERE schemaname = 'public';");
         foreach ($tables as $table) {
-            $tableName = $table->{"Tables_in_" . env('DB_DATABASE')}; // Récupère le nom de la table
+            $tableName = $table->tablename; // Récupère le nom de la table
 
             if ($tableName === 'migrations') {
                 continue; // Ignorer la table migrations
@@ -28,7 +28,7 @@ class ResetTables extends Command
         }
 
         // Réactiver les contraintes de clé étrangère
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        DB::statement('SET session_replication_role = DEFAULT;');
 
         $this->info('Toutes les tables ont été vidées.');
         $this->call('db:seed');
