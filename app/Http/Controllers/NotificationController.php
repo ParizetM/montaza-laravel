@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Redirect;
+use App\Models\Entite;
 
 class NotificationController extends Controller
 {
@@ -90,9 +91,11 @@ class NotificationController extends Controller
                 'specifyType' => $specifyType
             ])->render();
         }
+        $entites = Entite::all();
         // dd($notifications); // Debugging statement removed
         return view('notifications.lus', [
             'notifications_readed' => $notifications_readed,
+            '_entites' => $entites
         ]);
     }
     public function detail(int $id): View
@@ -116,6 +119,32 @@ class NotificationController extends Controller
         return redirect()->back();
     }
 
+    public function fetch(Request $request)
+    {
+        $type = $request->query('type');
+        if (!$type) {
+            $type = 'all';
+        }
+
+        $user = Auth::user();
+        if (!$user) {
+            return 'Vous devez être connecté pour effectuer cette action';
+        }
+        // Logique pour récupérer les notifications en fonction du type
+        if ($type === 'all') {
+            $notifications = $user->notifications()->where('read', false)->orderBy('created_at', 'desc')->take(10)->get();
+        } elseif ($type === 'system') {
+            $notifications = $user->notifications()->where('read', false)->where('type', 'system')->orderBy('created_at', 'desc')->take(10)->get();
+        } else {
+            $notifications = [];
+        }
+        $entites = Entite::all();
+        // Retourner les notifications sous forme de HTML
+        return view('components.table-notifications', [
+            'notifications' => $notifications,
+            '_entites' => $entites
+        ])->render();
+    }
 
 
     // /**

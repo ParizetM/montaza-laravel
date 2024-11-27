@@ -34,8 +34,8 @@
                         <button x-data=""
                             x-on:click.prevent="$dispatch('open-modal', 'notifications-modal')"
                             class="relative inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
-                            <x-icon type="bell" :size="1.5" class="icons" />
-                            @if ($_notifications->count() > 0)
+                            <x-icon type="bell" :size="1" class="icons" />
+                            @if ($_notifications_count > 0)
                                 <span
                                     class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">{{ $_notifications_count }}</span>
                             @endif
@@ -153,10 +153,10 @@
                                 <a href="{{ route('notifications.index') }}"
                                     class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
 
-                                    <x-icon :size="1.5" type="bell" class="icons " />
-                                    @if ($_notifications->count() > 0)
+                                    <x-icon :size="1" type="bell" class="icons " />
+                                    @if ($_notifications_count > 0)
                                         <span id="notifications-count"
-                                            class="relative bottom-3 right-4 inline-flex items-center justify-center px-1.5 py-1 text-xs font-semibold leading-none text-red-100 bg-red-600 rounded-full">{{ $_notifications->count() }}</span>
+                                            class="relative bottom-3 right-4 inline-flex items-center justify-center px-1 py-1 text-xs font-semibold leading-none text-red-100 bg-red-600 rounded-full">{{ $_notifications_count }}</span>
                                     @endif
                                 </a>
                             </div>

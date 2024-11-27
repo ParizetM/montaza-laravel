@@ -9,15 +9,25 @@
 
                 <form method="GET" action="{!! route('societes.index') !!}"
                     class="mr-4 mb-1 sm:mr-0 flex flex-col sm:flex-row items-start sm:items-center">
+                    <select name="type" id="type" onchange="this.form.submit()"
+                        class="px-4 py-2 mr-2 border select mb-2 sm:mb-0 ">
+                        <option value="" selected>{!! __('Tous les types') !!}</option>
+                        @foreach ($societeTypes as $societeType)
+                            <option value="{{ $societeType->id }}"
+                                {{ request('type') == $societeType->id ? 'selected' : '' }}>
+                                {!! $societeType->nom . '&nbsp;&nbsp;' !!}
+                            </option>
+                        @endforeach
+                    </select>
                     <input type="text" name="search" placeholder="Rechercher..." value="{!! request('search') !!}"
-                        class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        class="w-full sm:w-auto px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     <div class="flex items-center ml-4 my-1 ">
                         <label for="nombre"
                             class="mr-2 text-gray-900 dark:text-gray-100">{!! __('Quantité') !!}</label>
                         <input type="number" name="nombre" id="nombre" value="{!! old('nombre', request('nombre', 20)) !!}"
                             class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     </div>
-                    <button type="submit" class="ml-2 btn sm:mt-0 md:mt-0 lg:mt-0">
+                    <button type="submit" class="ml-2 btn w-full sm:w-auto sm:mt-0 md:mt-0 lg:mt-0">
                         {!! __('Rechercher') !!}
                     </button>
                 </form>
@@ -63,17 +73,16 @@
                                     </tr>
                                     <tr id="details-{{ $societe->id }}" class="hidden">
                                         <td colspan="3"
-                                            class="bg-gray-100 dark:bg-gray-900 rounded-r-md rounded-l-md rounded-t-none">
+                                            class="bg-gray-100 dark:bg-gray-900 rounded-r-md rounded-l-md rounded-t-none p-0">
                                             <div class="grid grid-cols-2">
                                                 <div class="p-4">
-                                                    <x-Copiable_text titre="Siren : " text="{{ $societe->siren }}" />
-                                                    <x-Copiable_text titre="Forme juridique : "
+                                                    <x-copiable_text titre="Siren : " text="{{ $societe->siren }}" />
+                                                    <x-copiable_text titre="Forme juridique : "
                                                         text="{{ $societe->formeJuridique->code }}" />
-                                                    <x-Copiable_text titre="Code APE : "
+                                                    <x-copiable_text titre="Code APE : "
                                                         text="{{ $societe->codeApe->code }}" />
-                                                    <x-Copiable_text titre="N° de TVA intra. : "
+                                                    <x-copiable_text titre="N° de TVA intra. : "
                                                         text="{{ $societe->numero_tva }}" />
-                                                    <!-- Add more details as needed -->
                                                 </div>
                                                 <div class="">
                                                     <table class="min-w-full">
@@ -92,51 +101,62 @@
                                                                 <tr id="details-{{ $societe->id }}-{{ $etablissement->id }}"
                                                                     class="hidden">
                                                                     <td colspan="3"
-                                                                        class="bg-gray-200 dark:bg-gray-900 rounded-r-md rounded-l-md rounded-t-none">
+                                                                        class="bg-gray-200 dark:bg-gray-850 border-l border-gray-100 dark:border-gray-800 rounded-bl-md">
                                                                         <div class="">
-                                                                            <div class="float-left p-4">
-                                                                                <x-Copiable_text titre="Adresse : "
+                                                                            <div class="float-left p-4 ">
+                                                                                <x-copiable_text titre="Adresse : "
                                                                                     text="{{ $etablissement->adresse }}" />
-                                                                                <x-Copiable_text titre="Code postal : "
+                                                                                <x-copiable_text titre="Code postal : "
                                                                                     text="{{ $etablissement->code_postal }}" />
-                                                                                <x-Copiable_text titre="Ville : "
+                                                                                <x-copiable_text titre="Ville : "
                                                                                     text="{{ $etablissement->ville }}" />
-                                                                                <x-Copiable_text titre="Région : "
+                                                                                <x-copiable_text titre="Région : "
                                                                                     text="{{ $etablissement->region }}" />
-                                                                                <x-Copiable_text titre="Pays : "
+                                                                                <x-copiable_text titre="Pays : "
                                                                                     text="{{ $etablissement->pays->nom }}" />
-                                                                                <x-Copiable_text titre="Siret : "
+                                                                                <x-copiable_text titre="Siret : "
                                                                                     text="{{ $etablissement->siret }}" />
                                                                             </div>
                                                                             <div class="float-right p-4">
-                                                                                    <button type="button" class="btn mb-4 dark:bg-gray-800"
-                                                                                        title="Contacts"
-                                                                                        x-data=""
-                                                                                        x-on:click.prevent="$dispatch('open-modal', 'contacts-modal-{{ $etablissement->id }}')">
-                                                                                        <x-icon :size="1.5" type="contact" class="icons-no_hover " />
-                                                                                    </button>
-                                                                                    @php
-                                                                                        $contacts = $etablissement->societeContacts;
-                                                                                    @endphp
-                                                                                    <x-modals.contacts name="contacts-modal-{{ $etablissement->id }}" :contacts="$contacts" />
-                                                                                </div>
+                                                                                <button type="button"
+                                                                                    class="btn mb-4 dark:bg-gray-800"
+                                                                                    title="Contacts"
+                                                                                    x-data=""
+                                                                                    x-on:click.prevent="$dispatch('open-modal', 'contacts-modal-{{ $etablissement->id }}')">
+                                                                                    <x-icon :size="1.5"
+                                                                                        type="contact"
+                                                                                        class="icons-no_hover " />
+                                                                                </button>
+                                                                                @php
+                                                                                    $contacts =
+                                                                                        $etablissement->societeContacts;
+                                                                                @endphp
+                                                                                <x-modals.contacts
+                                                                                    name="contacts-modal-{{ $etablissement->id }}"
+                                                                                    :contacts="$contacts" />
                                                                             </div>
-                                                                        </td>
-                                                                    </tr>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
                                 @endforeach
                             </tbody>
                         </table>
                     </div>
                 </div>
-                </td>
-                </tr>
-                @endforeach
-                </tbody>
-                </table>
+                <div class="mt-4 flex justify-center items-center pb-3">
+                    <div>
+                        {{ $societes->appends(request()->query())->links() }}
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    </div>
     </div>
 
 

@@ -45,15 +45,31 @@
                     </li> --}}
                 </ul>
                 <div>
-                    <div x-show="activeTab === 'tab1'">
-                        <x-table-notifications :notifications="$_notifications" :specifyType="true" />
+                    <div x-show="activeTab === 'tab1'" id="notif-tab1">
+                            <script>
+                                document.addEventListener('DOMContentLoaded', function () {
+                                    fetch('{{ route('notifications.fetch',['type'=> 'all']) }}')
+                                        .then(response => response.text())
+                                        .then(html => {
+                                            document.getElementById('notif-tab1').innerHTML = html;
+                                        })
+                                        .catch(error => console.error('Error fetching notifications:', error));
+                                });
+                            </script>
                     </div>
-                    <div x-show="activeTab === 'tab2'">
-                        <x-table-notifications :notifications="$_notificationsSystem" />
+                    <div x-show="activeTab === 'tab2'" id="notif-tab2">
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function () {
+                                fetch('{{ route('notifications.fetch',['type'=> 'system']) }}')
+                                    .then(response => response.text())
+                                    .then(html => {
+                                        document.getElementById('notif-tab2').innerHTML = html;
+                                    })
+                                    .catch(error => console.error('Error fetching notifications:', error));
+                            });
+                        </script>
                     </div>
-                    {{-- <div x-show="activeTab === 'tab3'">
-                        TEST 3
-                    </div> --}}
+
                 </div>
             </div>
         </div>

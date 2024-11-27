@@ -24,7 +24,7 @@
                                                     :class="activeTab === 'tab1' ? 'border-b-2 border-blue-500 text-blue-500' :
                                                         'text-gray-500'"
                                                     class="inline-block py-2 px-4" href="#">Tout
-                                                    @if ($_notifications->count() > 0)
+                                                    @if ($_notifications_count > 0)
                                                     <span id="notifications-count"
                                                         class="relative bottom-2 right-4 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">{{ $_notifications_count }}</span>
                                                     @endif

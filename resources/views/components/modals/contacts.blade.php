@@ -1,4 +1,5 @@
-<x-modal name="{{ $name ?? 'contacts-modal' }}" focusable>
+<x-modal name="{{ $name ?? 'contacts-modal' }}" focusable maxWidth="3xl"
+>
     <div class="p-8">
         <table class="min-w-full bg-white dark:bg-gray-800">
             <thead class="bg-gray-50 dark:bg-gray-700">

@@ -87,5 +87,7 @@
     .copiable:hover  {
         display: block;
     }
-
+    .bg-gray-850 {
+        background-color: #18202F;
+    }
 }

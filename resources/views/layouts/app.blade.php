@@ -108,28 +108,48 @@
         }
 
         function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(function() {
-                // Affiche un message temporaire pour indiquer que le texte a été copié
-                const flashMessage = document.createElement('div');
-                flashMessage.id = 'flash-message';
-                flashMessage.className =
-                    'fixed top-0 left-1/2 transform -translate-x-1/2 -translate-y-full bg-green-500 text-white p-4 rounded shadow-lg z-50 transition-transform duration-500 ease-in-out';
-                flashMessage.innerHTML = `
-                    <div class="container mx-auto flex justify-between items-center">
-                        <span>Texte copié</span>
-                        <button onclick="hideFlashMessage()" class="text-white font-bold ml-3">X</button>
-                    </div>
-                `;
-                document.body.appendChild(flashMessage);
-                setTimeout(function() {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(function() {
+                    showCopiedMessage();
+                }, function(err) {
+                    console.error('Could not copy text: ', err);
+                });
+            } else {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    showCopiedMessage();
+                } catch (err) {
+                    console.error('Could not copy text: ', err);
+                }
+                document.body.removeChild(textArea);
+            }
+        }
+
+        function showCopiedMessage() {
+            // Affiche un message temporaire pour indiquer que le texte a été copié
+            const flashMessage = document.createElement('div');
+            flashMessage.id = 'flash-message';
+            flashMessage.className =
+                'fixed top-0 left-1/2 transform -translate-x-1/2 -translate-y-full bg-green-500 text-white p-4 rounded shadow-lg z-50 transition-transform duration-500 ease-in-out';
+            flashMessage.innerHTML = `
+                <div class="container mx-auto flex justify-between items-center">
+                    <span>Texte copié</span>
+                    <button onclick="hideFlashMessage()" class="text-white font-bold ml-3">X</button>
+                </div>
+            `;
+            document.body.appendChild(flashMessage);
+            setTimeout(function() {
                 showFlashMessage();
-                }, 100);
-                setTimeout(function() {
-                    hideFlashMessage();
-                }, 1000);
-            }, function(err) {
-                console.error('Could not copy text: ', err);
-            });
+            }, 100);
+            setTimeout(function() {
+                hideFlashMessage();
+            }, 1000);
         }
 
         function showFlashMessage() {

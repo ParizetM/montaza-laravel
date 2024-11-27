@@ -25,14 +25,14 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-                    <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">
                         {{ __('Détails de la notification') }}
-                    </h2>
+                    </h3>
                     <div class="flex flex-col sm:flex-col md:flex-col lg:flex-row justify-between">
 
                         <div class="mt-4">
                             <div class="notification-content">
-                                <h3 class="text-lg font-semibold text-wrap">{!! $data['title'] ?? 'N/A' !!}</h3>
+                                <h2 class="text-lg font-semibold text-wrap text-gray-800 dark:text-gray-200">{!! $data['title'] ?? 'N/A' !!}</h2>
                                 <p class="mt-2 text-sm text-gray-600 dark:text-gray-400 text-wrap">
                                     {!! $data['message'] ?? 'N/A' !!}
                                 </p>
