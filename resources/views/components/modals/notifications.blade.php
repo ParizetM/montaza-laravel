@@ -48,7 +48,7 @@
                     <div x-show="activeTab === 'tab1'" id="notif-tab1">
                             <script>
                                 document.addEventListener('DOMContentLoaded', function () {
-                                    fetch('{{ route('notifications.fetch',['type'=> 'all']) }}')
+                                    fetch('{{ route('notifications.fetch',['type'=> 'all','specifyType' => true]) }}')
                                         .then(response => response.text())
                                         .then(html => {
                                             document.getElementById('notif-tab1').innerHTML = html;

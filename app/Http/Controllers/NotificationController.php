@@ -125,7 +125,11 @@ class NotificationController extends Controller
         if (!$type) {
             $type = 'all';
         }
-
+        if ($type === 'all') {
+            $specifyType = true;
+        } else {
+            $specifyType = false;
+        }
         $user = Auth::user();
         if (!$user) {
             return 'Vous devez être connecté pour effectuer cette action';
@@ -142,7 +146,8 @@ class NotificationController extends Controller
         // Retourner les notifications sous forme de HTML
         return view('components.table-notifications', [
             'notifications' => $notifications,
-            '_entites' => $entites
+            '_entites' => $entites,
+            'specifyType' => $specifyType
         ])->render();
     }
 
