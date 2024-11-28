@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\EtablissementController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
@@ -68,7 +69,10 @@ Route::middleware('auth')->group(function () {
             Route::patch('/societe/{societe}/update', [SocieteController::class, 'update'])->name('societes.update');
             Route::delete('/societe/{societe}/delete', [SocieteController::class, 'destroy'])->name('societes.destroy');
             Route::patch('/societe/{societe}/restore', [SocieteController::class, 'restore'])->name('societes.restore');
+            Route::patch('/societe/{id}/commentaire/save', [SocieteController::class, 'updateCommentaire'])->name('societes.commentaire');
+            Route::patch('/societe/etablissement/{id}/commentaire/save', [EtablissementController::class, 'updateCommentaire'])->name('societes.etablissement.commentaire');
         });
+
     });
 });
 require __DIR__ . '/auth.php';

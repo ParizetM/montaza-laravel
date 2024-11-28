@@ -19,7 +19,7 @@
 
                         @if (Auth::user()->hasPermission('gerer_les_societes'))
                             <x-nav-link :href="route('societes.index')" :active="request()->routeIs('societes.index')">
-                                {{ __('Société') }}
+                                {{ __('Sociétés') }}
                             </x-nav-link>
                         @endif
                     @endif

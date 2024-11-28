@@ -40,4 +40,12 @@ class Societe extends Model
     {
         return $this->hasMany(Etablissement::class);
     }
+    public function commentaire(): BelongsTo
+    {
+        return $this->belongsTo(Commentaire::class);
+    }
+    public function hasCommentaire(): bool
+    {
+        return $this->commentaire()->exists();
+    }
 }

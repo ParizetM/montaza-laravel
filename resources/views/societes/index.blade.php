@@ -35,13 +35,13 @@
         </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-8xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+    <div class="py-12 ">
+        <div class="max-w-8xl mx-auto sm:px-6 lg:px-8 ">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden sm:rounded-lg shadow-md">
                 <div class="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                     <div class="overflow-x-auto">
                         <table class="min-w-full bg-white dark:bg-gray-800">
-                            <thead class="bg-gray-50 dark:bg-gray-700">
+                            <thead class="bg-gradient-to-r from-gray-200 to-gray-50 dark:from-gray-700 dark:to-gray-800">
                                 <tr>
                                     <th
                                         class="text-left py-3 px-4 uppercase font-semibold text-sm text-gray-600 dark:text-gray-300">
@@ -83,6 +83,23 @@
                                                         text="{{ $societe->codeApe->code }}" />
                                                     <x-copiable_text titre="N° de TVA intra. : "
                                                         text="{{ $societe->numero_tva }}" />
+                                                    <x-copiable_text titre="Téléphone : "
+                                                        text="{{ $societe->telephone }}" />
+                                                    <x-copiable_text titre="Email : " text="{{ $societe->email }}" />
+                                                    <div class="">
+                                                        <span class="font-semibold">{!! __('Site web : ') !!}</span>
+                                                        <a href="{{ $societe->site_web }}" target="_blank"
+                                                            class="text-blue-500 hover:underline">
+                                                            {{ parse_url($societe->site_web, PHP_URL_HOST) }}
+                                                        </a>
+                                                    </div>
+                                                    <div class="mt-4">
+                                                        <label for="commentaire"
+                                                            class="block text-sm font-medium text-gray-700 dark:text-gray-300">{!! __('Commentaire') !!}</label>
+                                                        <textarea rows="3" id="commentaire" name="commentaire"
+                                                            class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-900 dark:text-gray-100"
+                                                            data-societe-id="{{ $societe->id }}" onblur="updateCommentaireSociete(this)">{{ $societe->commentaire ? $societe->commentaire->contenu : '' }}</textarea>
+                                                    </div>
                                                 </div>
                                                 <div class="">
                                                     <table class="min-w-full">
@@ -102,7 +119,7 @@
                                                                     class="hidden">
                                                                     <td colspan="3"
                                                                         class="bg-gray-200 dark:bg-gray-850 border-l border-gray-100 dark:border-gray-800 rounded-bl-md">
-                                                                        <div class="">
+                                                                        <div class="flex justify-between">
                                                                             <div class="float-left p-4 ">
                                                                                 <x-copiable_text titre="Adresse : "
                                                                                     text="{{ $etablissement->adresse }}" />
@@ -116,6 +133,7 @@
                                                                                     text="{{ $etablissement->pays->nom }}" />
                                                                                 <x-copiable_text titre="Siret : "
                                                                                     text="{{ $etablissement->siret }}" />
+
                                                                             </div>
                                                                             <div class="float-right p-4">
                                                                                 <button type="button"
@@ -135,6 +153,14 @@
                                                                                     name="contacts-modal-{{ $etablissement->id }}"
                                                                                     :contacts="$contacts" />
                                                                             </div>
+                                                                        </div>
+                                                                        <div class=" p-4 pt-0">
+                                                                            <div></div>
+                                                                            <label for="commentaire"
+                                                                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">{!! __('Commentaire') !!}</label>
+                                                                            <textarea rows="3" id="commentaire" name="commentaire"
+                                                                                class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-900 dark:text-gray-100"
+                                                                                data-etablissement-id="{{ $etablissement->id }}" onblur="updateCommentaireEtablissement(this)">{{ $etablissement->commentaire ? $etablissement->commentaire->contenu : '' }}</textarea>
                                                                         </div>
                                                                     </td>
                                                                 </tr>
@@ -158,6 +184,59 @@
             </div>
         </div>
     </div>
+    <script>
+        function updateCommentaireSociete(element) {
+            const societeId = element.dataset.societeId; // Récupère l'ID de la société
+            const commentaireTexte = element.value; // Récupère la valeur du commentaire
+
+            // Envoie la requête AJAX avec fetch
+            fetch('/societe/' + societeId + '/commentaire/save', {
+                    method: 'PATCH', // Utilise la méthode PATCH pour mettre à jour
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}', // Envoie le token CSRF pour la sécurité
+                    },
+                    body: JSON.stringify({
+                        commentaire: commentaireTexte, // Envoie le texte du commentaire
+                    }),
+                })
+                .then(response => response.json()) // Récupère la réponse en JSON
+                .then(data => {
+                    if (!(data.message == 'Commentaire inchangé')) {
+                        showFlashMessageFromJs(data.message, 2000);
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur lors de la mise à jour du commentaire', error);
+                });
+        }
+
+        function updateCommentaireEtablissement(element) {
+            const etablissementId = element.dataset.etablissementId; // Récupère l'ID de l'établissement
+            const commentaireTexte = element.value;
+
+            // Envoie la requête AJAX avec fetch
+            fetch('/societe/etablissement/' + etablissementId + '/commentaire/save', {
+                    method: 'PATCH', // Utilise la méthode PATCH pour mettre à jour
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}', // Envoie le token CSRF pour la sécurité
+                    },
+                    body: JSON.stringify({
+                        commentaire: commentaireTexte, // Envoie le texte du commentaire
+                    }),
+                })
+                .then(response => response.json()) // Récupère la réponse en JSON
+                .then(data => {
+                    if (!(data.message == 'Commentaire inchangé')) {
+                        showFlashMessageFromJs(data.message, 2000);
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur lors de la mise à jour du commentaire', error);
+                });
+        }
+    </script>
 
 
 </x-app-layout>

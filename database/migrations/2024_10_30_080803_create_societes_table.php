@@ -11,6 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::create('commentaires', function (Blueprint $table) {
+            $table->id();
+            $table->timestamps();
+            $table->text(column: 'contenu')->nullable();
+        });
         Schema::create('pays', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
@@ -41,8 +46,11 @@ return new class extends Migration
             $table->foreignId('forme_juridique_id')->constrained('forme_juridiques');
             $table->foreignId('code_ape_id')->constrained('code_apes');
             $table->foreignId('societe_type_id')->constrained('societe_types');
+            $table->string('telephone', length: 20);
+            $table->string('email', length: 100);
             $table->string('site_web', length: 100)->nullable();
             $table->string('numero_tva', length: 100);
+            $table->foreignId('commentaire_id')->constrained('commentaires');
             $table->softDeletes();
         });
         Schema::create('etablissements', function (Blueprint $table) {
@@ -56,6 +64,7 @@ return new class extends Migration
             $table->foreignId('pay_id')->constrained('pays');
             $table->string('siret', length: 14);
             $table->foreignId('societe_id')->constrained('societes');
+            $table->foreignId('commentaire_id')->constrained('commentaires');
             $table->softDeletes();
         });
         Schema::create('societe_contacts', function (Blueprint $table) {
@@ -63,6 +72,7 @@ return new class extends Migration
             $table->timestamps();
             $table->string(column: 'nom', length: 100);
             $table->string(column: 'prenom', length: 100);
+            $table->string(column: 'fonction', length: 100);
             $table->string(column: 'email', length: 100);
             $table->string(column: 'telephone_fixe', length: 20);
             $table->string(column: 'telephone_portable', length: 20);

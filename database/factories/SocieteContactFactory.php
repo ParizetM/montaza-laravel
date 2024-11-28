@@ -29,6 +29,7 @@ class SocieteContactFactory extends Factory
 
             'nom' => $this->faker->lastName(),
             'prenom' => $this->faker->firstName(),
+            'fonction' => $this->faker->jobTitle(),
             'email' => $this->faker->unique()->safeEmail(),
             'telephone_fixe' => '02' . $this->faker->numerify('########'),
             'telephone_portable' => '06' . $this->faker->numerify('########'),

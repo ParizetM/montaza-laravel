@@ -61,7 +61,7 @@
                         @endif
                     </p>
                     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead class="bg-gray-50 dark:bg-gray-700">
+                        <thead class="bg-gradient-to-r from-gray-200 to-gray-50 dark:from-gray-700 dark:to-gray-800">
                             <th scope="col">Prénom</th>
                             <th scope="col">Nom</th>
                             <th scope="col">Action</th>

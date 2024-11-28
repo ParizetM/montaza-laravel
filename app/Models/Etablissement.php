@@ -45,5 +45,14 @@ class Etablissement extends Model
         /** @var HasMany<SocieteContact, Etablissement> */
         return $this->hasMany(SocieteContact::class);
     }
-
+    public function commentaire(): BelongsTo
+    {
+        return $this->belongsTo(Commentaire::class);
+    }
+    public function hasCommentaire(): bool
+    {
+        return $this->commentaire()->exists();
+    }
 }
+
+

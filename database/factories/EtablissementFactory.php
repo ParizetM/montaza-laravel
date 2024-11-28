@@ -3,6 +3,8 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\Commentaire;
+use App\Models\Pays;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Etablissement>
@@ -62,9 +64,10 @@ class EtablissementFactory extends Factory
                 'Pays de la Loire',
                 'Normandie',
             ]),
-            'pay_id' => \App\Models\Pays::inRandomOrder()->first(),
+            'pay_id' => Pays::inRandomOrder()->first(),
             'societe_id' => $societe,
             'siret' => $societe->siren . $this->faker->numberBetween(10000, 99999),
+            'commentaire_id' => Commentaire::factory()->create()->id,
         ];
     }
 }
