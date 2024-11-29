@@ -27,6 +27,8 @@ class GetGlobalVariable
             View::share('_notificationsSystem_count', $notificationsSystem_count);
             $entites = Entite::all();
             View::share('_entites', $entites);
+            $shortcuts = $user->shortcuts;
+            View::share('_shortcuts', $shortcuts);
         }
 
         // return $next($request);

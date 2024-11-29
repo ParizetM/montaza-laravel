@@ -185,4 +185,8 @@ class User extends Authenticatable
     {
         return $this->last_name;
     }
+    public function shortcuts()
+    {
+        return $this->hasMany(UserShortcut::class) ?? collect();
+    }
 }

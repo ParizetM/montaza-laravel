@@ -29,7 +29,30 @@
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 @if (Auth::check())
+                    <x-dropdown align="right" width="48">
+                        <x-slot name="trigger">
+                            <button x-data=""
+                                x-on:click.prevent="$dispatch('open-modal', 'shortcuts-modal')" title="Raccourcis"
+                                class="relative inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
+                                <x-icons.apps :size="1" class="icons" />
+                            </button>
+                        </x-slot>
 
+                        <x-slot name="content">
+                            <div class="flex justify-between p-2">
+                                <h2 class="font-semibold text-l text-gray-800 dark:text-gray-200 leading-tight ml-1">
+                                    {{ __('raccourcis') }}</h2>
+                                <a href="{{ route('shortcuts.index') }}"
+                                    class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150"
+                                    title="Modifier les raccourcis">
+                                    <x-icons.apps-edit :size="1" class="icons mt-1 mr-1" />
+                                </a>
+                            </div>
+                            <div class="p-4">
+                                @include('shortcuts.partials.shortcuts')
+                            </div>
+                        </x-slot>
+                    </x-dropdown>
                     <div class="relative">
                         <button x-data=""
                             x-on:click.prevent="$dispatch('open-modal', 'notifications-modal')"

@@ -7,6 +7,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ModelChangeController;
 use App\Http\Controllers\SocieteController;
+use App\Http\Controllers\UserShortcutController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -15,10 +16,10 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function () {
     return view('dashboard');
-})->middleware(['auth', 'verified','GetGlobalVariable'])->name('dashboard');
+})->middleware(['auth', 'verified', 'GetGlobalVariable'])->name('dashboard');
 Route::get('/dashboard/paillettes', function () {
     return view('dashboard', ['paillettes' => 'oui']);
-})->middleware(['auth', 'verified','GetGlobalVariable'])->name('dashboard.paillettes');
+})->middleware(['auth', 'verified', 'GetGlobalVariable'])->name('dashboard.paillettes');
 
 Route::middleware('auth')->group(function () {
     Route::middleware('GetGlobalVariable')->group(function () {
@@ -72,7 +73,10 @@ Route::middleware('auth')->group(function () {
             Route::patch('/societe/{id}/commentaire/save', [SocieteController::class, 'updateCommentaire'])->name('societes.commentaire');
             Route::patch('/societe/etablissement/{id}/commentaire/save', [EtablissementController::class, 'updateCommentaire'])->name('societes.etablissement.commentaire');
         });
-
+        Route::get('/shortcuts', [UserShortcutController::class, 'index'])->name('shortcuts.index');
+        Route::post('/shortcuts', [UserShortcutController::class, 'store'])->name('shortcuts.store');
+        Route::delete('/shortcuts/{id}', [UserShortcutController::class, 'destroy'])->name('shortcuts.destroy');
+        Route::patch('/shortcuts/reorder', [UserShortcutController::class, 'reorder'])->name('shortcuts.reorder');
     });
 });
 require __DIR__ . '/auth.php';

@@ -156,5 +156,6 @@ class DatabaseSeeder extends Seeder
         $this->call(CodeApeSeeder::class);
         $this->call(SocieteTypeSeeder::class);
         SocieteContact::factory()->times(100)->create();
+        $this->call(PredefinedShortcutsSeeder::class);
     }
 }
