@@ -8,6 +8,10 @@ use Illuminate\View\View;
 use Illuminate\Support\Facades\Cache;
 use App\Models\SocieteType;
 use App\Models\Commentaire;
+use App\Models\FormeJuridique;
+use App\Models\CodeApe;
+use App\Models\Etablissement;
+use Illuminate\Http\RedirectResponse;
 
 class SocieteController extends Controller
 {
@@ -75,29 +79,123 @@ class SocieteController extends Controller
     }
 
 
-    // /**
-    //  * Show the form for creating a new resource.
-    //  */
-    // public function create()
-    // {
-    //     //
-    // }
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        return view('societes.create', [
+            'societeTypes' => SocieteType::all(),
+            'formeJuridiques' => FormeJuridique::all(),
+            'codeApes' => CodeApe::all(),
+        ]);
+    }
 
-    // /**
-    //  * Store a newly created resource in storage.
-    //  */
-    // public function store(Request $request)
-    // {
-    //     //
-    // }
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'raison_sociale' => 'required|string',
+            'societe_type_id' => 'required|exists:societe_types,id',
+            'forme_juridique_id' => 'required|exists:forme_juridiques,id',
+            'code_ape_id' => 'required|exists:code_apes,id',
+            'telephone' => 'required|string|max:30',
+            'email' => 'required|email',
+            'site_web' => 'nullable|url',
+            'siren' => 'required|digits:9|unique:societes',
+            'numero_tva' => 'required|string|min:13|max:13',
+            'commentaire' => 'nullable|string',
+        ],
+            [
+                'raison_sociale.required' => 'La raison sociale est obligatoire',
+                'raison_sociale.string' => 'La raison sociale doit être une chaîne de caractères',
+                'societe_type_id.required' => 'Le type de société est obligatoire',
+                'societe_type_id.exists' => 'Le type de société est invalide',
+                'forme_juridique_id.required' => 'La forme juridique est obligatoire',
+                'forme_juridique_id.exists' => 'La forme juridique est invalide',
+                'code_ape_id.required' => 'Le code APE est obligatoire',
+                'code_ape_id.exists' => 'Le code APE est invalide',
+                'telephone.required' => 'Le numéro de téléphone est obligatoire',
+                'telephone.string' => 'Le numéro de téléphone doit être une chaîne de caractères',
+                'telephone.max' => 'Le numéro de téléphone ne doit pas dépasser 30 caractères',
+                'email.required' => 'L\'adresse email est obligatoire',
+                'email.email' => 'L\'adresse email n\'est pas valide',
+                'site_web.url' => 'L\'adresse du site web n\'est pas valide',
+                'siren.required' => 'Le numéro SIREN est obligatoire',
+                'siren.int' => 'Le numéro SIREN doit être un nombre',
+                'siren.unique' => 'Le numéro SIREN est déjà utilisé',
+                'siren.min' => 'Le numéro SIREN doit contenir au moins 9 caractères',
+                'siren.max' => 'Le numéro SIREN doit contenir au maximum 9 caractères',
+                'numero_tva.required' => 'Le numéro de TVA intracommunautaire est obligatoire',
+                'numero_tva.string' => 'Le numéro de TVA intracommunautaire doit être une chaîne de caractères',
+                'numero_tva.min' => 'Le numéro de TVA intracommunautaire doit contenir 13 caractères',
+                'numero_tva.max' => 'Le numéro de TVA intracommunautaire doit contenir 13 caractères',
+                'commentaire.string' => 'Le commentaire doit être une chaîne de caractères',
+            ]
+    );
+        if ($request->site_web == 'http://') {
+            $request->merge(['site_web' => null]);
+        }
+        if ($request->site_web == 'https://') {
+            $request->merge(['site_web' => null]);
+        }
+        if ($request->site_web == 'http://www.') {
+            $request->merge(['site_web' => null]);
+        }
+        if ($request->site_web == 'https://www.') {
+            $request->merge(['site_web' => null]);
+        }
+        if (strpos($request->site_web, 'https://') === 0) {
+            $request->merge(['site_web' => substr($request->site_web, 8)]);
+        }
+        if ($request->filled('commentaire')) {
+            $commentaire = new Commentaire();
+            $commentaire->contenu = $request->commentaire;
+            $commentaire->save();
+        } else {
+            $commentaire = new Commentaire();
+            $commentaire->contenu = '';
+            $commentaire->save();
+        }
+        $societe = new Societe();
+        $societe->raison_sociale = $request->raison_sociale;
+        $societe->societe_type_id = $request->societe_type_id;
+        $societe->forme_juridique_id = $request->forme_juridique_id;
+        $societe->code_ape_id = $request->code_ape_id;
+        $societe->telephone = $request->telephone;
+        $societe->email = $request->email;
+        $societe->site_web = $request->site_web;
+        $societe->siren = $request->siren;
+        $societe->numero_tva = $request->numero_tva;
+        $societe->commentaire_id = $commentaire->id;
+        $societe->save();
+        Cache::flush(); // Clear the cache after saving a new Societe
 
-    // /**
-    //  * Display the specified resource.
-    //  */
-    // public function show(Societe $societe)
-    // {
-    //     //
-    // }
+
+
+        return redirect()->route('societes.index')->with('success', 'Société créée avec succès');
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Societe $societe, Etablissement $etablissement = null) : View|RedirectResponse
+    {
+        if ($etablissement == null) {
+            $etablissement = $societe->etablissements->first();
+        } else if ($etablissement->societe_id != $societe->id) {
+            return redirect()->route('societes.etablissement.show', ['societe' => $etablissement->societe_id, 'etablissement' => $etablissement->id]);
+        } else {
+            $etablissement = Etablissement::find($etablissement->id);
+        }
+
+        return view('societes.show', [
+            'societe' => $societe,
+            'etablissement' => $etablissement,
+        ]);
+    }
 
     // /**
     //  * Show the form for editing the specified resource.

@@ -27,7 +27,7 @@ class SocieteFactory extends Factory
             'societe_type_id' => \App\Models\SocieteType::inRandomOrder()->first()->id,
             'telephone' => '02' . $this->faker->numerify('########'),
             'email' => 'contact@' . strtolower(str_replace(' ', '', $raison_sociale)) . '.fr',
-            'site_web' => $this->faker->url,
+            'site_web' => 'www.' . strtolower(str_replace(' ', '-', $raison_sociale)) . '.fr',
             'numero_tva' => 'FR' .$this->faker->numberBetween(10,99). $siren,
             'commentaire_id' => Commentaire::factory()->create()->id,
         ];

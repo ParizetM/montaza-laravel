@@ -5,9 +5,11 @@ namespace Database\Seeders;
 use App\Models\Entite;
 use App\Models\Notification;
 use App\Models\Permission;
+use App\Models\PredefinedShortcut;
 use App\Models\Role;
 use App\Models\SocieteContact;
 use App\Models\User;
+use App\Models\UserShortcut;
 use Hash;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -25,6 +27,8 @@ class DatabaseSeeder extends Seeder
             'gerer_les_postes' => 'Consulter, créer, modifier et désactiver les postes',
             'voir_historique' => 'Consulter l\'historique des modifications des données',
             'gerer_les_societes' => 'Consulter, créer, modifier et désactiver les sociétés',
+            'voir_les_societes' => 'Consulter les sociétés',
+            'gerer_les_contacts' => 'Consulter, créer, modifier et désactiver les contacts',
         ];
         foreach ($permissions as $permission => $description) {
             Permission::factory()->create([
@@ -157,5 +161,11 @@ class DatabaseSeeder extends Seeder
         $this->call(SocieteTypeSeeder::class);
         SocieteContact::factory()->times(100)->create();
         $this->call(PredefinedShortcutsSeeder::class);
+        foreach (PredefinedShortcut::all() as $shortcut) {
+            UserShortcut::create([
+                'user_id' => 1,
+                'shortcut_id' => $shortcut->id,
+            ]);
+        }
     }
 }

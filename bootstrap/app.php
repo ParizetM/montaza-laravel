@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'CheckRole' => App\Http\Middleware\CheckRole::class,
             'permission' => App\Http\Middleware\CheckPermission::class,
             'GetGlobalVariable' => App\Http\Middleware\GetGlobalVariable::class,
+            'XSSProtection' => App\Http\Middleware\XSSProtection::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

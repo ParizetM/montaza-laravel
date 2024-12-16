@@ -50,7 +50,7 @@ return new class extends Migration
             $table->string('email', length: 100);
             $table->string('site_web', length: 100)->nullable();
             $table->string('numero_tva', length: 100);
-            $table->foreignId('commentaire_id')->constrained('commentaires');
+            $table->foreignId('commentaire_id')->constrained('commentaires')->nullable();
             $table->softDeletes();
         });
         Schema::create('etablissements', function (Blueprint $table) {

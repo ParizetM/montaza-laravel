@@ -17,7 +17,7 @@
                             {{ __('Dashboard') }}
                         </x-nav-link>
 
-                        @if (Auth::user()->hasPermission('gerer_les_societes'))
+                        @if (Auth::user()->hasPermission('voir_les_societes'))
                             <x-nav-link :href="route('societes.index')" :active="request()->routeIs('societes.index')">
                                 {{ __('Sociétés') }}
                             </x-nav-link>
@@ -104,7 +104,7 @@
                             </form>
                             @if (Auth::user()->hasPermission('gerer_les_utilisateurs'))
                                 <x-dropdown-link :href="route('profile.index')">
-                                    {{ __('utilisateurs') }}
+                                    {{ __('Utilisateurs') }}
                                 </x-dropdown-link>
                             @endif
                             @if (Auth::user()->hasPermission('gerer_les_permissions') || Auth::user()->hasPermission('gerer_les_postes'))
@@ -152,7 +152,7 @@
                 <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                     {{ __('Dashboard') }}
                 </x-responsive-nav-link>
-                @if (Auth::user()->hasPermission('gerer_les_societes'))
+                @if (Auth::user()->hasPermission('voir_les_societes'))
                     <x-responsive-nav-link :href="route('societes.index')" :active="request()->routeIs('societes.index')">
                         {{ __('Société') }}
                     </x-responsive-nav-link>
@@ -207,7 +207,7 @@
                     </form>
                     @if (Auth::user()->hasPermission('gerer_les_utilisateurs'))
                         <x-responsive-nav-link :href="route('profile.index')">
-                            {{ __('utilisateurs') }}
+                            {{ __('Utilisateurs') }}
                         </x-responsive-nav-link>
                     @endif
                     @if (Auth::user()->hasPermission('gerer_les_permissions') && Auth::user()->hasPermission('gerer_les_postes'))

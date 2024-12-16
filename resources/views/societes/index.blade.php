@@ -25,17 +25,24 @@
                         <label for="nombre"
                             class="mr-2 text-gray-900 dark:text-gray-100">{!! __('Quantité') !!}</label>
                         <input type="number" name="nombre" id="nombre" value="{!! old('nombre', request('nombre', 20)) !!}"
-                            class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-20 mr-2 ">
                     </div>
-                    <button type="submit" class="ml-2 btn w-full sm:w-auto sm:mt-0 md:mt-0 lg:mt-0">
+                    <button type="submit" class="mr-2 btn w-full sm:w-auto sm:mt-0 md:mt-0 lg:mt-0">
                         {!! __('Rechercher') !!}
                     </button>
+                    @if (Auth::user()->hasPermission('gerer_les_societes'))
+                    <a href="{!! route('societes.create') !!}"
+                    class="btn whitespace-nowrap w-fit-content sm:mt-0 md:mt-0 lg:mt-0">
+                    {!! __('Ajouter une société') !!}
+                </a>
+                @endif
                 </form>
+
             </div>
         </div>
     </x-slot>
 
-    <div class="py-12 ">
+    <div class="py-8 ">
         <div class="max-w-8xl mx-auto sm:px-6 lg:px-8 ">
             <div class="bg-white dark:bg-gray-800 overflow-hidden sm:rounded-lg shadow-md">
                 <div class="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
@@ -54,6 +61,9 @@
                                     <th
                                         class="text-left py-3 px-4 uppercase font-semibold text-sm text-gray-600 dark:text-gray-300">
                                     </th>
+                                    <th
+                                        class="text-left py-3 px-4 uppercase font-semibold text-sm text-gray-600 dark:text-gray-300 w-2">
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody class="text-gray-700 dark:text-gray-100">
@@ -70,9 +80,15 @@
                                             <x-icon :size="1" type="arrow_back"
                                                 class="float-right -rotate-90 mr-5" />
                                         </td>
+                                        <td class="">
+                                            <a href="{{ route('societes.show', $societe->id) }}"
+                                                class="btn float-right  mr-1">
+                                                <x-icon :size="1" type="open_in_new" />
+                                            </a>
+                                        </td>
                                     </tr>
                                     <tr id="details-{{ $societe->id }}" class="hidden">
-                                        <td colspan="3"
+                                        <td colspan="4"
                                             class="bg-gray-100 dark:bg-gray-900 rounded-r-md rounded-l-md rounded-t-none p-0">
                                             <div class="grid grid-cols-2">
                                                 <div class="p-4">
@@ -88,9 +104,9 @@
                                                     <x-copiable_text titre="Email : " text="{{ $societe->email }}" />
                                                     <div class="">
                                                         <span class="font-semibold">{!! __('Site web : ') !!}</span>
-                                                        <a href="{{ $societe->site_web }}" target="_blank"
+                                                        <a href="https://{{ $societe->site_web }}" target="_blank"
                                                             class="text-blue-500 hover:underline">
-                                                            {{ parse_url($societe->site_web, PHP_URL_HOST) }}
+                                                            {{ parse_url($societe->site_web, PHP_URL_HOST) ?: $societe->site_web }}
                                                         </a>
                                                     </div>
                                                     <div class="mt-4">
