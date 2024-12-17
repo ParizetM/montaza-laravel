@@ -2,11 +2,8 @@
 
 namespace App\Providers;
 
-use App\Models\Entite;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\View;
-use Illuminate\Support\Facades\Auth;
-use App\Models\Notification;
+use Illuminate\Support\Facades\Blade;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,6 +18,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Blade::directive('can', function ($expression) {
+            return "<?php if (Auth::check() && Auth::user()->hasPermission({$expression})): ?>";
+        });
 
+        // Redéfinir @endcan
+        Blade::directive('endcan', function () {
+            return "<?php endif; ?>";
+        });
     }
 }

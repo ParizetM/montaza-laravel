@@ -41,7 +41,7 @@
         </div>
     </x-slot>
 
-    <div class="py-12">
+    <div class="py-12" id="container">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
@@ -151,6 +151,10 @@
                 url.searchParams.delete('show_deleted');
             }
             window.location.href = url.toString();
+            const container = document.getElementById('container');
+            const containerHeight = container.offsetHeight;
+            container.innerHTML = '<div id="loading-spinner" class="inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50" style="height: ' + containerHeight + 'px;"><div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32"></div></div><style>.loader {border-top-color: #3498db;animation: spinner 1.5s linear infinite;}@keyframes spinner {0% {transform: rotate(0deg);}100% {transform: rotate(360deg);}}</style>';
+
         }
     </script>
 

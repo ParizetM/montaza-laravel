@@ -71,11 +71,10 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->string(column: 'nom', length: 100);
-            $table->string(column: 'prenom', length: 100);
-            $table->string(column: 'fonction', length: 100);
+            $table->string(column: 'fonction', length: 100)->nullable();
             $table->string(column: 'email', length: 100);
-            $table->string(column: 'telephone_fixe', length: 20);
-            $table->string(column: 'telephone_portable', length: 20);
+            $table->string(column: 'telephone_fixe', length: 20)->nullable();
+            $table->string(column: 'telephone_portable', length: 20)->nullable();
             $table->foreignId('etablissement_id')->constrained('etablissements');
             $table->softDeletes();
         });

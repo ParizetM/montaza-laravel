@@ -181,7 +181,14 @@
                                                                     </td>
                                                                 </tr>
                                                             @endforeach
-                                                        </tbody>
+                                                            <tr class="cursor-pointer">
+                                                                <td class="text-left hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 rounded-bl-xl" colspan="2">
+                                                                    <a href="{{ route('etablissements.create', $societe->id) }}" class="w-full h-full flex items-center px-4">
+                                                                        <span class=" text-4xl">+ &nbsp;</span>{!! __('Ajouter un établissement') !!}
+                                                                    </a>
+                                                                </td>
+                                                            </tr>
+                                                            </tbody>
                                                     </table>
                                                 </div>
                                             </div>

@@ -2,13 +2,14 @@
     <!-- Your modal code -->
     <x-modal name="notifications-modal" :show="session()->has('notification') && Route::currentRouteName() != 'notifications.index' ? true : false">
         <div class="p-4">
-            <div class="flex justify-between">
+            <a x-on:click="$dispatch('close')">
+                <x-icons.close  class="float-right mb-1 icons" size="1.5" unfocus/>
+                </a>
+            <div class="flex">
                 <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
                     {{ __('Notifications') }}
                 </h2>
-                <a href="{{ route('notifications.index') }}" class="btn">
-                    Voir tout
-                </a>
+
             </div>
             <div class="mt-4">
                 @if (session('notification'))
@@ -16,7 +17,8 @@
                         {{ session('notification') }}
                     </div>
                 @endif
-                <ul class="flex border-b">
+                <div class="flex border-b justify-between">
+                <ul class="flex">
                     <li class="mr-1">
                         <a @click.prevent="activeTab = 'tab1'"
                             :class="activeTab === 'tab1' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'"
@@ -44,6 +46,10 @@
                             class="inline-block py-2 px-4" href="#">Lu</a>
                     </li> --}}
                 </ul>
+                <a href="{{ route('notifications.index') }}" class="btn float-right p-2 py-1 my-1">
+                    Voir tout
+                </a>
+            </div>
                 <div>
                     <div x-show="activeTab === 'tab1'" id="notif-tab1">
                             <script>

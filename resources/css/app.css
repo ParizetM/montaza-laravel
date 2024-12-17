@@ -92,4 +92,9 @@
     .bg-gray-850 {
         background-color: #18202F;
     }
+    .btn-contact {
+        padding-top: 0.25rem;
+        background: none;
+        @apply bg-none border-none;
+    }
 }

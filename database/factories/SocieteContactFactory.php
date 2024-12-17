@@ -27,8 +27,7 @@ class SocieteContactFactory extends Factory
         }
         return [
 
-            'nom' => $this->faker->lastName(),
-            'prenom' => $this->faker->firstName(),
+            'nom' => $this->faker->lastName(). ' ' . $this->faker->firstName(),
             'fonction' => $this->faker->jobTitle(),
             'email' => $this->faker->unique()->safeEmail(),
             'telephone_fixe' => '02' . $this->faker->numerify('########'),

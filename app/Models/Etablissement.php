@@ -53,6 +53,10 @@ class Etablissement extends Model
     {
         return $this->commentaire()->exists();
     }
+    public function societe(): BelongsTo
+    {
+        return $this->belongsTo(Societe::class);
+    }
 }
 
 

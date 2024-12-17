@@ -1,7 +1,10 @@
 <x-modal name="create-role-modal" focusable :show="old('role_name')">
-    <form method="POST" action="{{ route('permissions.role.store') }}" x-show="show" class="p-6">
+    <form method="POST" action="{{ route('permissions.role.store') }}" x-show="show" class="p-2">
         @csrf
-        <div class="p-8">
+        <a x-on:click="$dispatch('close')">
+            <x-icons.close  class="float-right mb-1 icons" size="1.5" unfocus/>
+            </a>
+        <div class="p-6">
         <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
             {{ __('Créer un nouveau rôle') }}
         </h2>
