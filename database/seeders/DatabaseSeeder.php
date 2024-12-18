@@ -167,5 +167,8 @@ class DatabaseSeeder extends Seeder
                 'shortcut_id' => $shortcut->id,
             ]);
         }
+        $this->call([
+            MatiereSeeder::class,
+        ]);
     }
 }

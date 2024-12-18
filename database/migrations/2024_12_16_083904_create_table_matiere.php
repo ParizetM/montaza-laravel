@@ -30,21 +30,29 @@ return new class extends Migration
         Schema::create('matieres', function (Blueprint $table) {
             $table->id();
             $table->string('ref_interne')->unique();
-            $table->string('ref_externe');
+
             $table->string('designation');
             $table->foreignId('societe_id')->constrained('societes');
             $table->foreignId('unite_id')->constrained('unites');
-            $table->foreignId('sous_famille_id')->constrained('sous_familles');
+            $table->foreignId(column: 'sous_famille_id')->constrained('sous_familles');
             $table->integer('dn');
             $table->float('epaisseur');
-            $table->decimal('dernier_prix', 8, 2);
             $table->decimal('prix_moyen', 8, 2);
-            $table->date('date_dernier_achat');
             $table->integer('quantite');
             $table->integer('stock_min');
+            $table->date('date_dernier_achat');
             $table->timestamps();
         });
-
+        Schema::create('societe_matiere', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('matiere_id')->constrained('matieres')->cascadeOnDelete();
+            $table->foreignId('societe_id')->constrained('societes')->cascadeOnDelete();
+            $table->string('ref_fournisseur')->nullable(); // Référence fournisseur
+            $table->string('designation_fournisseur')->nullable(); // Désignation spécifique au fournisseur
+            $table->decimal('prix', 8, 2); // Prix associé
+            $table->date('date_dernier_prix'); // Date du dernier prix
+            $table->timestamps();
+        });
     }
 
     /**
@@ -52,6 +60,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('societe_matiere');
         Schema::dropIfExists('matieres');
         Schema::dropIfExists('sous_familles');
         Schema::dropIfExists('familles');

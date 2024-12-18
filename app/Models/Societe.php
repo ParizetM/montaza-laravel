@@ -48,4 +48,10 @@ class Societe extends Model
     {
         return $this->commentaire()->exists();
     }
+    public function matieres()
+{
+    return $this->belongsToMany(Matiere::class, 'societe_matiere')
+                ->withPivot(['ref_fournisseur', 'designation_fournisseur', 'prix', 'date_dernier_prix'])
+                ->withTimestamps();
+}
 }
