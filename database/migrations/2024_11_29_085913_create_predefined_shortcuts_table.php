@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('title'); // Titre du raccourci
             $table->string('icon');  // Chemin ou nom de l'icône
-            $table->string('url');   // URL cible
+            $table->string('url')->nullable();   // URL cible
+            $table->json('modal')->nullable(); // Données pour la modal
             $table->timestamps();
         });
     }

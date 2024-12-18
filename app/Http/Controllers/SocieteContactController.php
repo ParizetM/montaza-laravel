@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Societe;
 use App\Models\SocieteContact;
 use Cache;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use \Illuminate\Contracts\View\View;
 
 class SocieteContactController extends Controller
 {
@@ -14,6 +17,7 @@ class SocieteContactController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'societe_id' => 'nullable',
             'etablissement_id' => 'required|integer|exists:etablissements,id',
             'nom' => 'required|string',
             'email' => 'required|email',
@@ -22,9 +26,15 @@ class SocieteContactController extends Controller
             'fonction' => 'nullable|string',
         ]);
         Cache::flush();
-        $societeContact = SocieteContact::create($request->all());
+        SocieteContact::create($request->all());
 
-        return redirect()->back()->with('success', 'Le contact a bien été ajouté.');
+        return response()->json(['success' => true]);
+    }
+
+    public function quickCreate(): View
+    {
+        $societes = Societe::select('id', 'raison_sociale')->get();
+        return view('societes.contacts.quick-create', compact('societes'));
     }
 
     // /**

@@ -26,7 +26,7 @@
                 </div>
             </div>
 
-            <!-- Settings Dropdown -->
+            <!-- Shortcuts Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 @if (Auth::check())
                     <x-dropdown align="right" width="48">
@@ -53,6 +53,7 @@
                             </div>
                         </x-slot>
                     </x-dropdown>
+
                     <div class="relative">
                         <button x-data=""
                             x-on:click.prevent="$dispatch('open-modal', 'notifications-modal')"
@@ -119,7 +120,56 @@
                             @endif
                         </x-slot>
                     </x-dropdown>
-                    <x-modals.notifications />
+                    <div x-data="{ activeTab: 'tab1' }">
+                        <!-- Your modal code -->
+                        <x-modal name="notifications-modal" :show="session()->has('notification') && Route::currentRouteName() != 'notifications.index' ? true : false">
+                            <script>
+                                document.addEventListener('open-modal', event => {
+                            const modalTitle = event.detail;
+                            if (modalTitle === 'notifications-modal') {
+                                const containerModal = document.getElementById('notifications-modal');
+                                containerModal.innerHTML =
+                                    '<div id="loading-spinner" class="inset-0 bg-none bg-opacity-75 flex items-center justify-center z-50 h-32 w-full"><div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32"></div></div><style>.loader {border-top-color: #3498db;animation: spinner 1.5s linear infinite;}@keyframes spinner {0% {transform: rotate(0deg);}100% {transform: rotate(360deg);}}</style>';
+
+                                fetch('{{ route('notifications.modal') }}')
+                                    .then(response => response.text())
+                                    .then(html => {
+                                        const modalContent = document.getElementById('notifications-modal');
+                                        if (modalContent) {
+                                            // Utilisation de DOMParser pour analyser le HTML
+                                            const parser = new DOMParser();
+                                            const doc = parser.parseFromString(html, 'text/html');
+
+                                            // Insérer le contenu du body
+                                            modalContent.innerHTML = doc.body.innerHTML;
+
+                                            // Fonction pour exécuter les scripts
+                                            function executeScripts(doc) {
+                                                doc.querySelectorAll('script.SCRIPT').forEach(script => {
+                                                    const newScript = document.createElement('script');
+                                                    newScript.textContent = script.textContent;
+                                                    document.body.appendChild(newScript);
+                                                });
+                                            }
+
+                                            // Exécuter les scripts après avoir rempli le modal
+                                            executeScripts(doc);
+                                        } else {
+                                            console.error('Modal notification content element not found');
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error('Erreur de chargement:', error);
+                                    });
+                            }
+                        });
+                            </script>
+                            <div class="modal-content" id="notifications-modal">
+                                <!-- Content will be loaded here -->
+                            </div>
+                        </x-modal>
+
+                    </div>
                 @else
                     <a href="{{ route('login') }}"
                         class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">

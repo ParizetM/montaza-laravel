@@ -151,6 +151,20 @@ class NotificationController extends Controller
         ])->render();
     }
 
+    public function modal()
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return 'Vous devez être connecté pour effectuer cette action';
+        }
+        $notifications = $user->notifications()->where('read', false)->orderBy('created_at', 'desc')->take(20)->get();
+        $notificationsSystem = $notifications->where('type', 'system');
+        return view('notifications.modal', [
+            'notifications' => $notifications,
+            'notificationsSystem' => $notificationsSystem
+        ]);
+    }
+
 
     // /**
     //  * Show the form for creating a new resource.

@@ -202,6 +202,10 @@ class SocieteController extends Controller
     {
         return response()->json($societe);
     }
+    public function showEtablissementsJson(Societe $societe)
+    {
+        return response()->json($societe->etablissements);
+    }
     /**
      * Show the form for editing the specified resource.
      */
@@ -298,6 +302,7 @@ class SocieteController extends Controller
 
         return redirect()->route('societes.show', ['societe' => $societe->id])->with('success', 'Société modifiée avec succès');
     }
+
 
     // /**
     //  * Remove the specified resource from storage.

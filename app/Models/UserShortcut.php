@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class UserShortcut extends Model
 {
@@ -11,7 +12,7 @@ class UserShortcut extends Model
 
     protected $fillable = ['user_id', 'shortcut_id'];
 
-    public function shortcut()
+    public function shortcut(): BelongsTo
     {
         return $this->belongsTo(PredefinedShortcut::class);
     }

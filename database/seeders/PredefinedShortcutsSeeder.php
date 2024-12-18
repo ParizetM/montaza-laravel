@@ -16,8 +16,13 @@ class PredefinedShortcutsSeeder extends Seeder
         $shortcuts = [
             [
                 'title' => 'Ajouter un contact',
-                'url' => "societes.index",
                 'icon' => 'new-contact',
+                'modal' => json_encode([
+                    'title' => 'Ajouter-un-contact',
+                    'route' => 'societes.contacts.quickCreate',
+                    'vue' => 'societes.contacts.quick-create',
+                    'varName' => 'societes',
+                ]),
             ],
             [
                 'title' => 'Consulter l\'historique',

@@ -170,12 +170,18 @@
             }, 500); // Délai pour permettre la transition avant de supprimer l'élément
 
         }
-        function showFlashMessageFromJs(contenu,duree) {
+
+        function showFlashMessageFromJs(contenu, duree = 2000, type = 'success') {
             // Affiche un message temporaire pour indiquer que le texte a été copié
             const flashMessage = document.createElement('div');
             flashMessage.id = 'flash-message';
-            flashMessage.className =
-                'fixed top-0 left-1/2 transform -translate-x-1/2 -translate-y-full bg-green-500 text-white p-4 rounded shadow-lg z-50 transition-transform duration-500 ease-in-out';
+            if (type === 'error') {
+                flashMessage.className =
+                    'fixed top-0 left-1/2 transform -translate-x-1/2 -translate-y-full bg-red-500 text-white p-4 rounded shadow-lg z-50 transition-transform duration-500 ease-in-out';
+            } else if (type === 'success') {
+                flashMessage.className =
+                    'fixed top-0 left-1/2 transform -translate-x-1/2 -translate-y-full bg-green-500 text-white p-4 rounded shadow-lg z-50 transition-transform duration-500 ease-in-out';
+            }
             flashMessage.innerHTML = `
                 <div class="container mx-auto flex justify-between items-center">
                     <span>${contenu}</span>

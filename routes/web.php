@@ -54,6 +54,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection'])->group(function () {
     Route::get('/notification/{id}', [NotificationController::class, 'detail'])->name('notifications.detail');
     Route::post('/notifications/transfer', [NotificationController::class, 'transfer'])->name('notifications.transfer');
     Route::get('/notifications/fetch', [NotificationController::class, 'fetch'])->name('notifications.fetch');
+    Route::get('/notifications/modal', [NotificationController::class, 'modal'])->name('notifications.modal');
 
     Route::middleware('permission:voir_historique')->group(function () {
         Route::get('/logs', [ModelChangeController::class, 'index'])->name('model_changes.index');
@@ -65,6 +66,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection'])->group(function () {
         Route::get('/societe/{societe}', [SocieteController::class, 'show'])->name('societes.show');
         Route::get('/societe/{societe}/json', [SocieteController::class, 'showJson'])->name('societes.show_json');
         Route::get('/societe/{societe}/etablissement/{etablissement}', [SocieteController::class, 'show'])->name('societes.etablissement.show');
+        Route::get('/societe/{societe}/etablissements/json', [SocieteController::class, 'showEtablissementsJson'])->name('societes.etablissement.show_json');
         Route::patch('/societe/{id}/commentaire/save', [SocieteController::class, 'updateCommentaire'])->name('societes.commentaire');
         Route::patch('/societe/etablissement/{id}/commentaire/save', [EtablissementController::class, 'updateCommentaire'])->name('societes.etablissement.commentaire');
 
@@ -83,9 +85,11 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection'])->group(function () {
         });
         Route::middleware('permission:gerer_les_contacts')->group(function () {
             Route::post('/societe/contact/store', [SocieteContactController::class, 'store'])->name('societes.contacts.store');
+            Route::get('/societes/contacts/quickCreate', [SocieteContactController::class, 'quickCreate'])->name('societes.contacts.quickCreate');
             Route::get('/societe/{societe}/contact/{contact}/edit', [SocieteContactController::class, 'edit'])->name('societes.contacts.edit');
             Route::patch('/societe/contact/{contact}/update', [SocieteContactController::class, 'update'])->name('societes.contacts.update');
             Route::delete('/societe/contact/{contact}/delete', [SocieteContactController::class, 'destroy'])->name('societes.contacts.destroy');
+
         });
     });
 
