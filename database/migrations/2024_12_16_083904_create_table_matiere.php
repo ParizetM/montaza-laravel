@@ -13,17 +13,20 @@ return new class extends Migration
     {
         Schema::create('unites', function (Blueprint $table) {
             $table->id();
-            $table->string('libelle');
+            $table->string('short');
+            $table->string('full');
+            $table->string('full_plural')->nullable();
+            $table->string('type')->nullable();
             $table->timestamps();
         });
         Schema::create('familles', function (Blueprint $table) {
             $table->id();
-            $table->string('libelle');
+            $table->string('nom');
             $table->timestamps();
         });
         Schema::create('sous_familles', function (Blueprint $table) {
             $table->id();
-            $table->string('libelle');
+            $table->string('nom');
             $table->foreignId('famille_id')->constrained('familles');
             $table->timestamps();
         });

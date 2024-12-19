@@ -27,4 +27,16 @@ class Matiere extends Model
             ->withPivot(['ref_fournisseur', 'designation_fournisseur', 'prix', 'date_dernier_prix'])
             ->withTimestamps();
     }
+    public function unite()
+    {
+        return $this->belongsTo(Unite::class);
+    }
+    public function sousFamille()
+    {
+        return $this->belongsTo(SousFamille::class);
+    }
+    public function societe()
+    {
+        return $this->belongsTo(Societe::class);
+    }
 }
