@@ -30,10 +30,24 @@ return new class extends Migration
             $table->foreignId('famille_id')->constrained('familles');
             $table->timestamps();
         });
+        Schema::create('standards', function (Blueprint $table) {
+            $table->id();
+            $table->string('nom');
+            $table->timestamps();
+        });
+
+        Schema::create('standard_versions', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('standard_id')->constrained('standards')->cascadeOnDelete();
+            $table->string('version');
+            $table->string('chemin_pdf'); // Chemin du fichier PDF
+            $table->timestamps();
+        });
+
         Schema::create('matieres', function (Blueprint $table) {
             $table->id();
             $table->string('ref_interne')->unique();
-
+            $table->foreignId('standard_id')->nullable()->constrained('standards');
             $table->string('designation');
             $table->foreignId('societe_id')->constrained('societes');
             $table->foreignId('unite_id')->constrained('unites');
@@ -56,6 +70,7 @@ return new class extends Migration
             $table->date('date_dernier_prix'); // Date du dernier prix
             $table->timestamps();
         });
+
     }
 
     /**
@@ -63,6 +78,8 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('standard_versions');
+        Schema::dropIfExists('standards');
         Schema::dropIfExists('societe_matiere');
         Schema::dropIfExists('matieres');
         Schema::dropIfExists('sous_familles');

@@ -12,10 +12,7 @@ class MatiereSeeder extends Seeder
     {
         // Créer une instance de Faker
         $faker = Faker::create();
-
-        // Créer des sociétés
-        $societes = Societe::factory(10)->create();  // Crée 10 sociétés
-
+        $societes = Societe::all();
         // Créer des matières et lier les sociétés via la table intermédiaire
         Matiere::factory(100)->create()->each(function ($matiere) use ($societes, $faker) {
             $matiere->fournisseurs()->attach(

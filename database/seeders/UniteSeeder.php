@@ -18,7 +18,6 @@ class UniteSeeder extends Seeder
             ['short' => 'm²', 'full' => 'Mètre carré', 'full_plural' => 'Mètres carrés', 'type' => 'Surface'],
             ['short' => 'm³', 'full' => 'Mètre cube', 'full_plural' => 'Mètres cubes', 'type' => 'Volume'],
             ['short' => 'l', 'full' => 'Litre', 'full_plural' => 'Litres', 'type' => 'Volume'],
-            ['short' => 'pièce', 'full' => 'Pièce', 'full_plural' => 'Pièces', 'type' => 'Unité'],
             ['short' => 'unité', 'full' => 'Unité', 'full_plural' => 'Unités', 'type' => 'Unité'],
             ['short' => 'm', 'full' => 'Mètre', 'full_plural' => 'Mètres', 'type' => 'Longueur'],
             ['short' => 'cm', 'full' => 'Centimètre', 'full_plural' => 'Centimètres', 'type' => 'Longueur'],

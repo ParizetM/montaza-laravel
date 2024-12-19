@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\EtablissementController;
+use App\Http\Controllers\MatiereController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
@@ -21,6 +22,7 @@ Route::get('/dashboard', function () {
 Route::get('/dashboard/paillettes', function () {
     return view('dashboard', ['paillettes' => 'oui']);
 })->middleware(['auth', 'verified', 'GetGlobalVariable'])->name('dashboard.paillettes');
+
 Route::middleware(['GetGlobalVariable', 'XSSProtection'])->group(function () {
     Route::get('/profile/{id}', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -28,6 +30,20 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection'])->group(function () {
     Route::delete('/profile/{user}/delete', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/profile/{user}/restore', [ProfileController::class, 'restore'])->name('profile.restore');
 
+    Route::post('/notifications/{id}/lu', [NotificationController::class, 'lu'])->name('notifications.lu');
+    Route::post('/notifications/lu-all', [NotificationController::class, 'luAll'])->name('notifications.luall');
+    Route::post('/notifications/{id}/non-lu', [NotificationController::class, 'nonLu'])->name('notifications.nonlu');
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/lus', [NotificationController::class, 'indexLus'])->name('notifications.lus');
+    Route::get('/notification/{id}', [NotificationController::class, 'detail'])->name('notifications.detail');
+    Route::post('/notifications/transfer', [NotificationController::class, 'transfer'])->name('notifications.transfer');
+    Route::get('/notifications/fetch', [NotificationController::class, 'fetch'])->name('notifications.fetch');
+    Route::get('/notifications/modal', [NotificationController::class, 'modal'])->name('notifications.modal');
+
+    Route::get('/shortcuts', [UserShortcutController::class, 'index'])->name('shortcuts.index');
+    Route::post('/shortcuts', [UserShortcutController::class, 'store'])->name('shortcuts.store');
+    Route::delete('/shortcuts/{id}', [UserShortcutController::class, 'destroy'])->name('shortcuts.destroy');
+    Route::patch('/shortcuts/reorder', [UserShortcutController::class, 'reorder'])->name('shortcuts.reorder');
     Route::middleware('permission:gerer_les_utilisateurs')->group(function () {
         Route::get('/profiles', [ProfileController::class, 'index'])->name('profile.index');
         Route::post('/profile/create', [RoleController::class, 'store'])->name('role.store');
@@ -46,16 +62,6 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection'])->group(function () {
         Route::delete('/postes/{role}/delete', [RoleController::class, 'destroy'])->name('roles.destroy');
         Route::patch('/postes/{role}/restore', [RoleController::class, 'restore'])->name('roles.restore');
     });
-    Route::post('/notifications/{id}/lu', [NotificationController::class, 'lu'])->name('notifications.lu');
-    Route::post('/notifications/lu-all', [NotificationController::class, 'luAll'])->name('notifications.luall');
-    Route::post('/notifications/{id}/non-lu', [NotificationController::class, 'nonLu'])->name('notifications.nonlu');
-    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
-    Route::get('/notifications/lus', [NotificationController::class, 'indexLus'])->name('notifications.lus');
-    Route::get('/notification/{id}', [NotificationController::class, 'detail'])->name('notifications.detail');
-    Route::post('/notifications/transfer', [NotificationController::class, 'transfer'])->name('notifications.transfer');
-    Route::get('/notifications/fetch', [NotificationController::class, 'fetch'])->name('notifications.fetch');
-    Route::get('/notifications/modal', [NotificationController::class, 'modal'])->name('notifications.modal');
-
     Route::middleware('permission:voir_historique')->group(function () {
         Route::get('/logs', [ModelChangeController::class, 'index'])->name('model_changes.index');
     });
@@ -89,13 +95,13 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection'])->group(function () {
             Route::get('/societe/{societe}/contact/{contact}/edit', [SocieteContactController::class, 'edit'])->name('societes.contacts.edit');
             Route::patch('/societe/contact/{contact}/update', [SocieteContactController::class, 'update'])->name('societes.contacts.update');
             Route::delete('/societe/contact/{contact}/delete', [SocieteContactController::class, 'destroy'])->name('societes.contacts.destroy');
-
         });
     });
+    Route::middleware('permission:voir_les_matieres')->group( function () {
+        Route::get('/matieres', [MatiereController::class, 'index'])->name('matieres.index');
+        Route::get('/matieres/search', [MatiereController::class, 'searchResult'])->name('matieres.search');
+        Route::get('/matieres/famille/{famille}/sous-familles/json', [MatiereController::class, 'sousFamillesJson'])->name('matieres.sous_familles.json');
+    });
 
-    Route::get('/shortcuts', [UserShortcutController::class, 'index'])->name('shortcuts.index');
-    Route::post('/shortcuts', [UserShortcutController::class, 'store'])->name('shortcuts.store');
-    Route::delete('/shortcuts/{id}', [UserShortcutController::class, 'destroy'])->name('shortcuts.destroy');
-    Route::patch('/shortcuts/reorder', [UserShortcutController::class, 'reorder'])->name('shortcuts.reorder');
 });
 require __DIR__ . '/auth.php';

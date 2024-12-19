@@ -26,9 +26,11 @@ class DatabaseSeeder extends Seeder
             'gerer_les_permissions' => 'consulter, créer, modifier et supprimer les permissions des postes',
             'gerer_les_postes' => 'Consulter, créer, modifier et désactiver les postes',
             'voir_historique' => 'Consulter l\'historique des modifications des données',
-            'gerer_les_societes' => 'Consulter, créer, modifier et désactiver les sociétés',
+            'gerer_les_societes' => ' créer, modifier et désactiver les sociétés',
             'voir_les_societes' => 'Consulter les sociétés',
             'gerer_les_contacts' => 'Consulter, créer, modifier et désactiver les contacts',
+            'voir_les_matieres' => 'Consulter les matières',
+            'gerer_les_matieres' => 'créer, modifier et désactiver les matières',
         ];
         foreach ($permissions as $permission => $description) {
             Permission::factory()->create([

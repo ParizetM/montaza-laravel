@@ -92,7 +92,6 @@
                 console.error('Erreur lors de la création du contact :', error);
             });
         });
-        console.log('Quick create contact form loaded');
         document.getElementById('societe_id_quick_create').addEventListener('change', function() {
             var societeId = this.value;
             var etablissementSelect = document.getElementById('etablissement_id_quick_create');

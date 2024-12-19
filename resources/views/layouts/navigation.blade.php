@@ -22,6 +22,11 @@
                                 {{ __('Sociétés') }}
                             </x-nav-link>
                         @endif
+                        @can('voir_les_matieres')
+                            <x-nav-link :href="route('matieres.index')" :active="request()->routeIs('matieres.index')">
+                                {{ __('Matieres') }}
+                            </x-nav-link>
+                        @endcan
                     @endif
                 </div>
             </div>
@@ -207,6 +212,12 @@
                         {{ __('Société') }}
                     </x-responsive-nav-link>
                 @endif
+                @can('voir_les_matieres')
+                    <x-responsive-nav-link :href="route('matieres.index')" :active="request()->routeIs('matieres.index')">
+                        {{ __('Matieres') }}
+                    </x-responsive-nav-link>
+
+                @endcan
             @endif
         </div>
 

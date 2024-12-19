@@ -31,9 +31,16 @@
 
         </div>
         <div class="max-w-xl mx-auto sm:px-6 lg:px-8 mt-10">
+            @auth
             <a href="{{ url()->previous() }}" class="btn bg-white dark:bg-gray-800 rounded-full p-4 text-base">
                 {{ __('Retour') }}
             </a>
+            @else
+            <a href="{{ route('login') }}" class="btn bg-white dark:bg-gray-800 rounded-full p-4 text-base">
+                {{ __('Connexion') }}
+            </a>
+            @endauth
+
         </div>
         <a href="{{ route('welcome') }}" class="text-blue-500 hover:text-blue-700 underline">retour à l'accueil</a>
 
