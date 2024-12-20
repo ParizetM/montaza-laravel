@@ -17,27 +17,34 @@ class MatiereController extends Controller
         $request->validate([
             'search' => 'nullable|string|max:255',
             'nombre' => 'nullable|integer|min:1|max:100',
+            'famille' => 'nullable|integer|exists:familles,id',
             'sous_famille' => 'nullable|integer|exists:sous_familles,id',
             'page' => 'nullable|integer|min:1',
         ]);
 
         $search = $request->input('search', '');
         $nombre = intval($request->input('nombre', 50));
+        $famille = $request->input('famille', '');
         $sousFamille = $request->input('sous_famille', '');
-
         // Génération d'une clé de cache unique
         $cacheKey = sprintf(
-            'matieres_search_%s_%s_%s_page_%d',
+            'matieres_search_%s_%s_%s_%s_%s',
             md5($search),
+            $famille ?: 'all',
             $sousFamille ?: 'all',
             $nombre,
             $request->input('page', 1)
         );
 
         // Récupération ou mise en cache des résultats
-        $matieres = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($search, $nombre, $sousFamille) {
+        $matieres = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($search, $nombre, $sousFamille, $famille) {
             $query = Matiere::with(['sousFamille', 'societe', 'standard']);
 
+            if (!empty($famille)) {
+                $query->whereHas('sousFamille', function ($subQuery) use ($famille) {
+                    $subQuery->where('famille_id', $famille);
+                });
+            }
             if (!empty($sousFamille)) {
                 $query->where('sous_famille_id', $sousFamille);
             }
@@ -58,13 +65,16 @@ class MatiereController extends Controller
             return $query->orderBy('sous_famille_id')->paginate($nombre);
         });
 
+
         // Retourner les résultats
         if ($wantJson) {
-            $pagination = $matieres->appends($request->all())->toArray();
-            $pagination['links'] = $matieres->links()->toHtml();
+            $links = $matieres->appends(request()->query())->links()->toHtml();
+            $lastpage = $matieres->lastPage();
+            $links = str_replace('/search', '', $links);
             return response()->json(data: [
                 'matieres' => MatiereResource::collection($matieres),
-                'links' => $matieres->links()->toHtml(),
+                'links' => $links,
+                'lastPage' => $lastpage,
         ]);
         }
 
@@ -74,14 +84,12 @@ class MatiereController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): View
+    public function index(): View
     {
 
         $familles = Famille::all();
-        $matieres = $this->searchResult($request, false);
         return view('matieres.index', [
             'familles' => $familles,
-            'matieres' => $matieres,
         ]);
     }
 

@@ -20,7 +20,7 @@
                     </select>
                     <select name="sous_famille" id="sous_famille_id_search"
                         class="px-4 py-2 mr-2 border select mb-2 sm:mb-0 w-fit">
-                        <option value="" selected>{!! __('Toutes les sous-familles') !!}</option>
+                        <option value="" selected>{!! __('Toutes les sous-familles &nbsp;&nbsp;') !!}</option>
                     </select>
                     <input type="text" name="search" placeholder="Rechercher..." value="{!! request('search') !!}"
                         class="w-full sm:w-auto px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
@@ -57,7 +57,7 @@
                                     <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Unité</th>
                                 </tr>
                             </thead>
-                            <tbody class="text-gray-700 dark:text-gray-100">
+                            <tbody class="text-gray-700 dark:text-gray-100" id="body_table">
                             </tbody>
                         </table>
                     </div>
@@ -77,7 +77,7 @@
 
             // Efface les anciennes options
             sousFamilleSelect.innerHTML =
-                '<option value="" selected>toutes les sous-familles</option>';
+                '<option value="" selected>toutes les sous-familles &nbsp;&nbsp;</option>';
 
             if (familleId) {
                 fetch(`/matieres/famille/${familleId}/sous-familles/json`)
@@ -102,57 +102,59 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
-    // Mise à jour des sous-familles au chargement
-    updateSousFamilles();
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mise à jour des sous-familles au chargement
+            updateSousFamilles();
 
-    // Attache les événements pour la recherche dynamique
-    document.querySelector('input[name="search"]').addEventListener('input', debounce(liveSearch, 300));
-    document.getElementById('famille_id_search').addEventListener('change', function () {
-        updateSousFamilles();
-        liveSearch();
-    });
-    document.getElementById('sous_famille_id_search').addEventListener('change', liveSearch);
-    document.getElementById('nombre').addEventListener('change', liveSearch);
+            // Attache les événements pour la recherche dynamique
+            document.querySelector('input[name="search"]').addEventListener('input', debounce(liveSearch, 300));
+            document.getElementById('famille_id_search').addEventListener('change', function() {
+                updateSousFamilles();
+                liveSearch();
+            });
+            document.getElementById('sous_famille_id_search').addEventListener('change', liveSearch);
+            document.getElementById('nombre').addEventListener('change', liveSearch);
 
-    // Gestion de la pagination
-    document.addEventListener('click', function (event) {
-        if (event.target.matches('.pagination a')) {
-            event.preventDefault();
-            const url = new URL(event.target.href);
-            const page = url.searchParams.get('page');
-            liveSearch(page);
+            // Gestion de la pagination
+            // Lancer la première recherche au chargement
+            liveSearch();
+        });
+
+        function liveSearch() {
+
+            const searchQuery = document.querySelector('input[name="search"]').value.trim();
+            const familleId = document.getElementById('famille_id_search').value;
+            const sousFamilleId = document.getElementById('sous_famille_id_search').value;
+            const nombre = document.getElementById('nombre').value;
+            const containerSearch = document.getElementById('body_table');
+            const page = new URLSearchParams(window.location.search).get('page') || 1;
+            containerSearch.innerHTML =
+                '<tr><td colspan="100"><div id="loading-spinner" class=" mt-8 inset-0 bg-none bg-opacity-75 flex items-center justify-center z-50 h-32 w-full"><div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32"></div></div><style>.loader {border-top-color: #3498db;animation: spinner 1.5s linear infinite;}@keyframes spinner {0% {transform: rotate(0deg);}100% {transform: rotate(360deg);}}</style></tr></td>';
+
+            console.log(`/matieres/search?search=${encodeURIComponent(searchQuery)}&famille=${familleId}&sous_famille=${sousFamilleId}&nombre=${nombre}&page=${page}`);
+            fetch(
+                    `/matieres/search?search=${encodeURIComponent(searchQuery)}&famille=${familleId}&sous_famille=${sousFamilleId}&nombre=${nombre}&page=${page}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Erreur lors de la récupération des données');
+                    return response.json();
+                })
+                .then(data => {
+                    if (page > data.lastPage || page < 1) {
+                        window.location.href = `/matieres?search=${encodeURIComponent(searchQuery)}&famille=${familleId}&sous_famille=${sousFamilleId}&nombre=${nombre}&page=${data.lastPage}`;
+                    }
+                    updateTable(data.matieres); // Met à jour le tableau
+                    updatePagination(data.links); // Met à jour la pagination
+
+                })
+                .catch(error => console.error('Erreur lors de la recherche :', error));
         }
-    });
 
-    // Lancer la première recherche au chargement
-    liveSearch();
-});
-
-function liveSearch(page = 1) {
-    const searchQuery = document.querySelector('input[name="search"]').value.trim();
-    const familleId = document.getElementById('famille_id_search').value;
-    const sousFamilleId = document.getElementById('sous_famille_id_search').value;
-    const nombre = document.getElementById('nombre').value;
-    fetch(`/matieres/search?search=${encodeURIComponent(searchQuery)}&famille=${familleId}&sous_famille=${sousFamilleId}&nombre=${nombre}&page=${page}`)
-        .then(response => {
-            if (!response.ok) throw new Error('Erreur lors de la récupération des données');
-            return response.json();
-        })
-        .then(data => {
-
-            updateTable(data.matieres); // Met à jour le tableau
-            updatePagination(data.links); // Met à jour la pagination
-        })
-        .catch(error => console.error('Erreur lors de la recherche :', error));
-}
-
-function updateTable(matieres) {
-    const tbody = document.querySelector('tbody');
-    tbody.innerHTML = ''; // Réinitialise le tableau
-    matieres.forEach(matiere => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
+        function updateTable(matieres) {
+            const tbody = document.querySelector('tbody');
+            tbody.innerHTML = ''; // Réinitialise le tableau
+            matieres.forEach(matiere => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
             <td class="text-left py-3 px-4">${matiere.refInterne || '-'}</td>
             <td class="text-left py-3 px-4">${matiere.designation || '-'}</td>
             <td class="text-left py-3 px-4">${matiere.sousFamille || '-'}</td>
@@ -161,24 +163,23 @@ function updateTable(matieres) {
             <td class="text-left py-3 px-4">${matiere.epaisseur || '-'}</td>
             <td class="text-left py-3 px-4">${matiere.Unite || '-'}</td>
         `;
-        tbody.appendChild(row);
-    });
-}
+                tbody.appendChild(row);
+            });
+        }
 
-function updatePagination(data) {
-    const pagination = document.querySelector('.pagination');
-    pagination.innerHTML = data; // Réinitialise la pagination
-}
+        function updatePagination(data) {
+            const pagination = document.querySelector('.pagination');
+            pagination.innerHTML = data; // Réinitialise la pagination
+        }
 
 
-function debounce(func, delay) {
-    let timer;
-    return function (...args) {
-        clearTimeout(timer);
-        timer = setTimeout(() => func.apply(this, args), delay);
-    };
-}
-
+        function debounce(func, delay) {
+            let timer;
+            return function(...args) {
+                clearTimeout(timer);
+                timer = setTimeout(() => func.apply(this, args), delay);
+            };
+        }
     </script>
 
 
