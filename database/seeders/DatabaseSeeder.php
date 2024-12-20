@@ -172,6 +172,7 @@ class DatabaseSeeder extends Seeder
         $this->call(UniteSeeder::class);
         $this->call(FamilleSeeder::class);
         $this->call(SousFamilleSeeder::class);
+        $this->call(StandardSeeder::class);
         $this->call(MatiereSeeder::class);
     }
 }

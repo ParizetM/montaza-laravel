@@ -98,4 +98,24 @@ class MatiereController extends Controller
     {
         return response()->json($famille->sousFamilles);
     }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'ref_interne' => 'required|string|unique:matieres,ref_interne',
+            'standard_id' => 'nullable|exists:standards,id',
+            'designation' => 'required|string|max:255',
+            'societe_id' => 'required|exists:societes,id',
+            'unite_id' => 'required|exists:unites,id',
+            'sous_famille_id' => 'required|exists:sous_familles,id',
+            'dn' => 'nullable|integer',
+            'epaisseur' => 'nullable|numeric',
+            'quantite' => 'required|integer',
+            'stock_min' => 'nullable|integer',
+        ]);
+
+        $matiere = Matiere::create($request->all());
+
+        return response()->json(new MatiereResource($matiere), 201);
+    }
 }
