@@ -30,9 +30,16 @@ return new class extends Migration
             $table->foreignId('famille_id')->constrained('familles');
             $table->timestamps();
         });
-        Schema::create('standards', function (Blueprint $table) {
+        Schema::create('dossier_standards', function (Blueprint $table) {
             $table->id();
             $table->string('nom');
+            $table->timestamps();
+        });
+        Schema::create('standards', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('dossier_standard_id')->constrained('dossier_standards')->cascadeOnDelete();
+            $table->string('nom');
+
             $table->timestamps();
         });
 

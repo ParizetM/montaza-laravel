@@ -16,4 +16,9 @@ class Standard extends Model
     {
         return $this->hasMany(StandardVersion::class);
     }
+    public function dossierStandard()
+    {
+        return $this->belongsTo(DossierStandard::class);
+    }
+
 }

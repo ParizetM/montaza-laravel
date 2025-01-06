@@ -1,16 +1,17 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center">
-            <a href="{{ route('societes.index') }}" class="flex px-1.5 hover:bg-gray-100 hover:dark:bg-gray-700 items-center h-full">
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                {{ __('Sociétés') }}
-            </h2>
+            <a href="{{ route('societes.index') }}"
+                class="flex px-1.5 hover:bg-gray-100 hover:dark:bg-gray-700 items-center h-full rounded">
+                <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+                    {{ __('Sociétés') }}
+                </h2>
             </a>
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                {{ __(' >> ') }}
-                </h2>
+                {!! __(' >>&nbsp;') !!}
+            </h2>
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Aperçu de la société') }}
+                {{ __('Aperçu de la société') }}
             </h2>
         </div>
 
@@ -22,13 +23,21 @@
         <div class="max-w-5xl w-full sm:px-6 lg:px-8 mb-2">
             <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
                 <!-- En-tête Société -->
-                <div class=" py-6 px-8 text-gray-800 dark:text-gray-200">
-                    <h1 class="text-3xl font-bold mb-1">
-                        {{ $societe->raison_sociale }}
-                    </h1>
-                    <p class="text-lg">
-                        {{ $societe->societeType->nom }}
-                    </p>
+                <div class="flex justify-between">
+                    <div class=" py-6 px-8 text-gray-800 dark:text-gray-200">
+                        <h1 class="text-3xl font-bold mb-1">
+                            {{ $societe->raison_sociale }}
+                        </h1>
+                        <p class="text-lg">
+                            {{ $societe->societeType->nom }}
+                        </p>
+                    </div>
+                    @can('gerer_les_societes')
+                        <div class="py-6 px-8">
+                            <a href="{{ route('societes.edit', ['societe' => $societe->id]) }}"
+                                class="btn dark:bg-gray-900">Modifier</a>
+                        </div>
+                    @endcan
                 </div>
 
                 <!-- Contenu Principal -->
@@ -90,12 +99,7 @@
                         <textarea rows="3" id="commentaire" name="commentaire"
                             class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-900 dark:text-gray-100"
                             data-societe-id="{{ $societe->id }}" onblur="updateCommentaireSociete(this)">{{ $societe->commentaire ? $societe->commentaire->contenu : '' }}</textarea>
-                        @can('gerer_les_societes')
-                            <div class="flex justify-end mt-4">
-                                <a href="{{ route('societes.edit', ['societe' => $societe->id]) }}"
-                                    class="btn dark:bg-gray-900 ">Modifier</a>
-                            </div>
-                        @endcan
+
                     </div>
                 </div>
             </div>
@@ -104,9 +108,20 @@
             <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden" id="etablissements">
                 <!-- En-tête Etablissement -->
                 <div class=" py-6 px-8 text-gray-800 dark:text-gray-200">
+                    <div class="flex justify-between">
+
                     <h1 class="text-3xl font-bold mb-1">
                         {{ __('Établissements') }}
                     </h1>
+                    @can('gerer_les_societes')
+                            <div class="flex justify-end">
+                                <div>
+                                <a href="{{ route('etablissements.edit', ['societe' => $societe->id, 'etablissement' => $etablissement->id]) }}"
+                                    class="btn dark:bg-gray-900 ">Modifier</a>
+                                </div>
+                            </div>
+                        @endcan
+                    </div>
                     <div class="flex mt-4">
                         <select name="etablissement_id" id="etablissement_id" class="select-left w-full"
                             onchange="changeEtablissement(this)">
@@ -122,6 +137,7 @@
                         </a>
                     </div>
                 </div>
+
                 <div class="mx-8 flex justify-between border-b-2">
                     <h1 class="font-bold text-2xl text-gray-800 dark:text-gray-200 leading-tight">
                         {{ $etablissement->nom }}
@@ -155,12 +171,7 @@
                         <textarea rows="3" id="commentaire" name="commentaire"
                             class=" block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-900 dark:text-gray-100"
                             data-etablissement-id="{{ $etablissement->id }}" onblur="updateCommentaireEtablissement(this)">{{ $etablissement->commentaire ? $etablissement->commentaire->contenu : '' }}</textarea>
-                        @can('gerer_les_societes')
-                            <div class="flex justify-end mt-4">
-                                <a href="{{ route('etablissements.edit', ['societe' => $societe->id, 'etablissement' => $etablissement->id]) }}"
-                                    class="btn dark:bg-gray-900 ">Modifier</a>
-                            </div>
-                        @endcan
+
                     </div>
                 </div>
             </div>

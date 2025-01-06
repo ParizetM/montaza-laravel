@@ -10,6 +10,10 @@ use App\Models\CodeApe;
 use App\Models\SocieteType;
 use App\Models\Etablissement;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Commentaire;
+use App\Models\Matiere;
+use App\Models\ModelChange;
+use Illuminate\Support\Facades\Auth;
 
 
 class Societe extends Model
@@ -53,6 +57,37 @@ class Societe extends Model
         return $this->belongsToMany(Matiere::class, 'societe_matiere')
             ->withPivot(['ref_fournisseur', 'designation_fournisseur', 'prix', 'date_dernier_prix'])
             ->withTimestamps();
+    }
+    protected static function booted(): void
+    {
+        // Enregistrer avant la création d'un modèle
+        static::created(function ($model): void {
+            self::logChange($model, 'creating');
+        });
+
+        // Enregistrer avant la mise à jour d'un modèle
+        static::updating(function ($model): void {
+            if ($model->isDirty('remember_token')) {
+                return;
+            }
+            self::logChange($model, 'updating');
+        });
+
+        // Enregistrer avant la suppression d'un modèle
+        static::deleting(function ($model): void {
+            self::logChange($model, 'deleting');
+        });
+    }
+
+    protected static function logChange(Model $model, string $event): void
+    {
+        ModelChange::create([
+            'user_id' => Auth::id(),
+            'model_type' => 'societe',
+            'before' => $model->getOriginal(),
+            'after' => $model->getAttributes(),
+            'event' => $event,
+        ]);
     }
 
 }

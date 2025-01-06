@@ -24,7 +24,7 @@
                         @endif
                         @can('voir_les_matieres')
                             <x-nav-link :href="route('matieres.index')" :active="request()->routeIs('matieres.index')">
-                                {{ __('Matieres') }}
+                                {{ __('Matières') }}
                             </x-nav-link>
                         @endcan
                     @endif
@@ -69,7 +69,6 @@
                                     class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">{{ $_notifications_count }}</span>
                             @endif
                         </button>
-
                     </div>
 
                     <x-dropdown align="right" width="48">
@@ -134,7 +133,7 @@
                             if (modalTitle === 'notifications-modal') {
                                 const containerModal = document.getElementById('notifications-modal');
                                 containerModal.innerHTML =
-                                    '<div id="loading-spinner" class="inset-0 bg-none bg-opacity-75 flex items-center justify-center z-50 h-32 w-full"><div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32"></div></div><style>.loader {border-top-color: #3498db;animation: spinner 1.5s linear infinite;}@keyframes spinner {0% {transform: rotate(0deg);}100% {transform: rotate(360deg);}}</style>';
+                                    '<div id="loading-spinner" class=" m-6 inset-0 bg-none bg-opacity-75 flex items-center justify-center z-50 h-32 w-full"><div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32"></div></div><style>.loader {border-top-color: #3498db;animation: spinner 1.5s linear infinite;}@keyframes spinner {0% {transform: rotate(0deg);}100% {transform: rotate(360deg);}}</style>';
 
                                 fetch('{{ route('notifications.modal') }}')
                                     .then(response => response.text())

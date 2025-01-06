@@ -9,6 +9,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ModelChangeController;
 use App\Http\Controllers\SocieteContactController;
 use App\Http\Controllers\SocieteController;
+use App\Http\Controllers\StandardController;
 use App\Http\Controllers\UserShortcutController;
 use Illuminate\Support\Facades\Route;
 
@@ -101,6 +102,8 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection'])->group(function () {
         Route::get('/matieres', [MatiereController::class, 'index'])->name('matieres.index');
         Route::get('/matieres/search', [MatiereController::class, 'searchResult'])->name('matieres.search');
         Route::get('/matieres/famille/{famille}/sous-familles/json', [MatiereController::class, 'sousFamillesJson'])->name('matieres.sous_familles.json');
+        Route::get('/matieres/standard/{standard}', [StandardController::class, 'show'])->name('standards.show');
+        Route::get('/matieres/standards', [StandardController::class, 'index'])->name('standards.index');
     });
 
 });

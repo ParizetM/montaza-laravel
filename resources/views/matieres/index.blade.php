@@ -3,14 +3,14 @@
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
 
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                {!! __('Sociétés') !!}
+                {!! __('Matières') !!}
             </h2>
             <div class="mt-4 sm:mt-0 flex flex-col sm:flex-row items-start sm:items-center ">
 
                 <form method="GET" action="{!! route('matieres.index') !!}"
                     class="mr-4 mb-1 sm:mr-0 flex flex-col sm:flex-row items-start sm:items-center">
                     <select name="famille" id="famille_id_search" class="px-4 py-2 mr-2 border select mb-2 sm:mb-0 w-fit">
-                        <option value="" selected>{!! __('Tous les types') !!}</option>
+                        <option value="" selected>{!! __('Tous les types&nbsp;&nbsp;') !!}</option>
                         @foreach ($familles as $famille)
                             <option value="{{ $famille->id }}"
                                 {{ request('famille') == $famille->id ? 'selected' : '' }}>
@@ -37,8 +37,46 @@
 
             </div>
         </div>
-    </x-slot>
 
+    </x-slot>
+    <div class="w-full">
+        <div class=" flex transition-all duration-500 max-h-0 overflow-hidden border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800" id="slide-down">
+            <div class="flex p-4">
+                <a href="{!! route('standards.index') !!}"
+                class="btn">
+                {!! __('Standards') !!}
+                </a>
+            </div>
+
+        </div>
+        <button class="w-full bg-white dark:bg-gray-800 justify-center flex hover:bg-gray-100 dark:hover:bg-gray-700"
+            onclick="toggleSlide()"
+        >
+            <x-icon :size="2" type="arrow_back" class="-rotate-90 icons-no_hover -mt-2 mb-1 transition-all duration-500" id="arrow-slide-down" />
+        </button>
+
+        <script>
+            function toggleSlide() {
+            const slideDown = document.getElementById('slide-down');
+            const arrow = document.getElementById('arrow-slide-down');
+            if (slideDown.classList.contains('max-h-0')) {
+                slideDown.classList.remove('max-h-0');
+                slideDown.classList.add('max-h-40'); // Adjust max height as needed
+                arrow.classList.remove('-rotate-90');
+                arrow.classList.add('rotate-90');
+                arrow.classList.remove('-mt-2');
+                arrow.classList.add('-mb-2');
+            } else {
+                slideDown.classList.remove('max-h-40');
+                slideDown.classList.add('max-h-0');
+                arrow.classList.remove('rotate-90');
+                arrow.classList.add('-rotate-90');
+                arrow.classList.remove('-mb-2');
+                arrow.classList.add('-mt-2');
+            }
+            }
+        </script>
+    </div>
     <div class="py-8 ">
         <div class="max-w-8xl mx-auto sm:px-6 lg:px-8 ">
             <div class="bg-white dark:bg-gray-800 overflow-hidden sm:rounded-lg shadow-md">
@@ -77,7 +115,7 @@
 
             // Efface les anciennes options
             sousFamilleSelect.innerHTML =
-                '<option value="" selected>toutes les sous-familles &nbsp;&nbsp;</option>';
+                '<option value="" selected>Toutes les sous-familles &nbsp;&nbsp;</option>';
 
             if (familleId) {
                 fetch(`/matieres/famille/${familleId}/sous-familles/json`)
@@ -158,7 +196,7 @@
             <td class="text-left py-3 px-4">${matiere.refInterne || '-'}</td>
             <td class="text-left py-3 px-4">${matiere.designation || '-'}</td>
             <td class="text-left py-3 px-4">${matiere.sousFamille || '-'}</td>
-            <td class="text-left py-3 px-4">${matiere.standard || '-'}</td>
+            <td class="text-left py-3 px-4"><a href="${matiere.standardPath}" class="lien" target="_blank">${matiere.standardVersion || '-'} ${matiere.standard || '-'}</a> </td>
             <td class="text-left py-3 px-4">${matiere.dn || '-'}</td>
             <td class="text-left py-3 px-4">${matiere.epaisseur || '-'}</td>
             <td class="text-left py-3 px-4">${matiere.Unite || '-'}</td>
