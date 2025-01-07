@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class StandardVersion extends Model
 {
-    protected $fillable = ['standard_id', 'version'];
+    protected $fillable = ['standard_id', 'version','chemin_pdf'];
 
     public function standard()
     {
@@ -15,5 +15,9 @@ class StandardVersion extends Model
     public function matieres()
     {
         return $this->hasMany(Matiere::class);
+    }
+    public function path()
+    {
+        return $this->chemin_pdf;
     }
 }

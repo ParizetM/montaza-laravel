@@ -11,9 +11,11 @@ use Illuminate\Support\Facades\File;
 class StandardController extends Controller
 {
     public function index() {
-        $folders = DossierStandard::all()->sortBy('nom');
+        $folders = DossierStandard::with('standards')->get()->sortBy('nom');
 
-        return view('standards.index', compact('folders'));
+        // return cache()->remember('standards_dossiers', ttl: 60, function() use ($folders) {
+            return view('standards.index', compact('folders'))->render();
+        // });
     }
     public function show($standard) {
         $stockagePath = Storage::path('standards');
