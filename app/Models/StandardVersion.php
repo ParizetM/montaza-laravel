@@ -16,7 +16,7 @@ class StandardVersion extends Model
     {
         return $this->hasMany(Matiere::class);
     }
-    public function path()
+    public function path(): string
     {
         return $this->chemin_pdf;
     }

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\Unite;
 use App\Models\SousFamille;
 use App\Models\Standard;
+use App\Models\StandardVersion;
 
 class MatiereFactory extends Factory
 {
@@ -17,7 +18,7 @@ class MatiereFactory extends Factory
     {
         $societe = Societe::get('id')->random();
         $unite = Unite::get('id')->random();
-        $standard = Standard::get('id')->random();
+        $standard = StandardVersion::get('id')->random();
         $sous_famille = SousFamille::get('id')->random();
         return [
             'ref_interne' => $this->faker->unique()->word(),
@@ -25,7 +26,7 @@ class MatiereFactory extends Factory
             'societe_id' => $societe,
             'unite_id' => $unite,
             'sous_famille_id' => $sous_famille,
-            'standard_id' => $standard,
+            'standard_version_id' => $standard,
             'dn' => rand(1, 100),
             'epaisseur' => $this->faker->randomFloat(2, 0.1, 10),
             'prix_moyen' => $this->faker->randomFloat(2, 1, 100),

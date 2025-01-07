@@ -10,7 +10,7 @@ class Standard extends Model
 
     public function matieres()
     {
-        return $this->hasMany(Matiere::class);
+        return $this->hasManyThrough(Matiere::class, StandardVersion::class);
     }
     public function versions()
     {

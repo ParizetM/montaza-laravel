@@ -33,7 +33,7 @@
             <div id="flash-message"
                 class="fixed top-0 left-1/2 transform -translate-x-1/2 -translate-y-full bg-green-500 text-white p-4 rounded shadow-lg z-50 transition-transform duration-500 ease-in-out">
                 <div class="container mx-auto flex justify-between items-center">
-                    <span>{{ session('status') }}</span>
+                    <span>{!! session('status') !!}</span>
                     <button onclick="hideFlashMessage()" class="text-white font-bold ml-3">X</button>
                 </div>
             </div>
@@ -46,14 +46,59 @@
                 window.onload = function() {
                     showFlashMessage();
 
-                    // Masque le message après 5 secondes
-                    setTimeout(function() {
+                   // Masque le message après 5 secondes, sauf si la souris est dessus
+                   let hideTimeout = setTimeout(function() {
                         hideFlashMessage();
                     }, 5000); // 5000 millisecondes = 5 secondes
+
+                    const flashMessage = document.getElementById('flash-message');
+                    flashMessage.addEventListener('mouseenter', function() {
+                        clearTimeout(hideTimeout);
+                    });
+
+                    flashMessage.addEventListener('mouseleave', function() {
+                        hideTimeout = setTimeout(function() {
+                            hideFlashMessage();
+                        }, 2000); // 2000 millisecondes = 2 secondes
+                    });
                 };
             </script>
         @endif
+        @if (session('success'))
+            <div id="flash-message"
+                class="fixed top-0 left-1/2 transform -translate-x-1/2 -translate-y-full bg-green-500 text-white p-4 rounded shadow-lg z-50 transition-transform duration-500 ease-in-out">
+                <div class="container mx-auto flex justify-between items-center">
+                    <span>{!! session('success') !!}</span>
+                    <button onclick="hideFlashMessage()" class="text-white font-bold ml-3">X</button>
+                </div>
+            </div>
 
+            <script>
+                // Fonction pour afficher le message avec une transition de glissement
+
+
+                // Montre le message après un court délai pour l'animation
+                window.onload = function() {
+                    showFlashMessage();
+
+                    // Masque le message après 5 secondes, sauf si la souris est dessus
+                    let hideTimeout = setTimeout(function() {
+                        hideFlashMessage();
+                    }, 5000); // 5000 millisecondes = 5 secondes
+
+                    const flashMessage = document.getElementById('flash-message');
+                    flashMessage.addEventListener('mouseenter', function() {
+                        clearTimeout(hideTimeout);
+                    });
+
+                    flashMessage.addEventListener('mouseleave', function() {
+                        hideTimeout = setTimeout(function() {
+                            hideFlashMessage();
+                        }, 2000); // 2000 millisecondes = 2 secondes
+                    });
+                };
+            </script>
+        @endif
 
         @if (session('error'))
             <div

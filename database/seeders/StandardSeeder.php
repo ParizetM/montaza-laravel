@@ -39,7 +39,7 @@ class StandardSeeder extends Seeder
                 $standardVersion = new StandardVersion();
                 $standardVersion->standard_id = $standard->id;
                 $standardVersion->version = 'A';
-                $standardVersion->chemin_pdf = '/matieres/standard/' . $dossierStandard->nom . '/' . $standard->nom . '.pdf';
+                $standardVersion->chemin_pdf = 'standards/' . $dossierStandard->nom . '/' . $standard->nom . '.pdf';
                 $standardVersion->save();
             }
             }

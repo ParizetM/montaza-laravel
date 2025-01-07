@@ -24,9 +24,11 @@
     .btn-select-right {
         @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-r-md rounded-l-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 active:bg-indigo-700 focus:outline-none focus:border-indigo-700 focus:ring focus:ring-indigo-200 disabled:opacity-25 transition;
     }
+
     .btn-select-left {
         @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-l-md rounded-r-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 active:bg-indigo-700 focus:outline-none focus:border-indigo-700 focus:ring focus:ring-indigo-200 disabled:opacity-25 transition;
     }
+
     .btn-select-top-right {
         @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-t-md rounded-b-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 active:bg-indigo-700 focus:outline-none focus:border-indigo-700 focus:ring focus:ring-indigo-200 disabled:opacity-25 transition;
     }
@@ -73,7 +75,8 @@
         @apply cursor-pointer;
     }
 
-    .hidden_copiable,.hidden_copiable_small {
+    .hidden_copiable,
+    .hidden_copiable_small {
         display: none;
         @apply pb-1;
     }
@@ -83,21 +86,30 @@
         @apply rounded-md pr-1 dark:bg-[#2d3748] bg-[#f9fafb];
     }
 
-    .copiable:hover+.hidden_copiable,.copiable:hover+.hidden_copiable+.hidden_copiable_small {
+    .copiable:hover+.hidden_copiable,
+    .copiable:hover+.hidden_copiable+.hidden_copiable_small {
         display: block;
     }
-    .copiable:hover  {
+
+    .copiable:hover {
         display: block;
     }
+
     .bg-gray-850 {
         background-color: #18202F;
     }
+
     .btn-contact {
         padding-top: 0.25rem;
         background: none;
         @apply bg-none border-none;
     }
+
     .lien {
         @apply text-blue-500 dark:text-blue-300 underline hover:text-blue-700 dark:hover:text-blue-500;
+    }
+
+    .input-file {
+        @apply bg-gray-100 dark:bg-gray-900 border border-transparent rounded-md font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 active:bg-indigo-700 focus:outline-none focus:border-indigo-700 focus:ring focus:ring-indigo-200 disabled:opacity-25 transition;
     }
 }

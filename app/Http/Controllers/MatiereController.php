@@ -38,7 +38,7 @@ class MatiereController extends Controller
 
         // Récupération ou mise en cache des résultats
         $matieres = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($search, $nombre, $sousFamille, $famille) {
-            $query = Matiere::with(['sousFamille', 'societe', 'standard']);
+            $query = Matiere::with(['sousFamille', 'societe', 'standardVersion']);
 
             if (!empty($famille)) {
                 $query->whereHas('sousFamille', function ($subQuery) use ($famille) {

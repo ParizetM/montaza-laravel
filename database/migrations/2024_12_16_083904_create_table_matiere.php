@@ -54,7 +54,7 @@ return new class extends Migration
         Schema::create('matieres', function (Blueprint $table) {
             $table->id();
             $table->string('ref_interne')->unique();
-            $table->foreignId('standard_id')->nullable()->constrained('standards');
+            $table->foreignId('standard_version_id')->nullable()->constrained('standard_versions');
             $table->string('designation');
             $table->foreignId('societe_id')->constrained('societes');
             $table->foreignId('unite_id')->constrained('unites');

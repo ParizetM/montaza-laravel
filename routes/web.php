@@ -102,8 +102,13 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection'])->group(function () {
         Route::get('/matieres', [MatiereController::class, 'index'])->name('matieres.index');
         Route::get('/matieres/search', [MatiereController::class, 'searchResult'])->name('matieres.search');
         Route::get('/matieres/famille/{famille}/sous-familles/json', [MatiereController::class, 'sousFamillesJson'])->name('matieres.sous_familles.json');
-        Route::get('/matieres/standard/{standard}', [StandardController::class, 'show'])->name('standards.show');
+        Route::get('/matieres/standards/{dossier}/{standard}', [StandardController::class, 'show'])->name('standards.show');
         Route::get('/matieres/standards', [StandardController::class, 'index'])->name('standards.index');
+        Route::delete('/matieres/standards/delete', [StandardController::class, 'destroy'])->name('standards.destroy');
+        Route::delete('/matieres/standards/deleteDossier', [StandardController::class, 'destroyDossier'])->name('standards.destroy_dossier');
+        Route::post('/matieres/standards/create', [StandardController::class, 'store'])->name('standards.store');
+        Route::post('/matieres/standards/createDossier', [StandardController::class, 'storeDossier'])->name('standards.store_dossier');
+        Route::get('/matieres/standards/{dossier}/{standard}/versions/json', [StandardController::class, 'showVersionsJson'])->name('standards.show_versions_json');
     });
 
 });
