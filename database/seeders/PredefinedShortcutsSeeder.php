@@ -48,6 +48,11 @@ class PredefinedShortcutsSeeder extends Seeder
                 'title' => 'Consulter les profils',
                 'url' => "profile.index",
                 'icon' => 'group',
+            ],
+            [
+                'title' => 'Consulter les standards',
+                'url' => "standards.index",
+                'icon' => 'standard',
             ]
 
         ];

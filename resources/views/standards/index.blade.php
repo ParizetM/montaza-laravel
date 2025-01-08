@@ -172,8 +172,36 @@
     </x-slot>
 
     <div class="py-8 text-gray-800 dark:text-gray-200 ">
-        <div class="container mx-auto bg-white dark:bg-gray-800 p-4" x-data="{ allOpen: false }">
-            <div class="flex">
+        <div class="container mx-auto bg-white dark:bg-gray-800 p-4 h-100vh" id="standards-loading">
+            <tr>
+                <td colspan="100">
+                    <div id="loading-spinner"
+                        class=" mt-8 inset-0 bg-none bg-opacity-75 flex items-center justify-center z-50 h-32 w-full">
+                        <div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32">
+                        </div>
+                    </div>
+                    <style>
+                        .loader {
+                            border-top-color: #3498db;
+                            animation: spinner 1.5s linear infinite;
+                        }
+
+                        @keyframes spinner {
+                            0% {
+                                transform: rotate(0deg);
+                            }
+
+                            100% {
+                                transform: rotate(360deg);
+                            }
+                        }
+                    </style>
+            </tr>
+            </td>
+
+        </div>
+        <div id="standards-container" class="container mx-auto bg-white dark:bg-gray-800 p-4 hidden" x-data="{ allOpen: false }">
+            <div class="flex mb-2">
                 <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                     {!! __('Standards') !!}
                 </h2>
@@ -198,38 +226,12 @@
                             <x-icons.open-folder show="open" class="w-6 h-6 icons-no_hover" />
                             <strong class="text-lg ml-1"> {{ $folder->nom }}</strong>
                             <button class="ml-auto"
-                                x-on:click.prevent="$dispatch('open-modal','delete-dossier-{{ $folder->id }}')">
+                                onclick="deleteDossier('{{ $folder->id }}','{{ $folder->nom }}')"
+                                x-on:click.prevent="$dispatch('open-modal','delete-dossier')">
                                 <x-icons.close
                                     class="w-8 h-8 dark:group-hover:fill-gray-200 group-hover:fill-gray-500 fill-white dark:fill-gray-800 " />
                             </button>
-                            <x-modal name="delete-dossier-{{ $folder->id }}" focusable>
-                                <a x-on:click="$dispatch('close')">
-                                    <x-icons.close class="float-right mb-1 icons" size="1.5" unfocus />
-                                </a>
-                                <form method="post" action="{{ route('standards.destroy_dossier') }}"
-                                    class="p-4">
-                                    @csrf
-                                    @method('DELETE')
 
-                                    <input type="hidden" name="id" value="{{ $folder->id }}" />
-                                    <h1 class="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-2">
-                                        Supression</h1>
-                                    <h2 class="text-base font-normal text-gray-900 dark:text-gray-100">
-                                        Êtes-vous sûr de vouloir supprimer <strong
-                                            class="underline">{{ $folder->nom }}</strong> définitivement ?
-                                    </h2>
-
-                                    <div class="mt-6 flex justify-end">
-                                        <x-secondary-button x-on:click.prevent="$dispatch('close')">
-                                            {{ __('Cancel') }}
-                                        </x-secondary-button>
-
-                                        <x-danger-button class="ms-3" type="submit">
-                                            {{ __('Delete') }}
-                                        </x-danger-button>
-                                    </div>
-                                </form>
-                            </x-modal>
                         </div>
                         <ul x-show="open"
                             class="list-inside ml-5 mt-2 transition-all duration-300 ease-in-out overflow-hidden bg-gray-100 dark:bg-gray-900 rounded">
@@ -242,48 +244,92 @@
                                             {{ $version->standard->nom }} - {{ $version->version }}
                                         </a>
                                         <button class="ml-auto"
-                                            x-on:click.prevent="$dispatch('open-modal','delete-standard-{{ $version->id }}')">
-
+                                            onclick="deleteStandard('{{ $version->id }}','{{ $version->standard->nom }}')"
+                                            x-on:click.prevent="$dispatch('open-modal','delete-standard')">
                                             <x-icons.close
                                                 class="w-6 h-6 dark:fill-gray-900 mr-2 dark:group-hover:fill-gray-200 group-hover:fill-gray-500 fill-gray-100" />
                                         </button>
                                     </li>
-                                    <x-modal name="delete-standard-{{ $version->id }}" focusable>
-                                        <a x-on:click="$dispatch('close')">
-                                            <x-icons.close class="float-right mb-1 icons" size="1.5" unfocus />
-                                        </a>
-                                        <form method="post" action="{{ route('standards.destroy') }}"
-                                            class="p-4">
-                                            @csrf
-                                            @method('DELETE')
-
-                                            <input type="hidden" name="id" value="{{ $version->id }}" />
-                                            <h1 class="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-2">
-                                                Supression</h1>
-                                            <h2 class="text-base font-normal text-gray-900 dark:text-gray-100">
-                                                Êtes-vous sûr de vouloir supprimer <strong
-                                                    class="underline">{{ $version->standard->nom }} -
-                                                    {{ $version->version }}</strong> définitivement ?
-                                            </h2>
-
-                                            <div class="mt-6 flex justify-end">
-                                                <x-secondary-button x-on:click.prevent="$dispatch('close')">
-                                                    {{ __('Cancel') }}
-                                                </x-secondary-button>
-
-                                                <x-danger-button class="ms-3" type="submit">
-                                                    {{ __('Delete') }}
-                                                </x-danger-button>
-                                            </div>
-                                        </form>
-                                    </x-modal>
                                 @endforeach
                             @endforeach
                         </ul>
                     </li>
                 @endforeach
             </ul>
+            <x-modal name="delete-standard" focusable>
+                <a x-on:click="$dispatch('close')">
+                    <x-icons.close class="float-right mb-1 icons" size="1.5" unfocus />
+                </a>
+                <form method="post" action="{{ route('standards.destroy') }}" class="p-4">
+                    @csrf
+                    @method('DELETE')
+
+                    <input type="hidden" name="id" id="id-delete-standard" value="0" />
+                    <h1 class="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                        Supression</h1>
+                    <h2 class="text-base font-normal text-gray-900 dark:text-gray-100">
+                        Êtes-vous sûr de vouloir supprimer <strong class="underline" id="standard-name"></strong>
+                        définitivement ?
+                    </h2>
+
+                    <div class="mt-6 flex justify-end">
+                        <x-secondary-button x-on:click.prevent="$dispatch('close')">
+                            {{ __('Cancel') }}
+                        </x-secondary-button>
+
+                        <x-danger-button class="ms-3" type="submit">
+                            {{ __('Delete') }}
+                        </x-danger-button>
+                    </div>
+                </form>
+            </x-modal>
+            <x-modal name="delete-dossier" focusable>
+                <a x-on:click="$dispatch('close')">
+                    <x-icons.close class="float-right mb-1 icons" size="1.5" unfocus />
+                </a>
+                <form method="post" action="{{ route('standards.destroy_dossier') }}" class="p-4">
+                    @csrf
+                    @method('DELETE')
+
+                    <input type="hidden" name="id" id="id-delete-dossier" value="0" />
+                    <h1 class="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                        Supression</h1>
+                    <h2 class="text-base font-normal text-gray-900 dark:text-gray-100">
+                        Êtes-vous sûr de vouloir supprimer <strong class="underline" id="dossier-name"></strong>
+                        définitivement ?
+                    </h2>
+
+                    <div class="mt-6 flex justify-end">
+                        <x-secondary-button x-on:click.prevent="$dispatch('close')">
+                            {{ __('Cancel') }}
+                        </x-secondary-button>
+
+                        <x-danger-button class="ms-3" type="submit">
+                            {{ __('Delete') }}
+                        </x-danger-button>
+                    </div>
+                </form>
+            </x-modal>
         </div>
     </div>
+    <script>
+        function deleteStandard(id, name) {
+            document.getElementById('id-delete-standard').value = id;
+            document.getElementById('standard-name').textContent = name;
+        }
+
+        function deleteDossier(id, name) {
+            document.getElementById('id-delete-dossier').value = id;
+            document.getElementById('dossier-name').textContent = name;
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const loadingDiv = document.getElementById('standards-loading');
+            const containerDiv = document.getElementById('standards-container');
+            if (loadingDiv) {
+                loadingDiv.remove();
+                containerDiv.classList.remove('hidden');
+            }
+        });
+    </script>
 
 </x-app-layout>
