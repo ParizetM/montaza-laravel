@@ -31,6 +31,8 @@ class DatabaseSeeder extends Seeder
             'gerer_les_contacts' => 'Consulter, créer, modifier et désactiver les contacts',
             'voir_les_matieres' => 'Consulter les matières',
             'gerer_les_matieres' => 'créer, modifier et désactiver les matières',
+            'voir_les_ddp_et_cde' => 'Consulter les demandes de prix et les commandes',
+            'gerer_les_ddp_et_cde' => 'créer, modifier et désactiver les demandes de prix et les commandes',
         ];
         foreach ($permissions as $permission => $description) {
             Permission::factory()->create([

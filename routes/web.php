@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\CdeController;
+use App\Http\Controllers\DdpController;
 use App\Http\Controllers\EtablissementController;
 use App\Http\Controllers\MatiereController;
 use App\Http\Controllers\PermissionController;
@@ -24,7 +26,7 @@ Route::get('/dashboard/paillettes', function () {
     return view('dashboard', ['paillettes' => 'oui']);
 })->middleware(['auth', 'verified', 'GetGlobalVariable'])->name('dashboard.paillettes');
 
-Route::middleware(['GetGlobalVariable', 'XSSProtection'])->group(function () {
+Route::middleware(['GetGlobalVariable', 'XSSProtection','auth'])->group(function () {
     Route::get('/profile/{id}', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::patch('/profile-admin', [ProfileController::class, 'updateAdmin'])->name('profile.update_admin');
@@ -109,6 +111,11 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection'])->group(function () {
         Route::post('/matieres/standards/create', [StandardController::class, 'store'])->name('standards.store');
         Route::post('/matieres/standards/createDossier', [StandardController::class, 'storeDossier'])->name('standards.store_dossier');
         Route::get('/matieres/standards/{dossier}/{standard}/versions/json', [StandardController::class, 'showVersionsJson'])->name('standards.show_versions_json');
+    });
+    Route::middleware('permission:voir_les_ddp_et_cde')->group(function () {
+        Route::get('/ddp&cde', [DdpController::class, 'indexDdp_cde'])->name('ddp_cde.index');
+        Route::get('/colddp', [DdpController::class, 'indexColDdp'])->name('ddp.index_col_ddp');
+        Route::get('/colcde', [CdeController::class, 'indexColCde'])->name('ddp.index_col_cde');
     });
 
 });

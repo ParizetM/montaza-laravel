@@ -27,6 +27,11 @@
                                 {{ __('Matières') }}
                             </x-nav-link>
                         @endcan
+                        @can('voir_les_ddp_et_cde')
+                            <x-nav-link :href="route('ddp_cde.index')" :active="request()->routeIs('ddp_cde.index')">
+                                {{ __('DDP/CDE') }}
+                            </x-nav-link>
+                        @endcan
                     @endif
                 </div>
             </div>
