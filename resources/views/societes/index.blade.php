@@ -51,16 +51,17 @@
                             <thead class="bg-gradient-to-r from-gray-200 to-gray-50 dark:from-gray-700 dark:to-gray-800">
                                 <tr>
                                     <th
+                                        class="w-1">
+                                    </th>
+                                    <th
                                         class="text-left py-3 px-4 uppercase font-semibold text-sm text-gray-600 dark:text-gray-300">
-                                        {!! __('Nom') !!}
+                                        {!! __('Raison sociale') !!}
                                     </th>
                                     <th
                                         class="text-left py-3 px-4 uppercase font-semibold text-sm text-gray-600 dark:text-gray-300">
                                         {!! __('Type') !!}
                                     </th>
-                                    <th
-                                        class="text-left py-3 px-4 uppercase font-semibold text-sm text-gray-600 dark:text-gray-300">
-                                    </th>
+
                                     <th
                                         class="text-left py-3 px-4 uppercase font-semibold text-sm text-gray-600 dark:text-gray-300 w-2">
                                     </th>
@@ -68,18 +69,21 @@
                             </thead>
                             <tbody class="text-gray-700 dark:text-gray-100">
                                 @foreach ($societes as $societe)
+
                                     <tr class="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-700"
-                                        onclick="document.getElementById('details-{{ $societe->id }}').classList.toggle('hidden')">
+                                        onclick="document.getElementById('details-{{ $societe->id }}').classList.toggle('hidden');
+                                        rotateArrow({{ $societe->id }})">
+                                        <td class="block py-3 px-4 max-w-fit">
+                                            <x-icon :size="1" type="arrow_back" id="arrow-{{ $societe->id }}"
+                                                class=" -rotate-90 mr-5 mt-1" />
+                                        </td>
                                         <td class="text-left py-3 px-4">
                                             {!! $societe->raison_sociale !!}
                                         </td>
                                         <td class="text-left py-3 px-4">
                                             {!! $societe->societeType->nom !!}
                                         </td>
-                                        <td class="block py-3 px-4">
-                                            <x-icon :size="1" type="arrow_back"
-                                                class="float-right -rotate-90 mr-5" />
-                                        </td>
+
                                         <td class="">
                                             <a href="{{ route('societes.show', $societe->id) }}"
                                                 class="btn float-right  mr-1">
@@ -91,50 +95,25 @@
                                         <td colspan="4"
                                             class="bg-gray-100 dark:bg-gray-900 rounded-r-md rounded-l-md rounded-t-none p-0">
                                             <div class="grid grid-cols-2">
-                                                <div class="p-4">
-                                                    <x-copiable_text titre="Siren : " text="{{ $societe->siren }}" />
-                                                    <x-copiable_text titre="Forme juridique : "
-                                                        text="{{ $societe->formeJuridique->code }}" />
-                                                    <x-copiable_text titre="Code APE : "
-                                                        text="{{ $societe->codeApe->code }}" />
-                                                    <x-copiable_text titre="N° de TVA intra. : "
-                                                        text="{{ $societe->numero_tva }}" />
-                                                    <x-copiable_text titre="Téléphone : "
-                                                        text="{{ $societe->telephone }}" />
-                                                    <x-copiable_text titre="Email : " text="{{ $societe->email }}" />
-                                                    <div class="">
-                                                        <span class="font-semibold">{!! __('Site web : ') !!}</span>
-                                                        <a href="https://{{ $societe->site_web }}" target="_blank"
-                                                            class="text-blue-500 hover:underline">
-                                                            {{ parse_url($societe->site_web, PHP_URL_HOST) ?: $societe->site_web }}
-                                                        </a>
-                                                    </div>
-                                                    <div class="mt-4">
-                                                        <label for="commentaire"
-                                                            class="block text-sm font-medium text-gray-700 dark:text-gray-300">{!! __('Commentaire') !!}</label>
-                                                        <textarea rows="3" id="commentaire" name="commentaire"
-                                                            class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-900 dark:text-gray-100"
-                                                            data-societe-id="{{ $societe->id }}" onblur="updateCommentaireSociete(this)">{{ $societe->commentaire ? $societe->commentaire->contenu : '' }}</textarea>
-                                                    </div>
-                                                </div>
-                                                <div class="">
+                                                <div class="mb-4">
                                                     <table class="min-w-full">
                                                         <tbody>
                                                             @foreach ($societe->etablissements as $etablissement)
                                                                 <tr class="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800"
-                                                                    onclick="document.getElementById('details-{{ $societe->id }}-{{ $etablissement->id }}').classList.toggle('hidden')">
+                                                                    onclick="document.getElementById('details-{{ $societe->id }}-{{ $etablissement->id }}').classList.toggle('hidden');
+                                                                    rotateArrow('{{ $societe->id }}-{{ $etablissement->id }}')">
+                                                                    <td class="block py-3 pl-4 pr-2 w-1">
+                                                                        <x-icon :size="1" type="arrow_back" id="arrow-{{ $societe->id }}-{{ $etablissement->id }}"
+                                                                            class="ml-6 -rotate-90 mt-1" />
+                                                                    </td>
                                                                     <td class="text-left py-3 px-4">
                                                                         {!! $etablissement->nom !!}
-                                                                    </td>
-                                                                    <td class="block py-3 px-4">
-                                                                        <x-icon :size="1" type="arrow_back"
-                                                                            class="float-right -rotate-90 mr-5" />
                                                                     </td>
                                                                 </tr>
                                                                 <tr id="details-{{ $societe->id }}-{{ $etablissement->id }}"
                                                                     class="hidden">
                                                                     <td colspan="3"
-                                                                        class="bg-gray-200 dark:bg-gray-850 border-l border-gray-100 dark:border-gray-800 rounded-bl-md">
+                                                                        class="bg-gray-200 dark:bg-gray-850 ">
                                                                         <div class="flex justify-between">
                                                                             <div class="float-left p-4 ">
                                                                                 <x-copiable_text titre="Adresse : "
@@ -182,7 +161,7 @@
                                                                 </tr>
                                                             @endforeach
                                                             <tr class="cursor-pointer">
-                                                                <td class="text-left hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 rounded-bl-xl" colspan="2">
+                                                                <td class="text-left hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 rounded-br-xl" colspan="2">
                                                                     <a href="{{ route('etablissements.create', $societe->id) }}" class="w-full h-full flex items-center px-4">
                                                                         <span class=" text-4xl">+ &nbsp;</span>{!! __('Ajouter un établissement') !!}
                                                                     </a>
@@ -191,6 +170,33 @@
                                                             </tbody>
                                                     </table>
                                                 </div>
+                                                <div class="p-4">
+                                                    <x-copiable_text titre="Siren : " text="{{ $societe->siren }}" />
+                                                    <x-copiable_text titre="Forme juridique : "
+                                                        text="{{ $societe->formeJuridique->code }}" />
+                                                    <x-copiable_text titre="Code APE : "
+                                                        text="{{ $societe->codeApe->code }}" />
+                                                    <x-copiable_text titre="N° de TVA intra. : "
+                                                        text="{{ $societe->numero_tva }}" />
+                                                    <x-copiable_text titre="Téléphone : "
+                                                        text="{{ $societe->telephone }}" />
+                                                    <x-copiable_text titre="Email : " text="{{ $societe->email }}" />
+                                                    <div class="">
+                                                        <span class="font-semibold">{!! __('Site web : ') !!}</span>
+                                                        <a href="https://{{ $societe->site_web }}" target="_blank"
+                                                            class="text-blue-500 hover:underline">
+                                                            {{ parse_url($societe->site_web, PHP_URL_HOST) ?: $societe->site_web }}
+                                                        </a>
+                                                    </div>
+                                                    <div class="mt-4">
+                                                        <label for="commentaire"
+                                                            class="block text-sm font-medium text-gray-700 dark:text-gray-300">{!! __('Commentaire') !!}</label>
+                                                        <textarea rows="3" id="commentaire" name="commentaire"
+                                                            class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-900 dark:text-gray-100"
+                                                            data-societe-id="{{ $societe->id }}" onblur="updateCommentaireSociete(this)">{{ $societe->commentaire ? $societe->commentaire->contenu : '' }}</textarea>
+                                                    </div>
+                                                </div>
+
                                             </div>
                                         </td>
                                     </tr>
@@ -208,6 +214,21 @@
         </div>
     </div>
     <script>
+            function rotateArrow(id) {
+                console.log(id);
+            const arrow = document.getElementById('arrow-' + id);
+            if (arrow.classList.contains('-rotate-90')) {
+                arrow.classList.remove('-rotate-90');
+                arrow.classList.add('rotate-90');
+                arrow.classList.remove('-mt-2');
+                arrow.classList.add('-mb-2');
+            } else {
+                arrow.classList.remove('rotate-90');
+                arrow.classList.add('-rotate-90');
+                arrow.classList.remove('-mb-2');
+                arrow.classList.add('-mt-2');
+            }
+            }
         function updateCommentaireSociete(element) {
             const societeId = element.dataset.societeId; // Récupère l'ID de la société
             const commentaireTexte = element.value; // Récupère la valeur du commentaire

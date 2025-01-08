@@ -14,7 +14,7 @@ class StandardController extends Controller
     public function index() {
         $folders = DossierStandard::with('standards')->get()->sortBy('nom');
         $versions_count = StandardVersion::count();
-        return cache()->remember('standards_dossiers', 1440, function() use ($folders, $versions_count) {
+        return cache()->remember('standards_dossiers', 60, function() use ($folders, $versions_count) {
             return view('standards.index', compact('folders', 'versions_count'))->render();
         });
     }
@@ -54,10 +54,9 @@ class StandardController extends Controller
         if (Storage::exists($standardVersion->chemin_pdf)) {
             return back()->with('error', 'Une erreur est survenue lors de la suppression du fichier.');
         }
-
+        cache()->forget('standards_dossiers');
         if ($noms_matieres !== null) {
             $noms_matieres = implode(',<br/> ', $noms_matieres);
-            cache()->forget('standards_dossiers');
             return back()->with('success', 'Standard ajouté avec succès. Les matières suivantes ont été mises à jour: ' . $noms_matieres);
         }
         return back()->with('success', 'Standard supprimé avec succès.');

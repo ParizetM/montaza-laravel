@@ -232,11 +232,11 @@
                             </x-modal>
                         </div>
                         <ul x-show="open"
-                            class="list-inside pl-5 mt-2 transition-all duration-300 ease-in-out overflow-hidden">
+                            class="list-inside ml-5 mt-2 transition-all duration-300 ease-in-out overflow-hidden bg-gray-100 dark:bg-gray-900 rounded">
                             @foreach ($folder->standards as $standard)
                                 @foreach ($standard->versions as $version)
                                     <li
-                                        class="text-gray-700 dark:text-gray-300 pl-8 flex border-l border-gray-500 dark:border-gray-200 hover:bg-gray-100 hover:dark:bg-gray-700 rounded-r group">
+                                        class="text-gray-700 dark:text-gray-300 pl-8 flex border-l border-gray-500 dark:border-gray-200 hover:bg-gray-200 hover:dark:bg-gray-700 rounded-r group">
                                         <x-icons.pdf class="w-6 h-6" /><a href="{{ $version->path() }}"
                                             class="lien" target="_blank">
                                             {{ $version->standard->nom }} - {{ $version->version }}
@@ -245,7 +245,7 @@
                                             x-on:click.prevent="$dispatch('open-modal','delete-standard-{{ $version->id }}')">
 
                                             <x-icons.close
-                                                class="w-6 h-6 dark:fill-gray-800 mr-2 dark:group-hover:fill-gray-200 group-hover:fill-gray-500 fill-white" />
+                                                class="w-6 h-6 dark:fill-gray-900 mr-2 dark:group-hover:fill-gray-200 group-hover:fill-gray-500 fill-gray-100" />
                                         </button>
                                     </li>
                                     <x-modal name="delete-standard-{{ $version->id }}" focusable>
