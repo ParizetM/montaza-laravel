@@ -1,5 +1,10 @@
 <x-guest-layout>
     <!-- Session Status -->
+    <noscript>
+        <div class="mb-4 text-red-600 bg-orange-100 border-l-4 border-orange-500 dark:text-red-100 dark:bg-red-700 dark:border-red-600 p-4" role="alert">
+            {{ __('JavaScript est requis pour se connecter. Veuillez activer JavaScript dans les paramètres de votre navigateur et réessayer.') }}
+        </div>
+    </noscript>
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
     <form method="POST" action="{{ route('login') }}">
@@ -49,4 +54,13 @@
             </x-primary-button>
         </div>
     </form>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'javaScriptValidation';
+        input.value = 'true';
+        document.querySelector('form').appendChild(input);
+        });
+    </script>
 </x-guest-layout>

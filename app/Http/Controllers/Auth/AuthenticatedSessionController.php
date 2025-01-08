@@ -24,6 +24,9 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
+        if ($request->input('javaScriptValidation') != true) {
+            return back()->with('error', 'Une erreur est survenue lors de la validation du formulaire.');
+        }
         $request->authenticate();
 
         $request->session()->regenerate();
