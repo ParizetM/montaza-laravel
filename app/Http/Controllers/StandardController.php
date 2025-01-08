@@ -12,11 +12,11 @@ use Illuminate\Support\Facades\File;
 class StandardController extends Controller
 {
     public function index() {
-        $folders = DossierStandard::with('standards')->get()->sortBy('nom')->take(2);
-
-        // return cache()->remember('standards_dossiers', ttl: 60, function() use ($folders) {
-            return view('standards.index', compact('folders'))->render();
-        // });
+        $folders = DossierStandard::with('standards')->get()->sortBy('nom');
+        $versions_count = StandardVersion::count();
+        return cache()->remember('standards_dossiers', 1440, function() use ($folders, $versions_count) {
+            return view('standards.index', compact('folders', 'versions_count'))->render();
+        });
     }
     public function show($dossier, $standard) {
         $stockagePath = Storage::path('standards/' . $dossier);
@@ -57,6 +57,7 @@ class StandardController extends Controller
 
         if ($noms_matieres !== null) {
             $noms_matieres = implode(',<br/> ', $noms_matieres);
+            cache()->forget('standards_dossiers');
             return back()->with('success', 'Standard ajouté avec succès. Les matières suivantes ont été mises à jour: ' . $noms_matieres);
         }
         return back()->with('success', 'Standard supprimé avec succès.');
@@ -114,7 +115,7 @@ class StandardController extends Controller
         $path = $request->file('file')->storeAs('standards/' . $dossier->nom, basename($path));
         $version->save();
 
-
+        cache()->forget('standards_dossiers');
         return back()->with('success', 'Standard ajouté avec succès.');
     }
     public function destroyDossier(Request $request) {
@@ -138,6 +139,7 @@ class StandardController extends Controller
         }
         Storage::deleteDirectory('standards/' . $dossier->nom);
         $dossier->delete();
+        cache()->forget('standards_dossiers');
         if ($noms_matieres !== null) {
             $noms_matieres = implode(',<br/> ', $noms_matieres);
             return back()->with('success', 'Dossier supprimé avec succès. Les matières suivantes ont été mises à jour: ' . $noms_matieres);
@@ -152,6 +154,7 @@ class StandardController extends Controller
         $dossier = new DossierStandard();
         $dossier->nom = $request->nom;
         $dossier->save();
+        cache()->forget('standards_dossiers');
         return back()->with('success', 'Dossier '.$request->nom.' ajouté avec succès.');
             }
 }
