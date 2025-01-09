@@ -77,20 +77,29 @@
 
     .hidden_copiable,
     .hidden_copiable_small {
+        top: -105%;
+        left: 90%;
+
         display: none;
-        @apply pb-1;
+        @apply absolute bg-white dark:bg-[#2d3748] rounded-md;
+    }
+    .hidden_copiable {
+        z-index: 10;
+    }
+    .hidden_copiable_small {
+        @apply pl-4 pr-1 shadow-md;
+        z-index: 9;
     }
 
     .copiable_parent:hover .copiable {
 
-        @apply rounded-md pr-1 dark:bg-[#2d3748] bg-[#f9fafb];
+        @apply rounded-md dark:bg-[#2d3748] bg-[#f9fafb];
     }
 
     .copiable:hover+.hidden_copiable,
     .copiable:hover+.hidden_copiable+.hidden_copiable_small {
         display: block;
     }
-
     .copiable:hover {
         display: block;
     }

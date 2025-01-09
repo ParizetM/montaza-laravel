@@ -15,7 +15,7 @@ class ResetDatabase extends Command
         // Désactiver les contraintes de clé étrangère
         DB::statement('SET session_replication_role = replica;');
         $tables = DB::select("SELECT tablename FROM pg_tables WHERE schemaname = 'public'");
-
+        $depart = microtime(true);
         // Supprimer toutes les tables
         foreach ($tables as $table) {
             $tableName = $table->tablename; // Récupère le nom de la table
@@ -30,6 +30,8 @@ class ResetDatabase extends Command
         $this->call('migrate');
         $this->info('Toutes les tables ont été recréées.');
         $this->call('db:seed');
+        $fin = microtime(true);
         $this->info('Toutes les tables ont été remplies avec des données.');
+        $this->info('Temps d\'exécution : ' . round($fin - $depart, 3) . ' secondes.');
     }
 }

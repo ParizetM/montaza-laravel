@@ -21,7 +21,7 @@ class MatiereFactory extends Factory
         $standard = StandardVersion::get('id')->random();
         $sous_famille = SousFamille::get('id')->random();
         return [
-            'ref_interne' => $this->faker->unique()->word(),
+            'ref_interne' => strtoupper($this->faker->lexify('??')) . '-' . $this->faker->numerify('####'),
             'designation' => $this->faker->word(),
             'societe_id' => $societe,
             'unite_id' => $unite,

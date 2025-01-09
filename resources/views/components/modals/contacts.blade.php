@@ -40,10 +40,16 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                 @if ($contact->telephone_fixe)
-                                    <div><strong>Fixe :</strong> {{ $contact->telephone_fixe }}</div>
+                                    <div><strong>Fixe :</strong> <a href="tel:{{ $contact->telephone_fixe }}"
+                                        class="text-blue-500 hover:text-blue-700 dark:text-blue-300">
+                                        {{ $contact->telephone_fixe }}
+                                    </a></div>
                                 @endif
                                 @if ($contact->telephone_portable)
-                                    <div><strong>Portable :</strong> {{ $contact->telephone_portable }}</div>
+                                    <div><strong>Portable :</strong> <a href="tel:{{ $contact->telephone_portable }}"
+                                        class="text-blue-500 hover:text-blue-700 dark:text-blue-300">
+                                        {{ $contact->telephone_portable }}
+                                    </a></div>
                                 @endif
                             </td>
                         </tr>
@@ -60,7 +66,7 @@
                             </td>
                             <td>
                                 <input type="text" name="fonction" class="w-full btn-contact" placeholder="Poste"
-                                     style="padding: 1.75rem 0.1rem;">
+                                    style="padding: 1.75rem 0.1rem;">
                             </td>
                             <td>
                                 <input type="email" name="email" class="w-full btn-contact" placeholder="Email"
@@ -73,7 +79,7 @@
                                     <input type="tel" name="telephone_portable" class="w-full btn-contact"
                                         placeholder="Téléphone portable">
                                 </div>
-                                    <button type="submit" class="btn-select-square h-24 ml-1 border-0 scale-105"
+                                    <button type="submit" class="btn-select-square h-24 ml-1 border-0 scale-105" title="Ajouter un contact"
                                     >
                                         +
                                     </button></div>

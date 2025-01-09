@@ -176,5 +176,7 @@ class DatabaseSeeder extends Seeder
         $this->call(SousFamilleSeeder::class);
         $this->call(StandardSeeder::class);
         $this->call(MatiereSeeder::class);
+        $this->call(DdpCdeStatutSeeder::class);
+        $this->call(DdpSeeder::class);
     }
 }

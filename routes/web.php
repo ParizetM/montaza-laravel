@@ -103,6 +103,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection','auth'])->group(function
     Route::middleware('permission:voir_les_matieres')->group( function () {
         Route::get('/matieres', [MatiereController::class, 'index'])->name('matieres.index');
         Route::get('/matieres/search', [MatiereController::class, 'searchResult'])->name('matieres.search');
+        Route::get('/matieres/quickSearch', [MatiereController::class, 'quickSearch'])->name('matieres.quickSearch');
         Route::get('/matieres/famille/{famille}/sous-familles/json', [MatiereController::class, 'sousFamillesJson'])->name('matieres.sous_familles.json');
         Route::get('/matieres/standards/{dossier}/{standard}', [StandardController::class, 'show'])->name('standards.show');
         Route::get('/matieres/standards', [StandardController::class, 'index'])->name('standards.index');
@@ -115,6 +116,8 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection','auth'])->group(function
     Route::middleware('permission:voir_les_ddp_et_cde')->group(function () {
         Route::get('/ddp&cde', [DdpController::class, 'indexDdp_cde'])->name('ddp_cde.index');
         Route::get('/colddp', [DdpController::class, 'indexColDdp'])->name('ddp.index_col_ddp');
+        Route::get('/ddp/create', [DdpController::class, 'create'])->name('ddp.create');
+        Route::get('/ddp/{ddp}', [DdpController::class, 'show'])->name('ddp.show');
         Route::get('/colcde', [CdeController::class, 'indexColCde'])->name('ddp.index_col_cde');
     });
 
