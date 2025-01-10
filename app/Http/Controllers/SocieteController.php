@@ -302,6 +302,18 @@ class SocieteController extends Controller
 
         return redirect()->route('societes.show', ['societe' => $societe->id])->with('success', 'Société modifiée avec succès');
     }
+    public function quickSearchFournisseur(Request $request)
+    {
+        $request->validate([
+            'search' => 'required|string|max:255',
+        ]);
+        $search = $request->input('search', '');
+        $societes = Societe::where('raison_sociale', 'like', "%{$search}%")
+            ->whereIn('societe_type_id', [2, 3])
+            ->get();
+        return response()->json($societes);
+
+    }
 
 
     // /**

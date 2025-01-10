@@ -13,7 +13,7 @@ class DdpLigneFournisseur extends Model
     /** @use HasFactory<\Database\Factories\DdpLigneFournisseurFactory> */
     use HasFactory;
 
-    protected $fillable = ['ddp_ligne_id', 'fournisseur_id', 'prix', 'delai'];
+    protected $fillable = ['ddp_ligne_id', 'societe_id', 'ddp_cde_statut_id'];
 
     public function ddpLigne(): BelongsTo {
         return $this->belongsTo(DdpLigne::class);

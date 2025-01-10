@@ -161,4 +161,8 @@ class MatiereController extends Controller
 
         return response()->json(new MatiereResource($matiere), 201);
     }
+    public function fournisseursJson(Matiere $matiere)
+    {
+        return response()->json($matiere->fournisseurs);
+    }
 }

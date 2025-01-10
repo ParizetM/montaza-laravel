@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class DdpLigne extends Model
 {
@@ -22,6 +23,9 @@ class DdpLigne extends Model
     }
     public function ddpLigneFournisseur(): HasMany {
         return $this->hasMany(DdpLigneFournisseur::class);
+    }
+    public function fournisseurs(): BelongsToMany {
+        return $this->belongsToMany(Societe::class, 'ddp_ligne_fournisseurs', 'ddp_ligne_id', 'societe_id');
     }
 
 }

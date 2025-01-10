@@ -16,10 +16,10 @@ class MatiereSeeder extends Seeder
         // Créer des matières et lier les sociétés via la table intermédiaire
         Matiere::factory(100)->create()->each(function ($matiere) use ($societes, $faker) {
             $matiere->fournisseurs()->attach(
-                $societes->random(3)->pluck('id'),  // Attribue 3 fournisseurs au hasard
+                $societes->whereIn('societe_type_id', [2, 3])->random(rand(1, 10))->pluck('id'),
                 [
-                    'ref_fournisseur' => $faker->word(),
-                    'designation_fournisseur' => $faker->company(),
+                    'ref_fournisseur' => strtoupper($faker->lexify('??')) . '-' . $faker->numerify('####'),
+                    'designation_fournisseur' => $faker->word(),
                     'prix' => $faker->randomFloat(2, 10, 200),
                     'date_dernier_prix' => now(),
                 ]

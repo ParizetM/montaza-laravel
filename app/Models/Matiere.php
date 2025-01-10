@@ -43,5 +43,8 @@ class Matiere extends Model
     {
         return $this->belongsTo(StandardVersion::class);
     }
-
+    public function standard()
+    {
+        return $this->belongsTo(Standard::class);
+    }
 }

@@ -72,6 +72,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection','auth'])->group(function
         Route::get('/societes', [SocieteController::class, 'index'])->name('societes.index');
         Route::get('/societes/client', [SocieteController::class, 'indexClient'])->name('societes.index_client');
         Route::get('/societes/fournisseur', [SocieteController::class, 'indexFournisseur'])->name('societes.index_fournisseur');
+        Route::get('/societes/fournisseurs/quickSearch', [SocieteController::class, 'quickSearchFournisseur'])->name('societes.quickSearchFournisseur');
         Route::get('/societe/{societe}', [SocieteController::class, 'show'])->name('societes.show');
         Route::get('/societe/{societe}/json', [SocieteController::class, 'showJson'])->name('societes.show_json');
         Route::get('/societe/{societe}/etablissement/{etablissement}', [SocieteController::class, 'show'])->name('societes.etablissement.show');
@@ -105,6 +106,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection','auth'])->group(function
         Route::get('/matieres/search', [MatiereController::class, 'searchResult'])->name('matieres.search');
         Route::get('/matieres/quickSearch', [MatiereController::class, 'quickSearch'])->name('matieres.quickSearch');
         Route::get('/matieres/famille/{famille}/sous-familles/json', [MatiereController::class, 'sousFamillesJson'])->name('matieres.sous_familles.json');
+        Route::get('/matieres/{matiere}/fournisseurs/json', [MatiereController::class, 'fournisseursJson'])->name('matieres.fournisseurs.json');
         Route::get('/matieres/standards/{dossier}/{standard}', [StandardController::class, 'show'])->name('standards.show');
         Route::get('/matieres/standards', [StandardController::class, 'index'])->name('standards.index');
         Route::delete('/matieres/standards/delete', [StandardController::class, 'destroy'])->name('standards.destroy');
@@ -117,6 +119,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection','auth'])->group(function
         Route::get('/ddp&cde', [DdpController::class, 'indexDdp_cde'])->name('ddp_cde.index');
         Route::get('/colddp', [DdpController::class, 'indexColDdp'])->name('ddp.index_col_ddp');
         Route::get('/ddp/create', [DdpController::class, 'create'])->name('ddp.create');
+        Route::post('/ddp/save', [DdpController::class, 'save'])->name('ddp.save');
         Route::get('/ddp/{ddp}', [DdpController::class, 'show'])->name('ddp.show');
         Route::get('/colcde', [CdeController::class, 'indexColCde'])->name('ddp.index_col_cde');
     });
