@@ -18,6 +18,9 @@ class Ddp extends Model
     public function statut(): BelongsTo {
         return $this->belongsTo(DdpCdeStatut::class, 'ddp_cde_statut_id');
     }
+    public function ddpCdeStatut(): BelongsTo {
+        return $this->belongsTo(DdpCdeStatut::class, 'ddp_cde_statut_id');
+    }
     public function user(): BelongsTo {
         return $this->belongsTo(User::class);
     }

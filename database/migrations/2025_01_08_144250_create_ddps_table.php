@@ -29,14 +29,14 @@ return new class extends Migration
         });
         Schema::create('ddp_lignes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('ddp_id')->constrained('ddps');
+            $table->foreignId('ddp_id')->constrained('ddps')->onDelete('cascade');
             $table->foreignId('matiere_id')->constrained('matieres');
             $table->integer('quantite');
             $table->timestamps();
         });
         Schema::create('ddp_ligne_fournisseurs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('ddp_ligne_id')->constrained('ddp_lignes');
+            $table->foreignId('ddp_ligne_id')->constrained('ddp_lignes')->onDelete('cascade');
             $table->foreignId('societe_id')->constrained('societes');
             $table->foreignId('ddp_cde_statut_id')->constrained(table: 'ddp_cde_statuts');
             $table->timestamps();

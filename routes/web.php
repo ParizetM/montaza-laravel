@@ -120,6 +120,8 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection','auth'])->group(function
         Route::get('/colddp', [DdpController::class, 'indexColDdp'])->name('ddp.index_col_ddp');
         Route::get('/ddp/create', [DdpController::class, 'create'])->name('ddp.create');
         Route::post('/ddp/save', [DdpController::class, 'save'])->name('ddp.save');
+        Route::get('/ddp/{ddp}/destroy', [DdpController::class, 'destroy'])->name('ddp.destroy');
+        Route::get('/ddp/{ddp}/validate', [DdpController::class, 'validation'])->name('ddp.validate');
         Route::get('/ddp/{ddp}', [DdpController::class, 'show'])->name('ddp.show');
         Route::get('/colcde', [CdeController::class, 'indexColCde'])->name('ddp.index_col_cde');
     });

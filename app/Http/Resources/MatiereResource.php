@@ -18,6 +18,8 @@ class MatiereResource extends JsonResource
             'dn' => $this->dn ?? null,
             'epaisseur' => $this->epaisseur ?? null,
             'Unite' => $this->unite->short ?? null,
+            'Unite_id' => $this->unite->id ?? null,
+            'Unite_full' => $this->unite->full ?? null,
         ];
 
     }

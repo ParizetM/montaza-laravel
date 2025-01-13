@@ -11,7 +11,7 @@
     </x-slot>
     <div class="py-8 ">
         <div class="max-w-8xl mx-auto sm:px-6 lg:px-8 ">
-            <div class=" overflow-hidden sm:rounded-lg grid grid-cols-2 gap-4">
+            <div class=" overflow-hidden sm:rounded-lg grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div id="ddp_container" class="bg-white dark:bg-gray-800 rounded-md overflow-hidden shadow-md">
                     <div id="loading-spinner"
                         class=" mt-8 inset-0 bg-none bg-opacity-75 flex items-center justify-center z-50 h-dvh w-full">

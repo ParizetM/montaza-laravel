@@ -4,8 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Ddp;
 use App\Models\Famille;
+use App\Models\Societe;
+use App\Models\Unite;
 use Auth;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View ;
 
 class DdpController extends Controller
 {
@@ -16,7 +20,12 @@ class DdpController extends Controller
     }
     public function indexColDdp()
     {
-        $ddps = Ddp::whereIn('ddp_cde_statut_id', [1, 2])->orderBy('ddp_cde_statut_id', 'asc')->take(7)->get();
+        $ddps = Ddp::whereIn('ddp_cde_statut_id', [1, 2])->orderBy('ddp_cde_statut_id', 'asc')
+            ->where('nom', '!=', 'undefined')
+            ->take(7)->get();
+        $ddps->load('user');
+        $ddps->load('ddpCdeStatut');
+
         return view('ddp_cde.ddp.index_col', compact('ddps'));
     }
     public function show($id)
@@ -26,14 +35,14 @@ class DdpController extends Controller
             $ddp->load('ddpLigne.matiere', 'ddpLigne.ddpLigneFournisseur.societe');
             $ddpid =  $ddp->id;
             $familles = Famille::all();
-            return view('ddp_cde.ddp.create',['ddp' => $ddp, 'ddpid' => $ddpid,'familles' => $familles]);
+            $unites = Unite::all();
+            return view('ddp_cde.ddp.create', ['ddp' => $ddp, 'ddpid' => $ddpid, 'familles' => $familles, 'unites' => $unites]);
         }
         return view('ddp_cde.ddp.show', compact('ddp'));
     }
     public function create()
     {
         Ddp::where('nom', 'undefined')->delete();
-        $familles = Famille::all();
         $lastDdp = Ddp::latest()->first();
         $code = $lastDdp ? $lastDdp->code : 'DDP-' . now()->format('Y') . '-0000';
         $code = explode('-', $code);
@@ -46,10 +55,11 @@ class DdpController extends Controller
             'user_id' => Auth::id(),
         ]);
         $ddpid =  $ddp->id;
-        return view('ddp_cde.ddp.create', compact('familles', 'ddpid'));
+        return DdpController::show($ddpid);
     }
-    public function save(Request $request) {
-        $request->validate([
+    public function save(Request $request)
+    {
+        $validator = \Validator::make($request->all(), [
             'ddp_id' => 'required|integer|exists:ddps,id',
             'nom' => 'required|string|max:255',
             'matieres' => 'required|array',
@@ -58,27 +68,53 @@ class DdpController extends Controller
             'matieres.*.fournisseurs' => 'required|array',
             'matieres.*.fournisseurs.*' => 'required|string|max:255',
         ]);
-        $ddp = Ddp::findOrFail($request->ddp_id);
-        $ddp->nom = $request->nom;
-        $ddp->save();
 
-        foreach ($request->matieres as $matiere) {
-            $ddpLigne = $ddp->ddpLigne()->updateOrCreate(
-            ['matiere_id' => $matiere['id']],
-            ['quantite' => $matiere['quantity']]
-            );
-
-            foreach ($matiere['fournisseurs'] as $fournisseur) {
-            $ddpLigne->ddpLigneFournisseur()->updateOrCreate(
-                ['societe_id' => $fournisseur],
-                [
-                    'ddp_ligne_id' => $ddpLigne->id,
-                    'ddp_cde_statut_id' => 1
-                ]
-            );
-            }
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 400);
         }
 
-        return response()->json(['message' => 'Demande de prix sauvegardée avec succès']);
+        try {
+            $ddp = Ddp::findOrFail($request->ddp_id);
+            $ddp->nom = $request->nom;
+            $ddp->save();
+            $ddp->ddpLigne()->delete();
+            foreach ($request->matieres as $matiere) {
+                $ddpLigne = $ddp->ddpLigne()->updateOrCreate(
+                    ['matiere_id' => $matiere['id']],
+                    [ 'quantite' => $matiere['quantity']]
+                );
+
+                foreach ($matiere['fournisseurs'] as $fournisseur) {
+                    $ddpLigne->ddpLigneFournisseur()->updateOrCreate(
+                        ['societe_id' => $fournisseur],
+                        [
+                            'ddp_ligne_id' => $ddpLigne->id,
+                            'ddp_cde_statut_id' => 1
+                        ]
+                    );
+                }
+            }
+
+            return response()->json(['message' => 'Demande de prix sauvegardée avec succès']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'An error occurred while saving data', 'message' => $e->getMessage()], 500);
+        }
+    }
+    public function destroy($id): RedirectResponse
+    {
+
+        $ddp = Ddp::findOrFail($id);
+        $ddp->delete();
+        return redirect()->route('ddp_cde.index');
+    }
+    public function validation($id): View
+    {
+        $ddp = Ddp::findOrFail($id)->load('ddpLigne', 'ddpLigne.ddpLigneFournisseur');
+        $ddp_societe = $ddp->ddpLigne->map(function ($ligne) {
+            return $ligne->ddpLigneFournisseur->map(function ($fournisseur) {
+                return $fournisseur->societe;
+            });
+        })->flatten()->unique('id');
+        return view('ddp_cde.ddp.validation', ['ddp' => $ddp, 'societes' => $ddp_societe]);
     }
 }

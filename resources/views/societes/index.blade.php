@@ -31,11 +31,11 @@
                         {!! __('Rechercher') !!}
                     </button>
                     @if (Auth::user()->hasPermission('gerer_les_societes'))
-                    <a href="{!! route('societes.create') !!}"
-                    class="btn whitespace-nowrap w-fit-content sm:mt-0 md:mt-0 lg:mt-0">
-                    {!! __('Ajouter une société') !!}
-                </a>
-                @endif
+                        <a href="{!! route('societes.create') !!}"
+                            class="btn whitespace-nowrap w-fit-content sm:mt-0 md:mt-0 lg:mt-0">
+                            {!! __('Ajouter une société') !!}
+                        </a>
+                    @endif
                 </form>
 
             </div>
@@ -48,10 +48,10 @@
                 <div class="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                     <div class="overflow-x-auto">
                         <table class="min-w-full bg-white dark:bg-gray-800">
-                            <thead class="bg-gradient-to-r from-gray-200 to-gray-50 dark:from-gray-700 dark:to-gray-800">
+                            <thead
+                                class="bg-gradient-to-r from-gray-200 to-gray-50 dark:from-gray-700 dark:to-gray-800">
                                 <tr>
-                                    <th
-                                        class="w-1">
+                                    <th class="w-1">
                                     </th>
                                     <th
                                         class="text-left py-3 px-4 uppercase font-semibold text-sm text-gray-600 dark:text-gray-300">
@@ -69,13 +69,12 @@
                             </thead>
                             <tbody class="text-gray-700 dark:text-gray-100">
                                 @foreach ($societes as $societe)
-
                                     <tr class="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-700"
                                         onclick="document.getElementById('details-{{ $societe->id }}').classList.toggle('hidden');
                                         rotateArrow({{ $societe->id }})">
                                         <td class="block py-3 px-4 max-w-fit">
                                             <x-icon :size="1" type="arrow_back" id="arrow-{{ $societe->id }}"
-                                                class=" -rotate-90 mr-5 mt-1" />
+                                                class="-rotate-180 mr-5 mt-1" />
                                         </td>
                                         <td class="text-left py-3 px-4">
                                             {!! $societe->raison_sociale !!}
@@ -103,8 +102,9 @@
                                                                     onclick="document.getElementById('details-{{ $societe->id }}-{{ $etablissement->id }}').classList.toggle('hidden');
                                                                     rotateArrow('{{ $societe->id }}-{{ $etablissement->id }}')">
                                                                     <td class="block py-3 pl-4 pr-2 w-1">
-                                                                        <x-icon :size="1" type="arrow_back" id="arrow-{{ $societe->id }}-{{ $etablissement->id }}"
-                                                                            class="ml-6 -rotate-90 mt-1" />
+                                                                        <x-icon :size="1" type="arrow_back"
+                                                                            id="arrow-{{ $societe->id }}-{{ $etablissement->id }}"
+                                                                            class="ml-6 -rotate-180 mt-1" />
                                                                     </td>
                                                                     <td class="text-left py-3 px-4">
                                                                         {!! $etablissement->nom !!}
@@ -161,13 +161,16 @@
                                                                 </tr>
                                                             @endforeach
                                                             <tr class="cursor-pointer">
-                                                                <td class="text-left hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 rounded-br-xl" colspan="2">
-                                                                    <a href="{{ route('etablissements.create', $societe->id) }}" class="w-full h-full flex items-center px-4">
-                                                                        <span class=" text-4xl">+ &nbsp;</span>{!! __('Ajouter un établissement') !!}
+                                                                <td class="text-left hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 rounded-br-xl"
+                                                                    colspan="2">
+                                                                    <a href="{{ route('etablissements.create', $societe->id) }}"
+                                                                        class="w-full h-full flex items-center px-4">
+                                                                        <span class=" text-4xl">+
+                                                                            &nbsp;</span>{!! __('Ajouter un établissement') !!}
                                                                     </a>
                                                                 </td>
                                                             </tr>
-                                                            </tbody>
+                                                        </tbody>
                                                     </table>
                                                 </div>
                                                 <div class="p-4">
@@ -214,21 +217,22 @@
         </div>
     </div>
     <script>
-            function rotateArrow(id) {
-                console.log(id);
+        function rotateArrow(id) {
+            console.log(id);
             const arrow = document.getElementById('arrow-' + id);
-            if (arrow.classList.contains('-rotate-90')) {
-                arrow.classList.remove('-rotate-90');
-                arrow.classList.add('rotate-90');
+            if (arrow.classList.contains('-rotate-180')) {
+                arrow.classList.remove('-rotate-180');
+                arrow.classList.add('-rotate-90');
                 arrow.classList.remove('-mt-2');
                 arrow.classList.add('-mb-2');
             } else {
-                arrow.classList.remove('rotate-90');
-                arrow.classList.add('-rotate-90');
+                arrow.classList.add('-rotate-180');
+                arrow.classList.remove('-rotate-90');
                 arrow.classList.remove('-mb-2');
                 arrow.classList.add('-mt-2');
             }
-            }
+        }
+
         function updateCommentaireSociete(element) {
             const societeId = element.dataset.societeId; // Récupère l'ID de la société
             const commentaireTexte = element.value; // Récupère la valeur du commentaire

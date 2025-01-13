@@ -28,7 +28,7 @@
                             </x-nav-link>
                         @endcan
                         @can('voir_les_ddp_et_cde')
-                            <x-nav-link :href="route('ddp_cde.index')" :active="request()->routeIs('ddp_cde.index')">
+                            <x-nav-link :href="route('ddp_cde.index')" :active="request()->routeIs('ddp_cde.index')" title="Demande de prix et Commande">
                                 {{ __('DDP/CDE') }}
                             </x-nav-link>
                         @endcan
@@ -219,6 +219,12 @@
                 @can('voir_les_matieres')
                     <x-responsive-nav-link :href="route('matieres.index')" :active="request()->routeIs('matieres.index')">
                         {{ __('Matieres') }}
+                    </x-responsive-nav-link>
+
+                @endcan
+                @can('voir_les_ddp_et_cde')
+                    <x-responsive-nav-link :href="route('ddp_cde.index')" :active="request()->routeIs('ddp_cde.index')">
+                        {{ __('DDP/CDE') }}
                     </x-responsive-nav-link>
 
                 @endcan
