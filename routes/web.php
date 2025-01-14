@@ -118,13 +118,15 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection','auth'])->group(function
     });
     Route::middleware('permission:voir_les_ddp_et_cde')->group(function () {
         Route::get('/ddp&cde', [DdpController::class, 'indexDdp_cde'])->name('ddp_cde.index');
+        Route::get('/ddp', [DdpController::class, 'indexDdp_cde']);
+        Route::get('/cde', [DdpController::class, 'indexDdp_cde']);
         Route::get('/colddp', [DdpController::class, 'indexColDdp'])->name('ddp.index_col_ddp');
         Route::get('/ddp/create', [DdpController::class, 'create'])->name('ddp.create');
         Route::post('/ddp/save', [DdpController::class, 'save'])->name('ddp.save');
         Route::get('/ddp/{ddp}/destroy', [DdpController::class, 'destroy'])->name('ddp.destroy');
         Route::get('/ddp/{ddp}/validate', [DdpController::class, 'validation'])->name('ddp.validation');
         Route::post('/ddp/{ddp}/validate', [DdpController::class, 'validate'])->name('ddp.validate');
-
+        Route::get('/ddp/{ddp}/pdf', [DdpController::class, 'pdf'])->name('ddp.pdf');
         Route::get('/ddp/{ddp}', [DdpController::class, 'show'])->name('ddp.show');
         Route::get('/colcde', [CdeController::class, 'indexColCde'])->name('ddp.index_col_cde');
     });

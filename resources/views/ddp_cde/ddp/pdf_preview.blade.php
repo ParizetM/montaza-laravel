@@ -15,11 +15,24 @@
 
             <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-6 rounded-md shadow-md">
 
-
+                <ul>
+                    @foreach($ddp->ddpligne as $ligne)
+                        <li>
+                            <strong>{{ $ligne->matiere->designation }}</strong>
+                            <ul class="ml-12">
+                                @foreach($ligne->ddpLigneFournisseur as $fournisseur)
+                                    <li>{{ $fournisseur->societe->raison_sociale }}</li>
+                                    <li>{{ $fournisseur->societe_contact_id }}</li>
+                                @endforeach
+                            </ul>
+                        </li>
+                    @endforeach
+                </ul>
                 <div class="flex justify-end">
                     <button type="submit"
                         class="btn">{{ __('Valider') }}</button>
                 </div>
+                <a href="{{ route('ddp.pdf',$ddp->id) }}" class="btn"> TEST</a>
             </div>
     </div>
     <script>

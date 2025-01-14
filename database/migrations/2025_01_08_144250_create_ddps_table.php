@@ -39,7 +39,7 @@ return new class extends Migration
             $table->foreignId('ddp_ligne_id')->constrained('ddp_lignes')->onDelete('cascade');
             $table->foreignId('societe_id')->constrained('societes');
             $table->foreignId('ddp_cde_statut_id')->constrained(table: 'ddp_cde_statuts');
-            $table->foreignId('societe_contact_id')->constrained('societe_contacts');
+            $table->foreignId('societe_contact_id')->nullable()->constrained('societe_contacts');
             $table->timestamps();
         });
     }

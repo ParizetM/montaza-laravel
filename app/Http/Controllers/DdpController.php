@@ -8,9 +8,11 @@ use App\Models\Famille;
 use App\Models\Societe;
 use App\Models\Unite;
 use Auth;
+use Barryvdh\DomPDF\PDF;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View ;
+use Response;
 
 class DdpController extends Controller
 {
@@ -121,21 +123,37 @@ class DdpController extends Controller
     public function validate($ddp,Request $request): View
     {
 
-        dd($ddp,$request->all());
-        $ddp = Ddp::findOrFail($ddp);
+        $ddp = Ddp::findOrFail($ddp)->load('ddpLigne', 'ddpLigne.ddpLigneFournisseur');
         foreach ($request->all() as $key => $value) {
             if ($key != '_token' && preg_match('/^contact-\d+$/', $key)) {
                 $societe_id = explode('-', $key)[1];
-                $ddpLigneFournisseur = DdpLigneFournisseur::where('ddp_id', $ddp->ddp_cde_statut_id)
-                    ->where('societe_id', $societe_id)
-                    ->where('ddp_cde_statut_id', 1)
-                    ->first();
-                $ddpLigneFournisseur->societe_contact_id = $value;
-                $ddpLigneFournisseur->save();
+                $ddpLigneFournisseurs = DdpLigneFournisseur::whereHas('ddpLigne', function ($query) use ($ddp) {
+                    $query->where('ddp_id', $ddp->id);
+                })
+                ->where('societe_id', $societe_id)
+                ->get();
+                foreach ($ddpLigneFournisseurs as $ddpLigneFournisseur) {
+                    $ddpLigneFournisseur->societe_contact_id = $value;
+                    $ddpLigneFournisseur->save();
+                }
+
             }
         }
         $ddp->save();
-
         return view('ddp_cde.ddp.pdf_preview', ['ddp' => $ddp]);
+    }
+    public function pdf($id)
+    {
+        $ddp = Ddp::findOrFail($id)->load('ddpLigne', 'ddpLigne.ddpLigneFournisseur');
+        $ddp_societe = $ddp->ddpLigne->map(function ($ligne) {
+            return $ligne->ddpLigneFournisseur->map(function ($fournisseur) {
+                return $fournisseur->societe;
+            });
+        })->flatten()->unique('id');
+        $pdf = app('dompdf.wrapper');
+        $pdf->loadView('ddp_cde.ddp.pdf', ['societe' => $ddp_societe, 'ddp' => $ddp]);
+        $pdf->setOption(['isRemoteEnabled' => true]);
+        $pdf->setWarnings(true);
+        return $pdf->download("ddp_{$ddp->id}.pdf");
     }
 }
