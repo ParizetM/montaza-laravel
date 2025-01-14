@@ -79,6 +79,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection','auth'])->group(function
         Route::get('/societe/{societe}/etablissements/json', [SocieteController::class, 'showEtablissementsJson'])->name('societes.etablissement.show_json');
         Route::patch('/societe/{id}/commentaire/save', [SocieteController::class, 'updateCommentaire'])->name('societes.commentaire');
         Route::patch('/societe/etablissement/{id}/commentaire/save', [EtablissementController::class, 'updateCommentaire'])->name('societes.etablissement.commentaire');
+        Route::get('/societes/{societeId}/etablissements/{etablissementId}/contacts/json', [SocieteContactController::class, 'showJson'])->name('societes.contacts.show_json');
 
         Route::middleware('permission:gerer_les_societes')->group(function () {
             Route::get('/societes/create', [SocieteController::class, 'create'])->name('societes.create');
@@ -121,7 +122,9 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection','auth'])->group(function
         Route::get('/ddp/create', [DdpController::class, 'create'])->name('ddp.create');
         Route::post('/ddp/save', [DdpController::class, 'save'])->name('ddp.save');
         Route::get('/ddp/{ddp}/destroy', [DdpController::class, 'destroy'])->name('ddp.destroy');
-        Route::get('/ddp/{ddp}/validate', [DdpController::class, 'validation'])->name('ddp.validate');
+        Route::get('/ddp/{ddp}/validate', [DdpController::class, 'validation'])->name('ddp.validation');
+        Route::post('/ddp/{ddp}/validate', [DdpController::class, 'validate'])->name('ddp.validate');
+
         Route::get('/ddp/{ddp}', [DdpController::class, 'show'])->name('ddp.show');
         Route::get('/colcde', [CdeController::class, 'indexColCde'])->name('ddp.index_col_cde');
     });

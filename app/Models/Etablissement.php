@@ -57,6 +57,10 @@ class Etablissement extends Model
     {
         return $this->belongsTo(Societe::class);
     }
+    public function contacts(): HasMany
+    {
+        return $this->hasMany(SocieteContact::class);
+    }
 }
 
 

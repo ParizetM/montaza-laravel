@@ -152,7 +152,7 @@
                                 </div>
                             </div>
                         </div>
-                        <a class=" btn" href='{{ route('ddp.validate', ['ddp' => $ddpid]) }}'">Suivant</a>
+                        <a class=" btn" href='{{ route('ddp.validation', ['ddp' => $ddpid]) }}'">Suivant</a>
                     </div>
                 </div>
             </div>

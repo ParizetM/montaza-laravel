@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ddp;
+use App\Models\DdpLigneFournisseur;
 use App\Models\Famille;
 use App\Models\Societe;
 use App\Models\Unite;
@@ -116,5 +117,25 @@ class DdpController extends Controller
             });
         })->flatten()->unique('id');
         return view('ddp_cde.ddp.validation', ['ddp' => $ddp, 'societes' => $ddp_societe]);
+    }
+    public function validate($ddp,Request $request): View
+    {
+
+        dd($ddp,$request->all());
+        $ddp = Ddp::findOrFail($ddp);
+        foreach ($request->all() as $key => $value) {
+            if ($key != '_token' && preg_match('/^contact-\d+$/', $key)) {
+                $societe_id = explode('-', $key)[1];
+                $ddpLigneFournisseur = DdpLigneFournisseur::where('ddp_id', $ddp->ddp_cde_statut_id)
+                    ->where('societe_id', $societe_id)
+                    ->where('ddp_cde_statut_id', 1)
+                    ->first();
+                $ddpLigneFournisseur->societe_contact_id = $value;
+                $ddpLigneFournisseur->save();
+            }
+        }
+        $ddp->save();
+
+        return view('ddp_cde.ddp.pdf_preview', ['ddp' => $ddp]);
     }
 }

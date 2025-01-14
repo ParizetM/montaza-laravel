@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Etablissement;
 use App\Models\Societe;
 use App\Models\SocieteContact;
 use Cache;
@@ -36,7 +37,12 @@ class SocieteContactController extends Controller
         $societes = Societe::select('id', 'raison_sociale')->get();
         return view('societes.contacts.quick-create', compact('societes'));
     }
-
+    public function showJson( $societe_id,  $etablissement_id): JsonResponse
+    {
+        $etablissement = Etablissement::findOrFail($etablissement_id);
+        $contacts = $etablissement->contacts;
+        return response()->json($contacts);
+    }
     // /**
     //  * Display the specified resource.
     //  */
