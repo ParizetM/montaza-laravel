@@ -1,149 +1,170 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
             font-size: 12px;
+            margin: 0;
+            padding: 0;
         }
 
-        .header {
-            display: grid;
-            margin-bottom: 30px;
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            box-sizing: border-box;
         }
 
-
-        .address-box {
-            border: 1px solid #999;
-            padding: 10px;
+        .title {
             margin-bottom: 10px;
-            max-width: 250px;
         }
 
-        .consultation-info {
-            display: flex;
-            margin: 20px 0;
+        .details {
+            margin-bottom: 20px;
         }
 
-        .consultation-box {
-            border: 1px solid #000;
-            padding: 5px 15px;
-            display: inline-block;
-        }
-
-        .attention-box {
-            border: 1px solid #999;
-            padding: 5px 15px;
-            float: right;
-        }
-
-        table {
+        .details table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
         }
 
-        th {
-            background-color: #666;
-            color: white;
+        .details table td {
             padding: 5px;
-            text-align: left;
         }
 
-        td {
-            border: 1px solid #999;
+        .details table td:first-child {
+            width: 20%;
+        }
+
+        .main-content {
+            margin-bottom: 20px;
+        }
+
+        .main-content table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .main-content table th,
+        .main-content table td {
+            border: 1px solid #000;
             padding: 5px;
+            text-align: center;
+        }
+
+        .main-content table th {
+            background-color: #f0f0f0;
         }
 
         .footer {
-            margin-top: 40px;
             font-size: 10px;
-            color: #666;
+            text-align: center;
+            margin-top: 20px;
         }
 
+        .header {
+            width: 100%;
+            margin-bottom: 20px;
+            text-align: left;
+            /* S'assurer que tout est aligné à gauche */
+        }
+
+        .company-info {
+            display: inline-block;
+            vertical-align: top;
+            width: 48%;
+            /* Chaque colonne prend environ la moitié de la largeur */
+            box-sizing: border-box;
+            /* Inclut les marges/paddings dans la largeur totale */
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .left {
+            text-align: left;
+            /* Aligner le texte du premier bloc à gauche */
+        }
+
+        .right {
+            text-align: left;
+            /* Peut être `right` si nécessaire */
+            float: right;
+            /* Forcer ce bloc à droite */
+        }
     </style>
 </head>
+
 <body>
-    <div class="header">
-        <div>
-            <img src="{{ public_path('img/Logo-long.png') }}" alt="Logo">
-
-
-            <div class="address-box">
+    <div class="container">
+        <!-- Header -->
+        <img src="{{ public_path('img/logo-long.png') }}" alt="Logo" style="width: 30%; margin-bottom: 20px; margin-left:-2%;">
+        <div class="header">
+            <div class="company-info left">
+                <strong>ATLANTIS MONTAZA</strong><br>
                 1 Ter Rue de la Cité Nouvelle<br>
                 ZI Altitude<br>
                 44570 TRIGNAC<br>
                 FRANCE
             </div>
-        </div>
-        <div>
-            <div class="logo">ATLANTIC ROBINETTERIE</div>
-            <div class="address-box">
-                71 RUE HENRI GAUTIER<br>
-                BATIMENT G<br>
-                44550 - MONTOIR DE BRETAGNE<br>
-                FRANCE
+            <div class="company-info right">
+                <strong>{{ $etablissement->societe->raison_sociale }}</strong><br>
+                {{ $etablissement->adresse }}<br>
+                {{ $etablissement->code_postal }} {{ $etablissement->ville }}<br>
+                {{ $etablissement->pays->nom }}
             </div>
         </div>
-    </div>
 
-    <div>À l'attention de : VELIA LAURIANE</div>
-
-    <div class="consultation-info">
-        <div>
-            Consultation n° <span class="consultation-box">1</span>
-            Envoi <span class="consultation-box">1</span>
+        <!-- Title -->
+        <div class="title">
+            <strong>Dossier suivi par :</strong> <br>
+            <strong>Ref : </strong> {{ $ddp->code }}<br>
         </div>
-        <div>Ref : </div>
-        <div>du : 13/01/2025</div>
-    </div>
 
-    <div class="attention-box">
-        Attention : votre réponse est demandée pour, au plus tard, le
-    </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <p>
+                {{-- <strong>Livraison souhaitée au plus tard le :</strong> <br>
+                Attention : votre réponse est demandée pour, au plus tard, le :<br><br> --}}
+                Madame, Monsieur,<br>
+                Veuillez nous faire parvenir votre offre de prix concernant les éléments indiqués ci-dessous.
+            </p>
 
-    <div style="clear: both; margin: 20px 0;">
-        Madame, Monsieur,<br><br>
-        Veuillez nous faire parvenir votre offre de prix concernant les éléments indiqués ci-dessous.
-    </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Référence interne</th>
+                        <th>Désignation</th>
+                        <th>Qté</th>
+                        <th>Unité</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($lignes as $ligne)
+                        <tr>
+                            <td>{{ $ligne->matiere->ref_interne }}</td>
+                            <td>{{ $ligne->matiere->designation }}</td>
+                            <td>{{ $ligne->quantite }}</td>
+                            <td>{{ $ligne->matiere->unite->full }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Référence</th>
-                <th>Désignation</th>
-                <th>Nb lot</th>
-                <th>Qté</th>
-                <th>Lg</th>
-                <th>Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>SA000122</td>
-                <td>3 pieces Male Inox 25 25</td>
-                <td>1</td>
-                <td>5</td>
-                <td>1 U</td>
-                <td>5 U</td>
-            </tr>
-            <tr>
-                <td>SA000385</td>
-                <td>ROBINET TOURNANT<br>SPHERIQUE ACIER 15<br>EP2.5 2A10301S</td>
-                <td>1</td>
-                <td>8</td>
-                <td>1 U</td>
-                <td>8 U</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <div class="footer">
-        Powered by TopSolid'Erp(c) - ATLANTIS MONTAZA • 1 Ter Rue de la Cité Nouvelle - ZI Altitude - 44570 - TRIGNAC - FRANCE - Page 1 sur 1
+        <!-- Footer -->
+        <div class="footer">
+            ATLANTIS MONTAZA - 1 Ter Rue de la Cité Nouvelle - ZI Altitude - 44570 - TRIGNAC - FRANCE<br>
+            Téléphone : 02 40 17 65 62 <br>
+            Page 1 sur 1
+        </div>
     </div>
 </body>
+
 </html>

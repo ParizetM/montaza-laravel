@@ -13,6 +13,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View ;
 use Response;
+use Storage;
 
 class DdpController extends Controller
 {
@@ -140,20 +141,37 @@ class DdpController extends Controller
             }
         }
         $ddp->save();
-        return view('ddp_cde.ddp.pdf_preview', ['ddp' => $ddp]);
+        $pdfs = Storage::files('DDP/'.now()->format('Y'));
+        $pdfs = array_filter($pdfs, function($file) use ($ddp) {
+            return strpos(basename($file), $ddp->code) === 0;
+        });
+        return view('ddp_cde.ddp.pdf_preview', ['ddp' => $ddp, 'pdfs' => $pdfs]);
     }
-    public function pdf($id)
+    public function pdf($ddpi_id)
     {
-        $ddp = Ddp::findOrFail($id)->load('ddpLigne', 'ddpLigne.ddpLigneFournisseur');
-        $ddp_societe = $ddp->ddpLigne->map(function ($ligne) {
+        $ddp = Ddp::findOrFail($ddpi_id)->load('ddpLigne', 'ddpLigne.ddpLigneFournisseur');
+        $ddp_contacts = $ddp->ddpLigne->map(function ($ligne) {
             return $ligne->ddpLigneFournisseur->map(function ($fournisseur) {
-                return $fournisseur->societe;
+            return $fournisseur->societeContact;
             });
         })->flatten()->unique('id');
-        $pdf = app('dompdf.wrapper');
-        $pdf->loadView('ddp_cde.ddp.pdf', ['societe' => $ddp_societe, 'ddp' => $ddp]);
-        $pdf->setOption(['isRemoteEnabled' => true]);
-        $pdf->setWarnings(true);
-        return $pdf->download("ddp_{$ddp->id}.pdf");
+        foreach ($ddp_contacts as $contacts) {
+            $lignes = $ddp->ddpLigne->filter(function ($ligne) use ($contacts) {
+                return $ligne->ddpLigneFournisseur->contains(function ($fournisseur) use ($contacts) {
+                return $fournisseur->societe_contact_id == $contacts->id;
+                });
+            });
+            $etablissement = $contacts->etablissement;
+            $pdf = app('dompdf.wrapper');
+            $pdf->loadView('ddp_cde.ddp.pdf', ['etablissement' => $etablissement, 'ddp' => $ddp, 'lignes' => $lignes]);
+            $pdf->setOption(['isRemoteEnabled' => true, 'isHtml5ParserEnabled' => true, 'isPhpEnabled' => true]);
+
+            $fileName = $ddp->code . '_' . $etablissement->societe->raison_sociale . '.pdf';
+            $year = now()->format('Y');
+            Storage::put('DDP/'.$year.'/' . $fileName, $pdf->output());
+            $pdf = null;
+        }
+        return response()->json(['message' => 'PDFs generated successfully']);
+
     }
 }

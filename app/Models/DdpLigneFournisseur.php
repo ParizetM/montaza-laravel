@@ -31,6 +31,9 @@ class DdpLigneFournisseur extends Model
     public function destinataire(): BelongsTo {
         return $this->belongsTo(SocieteContact::class);
     }
+    public function societeContact(): BelongsTo {
+        return $this->belongsTo(SocieteContact::class);
+    }
     public function statut(): BelongsTo {
         return $this->belongsTo(DdpCdeStatut::class);
     }

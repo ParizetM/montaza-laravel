@@ -28,11 +28,18 @@
                         </li>
                     @endforeach
                 </ul>
+                <a href="{{ route('ddp.pdf',$ddp->id) }}" class="btn"> TEST</a>
+
+                <div class="flex">
+                    @dd($pdfs)
+                    @foreach ($pdfs as $pdf)
+                    <embed src="{{ asset('storage/'.$pdf) }}" type="application/pdf" width="100%" height="600px">
+                    @endforeach
+                </div>
                 <div class="flex justify-end">
                     <button type="submit"
                         class="btn">{{ __('Valider') }}</button>
                 </div>
-                <a href="{{ route('ddp.pdf',$ddp->id) }}" class="btn"> TEST</a>
             </div>
     </div>
     <script>
