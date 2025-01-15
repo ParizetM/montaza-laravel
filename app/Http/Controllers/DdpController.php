@@ -52,7 +52,7 @@ class DdpController extends Controller
         $code = $lastDdp ? $lastDdp->code : 'DDP-' . now()->format('Y') . '-0000';
         $code = explode('-', $code);
         $code = $code[1] + 1;
-        $newCode = 'DDP-' . now()->format('Y') . '-' . str_pad($code, 4, '0', STR_PAD_LEFT);
+        $newCode = 'DDP-' . now()->format('y') . '-' . str_pad($code, 4, '0', STR_PAD_LEFT);
         $ddp = Ddp::create([
             'code' => $newCode,
             'nom' => 'undefined',
@@ -144,12 +144,12 @@ class DdpController extends Controller
         if ($request->dossier_suivi_par_id != 0) {
             $ddp->dossier_suivi_par_id = $request->dossier_suivi_par_id;
         }
-        $ddp->afficher_destinataire = $request->afficher_destinataire;
+        $ddp->afficher_destinataire = $request->afficher_destinataire ? 1 : 0;
         $ddp->save();
         $ddpannee = explode('-', $ddp->code)[1];
         DdpController::pdf($ddp->id);
 
-        $pdfs = Storage::files('DDP/' . $ddpannee.'/');
+        $pdfs = Storage::files('DDP/' . $ddpannee);
         $pdfs = array_filter($pdfs, function ($file) use ($ddp) {
             return strpos(basename($file), $ddp->code) === 0;
         });
@@ -158,7 +158,7 @@ class DdpController extends Controller
         }, $pdfs);
         return view('ddp_cde.ddp.pdf_preview', ['ddp' => $ddp, 'pdfs' => $pdfs]);
     }
-    public function pdf($ddpi_id)
+    public function pdf($ddpi_id, $force = false)
     {
         $ddp = Ddp::findOrFail($ddpi_id)->load('ddpLigne', 'ddpLigne.ddpLigneFournisseur');
         $ddp_contacts = $ddp->ddpLigne->map(function ($ligne) {
@@ -175,15 +175,17 @@ class DdpController extends Controller
             $etablissement = $contacts->etablissement;
             $afficher_destinataire = $ddp->afficher_destinataire;
             $destinataire = $contacts->email;
-            $dossier_suivi_par = $ddp->dossier_suivi_par;
-            $pdf = app('dompdf.wrapper');
-            $pdf->loadView('ddp_cde.ddp.pdf', ['etablissement' => $etablissement, 'ddp' => $ddp, 'lignes' => $lignes, 'afficher_destinataire' => $afficher_destinataire, 'dossier_suivi_par' => $dossier_suivi_par, 'destinataire' => $destinataire]);
-            $pdf->setOption(['isRemoteEnabled' => true, 'isHtml5ParserEnabled' => true, 'isPhpEnabled' => true]);
-
             $fileName = $ddp->code . '_' . $etablissement->societe->raison_sociale . '.pdf';
-            $year = now()->format('Y');
-            Storage::put('DDP/' . $year . '/' . $fileName, $pdf->output());
-            $pdf = null;
+            if (!(Storage::exists('DDP/' . now()->format('y') . '/' . $fileName)) && $force == false) {
+                $pdf = app('dompdf.wrapper');
+                $pdf->loadView('ddp_cde.ddp.pdf', ['etablissement' => $etablissement, 'ddp' => $ddp, 'lignes' => $lignes, 'afficher_destinataire' => $afficher_destinataire, 'destinataire' => $destinataire]);
+                $pdf->setOption(['isRemoteEnabled' => true, 'isHtml5ParserEnabled' => true, 'isPhpEnabled' => true]);
+                $year = now()->format('y');
+                Storage::put('DDP/' . $year . '/' . $fileName, $pdf->output());
+                $pdf = null;
+            }
+
+
         }
     }
     public function pdfshow($ddp, $dossier, $path)
@@ -194,5 +196,31 @@ class DdpController extends Controller
         $response = Response::make($file, 200);
         $response->header('Content-Type', $type);
         return $response;
+    }
+    public function pdfsDownload($ddp_id) {
+        $ddp = Ddp::findOrFail($ddp_id);
+        $ddpannee = explode('-', $ddp->code)[1];
+        $pdfs = Storage::files('DDP/' . $ddpannee);
+        $pdfs = array_filter($pdfs, function ($file) use ($ddp) {
+            return strpos(basename($file), $ddp->code) === 0;
+        });
+        $pdfs = array_map(function ($file) use ($ddpannee) {
+            return str_replace('DDP/' . $ddpannee . '/', '', $file);
+        }, $pdfs);
+        $zip = new \ZipArchive();
+        $zipFileName = 'DDP_' . $ddp->code . '.zip';
+        $tempDir = storage_path('app/private/temp');
+        if (!file_exists($tempDir)) {
+            mkdir($tempDir, 0755, true);
+        }
+        $zip->open($tempDir . '/' . $zipFileName, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+        foreach ($pdfs as $pdf) {
+            $filePath = storage_path('app/private/DDP/' . $ddpannee . '/' . $pdf);
+            if (file_exists($filePath)) {
+                $zip->addFile($filePath, $pdf);
+            }
+        }
+        $zip->close();
+        return response()->download(storage_path('app/private/temp/' . $zipFileName))->deleteFileAfterSend(true);
     }
 }

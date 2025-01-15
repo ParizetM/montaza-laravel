@@ -14,41 +14,62 @@
     <div class="max-w-8xl py-4 mx-auto sm:px-4 lg:px-6">
 
         <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-6 rounded-md shadow-md">
+            <div class="flex justify-between items-center">
+                <h1 class="text-3xl font-bold mb-6 text-left">{{ $ddp->nom }} - Récapitulatif</h1>
+                <a href="{{ route('ddp.pdfs.download', $ddp) }}" class="btn">Télécharger tous les PDF</a>
 
-            <ul>
-                @foreach ($ddp->ddpligne as $ligne)
-                    <li>
-                        <strong>{{ $ligne->matiere->designation }}</strong>
-                        <ul class="ml-12">
-                            @foreach ($ligne->ddpLigneFournisseur as $fournisseur)
-                                <li>{{ $fournisseur->societe->raison_sociale }}</li>
-                                <li>{{ $fournisseur->societe_contact_id }}</li>
-                            @endforeach
-                        </ul>
-                    </li>
-                @endforeach
-            </ul>
-            <a href="{{ route('ddp.pdf', $ddp->id) }}" class="btn"> TEST</a>
-
-            <div class="flex space-x-4">
+            </div>
+            <div class="flex flex-wrap gap-4">
                 {{-- @dd($pdfs) --}}
                 @foreach ($pdfs as $pdf)
                     @php
                         $ddpannee = explode('-', $ddp->code)[1];
                     @endphp
-
-                    <object data="{{ route('ddp.pdfshow', ['ddp' => $ddp, 'annee' => $ddpannee, 'nom' => $pdf]) }}"
-                         type="application/pdf" height="848px" width="600px">
-                        <p>Il semble que vous n'ayez pas de plugin PDF pour ce navigateur. Pas de problème... vous pouvez <a href="{{ route('ddp.pdfshow', ['ddp' => $ddp, 'annee' => $ddpannee, 'nom' => $pdf]) }}">cliquer ici pour télécharger le fichier PDF.</a></p>
-                    </object>
+                    <div class="flex flex-col gap-2 bg-gray-100 dark:bg-gray-700 p-4 rounded-md hover:scale-105 cursor-pointer transition-all relative"
+                        id="pdf-{{ $pdf }}" title="Ouvrir le PDF">
+                        <h2
+                            class="text-xl font-semibold text-gray-700 dark:text-gray-200  border border-gray-300 dark:border-gray-700 pb-2">
+                            {{ explode('_', $pdf)[count(explode('_', $pdf)) - 1] }}</h2>
+                        <div style="background-color: rgba(0,0,0,0); height: 424px; width: 300px;"
+                            class="absolute bottom-4"></div>
+                        <object data="{{ route('ddp.pdfshow', ['ddp' => $ddp, 'annee' => $ddpannee, 'nom' => $pdf]) }}"
+                            type="application/pdf" height="424px" width="300px">
+                            <p>Il semble que vous n'ayez pas de plugin PDF pour ce navigateur. Pas de problème... vous
+                                pouvez <a
+                                    href="{{ route('ddp.pdfshow', ['ddp' => $ddp, 'annee' => $ddpannee, 'nom' => $pdf]) }}">cliquer
+                                    ici pour télécharger le fichier PDF.</a></p>
+                        </object>
+                    </div>
                 @endforeach
             </div>
-            <div class="flex justify-end">
-                <button type="submit" class="btn">{{ __('Valider') }}</button>
+            <div>
+                <div class="flex justify-between items-center border-b border-gray-300 dark:border-gray-700 mt-6 mb-4">
+                    <h1 class="text-3xl font-bold mb-6 text-left">Mails</h1>
+                    <a href="{{ route('ddp.pdfs.download', $ddp) }}" class="btn">Passer cette étape</a>
+                </div>
+                <div>
+                    <div class="mb-4">
+                        <x-input-label for="email_subject" :value="__('Objet du mail')" />
+                        <x-text-input id="email_subject" class="block mt-1 w-full" type="text" name="email_subject" required autofocus />
+                    </div>
+                    <div class="mb-4">
+                        <x-input-label for="email_body" :value="__('Contenu du mail')" />
+                        <textarea id="email_body" name="email_body" rows="10" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 dark:text-gray-200"></textarea>
+                    </div>
+                </div>
+
             </div>
+
         </div>
     </div>
-    <script></script>
+    <script>
+        document.querySelectorAll('[id^="pdf-"]').forEach(function(element) {
+            element.addEventListener('click', function() {
+                const pdfUrl = element.querySelector('object').data;
+                window.open(pdfUrl, '_blank');
+            });
+        });
+    </script>
 
 
 </x-app-layout>

@@ -1,0 +1,54 @@
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            {{ __('Administration') }}
+        </h2>
+    </x-slot>
+
+    <div class="py-12">
+        <div class="max-w-8xl mx-auto sm:px-6 lg:px-8 flex justify-center">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-4 flex flex-wrap gap-4">
+                @can('gerer_les_utilisateurs')
+                    <div class="flex p-6 text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-900 w-96 h-auto rounded-md cursor-pointer transition-all hover:scale-105 hover:bg-gray-200 dark:hover:bg-gray-700"
+                        onclick="window.location='{{ route('profile.index') }}'">
+                        <x-icons.group class="w-12 h-12 mr-2" />
+                        <div class="">
+                            <h1 class="text-3xl font-bold mb-6 text-left">{{ __('Utilisateurs') }}</h1>
+                            <p class=" p-1 rounded">{{ __('Gérer les utilisateurs') }}</p>
+                        </div>
+                    </div>
+                @endcan
+                @can('gerer_les_permissions')
+                    <div class="flex p-6 text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-900 w-96 h-auto rounded-md cursor-pointer transition-all hover:scale-105 hover:bg-gray-200 dark:hover:bg-gray-700"
+                        onclick="window.location='{{ route('permissions') }}'">
+                        <x-icons.key class="w-12 h-12 mr-2" />
+                        <div class="">
+                            <h1 class="text-3xl font-bold mb-6 text-left">{{ __('Permissions et Postes') }}</h1>
+                            <p class=" p-1 rounded">{{ __('Gérer les permissions et les postes') }}</p>
+                        </div>
+                    </div>
+                @endcan
+                @can('voir_historique')
+                    <div class="flex p-6 text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-900 w-96 h-auto rounded-md cursor-pointer transition-all hover:scale-105 hover:bg-gray-200 dark:hover:bg-gray-700"
+                        onclick="window.location='{{ route('model_changes.index') }}'">
+                        <x-icons.history class="w-12 h-12 mr-2" />
+                        <div class="flex flex-col">
+                            <h1 class="text-3xl font-bold mb-6 text-left">{{ __('Historique') }}</h1>
+                            <p class="p-1 rounded">{{ __('Voir l\'historique des modifications') }}</p>
+                        </div>
+                    </div>
+                @endcan
+                @can('gerer_mail_templates')
+                    <div class="flex p-6 text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-900 w-96 h-auto rounded-md cursor-pointer transition-all hover:scale-105 hover:bg-gray-200 dark:hover:bg-gray-700"
+                        onclick="window.location='{{ route('mailtemplates.index') }}'">
+                        <x-icons.inbox-text class="w-12 h-12 mr-2" />
+                        <div class="">
+                            <h1 class="text-3xl font-bold mb-6 text-left">{{ __('Modèles de mail') }}</h1>
+                            <p class=" p-1 rounded">{{ __('Gérer les modèles de mail') }}</p>
+                        </div>
+                    </div>
+                @endcan
+            </div>
+        </div>
+    </div>
+</x-app-layout>

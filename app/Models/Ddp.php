@@ -30,4 +30,7 @@ class Ddp extends Model
     public function ddpLigneFournisseur(): HasManyThrough {
         return $this->hasManyThrough(DdpLigneFournisseur::class, DdpLigne::class);
     }
+    public function dossierSuiviPar(): BelongsTo {
+        return $this->belongsTo(User::class, 'dossier_suivi_par_id');
+    }
 }

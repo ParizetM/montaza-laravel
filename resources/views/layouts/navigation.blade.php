@@ -112,21 +112,9 @@
                                     {{ __('Log Out') }}
                                 </x-dropdown-link>
                             </form>
-                            @if (Auth::user()->hasPermission('gerer_les_utilisateurs'))
-                                <x-dropdown-link :href="route('profile.index')">
-                                    {{ __('Utilisateurs') }}
-                                </x-dropdown-link>
-                            @endif
-                            @if (Auth::user()->hasPermission('gerer_les_permissions') || Auth::user()->hasPermission('gerer_les_postes'))
-                                <x-dropdown-link :href="route('permissions')">
-                                    {{ __('Permissions et Postes') }}
-                                </x-dropdown-link>
-                            @endif
-                            @if (Auth::user()->hasPermission('voir_historique'))
-                                <x-dropdown-link :href="route('model_changes.index')">
-                                    {{ __('Historique') }}
-                                </x-dropdown-link>
-                            @endif
+                            <x-dropdown-link :href="route('administration.index')">
+                                    {{ __('Administration') }}
+                            </x-dropdown-link>
                         </x-slot>
                     </x-dropdown>
                     <div x-data="{ activeTab: 'tab1' }">

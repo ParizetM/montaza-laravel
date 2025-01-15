@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\AdministrationController;
 use App\Http\Controllers\CdeController;
 use App\Http\Controllers\DdpController;
 use App\Http\Controllers\EtablissementController;
+use App\Http\Controllers\MailtemplateController;
 use App\Http\Controllers\MatiereController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileController;
@@ -27,6 +29,7 @@ Route::get('/dashboard/paillettes', function () {
 })->middleware(['auth', 'verified', 'GetGlobalVariable'])->name('dashboard.paillettes');
 
 Route::middleware(['GetGlobalVariable', 'XSSProtection','auth'])->group(function () {
+    Route::get('/administration' , [AdministrationController::class, 'index'])->name('administration.index');
     Route::get('/profile/{id}', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::patch('/profile-admin', [ProfileController::class, 'updateAdmin'])->name('profile.update_admin');
@@ -116,6 +119,12 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection','auth'])->group(function
         Route::post('/matieres/standards/createDossier', [StandardController::class, 'storeDossier'])->name('standards.store_dossier');
         Route::get('/matieres/standards/{dossier}/{standard}/versions/json', [StandardController::class, 'showVersionsJson'])->name('standards.show_versions_json');
     });
+    Route::middleware('permission:gerer_mail_templates')->group( function () {
+        Route::get('/mailtemplates', [MailtemplateController::class, 'index'])->name('mailtemplates.index');
+        Route::get('/mailtemplates/{mailtemplate}/edit', [MailTemplateController::class, 'edit'])->name('mailtemplates.edit');
+        Route::patch('/mailtemplates/{mailtemplate}/update', [MailTemplateController::class, 'update'])->name('mailtemplates.update');
+    });
+
     Route::middleware('permission:voir_les_ddp_et_cde')->group(function () {
         Route::get('/ddp&cde', [DdpController::class, 'indexDdp_cde'])->name('ddp_cde.index');
         Route::get('/ddp', [DdpController::class, 'indexDdp_cde']);
@@ -123,11 +132,12 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection','auth'])->group(function
         Route::get('/colddp', [DdpController::class, 'indexColDdp'])->name('ddp.index_col_ddp');
         Route::get('/ddp/create', [DdpController::class, 'create'])->name('ddp.create');
         Route::post('/ddp/save', [DdpController::class, 'save'])->name('ddp.save');
-        Route::get('/ddp/{ddp}/destroy', [DdpController::class, 'destroy'])->name('ddp.destroy');
+        Route::delete('/ddp/{ddp}/destroy', [DdpController::class, 'destroy'])->name('ddp.destroy');
         Route::get('/ddp/{ddp}/validate', [DdpController::class, 'validation'])->name('ddp.validation');
         Route::post('/ddp/{ddp}/validate', [DdpController::class, 'validate'])->name('ddp.validate');
+        Route::get('/ddp/{ddp}/pdfs', [DdpController::class, 'pdfs'])->name('ddp.pdfs');
+        Route::get('/ddp/{ddp}/pdfs/download', [DdpController::class, 'pdfsDownload'])->name('ddp.pdfs.download');
         Route::get('/ddp/{ddp}/pdf/{annee}/{nom}', [DdpController::class, 'pdfshow'])->name('ddp.pdfshow');
-        Route::get('/ddp/{ddp}/pdf', [DdpController::class, 'pdf'])->name('ddp.pdf');
         Route::get('/ddp/{ddp}', [DdpController::class, 'show'])->name('ddp.show');
         Route::get('/colcde', [CdeController::class, 'indexColCde'])->name('ddp.index_col_cde');
     });

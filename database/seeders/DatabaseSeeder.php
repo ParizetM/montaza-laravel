@@ -13,6 +13,7 @@ use App\Models\UserShortcut;
 use Hash;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Mail;
 
 class DatabaseSeeder extends Seeder
 {
@@ -22,17 +23,18 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $permissions = [
-            'gerer_les_utilisateurs' => 'Consulter, créer, modifier et désactiver des utilisateurs',
-            'gerer_les_permissions' => 'consulter, créer, modifier et supprimer les permissions des postes',
-            'gerer_les_postes' => 'Consulter, créer, modifier et désactiver les postes',
-            'voir_historique' => 'Consulter l\'historique des modifications des données',
-            'gerer_les_societes' => ' créer, modifier et désactiver les sociétés',
-            'voir_les_societes' => 'Consulter les sociétés',
-            'gerer_les_contacts' => 'Consulter, créer, modifier et désactiver les contacts',
-            'voir_les_matieres' => 'Consulter les matières',
-            'gerer_les_matieres' => 'créer, modifier et désactiver les matières',
-            'voir_les_ddp_et_cde' => 'Consulter les demandes de prix et les commandes',
-            'gerer_les_ddp_et_cde' => 'créer, modifier et désactiver les demandes de prix et les commandes',
+            'gerer_les_utilisateurs' => 'Consulter, Créer, Modifier Et Désactiver Des Utilisateurs',
+            'gerer_les_permissions' => 'Consulter, Créer, Modifier Et Supprimer Les Permissions Des Postes',
+            'gerer_les_postes' => 'Consulter, Créer, Modifier Et Désactiver Les Postes',
+            'voir_historique' => 'Consulter L\'historique Des Modifications Des Données',
+            'gerer_les_societes' => 'Créer, Modifier Et Désactiver Les Sociétés',
+            'voir_les_societes' => 'Consulter Les Sociétés',
+            'gerer_les_contacts' => 'Consulter, Créer, Modifier Et Désactiver Les Contacts',
+            'voir_les_matieres' => 'Consulter Les Matières',
+            'gerer_les_matieres' => 'Créer, Modifier Et Désactiver Les Matières',
+            'voir_les_ddp_et_cde' => 'Consulter Les Demandes De Prix Et Les Commandes',
+            'gerer_les_ddp_et_cde' => 'Créer, Modifier Et Désactiver Les Demandes De Prix Et Les Commandes',
+            'gerer_mail_templates' => 'Modifier Les Modèles De Mail',
         ];
         foreach ($permissions as $permission => $description) {
             Permission::factory()->create([
@@ -178,5 +180,6 @@ class DatabaseSeeder extends Seeder
         $this->call(MatiereSeeder::class);
         $this->call(DdpCdeStatutSeeder::class);
         $this->call(DdpSeeder::class);
+        $this->call(MailTemplateSeeder::class);
     }
 }

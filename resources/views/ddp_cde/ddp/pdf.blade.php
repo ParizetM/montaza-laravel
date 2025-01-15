@@ -117,10 +117,9 @@
                 <strong>{{ $etablissement->societe->raison_sociale }}</strong><br>
                 {{ $etablissement->adresse }}<br>
                 {{ $etablissement->code_postal }} {{ $etablissement->ville }}<br>
-                {{ $etablissement->pays->nom }}
+                {{ $etablissement->pays->nom }}<br>
                 @if ($afficher_destinataire)
-                    <br>
-                    <strong>Mail :</strong> {{ $destinataire }}
+                {{ $destinataire }}
                 @endif
             </div>
         </div>
@@ -128,8 +127,8 @@
         <!-- Title -->
         <div class="title">
             @if ($ddp->dossier_suivi_par_id != 0 && $ddp->dossier_suivi_par_id != null)
-                <strong>Dossier suivi par :</strong> {{ $ddp->dossier_suivi_par->first_name }}
-                {{ $ddp->dossier_suivi_par->last_name }}<br>
+                <strong>Dossier suivi par :</strong> {{ $ddp->dossierSuiviPar->first_name }}
+                {{ $ddp->dossierSuiviPar->last_name }}<br>
 
             @endif
             <strong>Ref : </strong> {{ $ddp->code }}<br>
