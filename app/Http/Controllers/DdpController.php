@@ -150,7 +150,6 @@ class DdpController extends Controller
         DdpController::pdf($ddp->id);
 
         $pdfs = Storage::files('DDP/' . $ddpannee.'/');
-        dd($ddp->code,$ddpannee,$pdfs);
         $pdfs = array_filter($pdfs, function ($file) use ($ddp) {
             return strpos(basename($file), $ddp->code) === 0;
         });
