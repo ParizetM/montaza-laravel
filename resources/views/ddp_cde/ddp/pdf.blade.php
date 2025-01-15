@@ -118,12 +118,20 @@
                 {{ $etablissement->adresse }}<br>
                 {{ $etablissement->code_postal }} {{ $etablissement->ville }}<br>
                 {{ $etablissement->pays->nom }}
+                @if ($afficher_destinataire)
+                    <br>
+                    <strong>Mail :</strong> {{ $destinataire }}
+                @endif
             </div>
         </div>
 
         <!-- Title -->
         <div class="title">
-            <strong>Dossier suivi par :</strong> <br>
+            @if ($ddp->dossier_suivi_par_id != 0 && $ddp->dossier_suivi_par_id != null)
+                <strong>Dossier suivi par :</strong> {{ $ddp->dossier_suivi_par->first_name }}
+                {{ $ddp->dossier_suivi_par->last_name }}<br>
+
+            @endif
             <strong>Ref : </strong> {{ $ddp->code }}<br>
         </div>
 

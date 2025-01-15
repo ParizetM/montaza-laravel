@@ -213,8 +213,9 @@
             </table>
             <div>
                 <h1 class="text-xl font-semibold">Autres Fournisseurs</h1>
-                <div class="flex gap-2">
-                    <x-text-input placeholder="Nom du fournisseur" class="m-4 w-1/2" id="searchbarFournisseur" />
+                <div class="flex gap-2 m-2">
+                    <x-text-input placeholder="Nom du fournisseur" class=" w-1/2" id="searchbarFournisseur" />
+                    <button class="btn" onclick="liveSearchFournisseurs()">Rechercher</button>
                 </div>
                 <table class="rounded-md overflow-hidden bg-gray-100 dark:bg-gray-900">
                     <thead>
@@ -616,7 +617,6 @@
                     saveStatus2.classList.remove('hidden');
                 });
         }
-
         document.addEventListener('DOMContentLoaded', function() {
             // Event listener for famille selection change
             document.getElementById('famille_id_search').addEventListener('change', function() {
@@ -635,10 +635,13 @@
             searchbar.addEventListener('input', function() {
                 liveSearch();
             });
+            searchbarFournisseur.addEventListener('input', function() {
+                liveSearchFournisseurs();
+            });
 
-            // Event listener for search bar input
-            searchbarFournisseur.addEventListener('input', async (e) => {
-                const search = e.target.value;
+
+            async function liveSearchFournisseurs() {
+                const search = document.getElementById('searchbarFournisseur').value;
                 if (search.length < 1) {
                     return;
                 }
@@ -657,7 +660,6 @@
                 `;
                     fournisseursTable.appendChild(tr);
                 } else {
-
                     data.forEach(fournisseur => {
                         const tr = document.createElement('tr');
                         tr.classList.add('border-b', 'border-gray-200', 'dark:border-gray-700',
@@ -665,8 +667,7 @@
                             'hover:bg-gray-200', 'dark:hover:bg-gray-700');
                         const fournisseurId = fournisseur.id || '';
                         tr.setAttribute('data-fournisseur-id', fournisseurId);
-                        tr.setAttribute('data-fournisseur-nom', fournisseur.raison_sociale ||
-                            '');
+                        tr.setAttribute('data-fournisseur-nom', fournisseur.raison_sociale || '');
                         tr.setAttribute('data-is-from-quicksearch', 'true');
                         tr.addEventListener('click', addFournisseur);
                         tr.innerHTML = `
@@ -675,7 +676,7 @@
                         fournisseursTable.appendChild(tr);
                     });
                 }
-            });
+            }
             ddpNom.addEventListener('input', function() {
                 if (ddpNom.value !== undefined && ddpNom.value.trim() !== '') {
                     saveChanges();

@@ -16,13 +16,28 @@
             @csrf
             <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-6 rounded-md shadow-md">
                 <h1 class="text-3xl font-bold mb-6 text-center">{{ $ddp->nom }}</h1>
-
+                <div class="flex flex-col gap-4 m-4">
+                    <div>
+                        <x-input-label value="Dossier suivi par ?" />
+                        <select name="dossier_suivi_par_id" required class="select w-fit min-w-96">
+                            <option value="0" selected>Non suivi</option>
+                            @foreach ($users as $user)
+                                <option value="{{ $user->id }}">{{ $user->first_name }} {{ $user->last_name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="flex gap-4">
+                        <x-toggle :checked="true" :label="'Afficher le mail du destinataire dans le PDF ?'" id="afficher_destinataire" name="afficher_destinataire"
+                            class="toggle-class" />
+                    </div>
+                </div>
                 @foreach ($societes as $societe)
                     <div class="mb-6">
                         <h2
                             class="text-xl font-semibold text-gray-700 dark:text-gray-200  border-b border-gray-300 dark:border-gray-700 pb-2">
                             {{ $societe->raison_sociale }}
                         </h2>
+
                         <div class="grid grid-cols-2 gap-4">
                             <ul class="space-y-4 bg-gray-900 py-4 rounded-b-md">
                                 @foreach ($ddp->ddpLigne as $ddpLigne)
@@ -70,8 +85,8 @@
                                 </div>
                                 <div class="flex flex-col gap-4">
                                     <x-input-label value="Destinataire" />
-                                    <select name="contact-{{ $societe->id }}" id="contact-{{ $societe->id }}" required
-                                        class="select w-fit min-w-96">
+                                    <select name="contact-{{ $societe->id }}" id="contact-{{ $societe->id }}"
+                                        required class="select w-fit min-w-96">
                                         @if ($societe->etablissements->count() == 1)
                                             @if ($societe->etablissements->first()->contacts->count() == 1)
                                                 <option
@@ -82,7 +97,8 @@
                                                     {{ $societe->etablissements->first()->contacts->first()->email }}
                                                 </option>
                                             @else
-                                                <option value="" disabled selected>Choisir un destinataire</option>
+                                                <option value="" disabled selected>Choisir un destinataire
+                                                </option>
                                                 @foreach ($societe->etablissements->first()->contacts as $contact)
                                                     <option value="{{ $contact->id }}">
                                                         {{ $contact->nom }} {{ $contact->fonction }}
@@ -98,8 +114,7 @@
                     </div>
                 @endforeach
                 <div class="flex justify-end">
-                    <button type="submit"
-                        class="btn">{{ __('Valider') }}</button>
+                    <button type="submit" class="btn">{{ __('Valider') }}</button>
                 </div>
             </div>
         </form>

@@ -25,6 +25,8 @@ return new class extends Migration
             $table->string('nom');
             $table->foreignId('ddp_cde_statut_id')->constrained(table: 'ddp_cde_statuts');
             $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('dossier_suivi_par_id')->nullable()->constrained('users');
+            $table->boolean('afficher_destinataire')->default(true);
             $table->timestamps();
         });
         Schema::create('ddp_lignes', function (Blueprint $table) {

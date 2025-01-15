@@ -7,11 +7,12 @@ use App\Models\DdpLigneFournisseur;
 use App\Models\Famille;
 use App\Models\Societe;
 use App\Models\Unite;
+use App\Models\User;
 use Auth;
 use Barryvdh\DomPDF\PDF;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View ;
+use Illuminate\View\View;
 use Response;
 use Storage;
 
@@ -85,7 +86,7 @@ class DdpController extends Controller
             foreach ($request->matieres as $matiere) {
                 $ddpLigne = $ddp->ddpLigne()->updateOrCreate(
                     ['matiere_id' => $matiere['id']],
-                    [ 'quantite' => $matiere['quantity']]
+                    ['quantite' => $matiere['quantity']]
                 );
 
                 foreach ($matiere['fournisseurs'] as $fournisseur) {
@@ -119,9 +120,10 @@ class DdpController extends Controller
                 return $fournisseur->societe;
             });
         })->flatten()->unique('id');
-        return view('ddp_cde.ddp.validation', ['ddp' => $ddp, 'societes' => $ddp_societe]);
+        $users = User::all();
+        return view('ddp_cde.ddp.validation', ['ddp' => $ddp, 'societes' => $ddp_societe, 'users' => $users]);
     }
-    public function validate($ddp,Request $request): View
+    public function validate($ddp, Request $request): View
     {
 
         $ddp = Ddp::findOrFail($ddp)->load('ddpLigne', 'ddpLigne.ddpLigneFournisseur');
@@ -131,20 +133,30 @@ class DdpController extends Controller
                 $ddpLigneFournisseurs = DdpLigneFournisseur::whereHas('ddpLigne', function ($query) use ($ddp) {
                     $query->where('ddp_id', $ddp->id);
                 })
-                ->where('societe_id', $societe_id)
-                ->get();
+                    ->where('societe_id', $societe_id)
+                    ->get();
                 foreach ($ddpLigneFournisseurs as $ddpLigneFournisseur) {
                     $ddpLigneFournisseur->societe_contact_id = $value;
                     $ddpLigneFournisseur->save();
                 }
-
             }
         }
+        if ($request->dossier_suivi_par_id != 0) {
+            $ddp->dossier_suivi_par_id = $request->dossier_suivi_par_id;
+        }
+        $ddp->afficher_destinataire = $request->afficher_destinataire;
         $ddp->save();
-        $pdfs = Storage::files('DDP/'.now()->format('Y'));
-        $pdfs = array_filter($pdfs, function($file) use ($ddp) {
+        $ddpannee = explode('-', $ddp->code)[1];
+        DdpController::pdf($ddp->id);
+
+        $pdfs = Storage::files('DDP/' . $ddpannee.'/');
+        dd($ddp->code,$ddpannee,$pdfs);
+        $pdfs = array_filter($pdfs, function ($file) use ($ddp) {
             return strpos(basename($file), $ddp->code) === 0;
         });
+        $pdfs = array_map(function ($file) use ($ddpannee) {
+            return str_replace('DDP/' . $ddpannee . '/', '', $file);
+        }, $pdfs);
         return view('ddp_cde.ddp.pdf_preview', ['ddp' => $ddp, 'pdfs' => $pdfs]);
     }
     public function pdf($ddpi_id)
@@ -152,26 +164,36 @@ class DdpController extends Controller
         $ddp = Ddp::findOrFail($ddpi_id)->load('ddpLigne', 'ddpLigne.ddpLigneFournisseur');
         $ddp_contacts = $ddp->ddpLigne->map(function ($ligne) {
             return $ligne->ddpLigneFournisseur->map(function ($fournisseur) {
-            return $fournisseur->societeContact;
+                return $fournisseur->societeContact;
             });
         })->flatten()->unique('id');
         foreach ($ddp_contacts as $contacts) {
             $lignes = $ddp->ddpLigne->filter(function ($ligne) use ($contacts) {
                 return $ligne->ddpLigneFournisseur->contains(function ($fournisseur) use ($contacts) {
-                return $fournisseur->societe_contact_id == $contacts->id;
+                    return $fournisseur->societe_contact_id == $contacts->id;
                 });
             });
             $etablissement = $contacts->etablissement;
+            $afficher_destinataire = $ddp->afficher_destinataire;
+            $destinataire = $contacts->email;
+            $dossier_suivi_par = $ddp->dossier_suivi_par;
             $pdf = app('dompdf.wrapper');
-            $pdf->loadView('ddp_cde.ddp.pdf', ['etablissement' => $etablissement, 'ddp' => $ddp, 'lignes' => $lignes]);
+            $pdf->loadView('ddp_cde.ddp.pdf', ['etablissement' => $etablissement, 'ddp' => $ddp, 'lignes' => $lignes, 'afficher_destinataire' => $afficher_destinataire, 'dossier_suivi_par' => $dossier_suivi_par, 'destinataire' => $destinataire]);
             $pdf->setOption(['isRemoteEnabled' => true, 'isHtml5ParserEnabled' => true, 'isPhpEnabled' => true]);
 
             $fileName = $ddp->code . '_' . $etablissement->societe->raison_sociale . '.pdf';
             $year = now()->format('Y');
-            Storage::put('DDP/'.$year.'/' . $fileName, $pdf->output());
+            Storage::put('DDP/' . $year . '/' . $fileName, $pdf->output());
             $pdf = null;
         }
-        return response()->json(['message' => 'PDFs generated successfully']);
-
+    }
+    public function pdfshow($ddp, $dossier, $path)
+    {
+        $path = 'DDP/' . $dossier . '/' . $path;
+        $file = Storage::get($path);
+        $type = 'application/pdf';
+        $response = Response::make($file, 200);
+        $response->header('Content-Type', $type);
+        return $response;
     }
 }

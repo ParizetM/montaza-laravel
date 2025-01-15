@@ -13,7 +13,7 @@ class Ddp extends Model
     /** @use HasFactory<\Database\Factories\DdpFactory> */
     use HasFactory;
 
-    protected $fillable = ['code', 'nom', 'ddp_cde_statut_id', 'user_id'];
+    protected $fillable = ['code', 'nom', 'ddp_cde_statut_id', 'user_id', 'dossier_suivi_par_id', 'afficher_destinataire'];
 
     public function statut(): BelongsTo {
         return $this->belongsTo(DdpCdeStatut::class, 'ddp_cde_statut_id');

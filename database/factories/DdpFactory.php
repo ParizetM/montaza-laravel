@@ -20,7 +20,7 @@ class DdpFactory extends Factory
     public function definition(): array
     {
         //samplecode : DDP25-0000
-        $code = 'DDP' . date('y'). '-' . $this->faker->numberBetween(1000, 9999);
+        $code = 'DDP-' . date('y'). '-' . $this->faker->numberBetween(1000, 9999);
         $random_statut = DdpCdeStatut::all()->random();
         $random_user = User::all()->random();
         return [
