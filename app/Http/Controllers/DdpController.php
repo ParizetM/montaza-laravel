@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Ddp;
 use App\Models\DdpLigneFournisseur;
 use App\Models\Famille;
+use App\Models\Mailtemplate;
 use App\Models\Societe;
 use App\Models\Unite;
 use App\Models\User;
@@ -13,6 +14,7 @@ use Barryvdh\DomPDF\PDF;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Mail;
 use Response;
 use Storage;
 
@@ -156,7 +158,9 @@ class DdpController extends Controller
         $pdfs = array_map(function ($file) use ($ddpannee) {
             return str_replace('DDP/' . $ddpannee . '/', '', $file);
         }, $pdfs);
-        return view('ddp_cde.ddp.pdf_preview', ['ddp' => $ddp, 'pdfs' => $pdfs]);
+        $mailtemplate = Mailtemplate::where('nom', 'ddp')->first();
+        $mailtemplate->sujet = str_replace('{code_ddp}', $ddp->code, $mailtemplate->sujet);
+        return view('ddp_cde.ddp.pdf_preview', ['ddp' => $ddp, 'pdfs' => $pdfs, 'mailtemplate' => $mailtemplate]);
     }
     public function pdf($ddpi_id, $force = false)
     {

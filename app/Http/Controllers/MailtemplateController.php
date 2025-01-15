@@ -25,7 +25,10 @@ class MailtemplateController extends Controller
             'contenu' => 'required|string',
         ]);
         $mailtemplate = Mailtemplate::findOrFail($id);
-        $mailtemplate->update($request->all());
+        $contenu = str_replace("CHEVRON-GAUCHE", "<", $request->contenu);
+        $contenu = str_replace("CHEVRON-DROIT", ">", $contenu);
+        $mailtemplate->sujet = $request->sujet;
+        $mailtemplate->contenu = $contenu;
         $mailtemplate->save();
         return redirect()->route('mailtemplates.edit', $id)->with('success', 'Modèle de mail mis à jour avec succès');
     }

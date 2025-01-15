@@ -126,20 +126,40 @@
             select.innerHTML = '';
             let option = document.createElement('option');
             option.value = '';
-            option.text = 'Choisir un destinataire';
-            option.disabled = true;
-            option.selected = true;
-            select.add(option);
             // console.log(`/societes/${societeId}/etablissements/${etablissementId}/contacts/json`);
             fetch(`/societes/${societeId}/etablissements/${etablissementId}/contacts/json`)
                 .then(response => response.json())
                 .then(data => {
-                    data.forEach(contact => {
+                    if (data.length == 0) {
                         let option = document.createElement('option');
-                        option.value = contact.id;
-                        option.text = contact.nom + ' ' + contact.fonction + ' ' + contact.email;
+                        option.value = '';
+                        option.text = 'Aucun contact';
+                        option.disabled = true;
+                        option.selected = true;
                         select.add(option);
-                    });
+                    } else if (data.length > 1) {
+                        let option = document.createElement('option');
+                        option.value = '';
+                        option.text = 'Choisir un destinataire';
+                        option.disabled = true;
+                        option.selected = true;
+                        select.add(option);
+                    }
+                    if (data.length == 1) {
+                        let option = document.createElement('option');
+                        option.value = data[0].id;
+                        option.text = `${data[0].nom} ${data[0].fonction} ${data[0].email}`;
+                        option.selected = true;
+                        select.add(option);
+                    } else {
+                        data.forEach(contact => {
+                            let option = document.createElement('option');
+                            option.value = contact.id;
+                            option.text = `${contact.nom} ${contact.fonction} ${contact.email}`;
+                            select.add(option);
+                        });
+                    }
+
                 })
                 .catch(error => console.error('Error fetching contacts:', error));
         }

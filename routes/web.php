@@ -122,7 +122,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection','auth'])->group(function
     Route::middleware('permission:gerer_mail_templates')->group( function () {
         Route::get('/mailtemplates', [MailtemplateController::class, 'index'])->name('mailtemplates.index');
         Route::get('/mailtemplates/{mailtemplate}/edit', [MailTemplateController::class, 'edit'])->name('mailtemplates.edit');
-        Route::patch('/mailtemplates/{mailtemplate}/update', [MailTemplateController::class, 'update'])->name('mailtemplates.update');
+        Route::patch('/mailtemplates/{mailtemplate}/update', [MailTemplateController::class, 'update'])->name(name: 'mailtemplates.update');
     });
 
     Route::middleware('permission:voir_les_ddp_et_cde')->group(function () {

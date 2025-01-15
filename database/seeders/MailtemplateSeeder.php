@@ -14,7 +14,7 @@ class MailtemplateSeeder extends Seeder
     public function run(): void
     {
         $mailtemplates = [
-            ['nom' => 'ddp', 'sujet' => 'Demande de prix {code_ddp}', 'contenu' => 'Bonjour, {br/} Pourriez-vous svp nous donner par retour votre {underline}{strong} tarif et délai{/strong}{/underline} suivant la pièce jointe. {br/} Merci {br/} Cordialement']
+            ['nom' => 'ddp', 'sujet' => 'Demande de prix {code_ddp}', 'contenu' => '<p>Bonjour,</p><p>Pourriez-vous, nous faire parvenir <strong><u>votre tarif ainsi que les délais de livraison</u></strong> suivant la pièce jointe ?</p><p>Merci d\'avance.</p><p>Cordialement,</p><p><br></p>']
         ];
 
         foreach ($mailtemplates as $mailtemplate) {
