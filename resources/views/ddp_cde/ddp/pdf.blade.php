@@ -8,11 +8,16 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
     <style>
+        @page {
+            margin: 0cm 0cm;
+        }
+
         body {
             font-family: Arial, sans-serif;
             font-size: 12px;
             margin: 0;
-            padding: 0;
+            padding: 20px;
+            margin-bottom: 60px; /* Espace pour le footer */
         }
 
         .container {
@@ -50,6 +55,12 @@
         .main-content table {
             width: 100%;
             border-collapse: collapse;
+            page-break-inside: auto;
+        }
+
+        .main-content table tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
         }
 
         .main-content table th,
@@ -63,45 +74,52 @@
             background-color: #f0f0f0;
         }
 
-        .footer {
-            font-size: 10px;
+        #footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
             text-align: center;
-            margin-top: 20px;
+            font-size: 10px;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+            background: white;
         }
 
         .header {
             width: 100%;
             margin-bottom: 20px;
+            margin-left: 50px;
             text-align: left;
-            /* S'assurer que tout est aligné à gauche */
         }
 
         .company-info {
             display: inline-block;
             vertical-align: top;
             width: 48%;
-            /* Chaque colonne prend environ la moitié de la largeur */
             box-sizing: border-box;
-            /* Inclut les marges/paddings dans la largeur totale */
             font-size: 12px;
             line-height: 1.5;
         }
 
         .left {
             text-align: left;
-            /* Aligner le texte du premier bloc à gauche */
         }
 
         .right {
             text-align: left;
-            /* Peut être `right` si nécessaire */
             float: right;
-            /* Forcer ce bloc à droite */
         }
+
     </style>
 </head>
 
 <body>
+    <div id="footer">
+        ATLANTIS MONTAZA - 1 Ter Rue de la Cité Nouvelle - ZI Altitude - 44570 - TRIGNAC - FRANCE <br>
+         Téléphone : 02 40 17 65 62
+    </div>
     <div class="container">
         <!-- Header -->
         <img src="{{ public_path('img/logo-long.png') }}" alt="Logo" style="width: 30%; margin-bottom: 20px; margin-left:-2%;">
@@ -129,7 +147,6 @@
             @if ($ddp->dossier_suivi_par_id != 0 && $ddp->dossier_suivi_par_id != null)
                 <strong>Dossier suivi par :</strong> {{ $ddp->dossierSuiviPar->first_name }}
                 {{ $ddp->dossierSuiviPar->last_name }}<br>
-
             @endif
             <strong>Ref : </strong> {{ $ddp->code }}<br>
         </div>
@@ -137,8 +154,6 @@
         <!-- Main Content -->
         <div class="main-content">
             <p>
-                {{-- <strong>Livraison souhaitée au plus tard le :</strong> <br>
-                Attention : votre réponse est demandée pour, au plus tard, le :<br><br> --}}
                 Madame, Monsieur,<br>
                 Veuillez nous faire parvenir votre offre de prix concernant les éléments indiqués ci-dessous.
             </p>
@@ -164,14 +179,10 @@
                 </tbody>
             </table>
         </div>
-
-        <!-- Footer -->
-        <div class="footer">
-            ATLANTIS MONTAZA - 1 Ter Rue de la Cité Nouvelle - ZI Altitude - 44570 - TRIGNAC - FRANCE<br>
-            Téléphone : 02 40 17 65 62 <br>
-            Page 1 sur 1
-        </div>
     </div>
+
+    <!-- Footer -->
+
 </body>
 
 </html>

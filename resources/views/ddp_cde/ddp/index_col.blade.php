@@ -6,7 +6,7 @@
         <p class="text-lg mb-2">
             Demandes de prix en cours
         </p>
-        <a href="#" class="btn mb-2">Voir tout</a>
+        <a href="{{ route('ddp.index') }}" class="btn mb-2">Voir tout</a>
     </div>
     <table>
         <thead>

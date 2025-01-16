@@ -6,6 +6,7 @@ use App\Models\Ddp;
 use App\Models\DdpLigneFournisseur;
 use App\Models\Famille;
 use App\Models\Mailtemplate;
+use App\Models\ModelChange;
 use App\Models\Societe;
 use App\Models\Unite;
 use App\Models\User;
@@ -24,6 +25,32 @@ class DdpController extends Controller
     {
 
         return view('ddp_cde.index');
+    }
+    public function index(Request $request)
+    {
+        $request->validate([
+            'search' => 'nullable|string|max:255',
+            'statut' => 'nullable|integer|exists:ddp_cde_statuts,id',
+        ]);
+        $search = $request->input('search');
+        $statut = $request->input('statut') ?? 0;
+        if ($statut == 0) {
+            $ddps = Ddp::query()
+                ->where('nom', 'LIKE', "%{$search}%")
+                ->orWhere('code', 'LIKE', "%{$search}%")
+                ->orderBy('created_at', 'desc')
+                ->paginate(10);
+        } else {
+            $ddps = Ddp::query()
+                ->where('nom', 'LIKE', "%{$search}%")
+                ->orWhere('code', 'LIKE', "%{$search}%")
+                ->where('ddp_cde_statut_id', $statut)
+                ->orderBy('ddp_cde_statut_id', 'asc')
+                ->orderBy('created_at', 'desc')
+                ->paginate(10);
+        }
+
+        return view('ddp_cde.ddp.index_col', compact('ddps'));
     }
     public function indexColDdp()
     {
@@ -114,9 +141,12 @@ class DdpController extends Controller
         $ddp->delete();
         return redirect()->route('ddp_cde.index');
     }
-    public function validation($id): View
+    public function validation($id): View|RedirectResponse
     {
         $ddp = Ddp::findOrFail($id)->load('ddpLigne', 'ddpLigne.ddpLigneFournisseur');
+        if ($ddp->nom == 'undefined') {
+            return redirect()->route('ddp.show', $ddp->id)->with('error', 'Veuillez renseigner la demande de prix');
+        }
         $ddp_societe = $ddp->ddpLigne->map(function ($ligne) {
             return $ligne->ddpLigneFournisseur->map(function ($fournisseur) {
                 return $fournisseur->societe;
@@ -129,6 +159,7 @@ class DdpController extends Controller
     {
 
         $ddp = Ddp::findOrFail($ddp)->load('ddpLigne', 'ddpLigne.ddpLigneFournisseur');
+
         foreach ($request->all() as $key => $value) {
             if ($key != '_token' && preg_match('/^contact-\d+$/', $key)) {
                 $societe_id = explode('-', $key)[1];
@@ -158,11 +189,25 @@ class DdpController extends Controller
         $pdfs = array_map(function ($file) use ($ddpannee) {
             return str_replace('DDP/' . $ddpannee . '/', '', $file);
         }, $pdfs);
+
+        if (count($pdfs) != $ddp->societeContacts()->count()) {
+            foreach ($pdfs as $pdf) {
+                Storage::delete('DDP/' . $ddpannee . '/' . $pdf);
+            }
+            DdpController::pdf($ddp->id);
+            $pdfs = Storage::files('DDP/' . $ddpannee);
+            $pdfs = array_filter($pdfs, function ($file) use ($ddp) {
+                return strpos(basename($file), $ddp->code) === 0;
+            });
+            $pdfs = array_map(function ($file) use ($ddpannee) {
+                return str_replace('DDP/' . $ddpannee . '/', '', $file);
+            }, $pdfs);
+        }
         $mailtemplate = Mailtemplate::where('nom', 'ddp')->first();
         $mailtemplate->sujet = str_replace('{code_ddp}', $ddp->code, $mailtemplate->sujet);
         return view('ddp_cde.ddp.pdf_preview', ['ddp' => $ddp, 'pdfs' => $pdfs, 'mailtemplate' => $mailtemplate]);
     }
-    public function pdf($ddpi_id, $force = false)
+    public function pdf($ddpi_id)
     {
         $ddp = Ddp::findOrFail($ddpi_id)->load('ddpLigne', 'ddpLigne.ddpLigneFournisseur');
         $ddp_contacts = $ddp->ddpLigne->map(function ($ligne) {
@@ -180,16 +225,24 @@ class DdpController extends Controller
             $afficher_destinataire = $ddp->afficher_destinataire;
             $destinataire = $contacts->email;
             $fileName = $ddp->code . '_' . $etablissement->societe->raison_sociale . '.pdf';
-            if (!(Storage::exists('DDP/' . now()->format('y') . '/' . $fileName)) && $force == false) {
-                $pdf = app('dompdf.wrapper');
-                $pdf->loadView('ddp_cde.ddp.pdf', ['etablissement' => $etablissement, 'ddp' => $ddp, 'lignes' => $lignes, 'afficher_destinataire' => $afficher_destinataire, 'destinataire' => $destinataire]);
-                $pdf->setOption(['isRemoteEnabled' => true, 'isHtml5ParserEnabled' => true, 'isPhpEnabled' => true]);
-                $year = now()->format('y');
-                Storage::put('DDP/' . $year . '/' . $fileName, $pdf->output());
-                $pdf = null;
-            }
+            $pdf = app('dompdf.wrapper');
+            $pdf->loadView('ddp_cde.ddp.pdf', ['etablissement' => $etablissement, 'ddp' => $ddp, 'lignes' => $lignes, 'afficher_destinataire' => $afficher_destinataire, 'destinataire' => $destinataire]);
+            $pdf->setOption(['isRemoteEnabled' => true, 'isHtml5ParserEnabled' => true, 'isPhpEnabled' => true]);
+            $pdf->output();
+            $domPdf = $pdf->getDomPDF();
+            $canvas = $domPdf->get_canvas();
+            $canvas->page_text(
+                $canvas->get_width() / 2 - 25,
+                $canvas->get_height() - 18,
+                "Page {PAGE_NUM} sur {PAGE_COUNT}",
+                null,
+                8,
+                [0, 0, 0]
+            );
 
-
+        $year = now()->format('y');
+            Storage::put('DDP/' . $year . '/' . $fileName, $pdf->output());
+            $pdf = null;
         }
     }
     public function pdfshow($ddp, $dossier, $path)
@@ -201,7 +254,8 @@ class DdpController extends Controller
         $response->header('Content-Type', $type);
         return $response;
     }
-    public function pdfsDownload($ddp_id) {
+    public function pdfsDownload($ddp_id)
+    {
         $ddp = Ddp::findOrFail($ddp_id);
         $ddpannee = explode('-', $ddp->code)[1];
         $pdfs = Storage::files('DDP/' . $ddpannee);
@@ -211,6 +265,12 @@ class DdpController extends Controller
         $pdfs = array_map(function ($file) use ($ddpannee) {
             return str_replace('DDP/' . $ddpannee . '/', '', $file);
         }, $pdfs);
+        if (count($pdfs) == 0) {
+            return redirect()->route('ddp.show', $ddp->id)->with('error', 'Aucun fichier à télécharger');
+        }
+        if (count($pdfs) == 1) {
+            return response()->download(storage_path('app/private/DDP/' . $ddpannee . '/' . $pdfs[0]));
+        }
         $zip = new \ZipArchive();
         $zipFileName = 'DDP_' . $ddp->code . '.zip';
         $tempDir = storage_path('app/private/temp');
@@ -226,5 +286,74 @@ class DdpController extends Controller
         }
         $zip->close();
         return response()->download(storage_path('app/private/temp/' . $zipFileName))->deleteFileAfterSend(true);
+    }
+    public function sendMails(Request $request, $id)
+    {
+        $ddp = Ddp::findOrFail($id);
+        $request->validate([
+            'sujet' => 'required|string|max:255',
+            'contenu' => 'required|string',
+        ]);
+        $contenu = str_replace("CHEVRON-GAUCHE", "<", $request->contenu);
+        $contenu = str_replace("CHEVRON-DROIT", ">", $contenu);
+        $ddpannee = explode('-', $ddp->code)[1];
+        $pdfs = Storage::files("DDP/{$ddpannee}");
+        $pdfs = array_filter($pdfs, function ($file) use ($ddp) {
+            return strpos(basename($file), $ddp->code) === 0;
+        });
+        $pdfs = array_map(function ($file) use ($ddpannee) {
+            return str_replace("DDP/{$ddpannee}/", '', $file);
+        }, $pdfs);
+        $contacts_Already_sent = [];
+        foreach ($ddp->ddpLigne as $ligne) {
+            foreach ($ligne->ddpLigneFournisseur as $fournisseur) {
+                $societe = $fournisseur->societe;
+                $contact = $fournisseur->societeContact;
+                $pdfFileName = "{$ddp->code}_{$societe->raison_sociale}.pdf";
+                $pdfPath = storage_path("app/private/DDP/{$ddpannee}/{$pdfFileName}");
+
+                if (file_exists($pdfPath) && !in_array($contact->id, $contacts_Already_sent)) {
+                    try {
+                        Mail::send([], [], function ($message) use ($request, $contact, $pdfPath, $contenu) {
+                            $message->to($contact->email)
+                                ->subject($request->sujet)
+                                ->html($contenu)
+                                ->attach($pdfPath);
+                        });
+                    } catch (\Exception $e) {
+                        return response()->json(['error' => 'An error occurred while sending emails', 'message' => $e->getMessage()], 500);
+                    }
+                    $logmail = [];
+                    $logmail['sujet'] = $request->sujet;
+                    $logmail['contenu'] = $contenu;
+                    $logmail['Destinataire'] = $contact->email;
+                    $logmail['pdf'] = $pdfPath;
+                    $logmail['ddp_nom'] = $ddp->nom;
+                    $logmail['ddp_id'] = $ddp->id;
+                    $logmail['societe_raison_sociale'] = $societe->raison_sociale;
+                    $logmail['societe_id'] = $societe->id;
+                    $logmail['contact_nom'] = $contact->nom;
+                    $logmail['contact_id'] = $contact->id;
+                    ModelChange::create([
+                        'user_id' => Auth::id(),
+                        'model_type' => 'Commentaire',
+                        'before' => '',
+                        'after' => $logmail,
+                        'event' => 'creating',
+                    ]);
+                    $contacts_Already_sent[] = $contact->id;
+                }
+            }
+        }
+        $ddp->ddp_cde_statut_id = 2;
+        $ddp->save();
+        return redirect()->route('ddp.show', $ddp->id)->with('success', 'Les emails ont été envoyés avec succès');
+    }
+    public function skipMails($id)
+    {
+        $ddp = Ddp::findOrFail($id);
+        $ddp->ddp_cde_statut_id = 2;
+        $ddp->save();
+        return redirect()->route('ddp.show', $ddp->id);
     }
 }

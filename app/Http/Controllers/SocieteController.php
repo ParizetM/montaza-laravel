@@ -191,10 +191,11 @@ class SocieteController extends Controller
         } else {
             $etablissement = Etablissement::find($etablissement->id);
         }
-
+        $societes = Societe::all();
         return view('societes.show', [
             'societe' => $societe,
             'etablissement' => $etablissement,
+            'societes' => $societes,
         ]);
     }
 

@@ -485,6 +485,7 @@
                     });
                     existingRow.setAttribute('data-fournisseurs-ids', FinalDataIds.join(';'));
                     existingRow.setAttribute('data-fournisseurs-noms', FinalDataNoms.join(';'));
+                    liveSearchFournisseurs();
                 })
                 .catch(error => {
                     console.error('Erreur lors de la récupération des fournisseurs :', error);
@@ -524,14 +525,17 @@
                         'dark:hover:bg-gray-700');
                 }
                 if (event.currentTarget.getAttribute('data-is-from-quicksearch') == 'true') {
-                    const clonedRow = event.currentTarget.cloneNode(true);
                     const fournisseurNom = event.currentTarget.getAttribute('data-fournisseur-nom');
-                    document.getElementById('fournisseurs-table').appendChild(clonedRow);
-                    existingRow.setAttribute('data-fournisseurs-ids',
-                        `${existingRow.getAttribute('data-fournisseurs-ids')};${fournisseurId}`);
-                    existingRow.setAttribute('data-fournisseurs-noms',
-                        `${existingRow.getAttribute('data-fournisseurs-noms')};${fournisseurNom}`);
-                    event.currentTarget.remove();
+                    const existingFournisseur = document.querySelector(`#fournisseurs-table tr[data-fournisseur-id="${fournisseurId}"]`);
+                    if (!existingFournisseur) {
+                        const clonedRow = event.currentTarget.cloneNode(true);
+                        document.getElementById('fournisseurs-table').appendChild(clonedRow);
+                        existingRow.setAttribute('data-fournisseurs-ids',
+                            `${existingRow.getAttribute('data-fournisseurs-ids')};${fournisseurId}`);
+                        existingRow.setAttribute('data-fournisseurs-noms',
+                            `${existingRow.getAttribute('data-fournisseurs-noms')};${fournisseurNom}`);
+                        event.currentTarget.remove();
+                    }
                 }
                 fournisseurInput.value = currentFournisseurs.join(';');
                 saveChanges();
@@ -617,30 +621,8 @@
                     saveStatus2.classList.remove('hidden');
                 });
         }
-        document.addEventListener('DOMContentLoaded', function() {
-            // Event listener for famille selection change
-            document.getElementById('famille_id_search').addEventListener('change', function() {
-                updateSousFamilles();
-            });
-            document.getElementById('sous_famille_id_search').addEventListener('change', function() {
-                liveSearch();
-            });
-            const searchbar = document.getElementById('searchbar');
-            const searchbarFournisseur = document.getElementById('searchbarFournisseur');
-            const matiereTable = document.getElementById('matiere-table');
-            const ddpNom = document.getElementById('ddp-nom');
 
-            // Event listener for search bar input
-
-            searchbar.addEventListener('input', function() {
-                liveSearch();
-            });
-            searchbarFournisseur.addEventListener('input', function() {
-                liveSearchFournisseurs();
-            });
-
-
-            async function liveSearchFournisseurs() {
+        async function liveSearchFournisseurs() {
                 const search = document.getElementById('searchbarFournisseur').value;
                 if (search.length < 1) {
                     return;
@@ -677,6 +659,31 @@
                     });
                 }
             }
+
+            document.addEventListener('DOMContentLoaded', function() {
+            // Event listener for famille selection change
+            document.getElementById('famille_id_search').addEventListener('change', function() {
+                updateSousFamilles();
+            });
+            document.getElementById('sous_famille_id_search').addEventListener('change', function() {
+                liveSearch();
+            });
+            const searchbar = document.getElementById('searchbar');
+            const searchbarFournisseur = document.getElementById('searchbarFournisseur');
+            const matiereTable = document.getElementById('matiere-table');
+            const ddpNom = document.getElementById('ddp-nom');
+
+            // Event listener for search bar input
+
+            searchbar.addEventListener('input', function() {
+                liveSearch();
+            });
+            searchbarFournisseur.addEventListener('input', function() {
+                liveSearchFournisseurs();
+            });
+
+
+
             ddpNom.addEventListener('input', function() {
                 if (ddpNom.value !== undefined && ddpNom.value.trim() !== '') {
                     saveChanges();

@@ -15,17 +15,25 @@ class DdpLigne extends Model
 
     protected $fillable = ['ddp_id', 'matiere_id', 'quantite'];
 
-    public function ddp(): BelongsTo {
+    public function ddp(): BelongsTo
+    {
         return $this->belongsTo(Ddp::class);
     }
-    public function matiere(): BelongsTo {
+    public function matiere(): BelongsTo
+    {
         return $this->belongsTo(Matiere::class);
     }
-    public function ddpLigneFournisseur(): HasMany {
+    public function ddpLigneFournisseur(): HasMany
+    {
         return $this->hasMany(DdpLigneFournisseur::class);
     }
-    public function fournisseurs(): BelongsToMany {
-        return $this->belongsToMany(Societe::class, 'ddp_ligne_fournisseurs', 'ddp_ligne_id', 'societe_id');
+    public function ddpLigneFournisseurs()
+    {
+        return $this->hasMany(DdpLigneFournisseur::class, 'ddp_ligne_id', 'id');
     }
 
+    public function fournisseurs(): BelongsToMany
+    {
+        return $this->belongsToMany(Societe::class, 'ddp_ligne_fournisseurs', 'ddp_ligne_id', 'societe_id');
+    }
 }

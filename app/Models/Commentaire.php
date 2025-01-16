@@ -18,6 +18,9 @@ class Commentaire extends Model
     {
         // Enregistrer avant la création d'un modèle
         static::created(function ($model): void {
+            if (empty($model->commentaire)) {
+            return;
+            }
             self::logChange($model, 'creating');
         });
 

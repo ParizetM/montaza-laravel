@@ -110,14 +110,14 @@
                 <div class=" py-6 px-8 text-gray-800 dark:text-gray-200">
                     <div class="flex justify-between">
 
-                    <h1 class="text-3xl font-bold mb-1">
-                        {{ __('Établissements') }}
-                    </h1>
-                    @can('gerer_les_societes')
+                        <h1 class="text-3xl font-bold mb-1">
+                            {{ __('Établissements') }}
+                        </h1>
+                        @can('gerer_les_societes')
                             <div class="flex justify-end">
                                 <div>
-                                <a href="{{ route('etablissements.edit', ['societe' => $societe->id, 'etablissement' => $etablissement->id]) }}"
-                                    class="btn dark:bg-gray-900 ">Modifier</a>
+                                    <a href="{{ route('etablissements.edit', ['societe' => $societe->id, 'etablissement' => $etablissement->id]) }}"
+                                        class="btn dark:bg-gray-900 ">Modifier</a>
                                 </div>
                             </div>
                         @endcan
@@ -142,14 +142,25 @@
                     <h1 class="font-bold text-2xl text-gray-800 dark:text-gray-200 leading-tight">
                         {{ $etablissement->nom }}
                     </h1>
-                    <button type="button" class="btn mb-2 dark:bg-gray-900" title="Contacts" x-data=""
-                        x-on:click.prevent="$dispatch('open-modal', 'contacts-modal-{{ $etablissement->id }}')">
-                        <x-icon :size="1.5" type="contact" class="icons-no_hover " />
-                    </button>
+                    <div class="flex gap-2">
+                        <button type="button" class="btn mb-2 dark:bg-gray-900" title="Contacts"
+                            x-data=""
+                            x-on:click.prevent="$dispatch('open-modal', 'contacts-modal-{{ $etablissement->id }}')">
+                            <x-icon :size="1" type="contact" class="icons-no_hover " />
+                        </button>
+                        <button type="button" class="btn mb-2 dark:bg-gray-900" title="Ajouter un contact"
+                            x-data=""
+                            x-on:click.prevent="$dispatch('open-modal', 'etablissement-quick-contact')">
+                            <x-icons.new-contact class="icons-no_hover" />
+                        </button>
+                    </div>
                     @php
                         $contacts = $etablissement->societeContacts;
                     @endphp
                     <x-modals.contacts name="contacts-modal-{{ $etablissement->id }}" :contacts="$contacts" />
+                    <x-modal name="etablissement-quick-contact" focusable maxWidth="5xl">
+                        @include('societes.contacts.quick-create', ['societes' => $societes,'selected_societe' => $societe, 'selected_etablissement' => $etablissement])
+                    </x-modal>
                 </div>
                 <!-- Contenu Principal -->
                 <div class="px-8 pb-6 mt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
