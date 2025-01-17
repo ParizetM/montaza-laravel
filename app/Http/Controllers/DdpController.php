@@ -97,7 +97,7 @@ class DdpController extends Controller
                 });
             })->flatten()->unique('id');
             $ddp->load('ddpLigne.matiere', 'ddpLigne.ddpLigneFournisseur.societe', 'ddpLigne.ddpLigneFournisseur.societeContact');
-            return view('ddp_cde.ddp.show', compact('ddp', 'ddp_societes'));
+            return view('ddp_cde.ddp.show', compact('ddp', ['ddp_societes',]));
         }
         return view('ddp_cde.ddp.show', compact('ddp'));
     }
