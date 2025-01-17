@@ -141,7 +141,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection','auth'])->group(function
         Route::get('/ddp/{ddp}', [DdpController::class, 'show'])->name('ddp.show');
         Route::get('/colcde', [CdeController::class, 'indexColCde'])->name('ddp.index_col_cde');
         Route::post('/ddp/{ddp}/sendmails', [DdpController::class, 'sendMails'])->name('ddp.sendmails');
-        Route::post('/ddp/{ddp}/skipmails', [DdpController::class, 'skipMails'])->name('ddp.skipmails');
+        Route::get('/ddp/{ddp}/skipmails', [DdpController::class, 'skipMails'])->name('ddp.skipmails');
     });
 
 });

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ddp;
+use App\Models\DdpCdeStatut;
 use App\Models\DdpLigneFournisseur;
 use App\Models\Famille;
 use App\Models\Mailtemplate;
@@ -28,30 +29,47 @@ class DdpController extends Controller
     }
     public function index(Request $request)
     {
+        // Validation des entrées
         $request->validate([
             'search' => 'nullable|string|max:255',
             'statut' => 'nullable|integer|exists:ddp_cde_statuts,id',
+            'nombre' => 'nullable|integer|min:1|'
         ]);
-        $search = $request->input('search');
-        $statut = $request->input('statut') ?? 0;
-        if ($statut == 0) {
-            $ddps = Ddp::query()
-                ->where('nom', 'LIKE', "%{$search}%")
-                ->orWhere('code', 'LIKE', "%{$search}%")
-                ->orderBy('created_at', 'desc')
-                ->paginate(10);
-        } else {
-            $ddps = Ddp::query()
-                ->where('nom', 'LIKE', "%{$search}%")
-                ->orWhere('code', 'LIKE', "%{$search}%")
-                ->where('ddp_cde_statut_id', $statut)
-                ->orderBy('ddp_cde_statut_id', 'asc')
-                ->orderBy('created_at', 'desc')
-                ->paginate(10);
-        }
 
-        return view('ddp_cde.ddp.index_col', compact('ddps'));
+        // Lecture des entrées avec des valeurs par défaut
+        $search = $request->input('search');
+        $statut = $request->input('statut');
+        $quantite = $request->input('nombre', 20);
+
+        // Construire la requête de base
+        $query = Ddp::query()
+            ->where('nom', '!=', 'undefined')
+            ->when($search, function ($query, $search) {
+                $query->where(function ($subQuery) use ($search) {
+                    $subQuery->where('nom', 'LIKE', "%{$search}%")
+                             ->orWhere('code', 'LIKE', "%{$search}%");
+                });
+            })
+            ->when($statut, function ($query, $statut) {
+                $query->where('ddp_cde_statut_id', $statut);
+            })
+            ->orWhereHas('user', function ($subQuery) use ($search) {
+                $subQuery->where('first_name', 'LIKE', "%{$search}%")
+                         ->orWhere('last_name', 'LIKE', "%{$search}%");
+            })
+            ->orderBy('ddp_cde_statut_id', 'asc')
+            ->orderBy('created_at', 'desc');
+
+        // Récupérer les résultats paginés
+        $ddps = $query->paginate($quantite);
+
+        // Récupérer les statuts pour le filtre
+        $ddp_statuts = DdpCdeStatut::all();
+
+        // Retourner la vue avec les données
+        return view('ddp_cde.ddp.index', compact('ddps', 'ddp_statuts'));
     }
+
     public function indexColDdp()
     {
         $ddps = Ddp::whereIn('ddp_cde_statut_id', [1, 2])->orderBy('ddp_cde_statut_id', 'asc')
@@ -71,6 +89,15 @@ class DdpController extends Controller
             $familles = Famille::all();
             $unites = Unite::all();
             return view('ddp_cde.ddp.create', ['ddp' => $ddp, 'ddpid' => $ddpid, 'familles' => $familles, 'unites' => $unites]);
+        }
+        if ($ddp->ddp_cde_statut_id == 2) {
+            $ddp_societes = $ddp->ddpLigne->map(function ($ligne) {
+                return $ligne->ddpLigneFournisseur->map(function ($fournisseur) {
+                    return $fournisseur->societe;
+                });
+            })->flatten()->unique('id');
+            $ddp->load('ddpLigne.matiere', 'ddpLigne.ddpLigneFournisseur.societe', 'ddpLigne.ddpLigneFournisseur.societeContact');
+            return view('ddp_cde.ddp.show', compact('ddp', 'ddp_societes'));
         }
         return view('ddp_cde.ddp.show', compact('ddp'));
     }

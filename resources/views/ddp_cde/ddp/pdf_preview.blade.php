@@ -47,7 +47,7 @@
             <div>
                 <div class="flex justify-between items-center border-b border-gray-300 dark:border-gray-700 mt-6 mb-4">
                     <h1 class="text-3xl font-bold mb-6 text-left">Mails</h1>
-                    <a href="{{ route('ddp.pdfs.download', $ddp) }}" class="btn">Passer cette étape</a>
+                    <a href="{{ route('ddp.skipmails', $ddp) }}" class="btn">Passer cette étape</a>
                 </div>
                 <div>
                     <form action="{{ route('ddp.sendmails', $ddp) }}" method="POST" id="mailtemplate-form">
