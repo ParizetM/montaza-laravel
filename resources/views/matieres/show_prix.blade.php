@@ -22,11 +22,11 @@
             <div class="block overflow-auto">
 
                 <div class="mb-6 chart-container">
-                    <canvas id="myChart"  width="400" height="100"></canvas>
+                    <canvas id="myChart" width="400" height="100"></canvas>
                 </div>
                 <div class="flex">
                     <label for="startDate">Date de début :</label>
-                    <select id="startDate" class="select w-auto">
+                    <select id="startDate" class="select w-auto datePicker">
                         @foreach ($dates as $date)
                             <option value="{{ $date }}">{{ $date }}</option>
                         @endforeach
@@ -61,60 +61,74 @@
         </div>
     </div>
     <script>
-       document.addEventListener('DOMContentLoaded', () => {
-    const ctx = document.getElementById('myChart').getContext('2d');
+        document.addEventListener('DOMContentLoaded', () => {
 
-    const myChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: @json($dates), // Les dates passées par le contrôleur
-            datasets: [{
-                label: 'Valeurs sur le temps',
-                data: @json($prix), // Les valeurs passées par le contrôleur
-                borderColor: 'rgba(75, 192, 192, 1)',
-                backgroundColor: 'white',
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                x: {
-                    type: 'time', // Échelle temporelle
-                    time: {
-                        unit: 'day', // Regroupe par jour
-                    },
+            const datePicker = new Pikaday({
+                field: document.getElementsByClassName('datePicker'), // L'élément input
+                format: 'YYYY-MM-DD', // Format de la date
+                firstDay: 1, // Lundi comme premier jour de la semaine
+                i18n: {
+                    previousMonth: 'Mois précédent',
+                    nextMonth: 'Mois suivant',
+                    months: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août',
+                        'Septembre', 'Octobre', 'Novembre', 'Décembre'
+                    ],
+                    weekdays: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
+                    weekdaysShort: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam']
                 },
-                y: {
-                    beginAtZero: true,
-                    type: 'linear',
+            });
+            const ctx = document.getElementById('myChart').getContext('2d');
+
+            const myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: @json($dates), // Les dates passées par le contrôleur
+                    datasets: [{
+                        label: 'Valeurs sur le temps',
+                        data: @json($prix), // Les valeurs passées par le contrôleur
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'white',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            type: 'time', // Échelle temporelle
+                            time: {
+                                unit: 'day', // Regroupe par jour
+                            },
+                        },
+                        y: {
+                            beginAtZero: true,
+                            type: 'linear',
+                        }
+                    }
                 }
-            }
-        }
-    });
+            });
 
-    // Gestionnaires des menus déroulants
-    const startDateSelect = document.getElementById('startDate');
-    const endDateSelect = document.getElementById('endDate');
+            // Gestionnaires des menus déroulants
+            const startDateSelect = document.getElementById('startDate');
+            const endDateSelect = document.getElementById('endDate');
 
-    // Fonction pour mettre à jour les limites de l'axe X
-    const updateChartLimits = () => {
-        const startDate = startDateSelect.value;
-        const endDate = endDateSelect.value;
+            // Fonction pour mettre à jour les limites de l'axe X
+            const updateChartLimits = () => {
+                const startDate = startDateSelect.value;
+                const endDate = endDateSelect.value;
 
-        if (new Date(startDate) <= new Date(endDate)) {
-            myChart.options.scales.x.min = startDate; // Limite inférieure
-            myChart.options.scales.x.max = endDate;   // Limite supérieure
-            myChart.update(); // Met à jour le graphique
-        } else {
-            alert("La date de début doit être inférieure ou égale à la date de fin.");
-        }
-    };
+                if (new Date(startDate) <= new Date(endDate)) {
+                    myChart.options.scales.x.min = startDate; // Limite inférieure
+                    myChart.options.scales.x.max = endDate; // Limite supérieure
+                    myChart.update(); // Met à jour le graphique
+                } else {
+                    alert("La date de début doit être inférieure ou égale à la date de fin.");
+                }
+            };
 
-    // Ajoute des événements de changement aux sélecteurs
-    startDateSelect.addEventListener('change', updateChartLimits);
-    endDateSelect.addEventListener('change', updateChartLimits);
-});
-
+            // Ajoute des événements de changement aux sélecteurs
+            startDateSelect.addEventListener('change', updateChartLimits);
+            endDateSelect.addEventListener('change', updateChartLimits);
+        });
     </script>
 
 </x-app-layout>
