@@ -42,7 +42,11 @@ return new class extends Migration
             $table->foreignId('societe_id')->constrained('societes');
             $table->foreignId('ddp_cde_statut_id')->constrained(table: 'ddp_cde_statuts');
             $table->foreignId('societe_contact_id')->nullable()->constrained('societe_contacts');
+            $table->date('date_livraison')->nullable();
             $table->timestamps();
+        });
+        Schema::table('societe_matiere', function (Blueprint $table) {
+            $table->foreignId('ddp_ligne_fournisseur_id')->nullable()->constrained('ddp_ligne_fournisseurs');
         });
     }
 
@@ -51,6 +55,9 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('societe_matiere', function (Blueprint $table) {
+            $table->dropForeign(['ddp_ligne_fournisseur_id']);
+        });
         Schema::dropIfExists('ddp_ligne_fournisseur');
         Schema::dropIfExists('ddp_lignes');
         Schema::dropIfExists('ddps');

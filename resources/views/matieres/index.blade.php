@@ -93,6 +93,7 @@
                                     <th class="text-left py-3 px-4 uppercase font-semibold text-sm">DN</th>
                                     <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Épaisseur</th>
                                     <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Unité</th>
+                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Action</th>
                                 </tr>
                             </thead>
                             <tbody class="text-gray-700 dark:text-gray-100" id="body_table">
@@ -200,6 +201,7 @@
             <td class="text-left py-3 px-4">${matiere.dn || '-'}</td>
             <td class="text-left py-3 px-4">${matiere.epaisseur || '-'}</td>
             <td class="text-left py-3 px-4">${matiere.Unite || '-'}</td>
+            <td class="text-left py-3 px-4"><a href="/matieres/${matiere.id}" class="btn">Voir</a></td>
         `;
                 tbody.appendChild(row);
             });

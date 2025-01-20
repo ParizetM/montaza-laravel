@@ -12,12 +12,18 @@ import numbro from 'numbro';
 
 // Import Alpine.js
 import Alpine from 'alpinejs';
+import { HyperFormula } from 'hyperformula';
 
 // Enregistrement du français
 registerLanguageDictionary(frFR);
+import 'chartjs-adapter-date-fns';
+import Chart from 'chart.js/auto';
 
+// Exposition des librairies dans la fenêtre globale
+window.Chart = Chart;
 window.Handsontable = Handsontable;
 window.frFR = frFR;
+window.HyperFormula = HyperFormula;
 window.numbro = numbro;
 window.Alpine = Alpine;
 

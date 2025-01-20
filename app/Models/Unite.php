@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Unite extends Model
 {
-    protected $fillable = ['libelle'];
+    protected $fillable = ['short', 'full', 'full_plural', 'type'];
     public $timestamps = false;
     public function matieres()
     {

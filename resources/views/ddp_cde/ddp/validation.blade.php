@@ -39,7 +39,7 @@
                         </h2>
 
                         <div class="grid grid-cols-2 gap-4">
-                            <ul class="space-y-4 bg-gray-900 py-4 rounded-b-md">
+                            <ul class="space-y-4 bg-gray-100 dark:bg-gray-900 py-4 rounded-b-md">
                                 @foreach ($ddp->ddpLigne as $ddpLigne)
                                     @foreach ($ddpLigne->ddpLigneFournisseur as $ddpLigneFournisseur)
                                         @if ($ddpLigneFournisseur->societe_id == $societe->id)

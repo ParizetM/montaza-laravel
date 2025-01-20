@@ -111,6 +111,8 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection','auth'])->group(function
         Route::get('/matieres/quickSearch', [MatiereController::class, 'quickSearch'])->name('matieres.quickSearch');
         Route::get('/matieres/famille/{famille}/sous-familles/json', [MatiereController::class, 'sousFamillesJson'])->name('matieres.sous_familles.json');
         Route::get('/matieres/{matiere}/fournisseurs/json', [MatiereController::class, 'fournisseursJson'])->name('matieres.fournisseurs.json');
+        Route::get('/matieres/{matiere}', [MatiereController::class, 'show'])->name('matieres.show');
+        Route::get('/matieres/{matiere}/prix/{fournisseur}', [MatiereController::class, 'showPrix'])->name('matieres.show_prix');
         Route::get('/matieres/standards/{dossier}/{standard}', [StandardController::class, 'show'])->name('standards.show');
         Route::get('/matieres/standards', [StandardController::class, 'index'])->name('standards.index');
         Route::delete('/matieres/standards/delete', [StandardController::class, 'destroy'])->name('standards.destroy');
@@ -135,6 +137,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection','auth'])->group(function
         Route::delete('/ddp/{ddp}/destroy', [DdpController::class, 'destroy'])->name('ddp.destroy');
         Route::get('/ddp/{ddp}/validate', [DdpController::class, 'validation'])->name('ddp.validation');
         Route::post('/ddp/{ddp}/validate', [DdpController::class, 'validate'])->name('ddp.validate');
+        Route::post('/ddp/{ddp}/save-retours', [DdpController::class, 'saveRetours'])->name('ddp.save_retours');
         Route::get('/ddp/{ddp}/pdfs', [DdpController::class, 'pdfs'])->name('ddp.pdfs');
         Route::get('/ddp/{ddp}/pdfs/download', [DdpController::class, 'pdfsDownload'])->name('ddp.pdfs.download');
         Route::get('/ddp/{ddp}/pdf/{annee}/{nom}', [DdpController::class, 'pdfshow'])->name('ddp.pdfshow');

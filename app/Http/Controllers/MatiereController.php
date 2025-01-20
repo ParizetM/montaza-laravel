@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\MatiereResource;
 use App\Models\Famille;
 use App\Models\Matiere;
+use App\Models\Societe;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
@@ -164,5 +165,35 @@ class MatiereController extends Controller
     public function fournisseursJson(Matiere $matiere)
     {
         return response()->json($matiere->fournisseurs);
+    }
+    public function show($matiere_id): View
+    {
+        $matiere = Matiere::with(['sousFamille', 'societe', 'standardVersion'])->findOrFail($matiere_id);
+        $fournisseurs_dernier_prix = $matiere->fournisseurs()
+            ->orderBy('date_dernier_prix', 'desc')
+            ->get()
+            ->unique('pivot.societe_id');
+        return view('matieres.show', [
+            'matiere' => $matiere,
+            'fournisseurs_dernier_prix' => $fournisseurs_dernier_prix,
+        ]);
+    }
+    public function showPrix($matiere_id, $societe_id): View
+    {
+        $fournisseur = Societe::findOrFail($societe_id)->where('societe_type_id', ['3', '2'])->first();
+        $matiere = Matiere::with(['sousFamille', 'societe', 'standardVersion'])->findOrFail($matiere_id);
+        $fournisseurs_prix = $matiere->fournisseurs()
+            ->where('societe_id', $societe_id)
+            ->orderBy('date_dernier_prix', 'desc')
+            ->get();
+        $dates = $fournisseurs_prix->pluck('pivot.date_dernier_prix');
+        $prix = $fournisseurs_prix->pluck('pivot.prix');
+        return view('matieres.show_prix', [
+            'matiere' => $matiere,
+            'fournisseur' => $fournisseur,
+            'fournisseurs_prix' => $fournisseurs_prix,
+            'dates' => $dates,
+            'prix' => $prix,
+        ]);
     }
 }

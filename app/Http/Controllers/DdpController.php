@@ -7,6 +7,7 @@ use App\Models\DdpCdeStatut;
 use App\Models\DdpLigneFournisseur;
 use App\Models\Famille;
 use App\Models\Mailtemplate;
+use App\Models\Matiere;
 use App\Models\ModelChange;
 use App\Models\Societe;
 use App\Models\Unite;
@@ -47,7 +48,7 @@ class DdpController extends Controller
             ->when($search, function ($query, $search) {
                 $query->where(function ($subQuery) use ($search) {
                     $subQuery->where('nom', 'LIKE', "%{$search}%")
-                             ->orWhere('code', 'LIKE', "%{$search}%");
+                        ->orWhere('code', 'LIKE', "%{$search}%");
                 });
             })
             ->when($statut, function ($query, $statut) {
@@ -55,7 +56,7 @@ class DdpController extends Controller
             })
             ->orWhereHas('user', function ($subQuery) use ($search) {
                 $subQuery->where('first_name', 'LIKE', "%{$search}%")
-                         ->orWhere('last_name', 'LIKE', "%{$search}%");
+                    ->orWhere('last_name', 'LIKE', "%{$search}%");
             })
             ->orderBy('ddp_cde_statut_id', 'asc')
             ->orderBy('created_at', 'desc');
@@ -267,7 +268,7 @@ class DdpController extends Controller
                 [0, 0, 0]
             );
 
-        $year = now()->format('y');
+            $year = now()->format('y');
             Storage::put('DDP/' . $year . '/' . $fileName, $pdf->output());
             $pdf = null;
         }
@@ -382,5 +383,57 @@ class DdpController extends Controller
         $ddp->ddp_cde_statut_id = 2;
         $ddp->save();
         return redirect()->route('ddp.show', $ddp->id);
+    }
+    public function saveRetours(Request $request, $id)
+    {
+        $ddp = Ddp::findOrFail($id);
+        $request->validate([
+            'data' => 'required|string',
+        ]);
+        $data = array_map('str_getcsv', array_filter(explode("\r\n", $request->data), 'strlen'));
+        array_shift($data);
+        array_pop($data);
+        $ddp_societes = $ddp->ddpLigne->map(function ($ligne) {
+            return $ligne->ddpLigneFournisseur->map(function ($fournisseur) {
+                return $fournisseur->societe;
+            });
+        })->flatten()->unique('id');
+        $data2 = [];
+        // foreach ($ddp->ddpLigne as $ddpLigne) {
+
+        //     $row = [];
+        //     foreach ($ddp_societes as $societe) {
+        //     $row[] = '';
+        //     $row[] = '';
+        //     }
+        //     $data2[] = $row;
+        // }
+        foreach ($ddp->ddpLigne as $index0 => $ddpLigne) {
+
+            $row = [];
+            foreach ($ddp_societes as $index1 => $societe) {
+                $matiereid = $ddpLigne->matiere_id;
+                $societeid = $societe->id;
+                // $row[] = $data[$index0][$index1 * 2];
+                $row[] = $matiereid;
+                $row[] = $societeid;
+                $matiere = Matiere::findOrNew($matiereid);
+                $existingFournisseur = $matiere->fournisseurs()->where('societe_id', $societeid)->orderBy('date_dernier_prix', 'desc')->first();
+                $newPrix = $data[$index0][$index1 * 2];
+                if (!$existingFournisseur || $existingFournisseur->pivot->prix != $newPrix) {
+                    $matiere->fournisseurs()->attach($societeid, ['prix' => $newPrix, 'date_dernier_prix' => now(),'ddp_ligne_fournisseur_id' => $ddpLigne->ddpLigneFournisseur->where('societe_id', $societeid)->first()->id]);
+                } else {
+                    $existingFournisseur->pivot->date_dernier_prix = now();
+                    $existingFournisseur->pivot->save();
+                }
+
+
+                // $row[] = $data[$index0][$index1 * 2 + 1];
+            }
+            $data2[] = $row;
+        }
+        return $data2;
+        // Assuming you have some logic to save the data here
+
     }
 }

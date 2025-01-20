@@ -58,150 +58,194 @@
                 .ht-center-first-row {
                     text-align: center;
                 }
+
+                thead {
+                    background: none;
+                }
             </style>
             <div id="handsontable-container" class="ht-theme-main-dark-auto"></div>
+            <button id="export-string" class="btn">Export as a string</button>
 
 
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
-                            const container = document.getElementById('handsontable-container');
-                            // Variables de données
-                            const rowHeaders = [
-                                'Matières',
-                                @foreach ($ddp->ddpLigne as $ddpLigne)
-                                    "{{ $ddpLigne->matiere->designation }}",
-                                @endforeach
-                                'Total',
-                                // Ajoutez autant de matières que nécessaire
-                            ];
-                            const ddp_societes = [
+                    const container = document.getElementById('handsontable-container');
+                    // Variables de données
+                    const rowHeaders = [
+                        'Matières',
+                        @foreach ($ddp->ddpLigne as $ddpLigne)
+                            "{{ $ddpLigne->matiere->designation }}",
+                        @endforeach
+                        'Total',
+                        // Ajoutez autant de matières que nécessaire
+                    ];
+                    const ddp_societes = [
+                        @foreach ($ddp_societes as $societe)
+                            {
+                                nom: "{{ $societe->raison_sociale }}",
+                                id: {{ $societe->id }}
+                            },
+                        @endforeach
+                        // Ajoutez autant de sociétés que nécessaire
+                    ];
+
+                    // Construire les en-têtes des colonnes
+                    const colHeaders = [];
+                    ddp_societes.forEach(societe => {
+                        colHeaders.push(`(Prix €)`, `(Date)`);
+                    });
+
+                    // Construire les colonnes (read-only pour matières, saisie pour les autres)
+                    const columns = [
+                        ...ddp_societes.flatMap(() => [{
+                                type: 'numeric',
+                            }, // Colonne prix
+                            {
+                                type: 'date',
+                                dateFormat: 'DD/MM/YYYY',
+                                correctFormat: true,
+                                datePickerConfig: {
+                                    firstDay: 1,
+                                    showWeekNumber: true,
+                                    numberOfMonths: 1,
+                                    i18n: {
+                                        previousMonth: 'Mois précédent',
+                                        nextMonth: 'Mois suivant',
+                                        months: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet',
+                                            'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+                                        ],
+                                        weekdays: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi',
+                                            'Samedi'
+                                        ],
+                                        weekdaysShort: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam']
+                                    }
+                                },
+                            } // Colonne date
+                        ])
+                    ];
+
+                    // Construire les données
+                    const data = [
+                        [
+                            @foreach ($ddp_societes as $societe)
+                                '{{ $societe->raison_sociale }}',
+                                '{{ $societe->raison_sociale }}',
+                            @endforeach
+                        ],
+                        @foreach ($ddp->ddpLigne as $ddpLigne)
+                            [
                                 @foreach ($ddp_societes as $societe)
-                                    {
-                                        nom: "{{ $societe->raison_sociale }}",
-                                        id: {{ $societe->id }}
-                                    },
+                                    '',
+                                    '',
                                 @endforeach
-                                // Ajoutez autant de sociétés que nécessaire
-                            ];
+                            ],
+                        @endforeach
+                        [
+                            @foreach ($ddp_societes as $societe)
+                                '=SUM({{ chr(65 + $loop->index * 2) }}2:{{ chr(65 + $loop->index * 2) }}{{ $ddp->ddpLigne->count() + 1 }})',
+                                '=IF(MINIFS({{ chr(66 + $loop->index * 2) }}2:{{ chr(66 + $loop->index * 2) }}{{ $ddp->ddpLigne->count() + 1 }}, {{ chr(66 + $loop->index * 2) }}2:{{ chr(66 + $loop->index * 2) }}{{ $ddp->ddpLigne->count() + 1 }}, ">=" & TODAY())=0, "", MINIFS({{ chr(66 + $loop->index * 2) }}2:{{ chr(66 + $loop->index * 2) }}{{ $ddp->ddpLigne->count() + 1 }}, {{ chr(66 + $loop->index * 2) }}2:{{ chr(66 + $loop->index * 2) }}{{ $ddp->ddpLigne->count() + 1 }}, ">=" & TODAY()))',
+                            @endforeach
+                        ],
+                    ];
+                    const mergeCells = [
+                        @foreach ($ddp_societes as $index => $societe)
+                            {
+                                row: 0,
+                                col: {{ $index * 2 }},
+                                rowspan: 1,
+                                colspan: 2
+                            },
+                        @endforeach
+                    ];
 
-                            // Construire les en-têtes des colonnes
-                            const colHeaders = [];
-                            ddp_societes.forEach(societe => {
-                                colHeaders.push(`(Prix €)`, `(Date)`);
-                            });
-
-                            // Construire les colonnes (read-only pour matières, saisie pour les autres)
-                            const columns = [
-                                ...ddp_societes.flatMap(() => [{
-                                        type: 'numeric',
-                                    }, // Colonne prix
-                                    {
-                                        type: 'date',
-                                        dateFormat: 'DD/MM/YYYY',
-                                        correctFormat: true
-                                    } // Colonne date
-                                ])
-                            ];
-
-                            // Construire les données
-                            const data = [
-                                [
-                                    @foreach ($ddp_societes as $societe)
-                                        '{{ $societe->raison_sociale }}',
-                                        '{{ $societe->raison_sociale }}',
-                                    @endforeach
-                                ],
-                                @foreach ($ddp->ddpLigne as $ddpLigne)
-                                    [
-                                        @foreach ($ddp_societes as $societe)
-                                            '',
-                                            '',
-                                        @endforeach
-                                    ],
-                                @endforeach
-                                [
-                                    @foreach ($ddp_societes as $societe)
-                                        '',
-                                        '',
-                                    @endforeach
-                                ],
-                            ];
-                            const mergeCells = [
-                                @foreach ($ddp_societes as $index => $societe)
-                                    {
-                                        row: 0,
-                                        col: {{ $index * 2 }},
-                                        rowspan: 1,
-                                        colspan: 2
-                                    },
-                                @endforeach
-                            ];
-                            // Initialiser Handsontable
-                            const hot = new Handsontable(container, {
-                                data: data,
-                                language: 'fr-FR', // Définir la langue sur français
-                                local: frFR,
-                                licenseKey: 'non-commercial-and-evaluation',
-                                rowHeaders: rowHeaders,
-                                rowHeaderWidth: 150,
-                                colHeaders: colHeaders,
-                                columns: columns,
-                                mergeCells: mergeCells,
-                                manualColumnResize: true,
-                                manualRowResize: true,
-                                contextMenu: true,
-                                preventOverflow: 'horizontal',
-                                colWidths(visualColumnIndex) {
-                                    return visualColumnIndex % 2 === 0 ? 80 : 115;
-                                },
-                                autoColumnSize: {
-                                    syncLimit: '100%'
-                                },
-                                cells: function(row, col, prop) {
-                                    const cellProperties = {};
-                                    if (row === 0) {
-                                        cellProperties.readOnly = true;
-                                        cellProperties.className += ' ht-center-first-row';
-                                    };
-                                    if (row == rowHeaders.length - 1) {
-                                        cellProperties.readOnly = true;
-                                    }
-                                    return cellProperties;
-                                },
-                                afterChange: function(changes, source) {
-                                    if (source === 'edit') {
-                                        updateTotal();
-                                    }
-                                }
-                            });
-
-                            function updateTotal() {
-                                // Récupère toutes les données de chaque colonne de montants
-                                for (let col = 0; col < hot.countCols(); col += 2) {
-                                    const columnData = hot.getDataAtCol(col);
-
-                                    // Filtrer les valeurs numériques pour éviter les erreurs
-                                    const total = columnData.reduce((sum, value, rowIndex) => {
-                                        // Ignorer la première et la dernière ligne
-                                        if (rowIndex === 0 || rowIndex === columnData.length - 1) {
-                                            return sum;
-                                        }
-                                        // Vérifier si la valeur est numérique et ajouter à la somme
-                                        const numericValue = parseFloat(value);
-                                        if (!isNaN(numericValue)) {
-                                            return sum + numericValue;
-                                        }
-                                        return sum;
-                                    }, 0);
-
-                                    // Afficher le total dans la cellule de la dernière ligne de la colonne
-                                    const totalCell = hot.getCell(hot.countRows() - 1, col); // Dernière ligne, colonne de montants
-                                    if (totalCell) {
-                                        totalCell.readOnly = false;
-                                        totalCell.innerHTML = numbro(total).format('0,0.00 €');
-                                    }
-                                }
+                    function findMinValue(rowData) {
+                        const numericValues = rowData.filter(value => typeof value === 'number' && !isNaN(value));
+                        return Math.min(...numericValues);
+                    };
+                    // Initialiser Handsontable
+                    const hot = new Handsontable(container, {
+                        data: data,
+                        language: 'fr-FR', // Définir la langue sur français
+                        local: frFR,
+                        licenseKey: 'non-commercial-and-evaluation',
+                        rowHeaders: rowHeaders,
+                        rowHeaderWidth: 150,
+                        colHeaders: colHeaders,
+                        columns: columns,
+                        mergeCells: mergeCells,
+                        manualColumnResize: true,
+                        manualRowResize: true,
+                        contextMenu: false,
+                        formulas: {
+                            engine: HyperFormula,
+                        },
+                        preventOverflow: 'horizontal',
+                        colWidths(visualColumnIndex) {
+                            return visualColumnIndex % 2 === 0 ? 80 : 115;
+                        },
+                        autoColumnSize: {
+                            syncLimit: '100%'
+                        },
+                        cells: function(row, col, prop) {
+                            const cellProperties = {};
+                            if (row === 0) {
+                                cellProperties.readOnly = true;
+                                cellProperties.className += ' ht-center-first-row';
+                            };
+                            if (row == rowHeaders.length - 1) {
+                                cellProperties.readOnly = true;
+                                cellProperties.renderer = function(instance, td, row, col, prop, value,
+                                    cellProperties) {
+                                    Handsontable.renderers.TextRenderer.apply(this, arguments);
+                                    td.style.fontWeight = 'bold';
+                                    td.title = 'Date la plus proche';
+                                };
                             }
+                            cellProperties.renderer = function(instance, td, row, col, prop, value) {
+                                Handsontable.renderers.TextRenderer.apply(this, arguments);
+                                const rowData = instance.getDataAtRow(
+                                    row); // Obtenir toutes les valeurs de la ligne
+                                const minValue = findMinValue(rowData); // Trouver la valeur minimale
+                                if (value === minValue && typeof value === 'number' && value !== 0) {
+                                    td.style.backgroundColor = '#77DD77'; // Changer le fond en vert
+                                    td.style.color = '#145214'; // Changer la couleur du texte
+                                }
+                            };
+
+                            return cellProperties;
+                        },
+                    });
+                    const exportPlugin = hot.getPlugin('exportFile');
+                    const button = document.querySelector('#export-string');
+
+                    button.addEventListener('click', () => {
+                        const exportedString = exportPlugin.exportAsString('csv', {
+                            bom: false,
+                            columnDelimiter: ',',
+                            columnHeaders: false,
+                            exportHiddenColumns: true,
+                            exportHiddenRows: true,
+                            rowDelimiter: '\r\n',
+                            rowHeaders: false,
+                        });
+                        console.log(exportedString);
+                        fetch('/ddp/{{ $ddp->id }}/save-retours', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({ data: exportedString })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('Success:', data);
+                        })
+                        .catch((error) => {
+                            console.error('Error:', error);
+                        });
+                    });
+
                 });
             </script>
         </div>
