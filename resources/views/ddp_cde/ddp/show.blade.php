@@ -123,7 +123,7 @@
                             } // Colonne date
                         ])
                     ];
-
+                    console.log(@json($table_data));
                     // Construire les données
                     const data = [
                         [
@@ -132,11 +132,16 @@
                                 '{{ $societe->raison_sociale }}',
                             @endforeach
                         ],
-                        @foreach ($ddp->ddpLigne as $ddpLigne)
+                        @foreach ($ddp->ddpLigne as $ddpLigneIndex => $ddpLigne)
                             [
-                                @foreach ($ddp_societes as $societe)
-                                    '',
-                                    '',
+                                @foreach ($ddp_societes as $societeIndex => $societe)
+                                    @if (isset($table_data[$ddpLigneIndex][$societeIndex]))
+                                        '{{ $table_data[$ddpLigneIndex][$societeIndex * 2] }}',
+                                        '{{ $table_data[$ddpLigneIndex][$societeIndex * 2 + 1] }}',
+                                    @else
+                                        '',
+                                        '',
+                                    @endif
                                 @endforeach
                             ],
                         @endforeach
@@ -230,20 +235,22 @@
                         });
                         console.log(exportedString);
                         fetch('/ddp/{{ $ddp->id }}/save-retours', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
-                            body: JSON.stringify({ data: exportedString })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            console.log('Success:', data);
-                        })
-                        .catch((error) => {
-                            console.error('Error:', error);
-                        });
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify({
+                                    data: exportedString
+                                })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log('Success:', data);
+                            })
+                            .catch((error) => {
+                                console.error('Error:', error);
+                            });
                     });
 
                 });

@@ -13,7 +13,9 @@ use App\Models\Societe;
 use App\Models\Unite;
 use App\Models\User;
 use Auth;
+use DB;
 use Barryvdh\DomPDF\PDF;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -97,8 +99,9 @@ class DdpController extends Controller
                     return $fournisseur->societe;
                 });
             })->flatten()->unique('id');
+            $table_data = $this->getRetours($id);
             $ddp->load('ddpLigne.matiere', 'ddpLigne.ddpLigneFournisseur.societe', 'ddpLigne.ddpLigneFournisseur.societeContact');
-            return view('ddp_cde.ddp.show', compact('ddp', ['ddp_societes',]));
+            return view('ddp_cde.ddp.show', compact('ddp', ['ddp_societes', 'table_data']));
         }
         return view('ddp_cde.ddp.show', compact('ddp'));
     }
@@ -189,7 +192,7 @@ class DdpController extends Controller
         $ddp = Ddp::findOrFail($ddp)->load('ddpLigne', 'ddpLigne.ddpLigneFournisseur');
 
         foreach ($request->all() as $key => $value) {
-            if ($key != '_token' && preg_match('/^contact-\d+$/', $key)) {
+            if (preg_match('/^contact-\d+$/', $key)) {
                 $societe_id = explode('-', $key)[1];
                 $ddpLigneFournisseurs = DdpLigneFournisseur::whereHas('ddpLigne', function ($query) use ($ddp) {
                     $query->where('ddp_id', $ddp->id);
@@ -415,25 +418,65 @@ class DdpController extends Controller
                 $matiereid = $ddpLigne->matiere_id;
                 $societeid = $societe->id;
                 // $row[] = $data[$index0][$index1 * 2];
-                $row[] = $matiereid;
-                $row[] = $societeid;
                 $matiere = Matiere::findOrNew($matiereid);
                 $existingFournisseur = $matiere->fournisseurs()->where('societe_id', $societeid)->orderBy('date_dernier_prix', 'desc')->first();
-                $newPrix = $data[$index0][$index1 * 2];
-                if (!$existingFournisseur || $existingFournisseur->pivot->prix != $newPrix) {
-                    $matiere->fournisseurs()->attach($societeid, ['prix' => $newPrix, 'date_dernier_prix' => now(),'ddp_ligne_fournisseur_id' => $ddpLigne->ddpLigneFournisseur->where('societe_id', $societeid)->first()->id]);
+                $newPrix = $data[$index0][$index1 * 2] ?? '';
+                if ($newPrix == '') {
+                    $newPrix = null;
+                } elseif (!$existingFournisseur || $existingFournisseur->pivot->prix != $newPrix) {
+                    $matiere->fournisseurs()->attach($societeid, ['prix' => $newPrix, 'date_dernier_prix' => now(), 'ddp_ligne_fournisseur_id' => $ddpLigne->ddpLigneFournisseur->where('societe_id', $societeid)->first()->id]);
                 } else {
                     $existingFournisseur->pivot->date_dernier_prix = now();
                     $existingFournisseur->pivot->save();
                 }
+                $row[] = $newPrix;
+                if ($data[$index0][$index1 * 2 + 1] == '') {
+                    $date = null;
+                } else {
+                    $date = Carbon::createFromFormat('d/m/Y', $data[$index0][$index1 * 2 + 1] ?? '');
 
+                    $date = Carbon::createFromFormat('d/m/Y', $data[$index0][$index1 * 2 + 1] ?? '');
+                    $ddpLigneFournisseur = $ddpLigne->ddpLigneFournisseur->where('societe_id', $societeid)->first();
+                    $ddpLigneFournisseur->date_livraison = $date;
+                    $ddpLigneFournisseur->save();
+                }
+                $row[] = $date;
 
                 // $row[] = $data[$index0][$index1 * 2 + 1];
             }
             $data2[] = $row;
         }
         return $data2;
+
         // Assuming you have some logic to save the data here
 
+    }
+    public function getRetours($id): array
+    {
+        $ddp = Ddp::findOrFail($id);
+        $ddp_societes = $ddp->ddpLigne->map(function ($ligne) {
+            return $ligne->ddpLigneFournisseur->map(function ($fournisseur) {
+                return $fournisseur->societe;
+            });
+        })->flatten()->unique('id');
+        $data = [];
+        foreach ($ddp->ddpLigne as $ddpLigne) {
+            $row = [];
+            foreach ($ddp_societes as $societe) {
+                $ddpLigneFournisseur = $ddpLigne->ddpLigneFournisseur->where('societe_id', $societe->id)->first();
+                if ($ddpLigneFournisseur) {
+
+                    $prix = $ddpLigneFournisseur->ddpLigne->matiere ? $ddpLigneFournisseur->ddpLigne->matiere->fournisseurs()->where('societe_id', $societe->id)->orderBy('date_dernier_prix', 'desc')->first()->pivot->prix ?? '' : '';
+                    $date_livraison = $ddpLigneFournisseur->date_livraison ? Carbon::parse($ddpLigneFournisseur->date_livraison)->format('d/m/Y') : '';
+                    $row[] = $prix;
+                    $row[] = $date_livraison;
+                } else {
+                    $row[] = 'UNDEFINED';
+                    $row[] = 'UNDEFINED';
+                }
+            }
+            $data[] = $row;
+        }
+        return $data;
     }
 }

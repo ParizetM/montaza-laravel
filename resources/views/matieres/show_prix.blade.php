@@ -1,14 +1,34 @@
 <x-app-layout>
     <x-slot name="header">
-        <div>
-            {{-- <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                <a href="{{ route('ddp_cde.index') }}"
-                    class="hover:bg-gray-100 hover:dark:bg-gray-700 p-1 rounded">Demandes de prix et commandes</a>
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+                <a href="{{ route('matieres.index') }}"
+                    class="hover:bg-gray-100 hover:dark:bg-gray-700 p-1 rounded">Matières</a>
                 >>
-                <a href="{{ route('ddp.show', $ddp->id) }}"
-                    class="hover:bg-gray-100 hover:dark:bg-gray-700 p-1 rounded">{!! __('Créer une demande de prix') !!}</a>
-                >> Validation
-            </h2> --}}
+                <a href="{{ route('matieres.show', $matiere->id) }}"
+                    class="hover:bg-gray-100 hover:dark:bg-gray-700 p-1 rounded">{{ $matiere->designation }}</a>
+                >> Prix par fournisseur
+            </h2>
+
+
+            <div class="flex gap-4">
+                <div>
+                    <x-input-label for="startDate" class="block">Date de début :</x-input-label>
+                    <select id="startDate" class="select w-auto">
+                        @foreach ($dates->reverse() as $date)
+                            <option value="{{ $date }}">{{ $date }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <x-input-label for="endDate" class="block">Date de fin :</x-input-label>
+                    <select id="endDate" class="select w-auto">
+                        @foreach ($dates as $date)
+                            <option value="{{ $date }}">{{ $date }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
         </div>
     </x-slot>
 
@@ -24,21 +44,7 @@
                 <div class="mb-6 chart-container">
                     <canvas id="myChart" width="400" height="100"></canvas>
                 </div>
-                <div class="flex">
-                    <label for="startDate">Date de début :</label>
-                    <select id="startDate" class="select w-auto datePicker">
-                        @foreach ($dates as $date)
-                            <option value="{{ $date }}">{{ $date }}</option>
-                        @endforeach
-                    </select>
 
-                    <label for="endDate">Date de fin :</label>
-                    <select id="endDate" class="select w-auto">
-                        @foreach ($dates as $date)
-                            <option value="{{ $date }}">{{ $date }}</option>
-                        @endforeach
-                    </select>
-                </div>
                 <table class="mt-6 min-w-0">
                     <thead>
                         <tr>
@@ -62,29 +68,14 @@
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-
-            const datePicker = new Pikaday({
-                field: document.getElementsByClassName('datePicker'), // L'élément input
-                format: 'YYYY-MM-DD', // Format de la date
-                firstDay: 1, // Lundi comme premier jour de la semaine
-                i18n: {
-                    previousMonth: 'Mois précédent',
-                    nextMonth: 'Mois suivant',
-                    months: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août',
-                        'Septembre', 'Octobre', 'Novembre', 'Décembre'
-                    ],
-                    weekdays: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
-                    weekdaysShort: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam']
-                },
-            });
             const ctx = document.getElementById('myChart').getContext('2d');
 
             const myChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: @json($dates), // Les dates passées par le contrôleur
+                    labels: @json($dates), // Limite à 10 dates passées par le contrôleur
                     datasets: [{
-                        label: 'Valeurs sur le temps',
+                        label: 'Prix sur le temps',
                         data: @json($prix), // Les valeurs passées par le contrôleur
                         borderColor: 'rgba(75, 192, 192, 1)',
                         backgroundColor: 'white',
@@ -96,7 +87,10 @@
                         x: {
                             type: 'time', // Échelle temporelle
                             time: {
-                                unit: 'day', // Regroupe par jour
+                                unit: 'hour', // Regroupe par heure (modifiable selon vos besoins)
+                                displayFormats: {
+                                    hour: 'yyyy-MM-dd HH:mm', // Format d'affichage des dates et heures
+                                },
                             },
                         },
                         y: {
@@ -127,7 +121,8 @@
 
             // Ajoute des événements de changement aux sélecteurs
             startDateSelect.addEventListener('change', updateChartLimits);
-            endDateSelect.addEventListener('change', updateChartLimits);
+            endDateSelect.addEventListener(
+                'change', updateChartLimits);
         });
     </script>
 
