@@ -46,7 +46,7 @@ return new class extends Migration
             $table->timestamps();
         });
         Schema::table('societe_matiere', function (Blueprint $table) {
-            $table->foreignId('ddp_ligne_fournisseur_id')->nullable()->constrained('ddp_ligne_fournisseurs');
+            $table->foreignId('ddp_ligne_fournisseur_id')->nullable()->constrained('ddp_ligne_fournisseurs')->after('societe_id');
         });
     }
 

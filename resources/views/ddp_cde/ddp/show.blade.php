@@ -1,24 +1,39 @@
 <x-app-layout>
     <x-slot name="header">
-        <div>
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                <a href="{{ route('ddp_cde.index') }}"
-                    class="hover:bg-gray-100 hover:dark:bg-gray-700 p-1 rounded">Demandes de prix et commandes</a>
-                >>
-                <a href="{{ route('ddp.show', $ddp->id) }}"
-                    class="hover:bg-gray-100 hover:dark:bg-gray-700 p-1 rounded">{!! __('Créer une demande de prix') !!}</a>
-                >> Validation
-            </h2>
+        <div class="flex justify-between items-center">
+            <div>
+                <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+                    <a href="{{ route('ddp_cde.index') }}"
+                        class="hover:bg-gray-100 hover:dark:bg-gray-700 p-1 rounded">Demandes de prix et commandes</a>
+                    >>
+                    <a href="{{ route('ddp.show', $ddp->id) }}"
+                        class="hover:bg-gray-100 hover:dark:bg-gray-700 p-1 rounded">{!! __('Créer une demande de prix') !!}</a>
+                    >> Validation
+                </h2>
+
+            </div>
+            <a href="{{ route('ddp.pdfs.download', $ddp) }}" class="btn">Télécharger tous les PDF</a>
         </div>
     </x-slot>
 
     <div class="max-w-8xl py-4 mx-auto sm:px-4 lg:px-6">
-
         <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-6 rounded-md shadow-md">
-            <div class="flex justify-between items-center">
+            <div class="flex justify-between items-center mb-6">
                 <h1 class="text-3xl font-bold mb-6 text-left">{{ $ddp->nom }} - Récapitulatif</h1>
-                <a href="{{ route('ddp.pdfs.download', $ddp) }}" class="btn">Télécharger tous les PDF</a>
 
+                <div class="flex items-center">
+                    <h1 class="text-xl font-semibold text-gray-500 dark:text-gray-400 flex items-center hidden"
+                        title="Demande de prix en cours d'enregistrement" id="save-status-0">Enregistrement
+                        en
+                        cours...<x-icons.progress-activity size="2" /></h1>
+                    <h1 class="text-xl font-semibold text-gray-500 dark:text-gray-400 {{ isset($ddp) ? '' : 'hidden' }}"
+                        title="Demande de prix enregistré avec succès" id="save-status-1">Enregistré</h1>
+                    <h1 class="text-xl font-semibold text-gray-500 dark:text-gray-400 {{ isset($ddp) ? 'hidden' : '' }}"
+                        title="Demande de prix non enregistrée" id="save-status-2">Non-enregistré</h1>
+                    <button class="" onclick="saveChanges()">
+                        <x-icons.refresh size="2" class="icons" />
+                    </button>
+                </div>
             </div>
             {{-- <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead class="bg-gray-50 dark:bg-gray-700">
@@ -62,6 +77,10 @@
                 thead {
                     background: none;
                 }
+
+                .rowHeader {
+                    text-align: left !important;
+                }
             </style>
             <div id="handsontable-container" class="ht-theme-main-dark-auto"></div>
             <button id="export-string" class="btn">Export as a string</button>
@@ -70,11 +89,14 @@
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
                     const container = document.getElementById('handsontable-container');
+                    const lignes_count = {{ $ddp->ddpLigne->count() }};
+                    const societe_count = {{ $ddp_societes->count() }};
+                    console.log('nombre de ligne : ' + lignes_count, 'nombre de societe : ' + societe_count);
                     // Variables de données
                     const rowHeaders = [
                         'Matières',
                         @foreach ($ddp->ddpLigne as $ddpLigne)
-                            "{{ $ddpLigne->matiere->designation }}",
+                            "{{ $ddpLigne->matiere->ref_interne }} {{ $ddpLigne->matiere->designation }}",
                         @endforeach
                         'Total',
                         // Ajoutez autant de matières que nécessaire
@@ -125,48 +147,23 @@
                     ];
                     console.log(@json($table_data));
                     // Construire les données
-                    const data = [
-                        [
-                            @foreach ($ddp_societes as $societe)
-                                '{{ $societe->raison_sociale }}',
-                                '{{ $societe->raison_sociale }}',
-                            @endforeach
-                        ],
-                        @foreach ($ddp->ddpLigne as $ddpLigneIndex => $ddpLigne)
-                            [
-                                @foreach ($ddp_societes as $societeIndex => $societe)
-                                    @if (isset($table_data[$ddpLigneIndex][$societeIndex]))
-                                        '{{ $table_data[$ddpLigneIndex][$societeIndex * 2] }}',
-                                        '{{ $table_data[$ddpLigneIndex][$societeIndex * 2 + 1] }}',
-                                    @else
-                                        '',
-                                        '',
-                                    @endif
-                                @endforeach
-                            ],
-                        @endforeach
-                        [
-                            @foreach ($ddp_societes as $societe)
-                                '=SUM({{ chr(65 + $loop->index * 2) }}2:{{ chr(65 + $loop->index * 2) }}{{ $ddp->ddpLigne->count() + 1 }})',
-                                '=IF(MINIFS({{ chr(66 + $loop->index * 2) }}2:{{ chr(66 + $loop->index * 2) }}{{ $ddp->ddpLigne->count() + 1 }}, {{ chr(66 + $loop->index * 2) }}2:{{ chr(66 + $loop->index * 2) }}{{ $ddp->ddpLigne->count() + 1 }}, ">=" & TODAY())=0, "", MINIFS({{ chr(66 + $loop->index * 2) }}2:{{ chr(66 + $loop->index * 2) }}{{ $ddp->ddpLigne->count() + 1 }}, {{ chr(66 + $loop->index * 2) }}2:{{ chr(66 + $loop->index * 2) }}{{ $ddp->ddpLigne->count() + 1 }}, ">=" & TODAY()))',
-                            @endforeach
-                        ],
-                    ];
-                    const mergeCells = [
-                        @foreach ($ddp_societes as $index => $societe)
-                            {
-                                row: 0,
-                                col: {{ $index * 2 }},
-                                rowspan: 1,
-                                colspan: 2
-                            },
-                        @endforeach
-                    ];
+                    const data = @json($data);
+                    console.log(data);
+                    const mergeCells = [];
+                    for (let i = 0; i < societe_count; i++) {
+                        mergeCells.push({
+                            row: 0,
+                            col: i * 2,
+                            rowspan: 1,
+                            colspan: 2
+                        });
+                    }
 
                     function findMinValue(rowData) {
-                        const numericValues = rowData.filter(value => typeof value === 'number' && !isNaN(value));
+                        const numericValues = rowData.filter(value => typeof value === 'number' && !isNaN(value) && value !== 'UNDEFINED' && value !== 0);
                         return Math.min(...numericValues);
                     };
+
                     // Initialiser Handsontable
                     const hot = new Handsontable(container, {
                         data: data,
@@ -193,10 +190,14 @@
                         },
                         cells: function(row, col, prop) {
                             const cellProperties = {};
+                            const data = this.instance.getData();
+                            if (data[row][col] === 'UNDEFINED') {
+                                cellProperties.readOnly = true; // Marquez la ligne comme readonly
+                            }
                             if (row === 0) {
                                 cellProperties.readOnly = true;
                                 cellProperties.className += ' ht-center-first-row';
-                            };
+                            }
                             if (row == rowHeaders.length - 1) {
                                 cellProperties.readOnly = true;
                                 cellProperties.renderer = function(instance, td, row, col, prop, value,
@@ -215,11 +216,18 @@
                                     td.style.backgroundColor = '#77DD77'; // Changer le fond en vert
                                     td.style.color = '#145214'; // Changer la couleur du texte
                                 }
+                                if (data[row][col] === 'UNDEFINED') {
+                                    td.style.backgroundColor =
+                                        'rgba(127,127,127,1)'; // Changer le fond en rouge
+                                    td.style.color = 'rgba(0,0,0,0)'; // Changer la couleur du texte
+                                }
                             };
 
                             return cellProperties;
                         },
+
                     });
+
                     const exportPlugin = hot.getPlugin('exportFile');
                     const button = document.querySelector('#export-string');
 

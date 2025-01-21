@@ -180,7 +180,7 @@ class MatiereController extends Controller
     }
     public function showPrix($matiere_id, $societe_id): View
     {
-        $fournisseur = Societe::findOrFail($societe_id)->where('societe_type_id', ['3', '2'])->first();
+        $fournisseur = Societe::where('societe_type_id', ['3', '2'])->findOrFail($societe_id);
         $matiere = Matiere::with(['sousFamille', 'societe', 'standardVersion'])->findOrFail($matiere_id);
         $fournisseurs_prix = $matiere->fournisseurs()
             ->where('societe_id', $societe_id)

@@ -59,20 +59,27 @@
                         <input type="hidden" name="ddp_id" value="{{ $ddp->id ?? '' }}">
                         <div class="flex justify-between items-center mb-6">
                             <h1 class="text-xl font-semibold">Demande de prix</h1>
-                            <h1 class="text-xl font-semibold text-gray-500 dark:text-gray-400 flex items-center hidden"
-                                title="Demande de prix en cours d'enregistrement" id="save-status-0">Enregistrement en
-                                cours...<x-icons.progress-activity size="2" /></h1>
-                            <h1 class="text-xl font-semibold text-gray-500 dark:text-gray-400 {{ isset($ddp) ? '' : 'hidden' }}"
-                                title="Demande de prix enregistré avec succès" id="save-status-1">Enregistré</h1>
-                            <h1 class="text-xl font-semibold text-gray-500 dark:text-gray-400 {{ isset($ddp) ? 'hidden' : '' }}"
-                                title="Demande de prix non enregistrée" id="save-status-2">Non-enregistré</h1>
+                            <div class="flex items-center">
+                                <h1 class="text-xl font-semibold text-gray-500 dark:text-gray-400 flex items-center hidden"
+                                    title="Demande de prix en cours d'enregistrement" id="save-status-0">Enregistrement
+                                    en
+                                    cours...<x-icons.progress-activity size="2" /></h1>
+                                <h1 class="text-xl font-semibold text-gray-500 dark:text-gray-400 {{ isset($ddp) ? '' : 'hidden' }}"
+                                    title="Demande de prix enregistré avec succès" id="save-status-1">Enregistré</h1>
+                                <h1 class="text-xl font-semibold text-gray-500 dark:text-gray-400 {{ isset($ddp) ? 'hidden' : '' }}"
+                                    title="Demande de prix non enregistrée" id="save-status-2">Non-enregistré</h1>
+                                <button class="" onclick="saveChanges()" type="button">
+                                    <x-icons.refresh size="2" class="icons" />
+                                </button>
+                            </div>
                         </div>
                         <div class="w-full">
 
                             <x-input-label for="ddp-nom" value="Nom" />
                             <x-text-input label="Nom" name="ddp-nom" id="ddp-nom"
-                                placeholder="Nom de la demande de prix" value="{{ isset($ddp) && ($ddp->nom != 'undefined') ? $ddp->nom : '' }}"
-                                class="w-1/2 {{ isset($ddp) && ($ddp->nom != 'undefined') ? 'border-r-green-500 dark:border-r-green-600 border-r-2' : '' }}" />
+                                placeholder="Nom de la demande de prix"
+                                value="{{ isset($ddp) && $ddp->nom != 'undefined' ? $ddp->nom : '' }}"
+                                class="w-1/2 {{ isset($ddp) && $ddp->nom != 'undefined' ? 'border-r-green-500 dark:border-r-green-600 border-r-2' : '' }}" />
                         </div>
                         <div class="min-h-96 overflow-x-auto bg-gray-100 dark:bg-gray-900 rounded">
                             <table>
@@ -89,7 +96,8 @@
                                                 class="border-b border-gray-200 dark:border-gray-700 rounded-r-md overflow-hidden bg-white dark:bg-gray-800 border-r-2 border-r-green-500 dark:border-r-green-600">
                                                 <td class="text-left px-4">{{ $ddp_ligne->matiere->ref_interne }}</td>
                                                 <td class="text-left px-4">{{ $ddp_ligne->matiere->designation }}</td>
-                                                <td class="text-right px-4 flex items-center" title="{{ $ddp_ligne->matiere->unite->full }}">
+                                                <td class="text-right px-4 flex items-center"
+                                                    title="{{ $ddp_ligne->matiere->unite->full }}">
                                                     <button type="button" class="btn-decrement px-2"
                                                         onclick="decrementQuantity(this)">-</button>
                                                     <x-text-input type="number"
@@ -152,7 +160,8 @@
                                 </div>
                             </div>
                         </div>
-                        <a class=" btn" href='{{ route('ddp.validation', ['ddp' => $ddpid]) }}'">Suivant</a>
+                        <button class=" btn"
+                            onclick="if (document.getElementById('ddp-nom').value.trim() != '') { window.location.href = '{{ route('ddp.validation', ['ddp' => $ddpid]) }}'; } else { alert('Veuillez renseigner le nom de la demande de prix'); }">Suivant</button>
                     </div>
                 </div>
             </div>
@@ -496,6 +505,7 @@
         function addFournisseur(event) {
             const matiereChoisiTable = document.getElementById('matiere-choisi-table');
             const fournisseurId = event.currentTarget.getAttribute('data-fournisseur-id');
+
             let matiereId;
             if (event.currentTarget.getAttribute('data-is-from-quicksearch') == 'true') {
                 matiereId = document.getElementById('fournisseurs-table').querySelector('tr:first-child').getAttribute(
@@ -511,6 +521,11 @@
                 const index = currentFournisseurs.indexOf(fournisseurId);
                 if (index === -1) {
                     // Add fournisseur
+                    var fournisseurtotal = Array.from(new Set(Array.from(document.querySelectorAll(`input[name^="fournisseur-"]`)).map(input => input.value.split(';')).flat().concat(fournisseurId))).length;
+                    if (fournisseurtotal > 10) {
+                        showFlashMessageFromJs('Vous ne pouvez pas ajouter plus de 10 fournisseurs différents', duree = 2000, type = 'error')
+                        return;
+                    }
                     currentFournisseurs.push(fournisseurId);
                     event.currentTarget.classList.remove('bg-white', 'dark:bg-gray-800', 'hover:bg-gray-200',
                         'dark:hover:bg-gray-700');
@@ -526,7 +541,8 @@
                 }
                 if (event.currentTarget.getAttribute('data-is-from-quicksearch') == 'true') {
                     const fournisseurNom = event.currentTarget.getAttribute('data-fournisseur-nom');
-                    const existingFournisseur = document.querySelector(`#fournisseurs-table tr[data-fournisseur-id="${fournisseurId}"]`);
+                    const existingFournisseur = document.querySelector(
+                        `#fournisseurs-table tr[data-fournisseur-id="${fournisseurId}"]`);
                     if (!existingFournisseur) {
                         const clonedRow = event.currentTarget.cloneNode(true);
                         document.getElementById('fournisseurs-table').appendChild(clonedRow);
@@ -537,6 +553,7 @@
                         event.currentTarget.remove();
                     }
                 }
+
                 fournisseurInput.value = currentFournisseurs.join(';');
                 saveChanges();
             }
@@ -623,44 +640,44 @@
         }
 
         async function liveSearchFournisseurs() {
-                const search = document.getElementById('searchbarFournisseur').value;
-                if (search.length < 1) {
-                    return;
-                }
-                const response = await fetch(
-                    `/societes/fournisseurs/quickSearch?search=${encodeURIComponent(search)}`
-                );
-                const data = await response.json();
-                const fournisseursTable = document.getElementById('quicksearchfournisseurs-table');
-                fournisseursTable.innerHTML = '';
-                if (data.length === 0) {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
+            const search = document.getElementById('searchbarFournisseur').value;
+            if (search.length < 1) {
+                return;
+            }
+            const response = await fetch(
+                `/societes/fournisseurs/quickSearch?search=${encodeURIComponent(search)}`
+            );
+            const data = await response.json();
+            const fournisseursTable = document.getElementById('quicksearchfournisseurs-table');
+            fournisseursTable.innerHTML = '';
+            if (data.length === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
                     <td colspan="100" class="text-gray-500 dark:text-gray-400 text-center ">
                         Aucun fournisseur trouvé
                     </td>
                 `;
-                    fournisseursTable.appendChild(tr);
-                } else {
-                    data.forEach(fournisseur => {
-                        const tr = document.createElement('tr');
-                        tr.classList.add('border-b', 'border-gray-200', 'dark:border-gray-700',
-                            'rounded-r-md', 'overflow-hidden', 'cursor-pointer',
-                            'hover:bg-gray-200', 'dark:hover:bg-gray-700');
-                        const fournisseurId = fournisseur.id || '';
-                        tr.setAttribute('data-fournisseur-id', fournisseurId);
-                        tr.setAttribute('data-fournisseur-nom', fournisseur.raison_sociale || '');
-                        tr.setAttribute('data-is-from-quicksearch', 'true');
-                        tr.addEventListener('click', addFournisseur);
-                        tr.innerHTML = `
+                fournisseursTable.appendChild(tr);
+            } else {
+                data.forEach(fournisseur => {
+                    const tr = document.createElement('tr');
+                    tr.classList.add('border-b', 'border-gray-200', 'dark:border-gray-700',
+                        'rounded-r-md', 'overflow-hidden', 'cursor-pointer',
+                        'hover:bg-gray-200', 'dark:hover:bg-gray-700');
+                    const fournisseurId = fournisseur.id || '';
+                    tr.setAttribute('data-fournisseur-id', fournisseurId);
+                    tr.setAttribute('data-fournisseur-nom', fournisseur.raison_sociale || '');
+                    tr.setAttribute('data-is-from-quicksearch', 'true');
+                    tr.addEventListener('click', addFournisseur);
+                    tr.innerHTML = `
                         <td class="text-left px-4" colspan="2">${fournisseur.raison_sociale || '-'}</td>
                     `;
-                        fournisseursTable.appendChild(tr);
-                    });
-                }
+                    fournisseursTable.appendChild(tr);
+                });
             }
+        }
 
-            document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function() {
             // Event listener for famille selection change
             document.getElementById('famille_id_search').addEventListener('change', function() {
                 updateSousFamilles();
