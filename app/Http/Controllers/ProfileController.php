@@ -36,12 +36,12 @@ class ProfileController extends Controller
         // Rechercher des utilisateurs en fonction du terme de recherche (si fourni)
         $users = User::query()
             ->when($search, function ($query, $search) {
-                $query->where('first_name', 'like', "%{$search}%")
-                    ->orWhere('last_name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%")
-                    ->orWhere('phone', 'like', "%{$search}%")
+                $query->where('first_name', 'ILIKE', "%{$search}%")
+                    ->orWhere('last_name', 'ILIKE', "%{$search}%")
+                    ->orWhere('email', 'ILIKE', "%{$search}%")
+                    ->orWhere('phone', 'ILIKE', "%{$search}%")
                     ->orWhereHas('role', function ($query) use ($search) {
-                        $query->withTrashed()->where('name', 'like', "%{$search}%");
+                        $query->withTrashed()->where('name', 'ILIKE', "%{$search}%");
                     });
             })
             ->with(['role' => function ($query) {

@@ -36,12 +36,12 @@ class SocieteController extends Controller
             // Si un terme de recherche est fourni
             if (!empty($search)) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('raison_sociale', 'like', "%{$search}%")
+                    $q->where('raison_sociale', 'ILIKE', "%{$search}%")
                         ->orWhereHas('formeJuridique', function ($subQuery) use ($search) {
-                            $subQuery->where('nom', 'like', "%{$search}%");
+                            $subQuery->where('nom', 'ILIKE', "%{$search}%");
                         })
                         ->orWhereHas('codeApe', function ($subQuery) use ($search) {
-                            $subQuery->where('code', 'like', "%{$search}%");
+                            $subQuery->where('code', 'ILIKE', "%{$search}%");
                         });
                 });
             }
@@ -309,7 +309,7 @@ class SocieteController extends Controller
             'search' => 'required|string|max:255',
         ]);
         $search = $request->input('search', '');
-        $societes = Societe::where('raison_sociale', 'like', "%{$search}%")
+        $societes = Societe::where('raison_sociale', 'ILIKE', "%{$search}%")
             ->whereIn('societe_type_id', [2, 3])
             ->get();
         return response()->json($societes);

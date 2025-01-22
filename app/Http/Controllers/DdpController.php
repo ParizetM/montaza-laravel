@@ -58,16 +58,16 @@ class DdpController extends Controller
             ->where('nom', '!=', 'undefined')
             ->when($search, function ($query, $search) {
                 $query->where(function ($subQuery) use ($search) {
-                    $subQuery->where('nom', 'LIKE', "%{$search}%")
-                        ->orWhere('code', 'LIKE', "%{$search}%");
+                    $subQuery->where('nom', 'ILIKE', "%{$search}%")
+                        ->orWhere('code', 'ILIKE', "%{$search}%");
                 });
             })
             ->when($statut, function ($query, $statut) {
                 $query->where('ddp_cde_statut_id', $statut);
             })
             ->orWhereHas('user', function ($subQuery) use ($search) {
-                $subQuery->where('first_name', 'LIKE', "%{$search}%")
-                    ->orWhere('last_name', 'LIKE', "%{$search}%");
+                $subQuery->where('first_name', 'ILIKE', "%{$search}%")
+                    ->orWhere('last_name', 'ILIKE', "%{$search}%");
             })
             ->orderBy('ddp_cde_statut_id', 'asc')
             ->orderBy('created_at', 'desc');

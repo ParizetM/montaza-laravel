@@ -18,23 +18,21 @@ class ModelChangeController extends Controller
         $start_date = $request->input('start_date');
         $end_date = $request->input('end_date');
         $nombre = $request->input('nombre') ?? 50;
-        if (!is_int($nombre)) {
+        if (!is_numeric($nombre)) {
             $nombre = 50;
         }
-
         if ($search || $start_date || $end_date) {
             $modelChanges = ModelChange::query();
 
             if ($search) {
                 $modelChanges->whereHas('user', function ($query) use ($search) {
-                    $query->where('first_name', 'like', '%' . $search . '%')
-                        ->orWhere('last_name', 'like', '%' . $search . '%');
+                    $query->where('first_name', 'ILIKE', "%{$search}%")
+                        ->orWhere('last_name', 'ILIKE', "%{$search}%");
                 })
-                    ->orWhere('model_type', 'like', '%' . $search . '%')
-                    ->orWhere('model_id', 'like', '%' . $search . '%')
-                    ->orWhere('before', 'like', '%' . $search . '%')
-                    ->orWhere('after', 'like', '%' . $search . '%')
-                    ->orWhere('event', 'like', '%' . $search . '%');
+                    ->orWhere('model_type', 'ILIKE', "%{$search}%")
+                    ->orWhere('before', 'ILIKE', "%{$search}%")
+                    ->orWhere('after', 'ILIKE', "%{$search}%")
+                    ->orWhere('event', 'ILIKE', "%{$search}%");
             }
 
             if ($start_date) {
@@ -46,12 +44,12 @@ class ModelChangeController extends Controller
             }
 
             $modelChanges = $modelChanges->orderBy('created_at', 'desc')
-                ->take(50)
-                ->get();
+                ->paginate($nombre);
+
         } else {
             $modelChanges = ModelChange::orderBy('created_at', 'desc')
-                ->take($nombre)
-                ->get();
+                ->paginate($nombre);
+
         }
 
         return view('model_changes.index', ['modelChanges' => $modelChanges]);

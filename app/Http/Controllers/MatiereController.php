@@ -52,14 +52,14 @@ class MatiereController extends Controller
 
             if (!empty($search)) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('designation', 'like', "%{$search}%")
+                    $q->where('designation', 'ILIKE', "%{$search}%")
                         ->orWhereHas('sousFamille', function ($subQuery) use ($search) {
-                            $subQuery->where('nom', 'like', "%{$search}%");
+                            $subQuery->where('nom', 'ILIKE', "%{$search}%");
                         })
                         ->orWhereHas('societe', function ($subQuery) use ($search) {
-                            $subQuery->where('raison_sociale', 'like', "%{$search}%");
+                            $subQuery->where('raison_sociale', 'ILIKE', "%{$search}%");
                         })
-                        ->orWhere('ref_interne', 'like', "%{$search}%");
+                        ->orWhere('ref_interne', 'ILIKE', "%{$search}%");
                 });
             }
 
@@ -108,14 +108,14 @@ class MatiereController extends Controller
 
         if (!empty($search)) {
             $query->where(function ($q) use ($search) {
-                $q->where('designation', 'like', "%{$search}%")
+                $q->where('designation', 'ILIKE', "%{$search}%")
                     ->orWhereHas('sousFamille', function ($subQuery) use ($search) {
-                        $subQuery->where('nom', 'like', "%{$search}%");
+                        $subQuery->where('nom', 'ILIKE', "%{$search}%");
                     })
                     ->orWhereHas('societe', function ($subQuery) use ($search) {
-                        $subQuery->where('raison_sociale', 'like', "%{$search}%");
+                        $subQuery->where('raison_sociale', 'ILIKE', "%{$search}%");
                     })
-                    ->orWhere('ref_interne', 'like', "%{$search}%");
+                    ->orWhere('ref_interne', 'ILIKE', "%{$search}%");
             });
         }
 
