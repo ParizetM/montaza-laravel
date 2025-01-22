@@ -66,7 +66,7 @@
 
                     <!-- Ligne pour ajouter un contact -->
                     <tr class="overflow-hidden border-t-0">
-                        <form method="POST" action="{{ route('societes.contacts.store') }}" class="w-full">
+                        <form method="POST" class="w-full" id="form-{{ $name ?? 'contacts-modal' }}">
                             @csrf
                             <input type="hidden" name="etablissement_id" value="{{ $contact->etablissement->id }}">
                             <td>
@@ -95,6 +95,34 @@
                             </td>
                         </form>
                     </tr>
+                    <script>
+                        document.getElementById('form-{{ $name ?? 'contacts-modal' }}').addEventListener('submit', function(event) {
+                            event.preventDefault();
+
+                            let formData = new FormData(this);
+
+                            fetch('{{ route('societes.contacts.store') }}', {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+                                    'Accept': 'application/json',
+                                },
+                                body: formData
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    showFlashMessageFromJs('Contact ajouté avec succès', duree = 2000, type = 'success')
+                                } else {
+                                    showFlashMessageFromJs('Erreur lors de l\'ajout du contact', duree = 2000, type = 'error')
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                showFlashMessageFromJs('Erreur lors de l\'ajout du contact', duree = 2000, type = 'error')
+                            });
+                        });
+                    </script>
                     @endif
                 </tbody>
             </table>

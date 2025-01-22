@@ -22,20 +22,64 @@
                 <h1 class="text-3xl font-bold mb-6 text-left">{{ $ddp->nom }} - Récapitulatif</h1>
             </div>
             <div class="overflow-auto">
-                <table class="w-full table-auto bg-gray-100 dark:bg-gray-900 ">
+                <table class="w-full table-auto bg-white dark:bg-gray-900 ">
                     <thead>
                         <tr>
+                            <th class=" p-2 text-center">
+                                &nbsp;</th>
+                            <th class=" p-2 text-center">
+                                &nbsp;</th>
                             @foreach ($ddp_societes as $societe)
-                                <th colspan="2" class=" p-2 text-center">
+                                <th colspan="3"
+                                    class=" p-2 text-center border-l-2 border-l-gray-500 dark:border-l-gray-700">
                                     {{ $societe->raison_sociale }}</th>
+                            @endforeach
+                        </tr>
+                        <tr>
+                            <th colspan="1" class=" p-2 text-center">
+                                Matière</th>
+                            <th colspan="1" class=" p-2 text-center">
+                                quantité</th>
+                            @foreach ($ddp_societes as $societe)
+                                <th class=" p-2 text-center border-l-2 border-l-gray-500 dark:border-l-gray-700">
+                                    Prix unitaire</th>
+                                <th class=" p-2 text-center">
+                                    Montant</th>
+                                <th class=" p-2 text-center">
+                                    Délai</th>
                             @endforeach
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($data as $ligne)
+                        @php
+                            $lastindex = count($data) - 1;
+                            $total_quantite = 0;
+                            foreach ($ddplignes as $ddpligne) {
+                                $total_quantite += $ddpligne->quantite;
+                            }
+                        @endphp
+                        @foreach ($data as $index => $ligne)
                             <tr>
+                                @if ($index == $lastindex)
+                                    <td> total</td>
+                                    <td class="text-center">{{ $total_quantite }}</td>
+                                @else
+                                    <td>{{ $ddplignes[$index]->matiere->designation }}</td>
+                                    <td class="text-center">{{ $ddplignes[$index]->quantite }}</td>
+                                @endif
+
                                 @foreach ($ligne as $key => $value)
-                                    <td class="border border-gray-300 dark:border-gray-700 p-2">{{ $value }}</td>
+                                    @if ($value == 'UNDEFINED')
+                                        <td
+                                            class="border border-gray-300 dark:border-gray-700 p-2 bg-gray-300 dark:bg-gray-700 {{ $key % 3 == 0 ? 'border-l-2 border-l-gray-500 dark:border-l-gray-700' : '' }}">
+                                        </td>
+                                    @else
+                                        <td
+                                            class="border border-gray-300 dark:border-gray-700 p-2 {{ $key % 3 == 0 ? 'border-l-2 border-l-gray-500 dark:border-l-gray-700' : '' }} whitespace-nowrap
+                                        ">
+                                            {{ $value }}
+                                        </td>
+                                    @endif
                                 @endforeach
                             </tr>
                         @endforeach

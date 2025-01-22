@@ -15,7 +15,6 @@
             <a href="{{ route('ddp.pdfs.download', $ddp) }}" class="btn">Télécharger tous les PDF</a>
         </div>
     </x-slot>
-
     <div class="max-w-8xl py-4 mx-auto sm:px-4 lg:px-6">
         <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-6 rounded-md shadow-md">
             <div class="flex justify-between items-center mb-6">
@@ -90,6 +89,7 @@
         </div>
     </div>
     <script>
+        const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
         document.addEventListener('DOMContentLoaded', function() {
             var last_data;
             const container = document.getElementById('handsontable-container');
@@ -149,7 +149,32 @@
                     } // Colonne date
                 ])
             ];
-            // console.log(@json($table_data));
+
+            const borders = [];
+
+            // Générer les bordures toutes les deux colonnes
+            for (let col = 0; col < (societe_count * 2); col += 2) {
+                borders.push({
+                    range: {
+                        from: {
+                            row: 0,
+                            col: col
+                        },
+                        to: {
+                            row: rowHeaders.length - 1,
+                            col: col
+                        },
+                    },
+                    start: {
+                        width: 2,
+                        color: 'gray',
+                    },
+                });
+            }
+
+
+
+
             // Construire les données
             const data = @json($data);
             // console.log(data);
@@ -178,12 +203,13 @@
                 licenseKey: 'non-commercial-and-evaluation',
                 rowHeaders: rowHeaders,
                 rowHeaderWidth: 150,
-                colHeaders: colHeaders,
+                colHeaders: false,
                 columns: columns,
                 mergeCells: mergeCells,
                 manualColumnResize: true,
                 manualRowResize: true,
                 contextMenu: false,
+                customBorders: borders,
                 formulas: {
                     engine: HyperFormula,
                 },
@@ -206,25 +232,33 @@
                     }
                     if (row == rowHeaders.length - 1) {
                         cellProperties.readOnly = true;
-                        cellProperties.renderer = function(instance, td, row, col, prop, value,
-                            cellProperties) {
-                            Handsontable.renderers.TextRenderer.apply(this, arguments);
-                            td.style.fontWeight = 'bold';
-                            td.title = 'Date la plus proche';
-                        };
+
                     }
                     cellProperties.renderer = function(instance, td, row, col, prop, value) {
                         Handsontable.renderers.TextRenderer.apply(this, arguments);
                         const rowData = instance.getDataAtRow(
                             row); // Obtenir toutes les valeurs de la ligne
+                        if (row == 0 || row == rowHeaders.length - 1) {
+                            if (isDarkMode) {
+                                td.style.backgroundColor = '#1e1e1f';
+                                td.style.color = '#fff'; // Changer la couleur du texte
+                            } else {
+                                td.style.backgroundColor = '#f3f3f5';
+                                td.style.color = '#000'; // Changer la couleur du texte
+                            }
+                        }
                         const minValue = findMinValue(rowData); // Trouver la valeur minimale
                         if (value == minValue) {
                             td.style.backgroundColor = '#77DD77'; // Changer le fond en vert
                             td.style.color = '#145214'; // Changer la couleur du texte
                         }
+
                         if (data[row][col] === 'UNDEFINED') {
-                            td.style.backgroundColor =
-                                'rgba(127,127,127,1)'; // Changer le fond en rouge
+                            if (isDarkMode) {
+                                td.style.backgroundColor = '#1e1e1f';
+                            } else {
+                                td.style.backgroundColor = '#f3f3f5';
+                            }
                             td.style.color = 'rgba(0,0,0,0)'; // Changer la couleur du texte
                         }
                     };

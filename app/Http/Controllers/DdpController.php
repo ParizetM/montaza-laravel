@@ -175,6 +175,7 @@ class DdpController extends Controller
                     $sum += (float)$dataRow[$indexSociete];
                 }
                 $row[] = $sum;
+
                 $dates = array_filter(array_column($table_data, $indexSociete + 1));
                 $closestDate = null;
                 if (!empty($dates)) {
@@ -188,7 +189,9 @@ class DdpController extends Controller
                 $indexSociete++;
             }
             $data[] = $row;
-            return view('ddp_cde.ddp.show', compact('ddp', ['ddp_societes', 'data']));
+            $ddplignes = $ddp->ddpLigne;
+            $$ddplignes = array_values($ddplignes->toArray());
+            return view('ddp_cde.ddp.show', compact('ddp', ['ddp_societes', 'data', 'ddplignes']));
         }
         return view('ddp_cde.ddp.show', compact('ddp'));
     }
@@ -506,7 +509,7 @@ class DdpController extends Controller
         foreach ($ddp->ddpLigne as $index0 => $ddpLigne) {
             $row = [];
             $index1 = 0;
-            foreach ($ddp_societes as$societe) {
+            foreach ($ddp_societes as $societe) {
                 $matiereid = $ddpLigne->matiere_id;
                 $societeid = $societe->id;
                 // $row[] = $data[$index0][$index1 * 2];
@@ -563,36 +566,76 @@ class DdpController extends Controller
                 return $fournisseur->societe;
             });
         })->flatten()->unique('id');
-        $data = [];
-        foreach ($ddp->ddpLigne as $ddpLigne) {
-            $row = [];
-            foreach ($ddp_societes as $societe) {
-                $ddpLigneFournisseur = $ddpLigne->ddpLigneFournisseur->where('societe_id', $societe->id)->first();
-                if ($ddpLigneFournisseur) {
-                    $prix = '';
-                    if ($ddpLigneFournisseur->ddpLigne->matiere) {
-                        $fournisseur = $ddpLigneFournisseur->ddpLigne->matiere->fournisseurs()
-                            ->where('societe_id', $societe->id)
-                            ->where('ddp_ligne_fournisseur_id', $ddpLigneFournisseur->id)
-                            ->orderBy('date_dernier_prix', 'desc')
-                            ->first();
-                        if ($fournisseur) {
-                            $prix = $fournisseur->pivot->prix;
+        if ($ddp->ddp_cde_statut_id == 2) {
+
+
+            $data = [];
+            foreach ($ddp->ddpLigne as $ddpLigne) {
+                $row = [];
+                foreach ($ddp_societes as $societe) {
+                    $ddpLigneFournisseur = $ddpLigne->ddpLigneFournisseur->where('societe_id', $societe->id)->first();
+                    if ($ddpLigneFournisseur) {
+                        $prix = '';
+                        if ($ddpLigneFournisseur->ddpLigne->matiere) {
+                            $fournisseur = $ddpLigneFournisseur->ddpLigne->matiere->fournisseurs()
+                                ->where('societe_id', $societe->id)
+                                ->where('ddp_ligne_fournisseur_id', $ddpLigneFournisseur->id)
+                                ->orderBy('date_dernier_prix', 'desc')
+                                ->first();
+                            if ($fournisseur) {
+                                $prix = $fournisseur->pivot->prix;
+                            } else {
+                                $prix = '';
+                            }
                         } else {
                             $prix = '';
                         }
+                        $date_livraison = $ddpLigneFournisseur->date_livraison ? Carbon::parse($ddpLigneFournisseur->date_livraison)->format('d/m/Y') : '';
+                        $row[] = $prix;
+                        $row[] = $date_livraison;
                     } else {
-                        $prix = '';
+                        $row[] = 'UNDEFINED';
+                        $row[] = 'UNDEFINED';
                     }
-                    $date_livraison = $ddpLigneFournisseur->date_livraison ? Carbon::parse($ddpLigneFournisseur->date_livraison)->format('d/m/Y') : '';
-                    $row[] = $prix;
-                    $row[] = $date_livraison;
-                } else {
-                    $row[] = 'UNDEFINED';
-                    $row[] = 'UNDEFINED';
                 }
+                $data[] = $row;
             }
-            $data[] = $row;
+        } elseif ($ddp->ddp_cde_statut_id == 3) {
+            $data = [];
+            foreach ($ddp->ddpLigne as $ddpLigne) {
+                $row = [];
+                foreach ($ddp_societes as $societe) {
+                    $ddpLigneFournisseur = $ddpLigne->ddpLigneFournisseur->where('societe_id', $societe->id)->first();
+                    if ($ddpLigneFournisseur) {
+                        $prix = '';
+                        if ($ddpLigneFournisseur->ddpLigne->matiere) {
+                            $fournisseur = $ddpLigneFournisseur->ddpLigne->matiere->fournisseurs()
+                                ->where('societe_id', $societe->id)
+                                ->where('ddp_ligne_fournisseur_id', $ddpLigneFournisseur->id)
+                                ->orderBy('date_dernier_prix', 'desc')
+                                ->first();
+                            if ($fournisseur) {
+                                $prix = $fournisseur->pivot->prix;
+                            } else {
+                                $prix = '';
+                            }
+                        } else {
+                            $prix = '';
+                        }
+                        $date_livraison = $ddpLigneFournisseur->date_livraison ? Carbon::parse($ddpLigneFournisseur->date_livraison)->format('d/m/Y') : '';
+                        $row[] = $prix.' €';
+
+                        $row[] = ($prix != '') ? $prix * $ddpLigne->quantite.' €' : '';
+                        $row[] = $date_livraison;
+                    } else {
+                        $row[] = 'UNDEFINED';
+                        $row[] = 'UNDEFINED';
+                        $row[] = 'UNDEFINED';
+                    }
+                }
+                $data[] = $row;
+            }
+
         }
         return $data;
     }
