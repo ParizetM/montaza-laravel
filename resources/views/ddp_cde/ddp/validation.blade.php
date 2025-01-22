@@ -20,15 +20,33 @@
                     <div>
                         <x-input-label value="Dossier suivi par ?" />
                         <select name="dossier_suivi_par_id" required class="select w-fit min-w-96">
-                            <option value="0" selected>Non suivi</option>
+                            <option value="0" {{ old('dossier_suivi_par_id') == 0 ? 'selected' : '' }}>Non suivi</option>
                             @foreach ($users as $user)
-                                <option value="{{ $user->id }}">{{ $user->first_name }} {{ $user->last_name }}</option>
+                                <option value="{{ $user->id }}" {{ old('dossier_suivi_par_id') == $user->id ? 'selected' : '' }}>
+                                    {{ $user->first_name }} {{ $user->last_name }}
+                                </option>
                             @endforeach
                         </select>
+                        @error('dossier_suivi_par_id')
+                            <span class="text-red-500">{{ $message }}</span>
+                        @enderror
                     </div>
                     <div class="flex gap-4">
-                        <x-toggle :checked="true" :label="'Afficher le mail du destinataire dans le PDF ?'" id="afficher_destinataire" name="afficher_destinataire"
+                        <x-toggle :checked="old('afficher_destinataire', true)" :label="'Afficher le mail du destinataire dans le PDF ?'" id="afficher_destinataire" name="afficher_destinataire"
                             class="toggle-class" />
+                        @error('afficher_destinataire')
+                            <span class="text-red-500">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    <div>
+                        <div class="flex gap-4">
+                            <x-input-label value="Date de rendu" />
+                            <small>(Optionnel)</small>
+                        </div>
+                        <x-date-input name="date_rendu" :value="old('date_rendu')" />
+                        @error('date_rendu')
+                            <span class="text-red-500">{{ $message }}</span>
+                        @enderror
                     </div>
                 </div>
                 @foreach ($societes as $societe)
@@ -69,7 +87,6 @@
                                     <select name="etablissement-{{ $societe->id }}" required
                                         id="etablissement-{{ $societe->id }}" class="select w-fit min-w-96"
                                         onchange="changeEtablissement({{ $societe->id }})">
-
                                         @if ($societe->etablissements->count() == 1)
                                             <option value="{{ $societe->etablissements->first()->id }}" selected>
                                                 {{ $societe->etablissements->first()->nom }}
@@ -77,11 +94,15 @@
                                         @else
                                             <option value="" disabled selected>Choisir un établissement</option>
                                             @foreach ($societe->etablissements as $etablissement)
-                                                <option value="{{ $etablissement->id }}">{{ $etablissement->nom }}
+                                                <option value="{{ $etablissement->id }}" {{ old('etablissement-' . $societe->id) == $etablissement->id ? 'selected' : '' }}>
+                                                    {{ $etablissement->nom }}
                                                 </option>
                                             @endforeach
                                         @endif
                                     </select>
+                                    @error('etablissement-' . $societe->id)
+                                        <span class="text-red-500">{{ $message }}</span>
+                                    @enderror
                                 </div>
                                 <div class="flex flex-col gap-4">
                                     <x-input-label value="Destinataire" />
@@ -100,7 +121,7 @@
                                                 <option value="" disabled selected>Choisir un destinataire
                                                 </option>
                                                 @foreach ($societe->etablissements->first()->contacts as $contact)
-                                                    <option value="{{ $contact->id }}">
+                                                    <option value="{{ $contact->id }}" {{ old('contact-' . $societe->id) == $contact->id ? 'selected' : '' }}>
                                                         {{ $contact->nom }} {{ $contact->fonction }}
                                                         {{ $contact->email }}
                                                     </option>
@@ -108,6 +129,9 @@
                                             @endif
                                         @endif
                                     </select>
+                                    @error('contact-' . $societe->id)
+                                        <span class="text-red-500">{{ $message }}</span>
+                                    @enderror
                                 </div>
                             </div>
                         </div>

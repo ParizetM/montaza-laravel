@@ -143,7 +143,52 @@ class DdpController extends Controller
                 $indexSociete++;
             }
             $data[] = $row;
-            return view('ddp_cde.ddp.show', compact('ddp', ['ddp_societes', 'table_data', 'data']));
+            return view('ddp_cde.ddp.retours', compact('ddp', ['ddp_societes', 'data']));
+        }
+        if ($ddp->ddp_cde_statut_id == 3) {
+            $ddp_societes = $ddp->ddpLigne->map(function ($ligne) {
+                return $ligne->ddpLigneFournisseur->map(function ($fournisseur) {
+                    return $fournisseur->societe;
+                });
+            })->flatten()->unique('id');
+            $table_data = $this->getRetours($id);
+
+            $ddp->load('ddpLigne.matiere', 'ddpLigne.ddpLigneFournisseur.societe', 'ddpLigne.ddpLigneFournisseur.societeContact');
+            $data = [];
+            $row = [];
+            // Lignes des données
+            foreach ($table_data as $index => $row) {
+                $row = array_map(function ($value) {
+                    return $value;
+                }, $row);
+                $data[] = $row;
+            }
+
+            // Dernière ligne : Formules de calcul
+            $row = [];
+            $indexSociete = 0;
+            while ($indexSociete < (count($ddp_societes) * 2)) {
+
+
+                $sum = 0;
+                foreach ($table_data as $dataRow) {
+                    $sum += (float)$dataRow[$indexSociete];
+                }
+                $row[] = $sum;
+                $dates = array_filter(array_column($table_data, $indexSociete + 1));
+                $closestDate = null;
+                if (!empty($dates)) {
+                    $closestDate = min(array_map(function ($date) {
+                        return Carbon::hasFormat($date, 'd/m/Y') ? Carbon::createFromFormat('d/m/Y', $date) : null;
+                    }, $dates));
+                }
+                $row[] = $closestDate ? $closestDate->format('d/m/Y') : '';
+
+                $indexSociete++;
+                $indexSociete++;
+            }
+            $data[] = $row;
+            return view('ddp_cde.ddp.show', compact('ddp', ['ddp_societes', 'data']));
         }
         return view('ddp_cde.ddp.show', compact('ddp'));
     }
@@ -249,6 +294,11 @@ class DdpController extends Controller
         }
         if ($request->dossier_suivi_par_id != 0) {
             $ddp->dossier_suivi_par_id = $request->dossier_suivi_par_id;
+        }
+        if (isset($request->date_rendu)) {
+            $ddp->date_rendu = $request->date_rendu;
+        } else {
+            $ddp->date_rendu = null;
         }
         $ddp->afficher_destinataire = $request->afficher_destinataire ? 1 : 0;
         $ddp->save();
@@ -545,5 +595,23 @@ class DdpController extends Controller
             $data[] = $row;
         }
         return $data;
+    }
+    public function terminer($id)
+    {
+        $ddp = Ddp::findOrFail($id);
+        $ddp->ddp_cde_statut_id = 3;
+        $ddp->save();
+        return redirect()->route('ddp.show', $ddp->id);
+    }
+    public function annuler_terminer($id)
+    {
+        $ddp = Ddp::findOrFail($id);
+        if ($ddp->ddp_cde_statut_id == 3) {
+            $ddp->ddp_cde_statut_id = 2;
+            $ddp->save();
+        } else {
+            return redirect()->route('ddp.show', $ddp->id)->with('error', 'Vous ne pouvez pas annuler une demande de prix qui n\'est pas terminée');
+        }
+        return redirect()->route('ddp.show', $ddp->id);
     }
 }

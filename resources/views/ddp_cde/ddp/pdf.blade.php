@@ -155,7 +155,14 @@
         <div class="main-content">
             <p>
                 Madame, Monsieur,<br>
+                @if ($ddp->date_rendu != null)
+                @php
+                    $dateRendu = \Carbon\Carbon::parse($ddp->date_rendu);
+                @endphp
+                Veuillez nous faire parvenir votre offre de prix concernant les éléments indiqués ci-dessous avant le {{ $dateRendu->format('d/m/Y') }}.
+                @else
                 Veuillez nous faire parvenir votre offre de prix concernant les éléments indiqués ci-dessous.
+                @endif
             </p>
 
             <table>

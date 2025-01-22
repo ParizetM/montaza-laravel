@@ -77,7 +77,7 @@
 
                             <x-input-label for="ddp-nom" value="Nom" />
                             <x-text-input label="Nom" name="ddp-nom" id="ddp-nom"
-                                placeholder="Nom de la demande de prix"
+                                placeholder="Nom de la demande de prix" autofocus
                                 value="{{ isset($ddp) && $ddp->nom != 'undefined' ? $ddp->nom : '' }}"
                                 class="w-1/2 {{ isset($ddp) && $ddp->nom != 'undefined' ? 'border-r-green-500 dark:border-r-green-600 border-r-2' : '' }}" />
                         </div>
