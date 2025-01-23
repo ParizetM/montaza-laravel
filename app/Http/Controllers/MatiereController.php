@@ -170,9 +170,11 @@ class MatiereController extends Controller
     {
         $matiere = Matiere::with(['sousFamille', 'societe', 'standardVersion'])->findOrFail($matiere_id);
         $fournisseurs_dernier_prix = $matiere->fournisseurs()
+            ->where('societe_type_id', ['3', '2'])
             ->orderBy('date_dernier_prix', 'desc')
             ->get()
             ->unique('pivot.societe_id');
+
         return view('matieres.show', [
             'matiere' => $matiere,
             'fournisseurs_dernier_prix' => $fournisseurs_dernier_prix,

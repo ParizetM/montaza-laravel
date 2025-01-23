@@ -35,6 +35,7 @@ class DatabaseSeeder extends Seeder
             'voir_les_ddp_et_cde' => 'Consulter Les Demandes De Prix Et Les Commandes',
             'gerer_les_ddp_et_cde' => 'Créer, Modifier Et Désactiver Les Demandes De Prix Et Les Commandes',
             'gerer_mail_templates' => 'Modifier Les Modèles De Mail',
+            'gerer_info_entreprise' => 'Modifier Les Informations De L\'entreprise',
         ];
         foreach ($permissions as $permission => $description) {
             Permission::factory()->create([

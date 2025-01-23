@@ -21,27 +21,25 @@
             <div class="flex justify-between items-center mb-6">
                 <h1 class="text-3xl font-bold mb-6 text-left">{{ $ddp->nom }} - Récapitulatif</h1>
             </div>
-            <div class="overflow-auto">
+            <div class="overflow-x-auto overflow-y-visible">
                 <table class="w-full table-auto bg-white dark:bg-gray-900 ">
-                    <thead>
-                        <tr>
-                            <th class=" p-2 text-center">
-                                &nbsp;</th>
-                            <th class=" p-2 text-center">
-                                &nbsp;</th>
+                    <thead class="">
+                        <tr class="bg-gray-200 dark:bg-gray-700">
+                            <th class=" p-2 text-center"></th>
+                            <th class=" p-2 text-center"></th>
                             @foreach ($ddp_societes as $societe)
                                 <th colspan="3"
-                                    class=" p-2 text-center border-l-2 border-l-gray-500 dark:border-l-gray-700">
+                                    class=" p-2 text-center border-l-2 border-l-gray-500 dark:border-l-gray-300">
                                     {{ $societe->raison_sociale }}</th>
                             @endforeach
                         </tr>
-                        <tr>
+                        <tr class="bg-gray-200 dark:bg-gray-700">
                             <th colspan="1" class=" p-2 text-center">
                                 Matière</th>
                             <th colspan="1" class=" p-2 text-center">
                                 quantité</th>
                             @foreach ($ddp_societes as $societe)
-                                <th class=" p-2 text-center border-l-2 border-l-gray-500 dark:border-l-gray-700">
+                                <th class=" p-2 text-center border-l-2 border-l-gray-500 dark:border-l-gray-300">
                                     Prix unitaire</th>
                                 <th class=" p-2 text-center">
                                     Montant</th>
@@ -61,21 +59,30 @@
                         @foreach ($data as $index => $ligne)
                             <tr>
                                 @if ($index == $lastindex)
-                                    <td> total</td>
-                                    <td class="text-center">{{ $total_quantite }}</td>
+                                    <td class="text-center border border-gray-300 dark:border-gray-700"> TOTAL</td>
+                                    <td class="text-center border border-gray-300 dark:border-gray-700">
+                                        {{ $total_quantite }}</td>
                                 @else
-                                    <td>{{ $ddplignes[$index]->matiere->designation }}</td>
-                                    <td class="text-center">{{ $ddplignes[$index]->quantite }}</td>
+                                    <td
+                                        class="border border-gray-300 dark:border-gray-700 pl-2
+                                            {{ $index % 2 == 1 ? 'bg-gray-50 dark:bg-gray-800' : '' }}
+                                    ">
+                                        {{ $ddplignes[$index]->matiere->designation }}</td>
+                                    <td
+                                        class="text-center border border-gray-300 dark:border-gray-700
+                                            {{ $index % 2 == 1 ? 'bg-gray-50 dark:bg-gray-800' : '' }}
+                                    ">
+                                        {{ $ddplignes[$index]->quantite }}</td>
                                 @endif
 
                                 @foreach ($ligne as $key => $value)
                                     @if ($value == 'UNDEFINED')
                                         <td
-                                            class="border border-gray-300 dark:border-gray-700 p-2 bg-gray-300 dark:bg-gray-700 {{ $key % 3 == 0 ? 'border-l-2 border-l-gray-500 dark:border-l-gray-700' : '' }}">
+                                            class="border border-gray-300 dark:border-gray-700 p-2 bg-gray-200 dark:bg-gray-700 {{ $key % 3 == 0 ? 'border-l-2 border-l-gray-500 dark:border-l-gray-300' : '' }}">
                                         </td>
                                     @else
                                         <td
-                                            class="border border-gray-300 dark:border-gray-700 p-2 {{ $key % 3 == 0 ? 'border-l-2 border-l-gray-500 dark:border-l-gray-700' : '' }} whitespace-nowrap
+                                            class="border border-gray-300 dark:border-gray-700 p-2 {{ $key % 3 == 0 ? 'border-l-2 border-l-gray-500 dark:border-l-gray-300' : '' }} {{ $index % 2 == 1 ? 'bg-gray-50 dark:bg-gray-800' : '' }} whitespace-nowrap
                                         ">
                                             {{ $value }}
                                         </td>
@@ -83,6 +90,15 @@
                                 @endforeach
                             </tr>
                         @endforeach
+                        <tr class="dark:bg-gray-800">
+                            <td colspan="2"></td>
+                            @foreach ($ddp_societes as $societe)
+                                <td colspan="3" class="">
+                                    <a href="{{ route('ddp.commander', ['ddp' => $ddp->id, 'societe' => $societe->id]) }}"
+                                        class=" btn-select-bottom-right btn-select-bottom-left text-center mb-10 dark:bg-gray-700 dark:hover:bg-gray-600">Commander</a>
+                                </td>
+                            @endforeach
+                        </tr>
                     </tbody>
                 </table>
             </div>

@@ -123,9 +123,16 @@
 
             // Construire les colonnes (read-only pour matières, saisie pour les autres)
             const columns = [
-                ...ddp_societes.flatMap(() => [{
+                ...ddp_societes.map(() => [{
+                        type: 'text',
+                    },
+                    {
                         type: 'numeric',
                     }, // Colonne prix
+                    {
+                        type: 'select',
+                        selectOptions: ['t', 'kg', 'ml', 'u', 'm²', 'm³', 'l'],
+                    },
                     {
                         type: 'date',
                         dateFormat: 'DD/MM/YYYY',
@@ -147,13 +154,13 @@
                             }
                         },
                     } // Colonne date
-                ])
+                ]).flat()
             ];
 
             const borders = [];
 
             // Générer les bordures toutes les deux colonnes
-            for (let col = 0; col < (societe_count * 2); col += 2) {
+            for (let col = 0; col < (societe_count * 4); col += 4) {
                 borders.push({
                     range: {
                         from: {
@@ -177,22 +184,21 @@
 
             // Construire les données
             const data = @json($data);
-            // console.log(data);
+            console.log(data);
             const mergeCells = [];
             for (let i = 0; i < societe_count; i++) {
                 mergeCells.push({
                     row: 0,
-                    col: i * 2,
+                    col: i * 4,
                     rowspan: 1,
-                    colspan: 2
+                    colspan: 4
                 });
             }
 
             function findMinValue(rowData) {
                 const numericValues = rowData
-                    .filter((value, index) => index % 2 === 0)
-                    .filter(value => !isNaN(value) && value !== 'UNDEFINED' && value !== 0 && value !== null &&
-                        value !== Infinity && value !== '');
+                    .filter((value, index) => index % 4 === 1)
+                    .filter(value => !isNaN(value) && value !== 0 && value !== null && value !== '');
                 return numericValues.length > 0 ? Math.min(...numericValues) : null;
             };
             // Initialiser Handsontable
@@ -202,7 +208,8 @@
                 local: frFR,
                 licenseKey: 'non-commercial-and-evaluation',
                 rowHeaders: rowHeaders,
-                rowHeaderWidth: 150,
+                rowHeaderWidth: rowHeaders.reduce((maxLength, header) => Math.max(maxLength, header.length),
+                    0) * 10,
                 colHeaders: false,
                 columns: columns,
                 mergeCells: mergeCells,
@@ -215,7 +222,19 @@
                 },
                 preventOverflow: 'horizontal',
                 colWidths(visualColumnIndex) {
-                    return visualColumnIndex % 2 === 0 ? 80 : 115;
+                    if (visualColumnIndex % 4 === 0) {
+                        return 115;
+                    }
+                    if (visualColumnIndex % 4 === 1) {
+                        return 80;
+                    }
+                    if (visualColumnIndex % 4 === 2) {
+                        return 50;
+                    }
+                    if (visualColumnIndex % 4 === 3) {
+                        return 115;
+                    }
+                    return visualColumnIndex
                 },
                 autoColumnSize: {
                     syncLimit: '100%'
@@ -247,10 +266,12 @@
                                 td.style.color = '#000'; // Changer la couleur du texte
                             }
                         }
-                        const minValue = findMinValue(rowData); // Trouver la valeur minimale
-                        if (value == minValue) {
-                            td.style.backgroundColor = '#77DD77'; // Changer le fond en vert
-                            td.style.color = '#145214'; // Changer la couleur du texte
+                        if (col % 4 === 1) {
+                            const minValue = findMinValue(rowData); // Trouver la valeur minimale
+                            if (value == minValue) {
+                                td.style.backgroundColor = '#77DD77'; // Changer le fond en vert
+                                td.style.color = '#145214'; // Changer la couleur du texte
+                            }
                         }
 
                         if (data[row][col] === 'UNDEFINED') {
@@ -270,15 +291,27 @@
             });
             // applyGreenBackgroundOnLowestValue(hot);
             var firstdedit = false;
+
+            function debounce(func, delay) {
+                let timer;
+                return function(...args) {
+                    clearTimeout(timer);
+                    timer = setTimeout(() => func.apply(this, args), delay);
+                };
+            }
+
+            // Appliquez le debounce à saveChanges
+            const debouncedSaveChanges = debounce(saveChanges, 500);
             hot.addHook('afterChange', function(changes, source) {
-                if (source === 'loadData') {
-                    return; // Ne pas enregistrer les modifications lors du chargement des données
+                try {
+                    if (source === 'loadData') return;
+                    if (changes && firstdedit == true) {
+                        debouncedSaveChanges();
+                    }
+                    firstdedit = true;
+                } catch (error) {
+                    console.error('Error in afterChange hook:', error);
                 }
-                if (changes && firstdedit == true) {
-                    // console.log(changes);
-                    saveChanges();
-                }
-                firstdedit = true;
             });
             const exportPlugin = hot.getPlugin('exportFile');
             const button = document.querySelector('#refresh');
@@ -302,7 +335,7 @@
                     rowDelimiter: '\r\n',
                     rowHeaders: false,
                 });
-                // console.log(exportedString);
+                console.log(exportedString);
                 fetch('/ddp/{{ $ddp->id }}/save-retours', {
                         method: 'POST',
                         headers: {
@@ -315,7 +348,7 @@
                     })
                     .then(response => response.json())
                     .then(data => {
-                        // console.log('Success:', data);
+                        console.log('Success:', data);
                         saveStatus0.classList.add('hidden');
                         saveStatus1.classList.remove('hidden');
                         saveStatus2.classList.add('hidden');

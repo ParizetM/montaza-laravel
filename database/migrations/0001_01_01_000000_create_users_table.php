@@ -14,6 +14,15 @@ return new class extends Migration
         Schema::create('entites', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('adresse');
+            $table->string('ville');
+            $table->string('code_postal');
+            $table->string('tel');
+            $table->string('siret');
+            $table->string('rcs');
+            $table->string('numero_tva');
+            $table->string('code_ape');
+            $table->string('logo')->nullable();
             $table->timestamps();
         });
         Schema::create('roles', function (Blueprint $table) {

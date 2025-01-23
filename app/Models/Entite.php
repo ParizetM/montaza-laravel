@@ -12,6 +12,19 @@ class Entite extends Model
 {
     /** @use HasFactory<EntiteFactory>  */
     use HasFactory;
+
+    protected $fillable = [
+        'name',
+        'adresse',
+        'ville',
+        'code_postal',
+        'tel',
+        'siret',
+        'rcs',
+        'numero_tva',
+        'code_ape',
+        'logo',
+    ];
     /**
  * @return HasMany<Role, Entite>
      */

@@ -74,6 +74,7 @@ return new class extends Migration
             $table->string('ref_fournisseur')->nullable(); // Référence fournisseur
             $table->string('designation_fournisseur')->nullable(); // Désignation spécifique au fournisseur
             $table->decimal('prix', 8, 2); // Prix associé
+            $table->foreignId('unite_id')->nullable()->constrained('unites');
             $table->dateTime('date_dernier_prix'); // Date du dernier prix
             $table->timestamps();
         });

@@ -30,6 +30,8 @@ Route::get('/dashboard/paillettes', function () {
 
 Route::middleware(['GetGlobalVariable', 'XSSProtection','auth'])->group(function () {
     Route::get('/administration' , [AdministrationController::class, 'index'])->name('administration.index');
+    Route::get('/administration/info' , [AdministrationController::class, 'info'])->name('administration.info');
+    Route::get('/administration/info/{entite}' , [AdministrationController::class, 'info'])->name('administration.info_entite');
     Route::get('/profile/{id}', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::patch('/profile-admin', [ProfileController::class, 'updateAdmin'])->name('profile.update_admin');
@@ -147,6 +149,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection','auth'])->group(function
         Route::get('/ddp/{ddp}/skipmails', [DdpController::class, 'skipMails'])->name('ddp.skipmails');
         Route::get('/ddp/{ddp}/terminer', [DdpController::class, 'terminer'])->name('ddp.terminer');
         Route::get('/ddp/{ddp}/annuler_terminer', [DdpController::class, 'annuler_terminer'])->name('ddp.annuler_terminer');
+        Route::get('/ddp/{ddp}/commander', [DdpController::class, 'commander'])->name('ddp.commander');
     });
 
 });

@@ -24,7 +24,7 @@ class Matiere extends Model
     public function fournisseurs()
     {
         return $this->belongsToMany(Societe::class, 'societe_matiere')
-            ->withPivot(['ref_fournisseur', 'designation_fournisseur', 'prix', 'date_dernier_prix'])
+            ->withPivot(['ref_fournisseur', 'designation_fournisseur', 'prix','unite_id', 'date_dernier_prix'])
             ->withTimestamps();
     }
     public function unite()

@@ -197,7 +197,7 @@
             <td class="text-left py-3 px-4">${matiere.refInterne || '-'}</td>
             <td class="text-left py-3 px-4">${matiere.designation || '-'}</td>
             <td class="text-left py-3 px-4">${matiere.sousFamille || '-'}</td>
-            <td class="text-left py-3 px-4 flex items-center"><x-icons.pdf class="w-6 h-6" /><a href="${matiere.standardPath}" class="lien" target="_blank">${matiere.standard || '-'} - ${matiere.standardVersion || '-'}</a> </td>
+            <td class="text-left py-3 px-4 flex items-center"><x-icons.pdf class="w-6 h-6" /><a href="/matieres/${matiere.standardPath}" class="lien" target="_blank">${matiere.standard || '-'} - ${matiere.standardVersion || '-'}</a> </td>
             <td class="text-left py-3 px-4">${matiere.dn || '-'}</td>
             <td class="text-left py-3 px-4">${matiere.epaisseur || '-'}</td>
             <td class="text-left py-3 px-4">${matiere.Unite || '-'}</td>
