@@ -44,15 +44,7 @@ class DatabaseSeeder extends Seeder
             ]);
         }
         // User::factory(10)->create();
-        Entite::factory()->create([
-            'name' => 'Atlantis Montaza',
-        ]);
-        Entite::factory()->create([
-            'name' => 'Atlantis Ventilation',
-        ]);
-        Entite::factory()->create([
-            'name' => 'AMB',
-        ]);
+        $this->call(EntiteSeeder::class);
 
         $Gerant = Role::factory()->create([
             'name' => 'Gérant',
@@ -182,5 +174,8 @@ class DatabaseSeeder extends Seeder
         $this->call(DdpCdeStatutSeeder::class);
         $this->call(DdpSeeder::class);
         $this->call(MailTemplateSeeder::class);
+        $this->call(ConditionPaiementSeeder::class);
+        $this->call(TypeExpeditionSeeder::class);
+        $this->call(CdeSeeder::class);
     }
 }

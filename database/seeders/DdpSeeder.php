@@ -18,6 +18,6 @@ class DdpSeeder extends Seeder
     {
         Ddp::factory(10)->create();
         DdpLigne::factory(35)->create();
-        DdpLigneFournisseur::factory(100)->create();
+        DdpLigneFournisseur::factory(60)->create();
     }
 }

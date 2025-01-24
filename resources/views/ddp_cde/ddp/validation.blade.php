@@ -16,38 +16,43 @@
             @csrf
             <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-6 rounded-md shadow-md">
                 <h1 class="text-3xl font-bold mb-6 text-center">{{ $ddp->nom }}</h1>
-                <div class="flex flex-col gap-4 m-4">
-                    <div>
-                        <x-input-label value="Dossier suivi par ?" />
-                        <select name="dossier_suivi_par_id" required class="select w-fit min-w-96">
-                            <option value="0" {{ old('dossier_suivi_par_id') == 0 ? 'selected' : '' }}>Non suivi</option>
-                            @foreach ($users as $user)
-                                <option value="{{ $user->id }}" {{ old('dossier_suivi_par_id') == $user->id ? 'selected' : '' }}>
-                                    {{ $user->first_name }} {{ $user->last_name }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('dossier_suivi_par_id')
-                            <span class="text-red-500">{{ $message }}</span>
-                        @enderror
-                    </div>
-                    <div class="flex gap-4">
-                        <x-toggle :checked="old('afficher_destinataire', true)" :label="'Afficher le mail du destinataire dans le PDF ?'" id="afficher_destinataire" name="afficher_destinataire"
-                            class="toggle-class" />
-                        @error('afficher_destinataire')
-                            <span class="text-red-500">{{ $message }}</span>
-                        @enderror
-                    </div>
-                    <div>
-                        <div class="flex gap-4">
-                            <x-input-label value="Date de rendu" />
-                            <small>(Optionnel)</small>
+                <div class="flex justify-between">
+                    <div class="flex flex-col gap-4 m-4">
+                        <div>
+                            <x-input-label value="Dossier suivi par ?" />
+                            <select name="dossier_suivi_par_id" required class="select w-fit min-w-96">
+                                <option value="0" {{ old('dossier_suivi_par_id') == 0 ? 'selected' : '' }}>Non
+                                    suivi</option>
+                                @foreach ($users as $user)
+                                    <option value="{{ $user->id }}"
+                                        {{ old('dossier_suivi_par_id') == $user->id ? 'selected' : '' }}>
+                                        {{ $user->first_name }} {{ $user->last_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('dossier_suivi_par_id')
+                                <span class="text-red-500">{{ $message }}</span>
+                            @enderror
                         </div>
-                        <x-date-input name="date_rendu" :value="old('date_rendu')" />
-                        @error('date_rendu')
-                            <span class="text-red-500">{{ $message }}</span>
-                        @enderror
+                        <div class="flex gap-4">
+                            <x-toggle :checked="old('afficher_destinataire', true)" :label="'Afficher le mail du destinataire dans le PDF ?'" id="afficher_destinataire"
+                                name="afficher_destinataire" class="toggle-class" />
+                            @error('afficher_destinataire')
+                                <span class="text-red-500">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div>
+                            <div class="flex gap-4">
+                                <x-input-label value="Date de rendu" />
+                                <small>(Optionnel)</small>
+                            </div>
+                            <x-date-input name="date_rendu" :value="old('date_rendu')" />
+                            @error('date_rendu')
+                                <span class="text-red-500">{{ $message }}</span>
+                            @enderror
+                        </div>
                     </div>
+                    <img src="{{ asset($entite->logo) }}" alt="Logo" class="w-1/4 h-1/4 mb-4 object-contain float-right">
                 </div>
                 @foreach ($societes as $societe)
                     <div class="mb-6">
@@ -94,7 +99,8 @@
                                         @else
                                             <option value="" disabled selected>Choisir un établissement</option>
                                             @foreach ($societe->etablissements as $etablissement)
-                                                <option value="{{ $etablissement->id }}" {{ old('etablissement-' . $societe->id) == $etablissement->id ? 'selected' : '' }}>
+                                                <option value="{{ $etablissement->id }}"
+                                                    {{ old('etablissement-' . $societe->id) == $etablissement->id ? 'selected' : '' }}>
                                                     {{ $etablissement->nom }}
                                                 </option>
                                             @endforeach
@@ -121,7 +127,8 @@
                                                 <option value="" disabled selected>Choisir un destinataire
                                                 </option>
                                                 @foreach ($societe->etablissements->first()->contacts as $contact)
-                                                    <option value="{{ $contact->id }}" {{ old('contact-' . $societe->id) == $contact->id ? 'selected' : '' }}>
+                                                    <option value="{{ $contact->id }}"
+                                                        {{ old('contact-' . $societe->id) == $contact->id ? 'selected' : '' }}>
                                                         {{ $contact->nom }} {{ $contact->fonction }}
                                                         {{ $contact->email }}
                                                     </option>

@@ -9,7 +9,7 @@
             </h2>
         </div>
     </x-slot>
-    <div id="new-ddp" class="hidden">{{ $ddpid ? $ddpid : '' }}</div>
+    <div id="new-ddp" class="hidden">{{ $cdeid ? $cdeid : '' }}</div>
     <div class="py-4">
         <div class="max-w-8xl mx-auto sm:px-4 lg:px-6">
             <div
@@ -56,7 +56,7 @@
                 <div class="bg-white dark:bg-gray-800 p-4 flex flex-col gap-4 rounded-md">
                     <form class="bg-white dark:bg-gray-800 flex flex-col gap-4 rounded-md">
                         @csrf
-                        <input type="hidden" name="ddp_id" value="{{ $ddp->id ?? '' }}">
+                        <input type="hidden" name="ddp_id" value="{{ $cde->id ?? '' }}">
                         <div class="flex justify-between items-center mb-6">
                             <h1 class="text-xl font-semibold">Demande de prix</h1>
                             <div class="flex items-center">
@@ -64,9 +64,9 @@
                                     title="Demande de prix en cours d'enregistrement" id="save-status-0">Enregistrement
                                     en
                                     cours...<x-icons.progress-activity size="2" /></h1>
-                                <h1 class="text-xl font-semibold text-gray-500 dark:text-gray-400 {{ isset($ddp) ? '' : 'hidden' }}"
+                                <h1 class="text-xl font-semibold text-gray-500 dark:text-gray-400 {{ isset($cde) ? '' : 'hidden' }}"
                                     title="Demande de prix enregistré avec succès" id="save-status-1">Enregistré</h1>
-                                <h1 class="text-xl font-semibold text-gray-500 dark:text-gray-400 {{ isset($ddp) ? 'hidden' : '' }}"
+                                <h1 class="text-xl font-semibold text-gray-500 dark:text-gray-400 {{ isset($cde) ? 'hidden' : '' }}"
                                     title="Demande de prix non enregistrée" id="save-status-2">Non-enregistré</h1>
                                 <button class="" onclick="saveChanges()" type="button">
                                     <x-icons.refresh size="2" class="icons" />
@@ -77,10 +77,10 @@
                             <div class="w-auto">
                                 <x-input-label for="ddp-entite" value="Pour" />
                                 <select name="ddp-entite" id="ddp-entite"
-                                    class="select w-auto {{ isset($ddp) && $ddp->nom != 'undefined' ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : '' }} p-3">
+                                    class="select w-auto {{ isset($cde) && $cde->nom != 'undefined' ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : '' }} p-3">
                                     @foreach ($entites as $entite)
                                         <option value="{{ $entite->id }}"
-                                            {{ isset($ddp) && $ddp->entite_id == $entite->id ? 'selected' : '' }}>
+                                            {{ isset($cde) && $cde->entite_id == $entite->id ? 'selected' : '' }}>
                                             {{ $entite->name }}
                                         </option>
                                     @endforeach
@@ -90,9 +90,22 @@
                                 <x-input-label for="ddp-nom" value="Nom" />
                                 <x-text-input label="Nom" name="ddp-nom" id="ddp-nom"
                                     placeholder="Nom de la demande de prix" autofocus
-                                    value="{{ isset($ddp) && $ddp->nom != 'undefined' ? $ddp->nom : '' }}"
-                                    class="w-1/2 {{ isset($ddp) && $ddp->nom != 'undefined' ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : '' }}" />
+                                    value="{{ isset($cde) && $cde->nom != 'undefined' ? $cde->nom : '' }}"
+                                    class="w-1/2 {{ isset($cde) && $cde->nom != 'undefined' ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : '' }}" />
                             </div>
+                        </div>
+                        <div class="flex">
+                            <select name="societe_select" id="societe_select" class="select w-auto">
+                                @if (!$cde->societe)
+                                    <option value="" selected disabled>Choisir une société</option>
+                                @endif
+                                    @foreach ($societes as $societe)
+                                        <option value="{{ $societe->id }}"
+                                            {{ (isset($cde->societe) && $cde->societe->id == $societe->id) ? 'selected' : '' }}>
+                                            {{ $societe->raison_sociale }}
+                                        </option>
+                                    @endforeach
+                            </select>
                         </div>
                         <div class="min-h-96 overflow-x-auto bg-gray-100 dark:bg-gray-900 rounded">
                             <table>
@@ -101,42 +114,42 @@
 
                                 </thead>
                                 <tbody id="matiere-choisi-table">
-                                    @if ($ddp && $ddp->ddpLigne->count() > 0)
-                                        @foreach ($ddp->ddpLigne as $ddp_ligne)
-                                            <tr data-matiere-id="{{ $ddp_ligne->matiere->id }}" x-data
-                                                data-fournisseurs-ids="{{ $ddp_ligne->fournisseurs->pluck('id')->join(';') }}"
-                                                data-fournisseurs-noms="{{ $ddp_ligne->fournisseurs->pluck('raison_sociale')->join(';') }}"
+                                    @if ($cde && $cde->cdeLignes->count() > 0)
+                                        @foreach ($cde->cdeLignes as $cde_ligne)
+                                            <tr data-matiere-id="{{ $cde_ligne->matiere->id }}" x-data
+                                                data-fournisseurs-ids="{{ $cde_ligne->fournisseurs->pluck('id')->join(';') }}"
+                                                data-fournisseurs-noms="{{ $cde_ligne->fournisseurs->pluck('raison_sociale')->join(';') }}"
                                                 class="border-b border-gray-200 dark:border-gray-700 rounded-r-md overflow-hidden bg-white dark:bg-gray-800 border-r-4 border-r-green-500 dark:border-r-green-600">
-                                                <td class="text-left px-4">{{ $ddp_ligne->matiere->ref_interne }}</td>
-                                                <td class="text-left px-4">{{ $ddp_ligne->matiere->designation }}</td>
+                                                <td class="text-left px-4">{{ $cde_ligne->matiere->ref_interne }}</td>
+                                                <td class="text-left px-4">{{ $cde_ligne->matiere->designation }}</td>
                                                 <td class="text-right px-4 flex items-center"
-                                                    title="{{ $ddp_ligne->matiere->unite->full }}">
+                                                    title="{{ $cde_ligne->matiere->unite->full }}">
                                                     <button type="button" class="btn-decrement px-2"
                                                         onclick="decrementQuantity(this)">-</button>
                                                     <x-text-input type="number"
-                                                        name="quantite[{{ $ddp_ligne->matiere->id }}]"
+                                                        name="quantite[{{ $cde_ligne->matiere->id }}]"
                                                         oninput="saveChanges()" class="w-20 text-right mx-2"
-                                                        value="{{ $ddp_ligne->quantite }}" min="1" />
-                                                    {{ $ddp_ligne->matiere->unite->short }}
+                                                        value="{{ $cde_ligne->quantite }}" min="1" />
+                                                    {{ $cde_ligne->matiere->unite->short }}
                                                     <button type="button" class="btn-increment px-2"
                                                         onclick="incrementQuantity(this)">+</button>
                                                 </td>
                                                 <td class="text-right px-4">
                                                     <button class="float-right"
-                                                        data-matiere-id="{{ $ddp_ligne->matiere->id }}"
+                                                        data-matiere-id="{{ $cde_ligne->matiere->id }}"
                                                         onclick="removeMatiere(event)">
                                                         <x-icons.close size="2" class="icons" />
                                                     </button>
                                                     <button class="float-right"
-                                                        data-matiere-id="{{ $ddp_ligne->matiere->id }}"
+                                                        data-matiere-id="{{ $cde_ligne->matiere->id }}"
                                                         onclick="showFournisseurs(event)"
                                                         x-on:click.prevent="$dispatch('open-modal', 'fournisseurs-modal')"
                                                         title="Fournisseurs">
                                                         <x-icons.list size="2" class="icons" />
                                                     </button>
                                                     <input type="hidden"
-                                                        name="fournisseur-{{ $ddp_ligne->matiere->id }}"
-                                                        value="{{ $ddp_ligne->fournisseurs->pluck('id')->join(';') }}">
+                                                        name="fournisseur-{{ $cde_ligne->matiere->id }}"
+                                                        value="{{ $cde_ligne->fournisseurs->pluck('id')->join(';') }}">
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -164,7 +177,7 @@
                                 <div class="flex justify-end gap-4">
                                     <button class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
                                         onclick="document.getElementById('confirm-delete-modal').classList.add('hidden');">Annuler</button>
-                                    <form action="{{ route('ddp.destroy', ['ddp' => $ddpid]) }}" method="POST">
+                                    <form action="{{ route('ddp.destroy', ['ddp' => $cdeid]) }}" method="POST">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit"
@@ -174,7 +187,7 @@
                             </div>
                         </div>
                         <button class=" btn"
-                            onclick="if (document.getElementById('ddp-nom').value.trim() != '') { window.location.href = '{{ route('ddp.validation', ['ddp' => $ddpid]) }}'; } else { alert('Veuillez renseigner le nom de la demande de prix'); }">Suivant</button>
+                            onclick="if (document.getElementById('ddp-nom').value.trim() != '') { window.location.href = '{{ route('ddp.validation', ['ddp' => $cdeid]) }}'; } else { alert('Veuillez renseigner le nom de la demande de prix'); }">Suivant</button>
                     </div>
                 </div>
             </div>

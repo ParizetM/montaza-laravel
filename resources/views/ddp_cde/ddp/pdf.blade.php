@@ -117,18 +117,17 @@
 
 <body>
     <div id="footer">
-        ATLANTIS MONTAZA - 1 Ter Rue de la Cité Nouvelle - ZI Altitude - 44570 - TRIGNAC - FRANCE <br>
-         Téléphone : 02 40 17 65 62
+        {{ strtoupper($entite->name) }} - {{ $entite->adresse}} -  {{ $entite->code_postal}} - {{ $entite->ville}} - FRANCE <br>
+         Téléphone : {{ $entite->tel}}
     </div>
     <div class="container">
         <!-- Header -->
-        <img src="{{ public_path('img/logo-long.png') }}" alt="Logo" style="width: 30%; margin-bottom: 20px; margin-left:-2%;">
+        <img src="{{ public_path($entite->logo) }}" alt="Logo" style="width: 30%; margin-bottom: 20px;">
         <div class="header">
             <div class="company-info left">
-                <strong>ATLANTIS MONTAZA</strong><br>
-                1 Ter Rue de la Cité Nouvelle<br>
-                ZI Altitude<br>
-                44570 TRIGNAC<br>
+                <strong>{{ strtoupper($entite->name) }}</strong><br>
+                {{ $entite->adresse}}<br>
+                {{ $entite->code_postal}} - {{ $entite->ville}}<br>
                 FRANCE
             </div>
             <div class="company-info right">

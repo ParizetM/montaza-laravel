@@ -53,6 +53,16 @@ class PredefinedShortcutsSeeder extends Seeder
                 'title' => 'Consulter les standards',
                 'url' => "standards.index",
                 'icon' => 'standard',
+            ],
+            [
+                'title' => 'Consulter les Demandes de Prix',
+                'url' => "ddp.index",
+                'icon' => 'ddp',
+            ],
+            [
+                'title' => 'Consulter les Commandes',
+                'url' => "cde.index",
+                'icon' => 'cde',
             ]
 
         ];

@@ -51,7 +51,7 @@
                 </tbody>
             </table>
 
-            <table class="mt-6 w-full">
+            <table class="mt-6 min-w-0">
                 <thead>
                     <tr>
                         <th class="px-4 py-2">Fournisseur</th>

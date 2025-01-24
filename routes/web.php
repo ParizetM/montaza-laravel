@@ -32,6 +32,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection','auth'])->group(function
     Route::get('/administration' , [AdministrationController::class, 'index'])->name('administration.index');
     Route::get('/administration/info' , [AdministrationController::class, 'info'])->name('administration.info');
     Route::get('/administration/info/{entite}' , [AdministrationController::class, 'info'])->name('administration.info_entite');
+    Route::patch('/administration/info/{entite}/update' , [AdministrationController::class, 'update'])->name('administration.update');
     Route::get('/profile/{id}', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::patch('/profile-admin', [ProfileController::class, 'updateAdmin'])->name('profile.update_admin');
@@ -132,7 +133,6 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection','auth'])->group(function
     Route::middleware('permission:voir_les_ddp_et_cde')->group(function () {
         Route::get('/ddp&cde', [DdpController::class, 'indexDdp_cde'])->name('ddp_cde.index');
         Route::get('/ddp', [DdpController::class, 'index'])->name('ddp.index');
-        Route::get('/cde', [DdpController::class, 'indexDdp_cde']);
         Route::get('/colddp', [DdpController::class, 'indexColDdp'])->name('ddp.index_col_ddp');
         Route::get('/ddp/create', [DdpController::class, 'create'])->name('ddp.create');
         Route::post('/ddp/save', [DdpController::class, 'save'])->name('ddp.save');
@@ -144,12 +144,21 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection','auth'])->group(function
         Route::get('/ddp/{ddp}/pdfs/download', [DdpController::class, 'pdfsDownload'])->name('ddp.pdfs.download');
         Route::get('/ddp/{ddp}/pdf/{annee}/{nom}', [DdpController::class, 'pdfshow'])->name('ddp.pdfshow');
         Route::get('/ddp/{ddp}', [DdpController::class, 'show'])->name('ddp.show');
-        Route::get('/colcde', [CdeController::class, 'indexColCde'])->name('ddp.index_col_cde');
         Route::post('/ddp/{ddp}/sendmails', [DdpController::class, 'sendMails'])->name('ddp.sendmails');
         Route::get('/ddp/{ddp}/skipmails', [DdpController::class, 'skipMails'])->name('ddp.skipmails');
         Route::get('/ddp/{ddp}/terminer', [DdpController::class, 'terminer'])->name('ddp.terminer');
         Route::get('/ddp/{ddp}/annuler_terminer', [DdpController::class, 'annuler_terminer'])->name('ddp.annuler_terminer');
-        Route::get('/ddp/{ddp}/commander', [DdpController::class, 'commander'])->name('ddp.commander');
+        Route::get('/ddp/{ddp}/{societe}/commander', [DdpController::class, 'commander'])->name('ddp.commander');
+
+
+
+
+        Route::get('/cde', [CdeController::class, 'index'])->name('cde.index');
+        Route::get('/colcde', [CdeController::class, 'indexColCde'])->name('ddp.index_col_cde');
+        Route::get('/cde/create', [CdeController::class, 'create'])->name('cde.create');
+        Route::get('/cde/{cde}', [CdeController::class, 'show'])->name('cde.show');
+
+
     });
 
 });

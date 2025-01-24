@@ -26,6 +26,7 @@ class DdpFactory extends Factory
         return [
             'code' => $code,
             'nom' => $this->faker->sentence(3),
+            'entite_id' => $this->faker->numberBetween(1, 3),
             'ddp_cde_statut_id' => $random_statut->id,
             'user_id' => $random_user->id,
         ];

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Entite;
 use Illuminate\Http\Request;
+use Storage;
 
 class AdministrationController extends Controller
 {
@@ -33,12 +34,29 @@ class AdministrationController extends Controller
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        if ($request->hasFile('logo')) {
-            $logoPath = $request->file('logo')->store('logos', 'public');
-            $request->merge(['logo' => $logoPath]);
+        if ($request->hasFile('logo') && !$request->file('logo')->isValid()) {
+            return redirect()->back()->withErrors(['logo' => 'Le champ logo doit être une image valide.']);
         }
+        $logoPath = $entite->logo;
+        if ($request->hasFile('logo')) {
+            $logoPath = $request->file('logo');
+            $logoPath = $request->file('logo');
+            $logoName = 'img/' . $request->name . '.' . $logoPath->getClientOriginalExtension();
+            $logoPath->move(public_path('img'), $logoName);
+            $logoPath = $logoName;
+        }
+        $entite->name = $request->name;
+        $entite->adresse = $request->adresse;
+        $entite->ville = $request->ville;
+        $entite->code_postal = $request->code_postal;
+        $entite->tel = $request->tel;
+        $entite->siret = $request->siret;
+        $entite->rcs = $request->rcs;
+        $entite->numero_tva = $request->numero_tva;
+        $entite->code_ape = $request->code_ape;
+        $entite->logo = $logoPath;
+        $entite->save();
 
-        $entite->update($request->all());
-        return redirect()->route('administration.info', $id);
+        return redirect()->route('administration.info_entite', $id);
     }
 }

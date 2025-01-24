@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Ddp;
 use App\Models\DdpCdeStatut;
 use App\Models\DdpLigneFournisseur;
+use App\Models\Entite;
 use App\Models\Famille;
 use App\Models\Mailtemplate;
 use App\Models\Matiere;
@@ -55,22 +56,22 @@ class DdpController extends Controller
 
         // Construire la requête de base
         $query = Ddp::query()
-            ->where('nom', '!=', 'undefined')
-            ->when($search, function ($query, $search) {
-                $query->where(function ($subQuery) use ($search) {
-                    $subQuery->where('nom', 'ILIKE', "%{$search}%")
-                        ->orWhere('code', 'ILIKE', "%{$search}%");
-                });
-            })
-            ->when($statut, function ($query, $statut) {
-                $query->where('ddp_cde_statut_id', $statut);
-            })
-            ->orWhereHas('user', function ($subQuery) use ($search) {
-                $subQuery->where('first_name', 'ILIKE', "%{$search}%")
-                    ->orWhere('last_name', 'ILIKE', "%{$search}%");
-            })
-            ->orderBy('ddp_cde_statut_id', 'asc')
-            ->orderBy('created_at', 'desc');
+                    ->where('nom', '!=', 'undefined')
+                    ->when($search, function ($query, $search) {
+                        $query->where(function ($subQuery) use ($search) {
+                            $subQuery->where('nom', 'ILIKE', "%{$search}%")
+                                ->orWhere('code', 'ILIKE', "%{$search}%")
+                                ->orWhereHas('user', function ($subQuery) use ($search) {
+                                    $subQuery->where('first_name', 'ILIKE', "%{$search}%")
+                                        ->orWhere('last_name', 'ILIKE', "%{$search}%");
+                                });
+                        });
+                    })
+                    ->when($statut, function ($query, $statut) {
+                        $query->where('ddp_cde_statut_id', $statut);
+                    })
+                    ->orderBy('ddp_cde_statut_id', 'asc')
+                    ->orderBy('created_at', 'desc');
 
         // Récupérer les résultats paginés
         $ddps = $query->paginate($quantite);
@@ -109,7 +110,8 @@ class DdpController extends Controller
             $ddpid =  $ddp->id;
             $familles = Famille::all();
             $unites = Unite::all();
-            return view('ddp_cde.ddp.create', ['ddp' => $ddp, 'ddpid' => $ddpid, 'familles' => $familles, 'unites' => $unites]);
+            $entites = Entite::all();
+            return view('ddp_cde.ddp.create', ['ddp' => $ddp, 'ddpid' => $ddpid, 'familles' => $familles, 'unites' => $unites, 'entites' => $entites]);
         }
         if ($ddp->ddp_cde_statut_id == 2) {
             $ddp_societes = $ddp->ddpLigne->map(function ($ligne) {
@@ -210,7 +212,6 @@ class DdpController extends Controller
             $ddplignes = $ddp->ddpLigne;
             return view('ddp_cde.ddp.show', compact('ddp', ['ddp_societes', 'data', 'ddplignes']));
         }
-        return view('ddp_cde.ddp.show', compact('ddp'));
     }
     public function create()
     {
@@ -224,6 +225,7 @@ class DdpController extends Controller
             'code' => $newCode,
             'nom' => 'undefined',
             'ddp_cde_statut_id' => 1,
+            'entite_id' => 1,
             'user_id' => Auth::id(),
         ]);
         $ddpid =  $ddp->id;
@@ -233,6 +235,7 @@ class DdpController extends Controller
     {
         $validator = \Validator::make($request->all(), [
             'ddp_id' => 'required|integer|exists:ddps,id',
+            'entite_id' => 'required|integer|exists:entites,id',
             'nom' => 'required|string|max:255',
             'matieres' => 'required|array',
             'matieres.*.id' => 'required|integer|exists:matieres,id',
@@ -247,6 +250,7 @@ class DdpController extends Controller
 
         try {
             $ddp = Ddp::findOrFail($request->ddp_id);
+            $ddp->entite_id = $request->entite_id;
             $ddp->nom = $request->nom;
             $ddp->save();
             $ddp->ddpLigne()->delete();
@@ -291,7 +295,8 @@ class DdpController extends Controller
             });
         })->flatten()->unique('id');
         $users = User::all();
-        return view('ddp_cde.ddp.validation', ['ddp' => $ddp, 'societes' => $ddp_societe, 'users' => $users]);
+        $entite = $ddp->entite;
+        return view('ddp_cde.ddp.validation', ['ddp' => $ddp, 'societes' => $ddp_societe, 'users' => $users, 'entite' => $entite]);
     }
     public function validate($ddp, Request $request): View
     {
@@ -368,8 +373,9 @@ class DdpController extends Controller
             $afficher_destinataire = $ddp->afficher_destinataire;
             $destinataire = $contacts->email;
             $fileName = $ddp->code . '_' . $etablissement->societe->raison_sociale . '.pdf';
+            $entite = $ddp->entite;
             $pdf = app('dompdf.wrapper');
-            $pdf->loadView('ddp_cde.ddp.pdf', ['etablissement' => $etablissement, 'ddp' => $ddp, 'lignes' => $lignes, 'afficher_destinataire' => $afficher_destinataire, 'destinataire' => $destinataire]);
+            $pdf->loadView('ddp_cde.ddp.pdf', ['etablissement' => $etablissement, 'ddp' => $ddp, 'lignes' => $lignes, 'afficher_destinataire' => $afficher_destinataire, 'destinataire' => $destinataire,'entite' => $entite]);
             $pdf->setOption(['isRemoteEnabled' => true, 'isHtml5ParserEnabled' => true, 'isPhpEnabled' => true]);
             $pdf->output();
             $domPdf = $pdf->getDomPDF();

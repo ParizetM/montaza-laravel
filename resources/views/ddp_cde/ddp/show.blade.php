@@ -22,7 +22,7 @@
                 <h1 class="text-3xl font-bold mb-6 text-left">{{ $ddp->nom }} - Récapitulatif</h1>
             </div>
             <div class="overflow-x-auto overflow-y-visible">
-                <table class="w-full table-auto bg-white dark:bg-gray-900 ">
+                <table class="w-auto table-auto bg-white dark:bg-gray-900 min-w-0">
                     <thead class="">
                         <tr class="bg-gray-200 dark:bg-gray-700">
                             <th class=" p-2 text-center"></th>
