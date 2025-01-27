@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\MatiereResource;
+use App\Http\Resources\MatiereResourceWithPrice;
 use App\Models\Famille;
 use App\Models\Matiere;
 use App\Models\Societe;
@@ -88,6 +89,8 @@ class MatiereController extends Controller
             'search' => 'nullable|string|max:255',
             'famille' => 'nullable|integer|exists:familles,id',
             'sous_famille' => 'nullable|integer|exists:sous_familles,id',
+            'with_last_price' => 'nullable|boolean',
+            'societe' => 'nullable|integer|exists:societes,id',
         ]);
 
         $search = $request->input('search', '');
@@ -96,7 +99,6 @@ class MatiereController extends Controller
         // Génération d'une clé de cache unique
         // Récupération ou mise en cache des résultats
         $query = Matiere::with(['sousFamille', 'societe', 'standardVersion']);
-
         if (!empty($famille)) {
             $query->whereHas('sousFamille', function ($subQuery) use ($famille) {
                 $subQuery->where('famille_id', $famille);
@@ -121,6 +123,12 @@ class MatiereController extends Controller
 
         $query->orderBy('sous_famille_id')->limit(15)->get();
         $matieres = $query->get();
+        if ($request->input('with_last_price')) {
+            return response()->json(data: [
+            'matieres' => MatiereResourceWithPrice::collection($matieres),
+            ]);
+        }
+
         return response()->json(data: [
             'matieres' => MatiereResource::collection($matieres),
         ]);

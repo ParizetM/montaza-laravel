@@ -47,8 +47,14 @@ return new class extends Migration
             $table->id();
             $table->foreignId('cde_id')->constrained('cdes')->onDelete('cascade');
             $table->integer('poste');
-            $table->foreignId('societe_matiere_id')->constrained('societe_matiere');
-            $table->integer('quantite');
+            $table->string('ref_interne')->nullable();
+            $table->string('ref_fournisseur')->nullable();
+            $table->string('designation')->nullable();
+            $table->foreignId('societe_matiere_id')->nullable()->constrained('societe_matiere');
+            $table->decimal('quantite', 10, places: 6);
+            $table->foreignId('unite_id')->nullable()->constrained('unites');
+            $table->decimal('prix_unitaire', 10, places: 2)->nullable();
+            $table->decimal('prix', 10, places: 2)->nullable();
             $table->date('date_livraison')->nullable();
             $table->timestamps();
         });

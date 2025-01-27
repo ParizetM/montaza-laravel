@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Log;
 
 class Matiere extends Model
 {
@@ -24,8 +25,40 @@ class Matiere extends Model
     public function fournisseurs()
     {
         return $this->belongsToMany(Societe::class, 'societe_matiere')
-            ->withPivot(['ref_fournisseur', 'designation_fournisseur', 'prix','unite_id', 'date_dernier_prix'])
+            ->withPivot(['ref_fournisseur', 'designation_fournisseur', 'prix', 'unite_id', 'date_dernier_prix'])
             ->withTimestamps();
+    }
+    public function getLastPrice($societe_id = null)
+    {
+        // Log::info('societe_id: ' . $societe_id);
+        if ($societe_id) {
+            $lastPrice = $this->fournisseurs()
+                ->where('societe_id', $societe_id)
+                ->whereNotNull('prix')
+                ->whereNotNull('unite_id')
+                ->orderBy('date_dernier_prix', 'desc')
+                ->first();
+            if (!$lastPrice) {
+                $lastPrice = $this->fournisseurs()
+                    ->where('societe_id', $societe_id)
+                    ->orderBy('date_dernier_prix', 'desc')
+                    ->first();
+            }
+        } else {
+            $lastPrice = $this->fournisseurs()
+                ->whereNotNull('prix')
+                ->whereNotNull('unite_id')
+                ->orderBy('date_dernier_prix', 'desc')
+                ->first();
+
+            if (!$lastPrice) {
+                $lastPrice = $this->fournisseurs()
+                    ->orderBy('date_dernier_prix', 'desc')
+                    ->first();
+            }
+        }
+
+        return $lastPrice;
     }
     public function unite()
     {

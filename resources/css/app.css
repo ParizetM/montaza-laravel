@@ -133,8 +133,24 @@
     .progress-activity {
         @apply animate-spin;
     }
+    .price-input-container {
+        position: relative;
+        display: inline-block;
+        @apply w-28;
+    }
 
+    .price-input-container::after {
+        content: '€';
+        position: absolute;
+        right: 6px; /* Ajustez la position selon votre besoin */
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none; /* Permet de cliquer à travers le symbole */
+    }
 
-
+    .price-input {
+        padding-right: 15px; /* Ajoutez un padding pour éviter que le texte ne chevauche le symbole */
+        @apply w-28;
+    }
 }
 

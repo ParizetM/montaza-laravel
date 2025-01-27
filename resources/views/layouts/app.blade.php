@@ -212,7 +212,9 @@
             flashMessage.classList.add('-translate-y-full'); // Ajoute la classe pour remonter le message
             flashMessage.classList.remove('shadow-lg'); // Enlève l'ombre pour le rendre moins visible
             setTimeout(function() {
-                flashMessage.remove();
+                document.querySelectorAll('#flash-message').forEach(function(element) {
+                    element.remove();
+                });
             }, 500); // Délai pour permettre la transition avant de supprimer l'élément
 
         }

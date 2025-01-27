@@ -35,7 +35,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('ddp_id')->constrained('ddps')->onDelete('cascade');
             $table->foreignId('matiere_id')->constrained('matieres');
-            $table->integer('quantite');
+            $table->decimal('quantite', 10, places: 6);
             $table->timestamps();
         });
         Schema::create('ddp_ligne_fournisseurs', function (Blueprint $table) {

@@ -18,7 +18,7 @@ class UniteSeeder extends Seeder
             ['short' => 'm²', 'full' => 'Mètre carré', 'full_plural' => 'Mètres carrés', 'type' => 'Surface'],
             ['short' => 'm³', 'full' => 'Mètre cube', 'full_plural' => 'Mètres cubes', 'type' => 'Volume'],
             ['short' => 'l', 'full' => 'Litre', 'full_plural' => 'Litres', 'type' => 'Volume'],
-            ['short' => 'unité', 'full' => 'Unité', 'full_plural' => 'Unités', 'type' => 'Unité'],
+            ['short' => 'u', 'full' => 'Unité', 'full_plural' => 'Unités', 'type' => 'Unité'],
             ['short' => 'm', 'full' => 'Mètre', 'full_plural' => 'Mètres', 'type' => 'Longueur'],
             ['short' => 'cm', 'full' => 'Centimètre', 'full_plural' => 'Centimètres', 'type' => 'Longueur'],
             ['short' => 'mm', 'full' => 'Millimètre', 'full_plural' => 'Millimètres', 'type' => 'Longueur'],
@@ -30,7 +30,8 @@ class UniteSeeder extends Seeder
             ['short' => 'jour', 'full' => 'Jour', 'full_plural' => 'Jours', 'type' => 'Temps'],
             ['short' => 'mois', 'full' => 'Mois', 'full_plural' => 'Mois', 'type' => 'Temps'],
             ['short' => 'an', 'full' => 'Année', 'full_plural' => 'Années', 'type' => 'Temps'],
-            ['short' => 'W', 'full' => 'Watt', 'full_plural' => 'Watts', 'type' => 'Puissance']
+            ['short' => 'W', 'full' => 'Watt', 'full_plural' => 'Watts', 'type' => 'Puissance'],
+            ['short' => 't', 'full' => 'Tonne', 'full_plural' => 'Tonnes' , 'type' => 'Poids']
         ];
 
         foreach ($unites as $unite) {

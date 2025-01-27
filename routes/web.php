@@ -157,7 +157,10 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection','auth'])->group(function
         Route::get('/colcde', [CdeController::class, 'indexColCde'])->name('ddp.index_col_cde');
         Route::get('/cde/create', [CdeController::class, 'create'])->name('cde.create');
         Route::get('/cde/{cde}', [CdeController::class, 'show'])->name('cde.show');
-
+        Route::post('/cde/save', [CdeController::class, 'save'])->name('cde.save');
+        Route::delete('/cde/{cde}/destroy', [CdeController::class, 'destroy'])->name('cde.destroy');
+        Route::get('/cde/{cde}/validate', [CdeController::class, 'validation'])->name('cde.validation');
+        Route::get('/cde/{cde}/reset', [CdeController::class, 'reset'])->name('cde.reset');
 
     });
 

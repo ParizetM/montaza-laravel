@@ -21,6 +21,7 @@ class MatiereSeeder extends Seeder
                     'ref_fournisseur' => strtoupper($faker->lexify('??')) . '-' . $faker->numerify('####'),
                     'designation_fournisseur' => $faker->word(),
                     'prix' => $faker->randomFloat(2, 10, 200),
+                    'unite_id' => $faker->randomElement([1, 2, 3, 4, 6, 19]),
                     'date_dernier_prix' => now(),
                 ]
             );

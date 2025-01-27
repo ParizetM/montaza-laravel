@@ -92,7 +92,8 @@ class CdeController extends Controller
             $familles = Famille::all();
             $unites = Unite::all();
             $entites = Entite::all();
-            $societes = Societe::all();
+            $societes = Societe::where('societe_type_id', [2,3])->get();
+
             return view('ddp_cde.cde.create', ['cde' => $cde, 'familles' => $familles, 'unites' => $unites, 'entites' => $entites, 'cdeid' => $cdeid, 'societes' => $societes]);
         }
     }
