@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\Commentaire;
 use App\Models\Matiere;
 use App\Models\ModelChange;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -57,6 +58,10 @@ class Societe extends Model
         return $this->belongsToMany(Matiere::class, 'societe_matiere')
             ->withPivot(['ref_fournisseur', 'designation_fournisseur', 'prix', 'date_dernier_prix'])
             ->withTimestamps();
+    }
+    public function societeContacts(): HasManyThrough
+    {
+        return $this->hasManyThrough(SocieteContact::class, Etablissement::class);
     }
     protected static function booted(): void
     {

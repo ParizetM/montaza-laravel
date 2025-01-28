@@ -40,6 +40,7 @@ return new class extends Migration
             $table->string('adresse_livraison')->nullable();
             $table->string('adresse_facturation')->nullable();
             $table->foreignId('condition_paiement_id')->constrained('condition_paiements');
+            $table->boolean('show_ref_fournisseur')->default(false);
             $table->boolean('afficher_destinataire')->default(true);
             $table->timestamps();
         });
@@ -49,12 +50,12 @@ return new class extends Migration
             $table->integer('poste');
             $table->string('ref_interne')->nullable();
             $table->string('ref_fournisseur')->nullable();
+            $table->foreignId('matiere_id')->nullable()->constrained('matieres');
             $table->string('designation')->nullable();
-            $table->foreignId('societe_matiere_id')->nullable()->constrained('societe_matiere');
             $table->decimal('quantite', 10, places: 6);
             $table->foreignId('unite_id')->nullable()->constrained('unites');
-            $table->decimal('prix_unitaire', 10, places: 2)->nullable();
-            $table->decimal('prix', 10, places: 2)->nullable();
+            $table->decimal('prix_unitaire', 10, places: 3)->nullable();
+            $table->decimal('prix', 10, places: 3)->nullable();
             $table->date('date_livraison')->nullable();
             $table->timestamps();
         });

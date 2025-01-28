@@ -24,7 +24,7 @@
             <div class="overflow-x-auto overflow-y-visible">
                 <table class="w-auto table-auto bg-white dark:bg-gray-900 min-w-0">
                     <thead class="">
-                        <tr class="bg-gray-200 dark:bg-gray-700">
+                        <tr class="bg-gray-200 dark:bg-gray-700 border-r-2 border-r-gray-200 dark:border-r-gray-700">
                             <th class=" p-2 text-center"></th>
                             <th class=" p-2 text-center"></th>
                             @foreach ($ddp_societes as $societe)
@@ -33,7 +33,7 @@
                                     {{ $societe->raison_sociale }}</th>
                             @endforeach
                         </tr>
-                        <tr class="bg-gray-200 dark:bg-gray-700">
+                        <tr class="bg-gray-200 dark:bg-gray-700 border-r-2 border-r-gray-200 dark:border-r-gray-700">
                             <th colspan="1" class=" p-2 text-center">
                                 Matière</th>
                             <th colspan="1" class=" p-2 text-center">
@@ -72,7 +72,7 @@
                                         class="text-center border border-gray-300 dark:border-gray-700
                                             {{ $index % 2 == 1 ? 'bg-gray-50 dark:bg-gray-800' : '' }}
                                     ">
-                                        {{ $ddplignes[$index]->quantite }}</td>
+                                        {{ formatNumber($ddplignes[$index]->quantite) }}</td>
                                 @endif
 
                                 @foreach ($ligne as $key => $value)
@@ -90,12 +90,12 @@
                                 @endforeach
                             </tr>
                         @endforeach
-                        <tr class="dark:bg-gray-800">
+                        <tr class="dark:bg-gray-800 border-r-2 border-r-white dark:border-r-gray-800">
                             <td colspan="2"></td>
-                            @foreach ($ddp_societes as $societe)
+                            @foreach ($ddp_societe_contacts as $societe_contact)
                                 <td colspan="3" class="">
-                                    <a href="{{ route('ddp.commander', ['ddp' => $ddp->id, 'societe' => $societe->id]) }}"
-                                        class=" btn-select-bottom-right btn-select-bottom-left text-center mb-10 dark:bg-gray-700 dark:hover:bg-gray-600">Commander</a>
+                                    <a href="{{ route('ddp.commander', ['ddp' => $ddp->id, 'societe_contact' => $societe_contact->id]) }}"
+                                        class=" btn-select-bottom-right btn-select-bottom-left text-center mb-10 dark:bg-gray-700 dark:hover:bg-gray-600" title="Commander chez {{ $societe->raison_sociale }}">Commander</a>
                                 </td>
                             @endforeach
                         </tr>

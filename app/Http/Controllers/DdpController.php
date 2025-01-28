@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cde;
+use App\Models\CdeLigne;
 use App\Models\Ddp;
 use App\Models\DdpCdeStatut;
 use App\Models\DdpLigneFournisseur;
@@ -11,6 +13,7 @@ use App\Models\Mailtemplate;
 use App\Models\Matiere;
 use App\Models\ModelChange;
 use App\Models\Societe;
+use App\Models\SocieteContact;
 use App\Models\Unite;
 use App\Models\User;
 use Auth;
@@ -165,6 +168,11 @@ class DdpController extends Controller
                     return $fournisseur->societe;
                 });
             })->flatten()->unique('id');
+            $ddp_societe_contacts = $ddp->ddpLigne->map(function ($ligne) {
+                return $ligne->ddpLigneFournisseur->map(function ($fournisseur) {
+                    return $fournisseur->societeContact;
+                });
+            })->flatten()->unique('id');
             $table_data = $this->getRetours($id);
 
             $ddp->load('ddpLigne.matiere', 'ddpLigne.ddpLigneFournisseur.societe', 'ddpLigne.ddpLigneFournisseur.societeContact');
@@ -195,7 +203,7 @@ class DdpController extends Controller
                 }
                 $row[] = ($sum != 0) ? $sum . '€' : '';
 
-                $dates = array_filter(array_column($table_data, $indexSociete + 1));
+                $dates = array_filter(array_column($table_data, $indexSociete + 2));
                 $closestDate = null;
                 if (!empty($dates)) {
                     $closestDate = min(array_map(function ($date) {
@@ -210,7 +218,7 @@ class DdpController extends Controller
             }
             $data[] = $row;
             $ddplignes = $ddp->ddpLigne;
-            return view('ddp_cde.ddp.show', compact('ddp', ['ddp_societes', 'data', 'ddplignes']));
+            return view('ddp_cde.ddp.show', compact('ddp', ['ddp_societes', 'data', 'ddplignes','ddp_societe_contacts']));
         }
     }
     public function create()
@@ -542,7 +550,7 @@ class DdpController extends Controller
             $dateString = $data[$index0][$index1 * 4 + 3] ?? '';
             $date = (!empty($dateString) && $dateString != 'UNDEFINED') ? Carbon::createFromFormat('d/m/Y', $dateString) : null;
 
-            if ($newPrix && (!$existingFournisseur || $existingFournisseur->pivot->prix != $newPrix) && $newPrix != 'UNDEFINED') {
+            if ($newPrix && (!$existingFournisseur || $existingFournisseur->pivot->prix != $newPrix) && $newPrix != 'UNDEFINED' && $newPrix != '' && $newPrix ) {
                 $matiere->fournisseurs()->attach($societeid, [
                 'ref_fournisseur' => $ref_fournisseur,
                 'prix' => $newPrix,
@@ -550,7 +558,7 @@ class DdpController extends Controller
                 'date_dernier_prix' => now(),
                 'ddp_ligne_fournisseur_id' => $ddpLigne->ddpLigneFournisseur->where('societe_id', $societeid)->first()->id
                 ]);
-            } elseif ($existingFournisseur && $newPrix != 'UNDEFINED') {
+            } elseif ($existingFournisseur && $newPrix != 'UNDEFINED' && $newPrix != '' && $newPrix) {
                 $existingFournisseur->pivot->update([
                 'ref_fournisseur' => $ref_fournisseur,
                 'prix' => $newPrix,
@@ -560,8 +568,10 @@ class DdpController extends Controller
             }
 
             $ddpLigneFournisseur = $ddpLigne->ddpLigneFournisseur->where('societe_id', $societeid)->first();
-            if ($ddpLigneFournisseur) {
-                $ddpLigneFournisseur->update(['date_livraison' => $date]);
+            if ($ddpLigneFournisseur && $date) {
+                $ddpLigneFournisseur->date_livraison = $date->format('Y-m-d');
+                $ddpLigneFournisseur->save();
+                $date = 'date_enregistrement';
             }
 
             $row[] = $ref_fournisseur;
@@ -704,10 +714,42 @@ class DdpController extends Controller
         }
         return redirect()->route('ddp.show', $ddp->id);
     }
-    public function commander($id) {
+    public function commander($id,$societe_contact_id) {
         $ddp = Ddp::findOrFail($id);
-        $ddp->ddp_cde_statut_id = 4;
-        $ddp->save();
-        return redirect()->route('ddp.show', $ddp->id);
+        $societe_contact = SocieteContact::findOrFail($societe_contact_id);
+        $societe = $societe_contact->etablissement->societe;
+        $cde = Cde::create([
+            'code' => 'CDE-' . now()->format('Y') . '-' . str_pad(Cde::whereYear('created_at', now()->year)->count() + 1, 4, '0', STR_PAD_LEFT),
+            'nom' => 'Commande de ' . $ddp->code.' chez '.$societe->raison_sociale,
+            'ddp_cde_statut_id' => 1,
+            'ddp_id' => $ddp->id,
+            'entite_id' => $ddp->entite_id,
+            'societe_contact_id' => $societe_contact_id,
+            'user_id' => Auth::id(),
+            'tva' => 0,
+            'type_expedition_id' => 1,
+            'condition_paiement_id' => 1,
+        ]);
+        $poste = 0;
+        foreach ($ddp->ddpLigne as $ddpLigne) {
+            foreach ($ddpLigne->ddpLigneFournisseur as $ddpLigneFournisseur) {
+                if ($ddpLigneFournisseur->societe_id == $societe->id) {
+                    $poste++;
+                    CdeLigne::create([
+                        'cde_id' => $cde->id,
+                        'poste' => $poste,
+                        'matiere_id' => $ddpLigne->matiere_id,
+                        'ref_interne' => $ddpLigne->matiere->ref_interne,
+                        'designation' => $ddpLigne->matiere->designation,
+                        'quantite' => $ddpLigne->quantite,
+                        'ref_fournisseur' => $ddpLigne->matiere->getLastPrice($societe->id) ? $ddpLigne->matiere->getLastPrice($societe->id)->pivot->ref_fournisseur : null,
+                        'prix_unitaire' => $ddpLigne->matiere->getLastPrice($societe->id) ? $ddpLigne->matiere->getLastPrice($societe->id)->pivot->prix : null,
+                        'unite_id' => $ddpLigne->matiere->getLastPrice($societe->id) ? $ddpLigne->matiere->getLastPrice($societe->id)->pivot->unite_id : null,
+                        'date_livraison' => $ddpLigneFournisseur->date_livraison,
+                    ]);
+                }
+            }
+        }
+        return redirect()->route('cde.show', $cde->id);
     }
 }

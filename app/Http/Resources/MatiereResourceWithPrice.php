@@ -11,7 +11,6 @@ class MatiereResourceWithPrice extends JsonResource
     public function toArray($request)
     {
         $societe_id = $request->input('societe');
-        Log::info('societe_id: ' . $societe_id);
         return [
             'id' => $this->id,
             'refInterne' => $this->ref_interne,
@@ -25,9 +24,10 @@ class MatiereResourceWithPrice extends JsonResource
             'Unite' => $this->unite->short ?? null,
             'Unite_id' => $this->unite->id ?? null,
             'Unite_full' => $this->unite->full ?? null,
-            'lastPriceDate' => $this->getLastPrice($societe_id) ? $this->getLastPrice($societe_id)->pivot->date_dernier_prix : null,
+            'lastPriceDate' => $this->getLastPrice($societe_id) ? \Carbon\Carbon::parse($this->getLastPrice($societe_id)->pivot->date_dernier_prix)->format('d/m/Y') : null,
             'lastPrice' => $this->getLastPrice($societe_id) ? $this->getLastPrice($societe_id)->pivot->prix : null,
             'lastPriceUnite' => $this->getLastPrice($societe_id) && $this->getLastPrice($societe_id)->pivot->unite_id ? Unite::find($this->getLastPrice($societe_id)->pivot->unite_id)->short : null,
+            'lastPriceRefFournisseur' => $this->getLastPrice($societe_id) ? $this->getLastPrice($societe_id)->pivot->ref_fournisseur : null,
         ];
     }
 }

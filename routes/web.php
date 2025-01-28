@@ -148,7 +148,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection','auth'])->group(function
         Route::get('/ddp/{ddp}/skipmails', [DdpController::class, 'skipMails'])->name('ddp.skipmails');
         Route::get('/ddp/{ddp}/terminer', [DdpController::class, 'terminer'])->name('ddp.terminer');
         Route::get('/ddp/{ddp}/annuler_terminer', [DdpController::class, 'annuler_terminer'])->name('ddp.annuler_terminer');
-        Route::get('/ddp/{ddp}/{societe}/commander', [DdpController::class, 'commander'])->name('ddp.commander');
+        Route::get('/ddp/{ddp}/{societe_contact}/commander', [DdpController::class, 'commander'])->name('ddp.commander');
 
 
 
@@ -160,6 +160,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection','auth'])->group(function
         Route::post('/cde/save', [CdeController::class, 'save'])->name('cde.save');
         Route::delete('/cde/{cde}/destroy', [CdeController::class, 'destroy'])->name('cde.destroy');
         Route::get('/cde/{cde}/validate', [CdeController::class, 'validation'])->name('cde.validation');
+        Route::post('/cde/{cde}/validate', [CdeController::class, 'validate'])->name('cde.validate');
         Route::get('/cde/{cde}/reset', [CdeController::class, 'reset'])->name('cde.reset');
 
     });

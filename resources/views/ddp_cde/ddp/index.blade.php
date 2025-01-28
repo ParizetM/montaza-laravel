@@ -30,12 +30,10 @@
                 <button type="submit" class="mr-2 btn w-full sm:w-auto sm:mt-0 md:mt-0 lg:mt-0">
                     {!! __('Rechercher') !!}
                 </button>
-                @if (Auth::user()->hasPermission('gerer_les_societes'))
                     <a href="{!! route('ddp.create') !!}"
                         class="btn whitespace-nowrap w-fit-content sm:mt-0 md:mt-0 lg:mt-0">
                         {!! __('Créer une demande de prix') !!}
                     </a>
-                @endif
             </form>
         </div>
     </x-slot>

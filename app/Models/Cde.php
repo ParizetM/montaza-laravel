@@ -61,13 +61,14 @@ class Cde extends Model
     {
         return $this->belongsTo(SocieteContact::class);
     }
-    public function societe()
-    {
-        return $this->hasOneThrough(Societe::class, SocieteContact::class, 'id', 'id', 'societe_contact_id', 'etablissement_id');
-    }
+
     public function etablissement()
     {
         return $this->hasOneThrough(Etablissement::class, SocieteContact::class, 'id', 'id', 'societe_contact_id', 'etablissement_id');
+    }
+    public function societe()
+    {
+        return $this->societeContact->etablissement->societe();
     }
     public function affaireSuiviPar(): BelongsTo
     {

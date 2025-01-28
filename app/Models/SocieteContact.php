@@ -24,6 +24,10 @@ class SocieteContact extends Model
     {
         return $this->belongsTo(Etablissement::class);
     }
+    public function societe()
+    {
+        return $this->hasOneThrough(Societe::class, Etablissement::class);
+    }
     public function ddpLigneFournisseurs(): HasMany
     {
         return $this->hasMany(DdpLigneFournisseur::class);

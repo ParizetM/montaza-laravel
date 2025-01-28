@@ -9,6 +9,18 @@
             </h2>
         </div>
     </x-slot>
+    <style>
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* Pour Firefox */
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+    </style>
     <div id="new-ddp" class="hidden">{{ $ddpid ? $ddpid : '' }}</div>
     <div class="py-4">
         <div class="max-w-8xl mx-auto sm:px-4 lg:px-6">
@@ -111,15 +123,11 @@
                                                 <td class="text-left px-4">{{ $ddp_ligne->matiere->designation }}</td>
                                                 <td class="text-right px-4 flex items-center"
                                                     title="{{ $ddp_ligne->matiere->unite->full }}">
-                                                    <button type="button" class="btn-decrement px-2"
-                                                        onclick="decrementQuantity(this)">-</button>
                                                     <x-text-input type="number"
                                                         name="quantite[{{ $ddp_ligne->matiere->id }}]"
-                                                        oninput="saveChanges()" class="w-20 text-right mx-2"
-                                                        value="{{ $ddp_ligne->quantite }}" min="1" />
+                                                        oninput="saveChanges()" class="w-20 mx-2"
+                                                        value="{{ formatNumber($ddp_ligne->quantite) }}" min="1" />
                                                     {{ $ddp_ligne->matiere->unite->short }}
-                                                    <button type="button" class="btn-increment px-2"
-                                                        onclick="incrementQuantity(this)">+</button>
                                                 </td>
                                                 <td class="text-right px-4">
                                                     <button class="float-right"
@@ -353,12 +361,10 @@
             <td class="text-left px-4">${matiereRef || '-'}</td>
             <td class="text-left px-4">${matiereDesignation || '-'}</td>
             <td class="text-right px-4 flex items-center" title="${matiereUniteFull || '-'}">
-                <button type="button" class="btn-decrement px-2" onclick="decrementQuantity(this)">-</button>
-                <x-text-input type="number" name="quantite[${matiereId}]" class="w-20 text-right mx-2" value="1" min="1" oninput="saveChanges()"
+                <x-text-input type="number" name="quantite[${matiereId}]" class="w-20 mx-2" value="1" min="1" oninput="saveChanges()"
                 />
                 ${matiereUnite || '-'}
 
-                <button type="button" class="btn-increment px-2" onclick="incrementQuantity(this)">+</button>
             </td>
             <td class="text-right px-4" >
                 <button class=" float-right" data-matiere-id="${matiereId}" onclick="removeMatiere(event)">
@@ -399,21 +405,6 @@
             saveChanges();
         }
 
-        // Function to increment the quantity of selected material
-        function incrementQuantity(button) {
-            const input = button.previousElementSibling;
-            input.value = parseInt(input.value) + 1;
-            saveChanges();
-        }
-
-        // Function to decrement the quantity of selected material
-        function decrementQuantity(button) {
-            const input = button.nextElementSibling;
-            if (parseInt(input.value) > 1) {
-                input.value = parseInt(input.value) - 1;
-                saveChanges();
-            }
-        }
 
         // Function to show the list of suppliers for the selected material
         function showFournisseurs(event, isRefresh = 0) {

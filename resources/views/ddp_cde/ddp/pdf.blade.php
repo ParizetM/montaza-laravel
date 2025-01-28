@@ -178,7 +178,7 @@
                         <tr>
                             <td>{{ $ligne->matiere->ref_interne }}</td>
                             <td>{{ $ligne->matiere->designation }}</td>
-                            <td>{{ $ligne->quantite }}</td>
+                            <td>{{ formatNumber($ligne->quantite) }}</td>
                             <td>{{ $ligne->matiere->unite->full }}</td>
                         </tr>
                     @endforeach
