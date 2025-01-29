@@ -16,12 +16,32 @@ if (!function_exists('formatNumber')) {
      * @param mixed $number
      * @return string
      */
-    function formatNumber($number) {
+
+     function formatNumber($number): string {
         // Vérifier si le nombre est numérique
         if (!is_numeric($number)) {
-            return '0';
+            return (string)$number;
         }
-        // Supprimer les zéros inutiles à la fin et le point décimal si nécessaire
-        return rtrim(rtrim((string)$number, '0'), '.');
+
+        // Convertir en chaîne pour manipuler les décimales
+        $nombre = (string)$number;
+
+        // Séparer la partie entière et la partie décimale
+        $parties = explode('.', $nombre);
+        $partie_entiere = $parties[0];
+        $partie_decimale = $parties[1] ?? ''; // Utiliser une chaîne vide si aucune décimale
+
+        // Supprimer les zéros inutiles après la virgule
+        $partie_decimale = rtrim($partie_decimale, '0');
+
+        // Formater la partie entière avec des espaces entre les milliers
+        $partie_entiere_formattee = number_format((float)$partie_entiere, 0, '.', ' ');
+
+        // Si la partie décimale n'est pas vide, on l'ajoute au résultat final
+        if ($partie_decimale !== '') {
+            return $partie_entiere_formattee . '.' . $partie_decimale;
+        }
+
+        return $partie_entiere_formattee;
     }
 }

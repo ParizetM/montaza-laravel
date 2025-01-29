@@ -267,7 +267,7 @@
                         <div>
                             <button class="bg-red-500 hover:bg-red-600 btn"
                                 onclick="event.preventDefault(); document.getElementById('confirm-delete-modal').classList.remove('hidden');">Supprimer</button>
-                            <button class="btn" type="button"
+                            <button class="btn" type="button" x-data
                                 x-on:click="$dispatch('open-modal', 'reset-commande-modal')">Réinitialiser</button>
                         </div>
                         <x-modal name="reset-commande-modal" title="Réinitialiser" max-width="5xl">
@@ -759,6 +759,7 @@
                         entite_id: cdeEntite.value,
                         show_ref_fournisseur: showRefFournisseur,
                         contact_id: document.getElementById('societe_contact_select').value,
+                        total_ht: Total,
                         nom: cdeNom.value,
                         matieres: matieres
                     })

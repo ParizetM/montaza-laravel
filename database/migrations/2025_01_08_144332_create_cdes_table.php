@@ -16,11 +16,6 @@ return new class extends Migration
             $table->string('nom');
             $table->timestamps();
         });
-        Schema::create('condition_paiements', function (Blueprint $table) {
-            $table->id();
-            $table->string('nom');
-            $table->timestamps();
-        });
         Schema::create('cdes', function (Blueprint $table) {
             $table->id();
             $table->string('code');
@@ -35,11 +30,12 @@ return new class extends Migration
             $table->string('devis_numero')->nullable();
             $table->foreignId('affaire_suivi_par_id')->nullable()->constrained('users');
             $table->foreignId('acheteur_id')->nullable()->constrained('users');
+            $table->decimal('total_ht', 10, places: 3)->nullable();
             $table->integer('tva');
             $table->foreignId('type_expedition_id')->nullable()->constrained('type_expeditions');
-            $table->string('adresse_livraison')->nullable();
-            $table->string('adresse_facturation')->nullable();
-            $table->foreignId('condition_paiement_id')->constrained('condition_paiements');
+            $table->json('adresse_livraison')->nullable();
+            $table->json('adresse_facturation')->nullable();
+            $table->foreignId('condition_paiement_id')->nullable()->constrained('condition_paiements');
             $table->boolean('show_ref_fournisseur')->default(false);
             $table->boolean('afficher_destinataire')->default(true);
             $table->timestamps();
@@ -68,7 +64,6 @@ return new class extends Migration
     {
         Schema::dropIfExists('cde_lignes');
         Schema::dropIfExists('cdes');
-        Schema::dropIfExists('condition_paiements');
         Schema::dropIfExists('type_expeditions');
     }
 };

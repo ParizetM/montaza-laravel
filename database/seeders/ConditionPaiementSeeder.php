@@ -13,11 +13,16 @@ class ConditionPaiementSeeder extends Seeder
      */
     public function run(): void
     {
-        ConditionPaiement::create(['nom' => 'VIREMENT CIC 45 JOURS']);
-        ConditionPaiement::create(['nom' => 'VIREMENT CIC 60 JOURS']);
-        ConditionPaiement::create(['nom' => 'VIREMENT CIC 30 JOURS']);
-        ConditionPaiement::create(['nom' => '45 JOURS FDM']);
-        ConditionPaiement::create(['nom' => '60 JOURS FDM']);
-        ConditionPaiement::create(['nom' => '30 JOURS FDM']);
+        ConditionPaiement::create(['nom' => '30 jours']);
+        ConditionPaiement::create(['nom' => '30 jours FDM']);
+        ConditionPaiement::create(['nom' => '30 jours le 10']);
+        ConditionPaiement::create(['nom' => '30 jours le 15']);
+        ConditionPaiement::create(['nom' => '45 jours']);
+        ConditionPaiement::create(['nom' => '45 jours, FDM']);
+        ConditionPaiement::create(['nom' => '60 jours FDM']);
+        ConditionPaiement::create(['nom' => '60 jours net']);
+        ConditionPaiement::create(['nom' => 'Comptant']);
+        ConditionPaiement::create(['nom' => 'LCR 30 jours FDM']);
+        ConditionPaiement::create(['nom' => 'LCR 45 jours']);
     }
 }

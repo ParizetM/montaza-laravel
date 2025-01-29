@@ -30,7 +30,11 @@ class CdeFactory extends Factory
         $random_societe_contact = SocieteContact::all()->random();
         $random_user2 = User::all()->random();
         $random_type_expedition = TypeExpedition::all()->random();
-        $adresse = $random_societe_contact->etablissement->adresse.' '.$random_societe_contact->etablissement->code_postal.' '.$random_societe_contact->etablissement->ville;
+        $adresse['adresse'] = $random_entite->adresse;
+        $adresse['code_postal'] = $random_entite->code_postal;
+        $adresse['ville'] = $random_entite->ville;
+        $adresse['pays'] = 'France';
+        $adresse = json_encode($adresse);
         $random_condition_paiement = ConditionPaiement::all()->random();
         return [
             'code' => $code,

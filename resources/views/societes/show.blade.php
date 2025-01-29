@@ -42,35 +42,47 @@
 
                 <!-- Contenu Principal -->
                 <div class="p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <!-- Informations Générales -->
+                    <!--
+#### ##    ## ########  #######        ######
+ ##  ###   ## ##       ##     ##      ##    ##
+ ##  ####  ## ##       ##     ##      ##
+ ##  ## ## ## ######   ##     ##      ##   ####
+ ##  ##  #### ##       ##     ##      ##    ##
+ ##  ##   ### ##       ##     ##      ##    ##
+#### ##    ## ##        #######        ######
+-->
                     <div class="col-span-1 md:col-span-2">
                         <h3 class="text-xl font-semibold mb-3 border-b-2 pb-2 text-gray-800 dark:text-gray-200">
                             {{ __('Informations Générales') }}</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <strong class="text-gray-800 dark:text-gray-200">{{ __('Forme Juridique:') }}</strong>
+                                <strong class="text-gray-800 dark:text-gray-200">{{ __('Forme Juridique :') }}</strong>
                                 <x-copiable_text text="{{ $societe->formeJuridique->code }}" />
                                 <small>({{ $societe->formeJuridique->nom }})</small>
                             </div>
                             <div>
-                                <strong class="text-gray-800 dark:text-gray-200">{{ __('Code APE:') }}</strong>
+                                <strong class="text-gray-800 dark:text-gray-200">{{ __('Code APE :') }}</strong>
                                 <x-copiable_text text="{{ $societe->codeApe->code }}" />
                                 <small>({{ $societe->codeApe->nom }})</small>
                             </div>
                             <div>
-                                <strong class="text-gray-800 dark:text-gray-200">{{ __('SIREN:') }}</strong>
+                                <strong class="text-gray-800 dark:text-gray-200">{{ __('SIREN :') }}</strong>
                                 <x-copiable_text text="{{ $societe->siren }}" />
                             </div>
                             <div>
-                                <strong class="text-gray-800 dark:text-gray-200">{{ __('Numéro TVA:') }}</strong>
+                                <strong class="text-gray-800 dark:text-gray-200">{{ __('Numéro TVA :') }}</strong>
                                 <x-copiable_text text="{{ $societe->numero_tva }}" />
+                            </div>
+                            <div>
+                                <strong class="text-gray-800 dark:text-gray-200">{{ __('Condition de paiement :') }}</strong>
+                                <x-copiable_text text="{{ $societe->conditionPaiement->nom }}" />
                             </div>
                         </div>
                     </div>
                     <!-- Contacts -->
                     <div class="col-span-1">
                         <h3 class="text-xl font-semibold mb-3 border-b-2 pb-2 text-gray-800 dark:text-gray-200">
-                            {{ __('Contacts') }}</h3>
+                            {{ __('Contact') }}</h3>
                         <div class="space-y-3">
                             <div>
                                 <strong class="text-gray-800 dark:text-gray-200">{{ __('Téléphone:') }}</strong>

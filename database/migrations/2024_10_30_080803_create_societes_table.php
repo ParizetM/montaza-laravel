@@ -38,6 +38,11 @@ return new class extends Migration
             $table->timestamps();
             $table->string(column: 'nom', length: 100);
         });
+        Schema::create('condition_paiements', function (Blueprint $table) {
+            $table->id();
+            $table->string('nom');
+            $table->timestamps();
+        });
         Schema::create('societes', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
@@ -50,6 +55,7 @@ return new class extends Migration
             $table->string('email', length: 100);
             $table->string('site_web', length: 100)->nullable();
             $table->string('numero_tva', length: 100);
+            $table->foreignId('condition_paiement_id')->constrained('condition_paiements');
             $table->foreignId('commentaire_id')->constrained('commentaires')->nullable();
             $table->softDeletes();
         });
@@ -89,6 +95,7 @@ return new class extends Migration
         Schema::dropIfExists('societe_contacts');
         Schema::dropIfExists('etablissements');
         Schema::dropIfExists('societes');
+        Schema::dropIfExists('condition_paiements');
         Schema::dropIfExists('code_apes');
         Schema::dropIfExists('forme_juridiques');
         Schema::dropIfExists('societe_types');

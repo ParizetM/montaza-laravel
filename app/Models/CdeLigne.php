@@ -23,4 +23,16 @@ class CdeLigne extends Model
         'prix',
         'date_livraison',
     ];
+    public function unite()
+    {
+        return $this->belongsTo(Unite::class);
+    }
+    public function matiere()
+    {
+        return $this->belongsTo(Matiere::class);
+    }
+    public function cde()
+    {
+        return $this->belongsTo(Cde::class);
+    }
 }

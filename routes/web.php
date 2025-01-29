@@ -28,11 +28,11 @@ Route::get('/dashboard/paillettes', function () {
     return view('dashboard', ['paillettes' => 'oui']);
 })->middleware(['auth', 'verified', 'GetGlobalVariable'])->name('dashboard.paillettes');
 
-Route::middleware(['GetGlobalVariable', 'XSSProtection','auth'])->group(function () {
-    Route::get('/administration' , [AdministrationController::class, 'index'])->name('administration.index');
-    Route::get('/administration/info' , [AdministrationController::class, 'info'])->name('administration.info');
-    Route::get('/administration/info/{entite}' , [AdministrationController::class, 'info'])->name('administration.info_entite');
-    Route::patch('/administration/info/{entite}/update' , [AdministrationController::class, 'update'])->name('administration.update');
+Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(function () {
+    Route::get('/administration', [AdministrationController::class, 'index'])->name('administration.index');
+    Route::get('/administration/info', [AdministrationController::class, 'info'])->name('administration.info');
+    Route::get('/administration/info/{entite}', [AdministrationController::class, 'info'])->name('administration.info_entite');
+    Route::patch('/administration/info/{entite}/update', [AdministrationController::class, 'update'])->name('administration.update');
     Route::get('/profile/{id}', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::patch('/profile-admin', [ProfileController::class, 'updateAdmin'])->name('profile.update_admin');
@@ -108,7 +108,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection','auth'])->group(function
             Route::delete('/societe/contact/{contact}/delete', [SocieteContactController::class, 'destroy'])->name('societes.contacts.destroy');
         });
     });
-    Route::middleware('permission:voir_les_matieres')->group( function () {
+    Route::middleware('permission:voir_les_matieres')->group(function () {
         Route::get('/matieres', [MatiereController::class, 'index'])->name('matieres.index');
         Route::get('/matieres/search', [MatiereController::class, 'searchResult'])->name('matieres.search');
         Route::get('/matieres/quickSearch', [MatiereController::class, 'quickSearch'])->name('matieres.quickSearch');
@@ -124,7 +124,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection','auth'])->group(function
         Route::post('/matieres/standards/createDossier', [StandardController::class, 'storeDossier'])->name('standards.store_dossier');
         Route::get('/matieres/standards/{dossier}/{standard}/versions/json', [StandardController::class, 'showVersionsJson'])->name('standards.show_versions_json');
     });
-    Route::middleware('permission:gerer_mail_templates')->group( function () {
+    Route::middleware('permission:gerer_mail_templates')->group(function () {
         Route::get('/mailtemplates', [MailtemplateController::class, 'index'])->name('mailtemplates.index');
         Route::get('/mailtemplates/{mailtemplate}/edit', [MailTemplateController::class, 'edit'])->name('mailtemplates.edit');
         Route::patch('/mailtemplates/{mailtemplate}/update', [MailTemplateController::class, 'update'])->name(name: 'mailtemplates.update');
@@ -162,8 +162,12 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection','auth'])->group(function
         Route::get('/cde/{cde}/validate', [CdeController::class, 'validation'])->name('cde.validation');
         Route::post('/cde/{cde}/validate', [CdeController::class, 'validate'])->name('cde.validate');
         Route::get('/cde/{cde}/reset', [CdeController::class, 'reset'])->name('cde.reset');
+        Route::get('/cde/{cde}/pdfs/download', [CdeController::class, 'downloadPdfs'])->name('cde.pdfs.download');
+        Route::get('/cde/{cde}/pdfshow/{annee}/{nom}', [CdeController::class, 'showPdf'])->name('cde.pdfshow');
+        Route::get('/cde/{cde}/skipmails', [CdeController::class, 'skipMails'])->name('cde.skipmails');
+        Route::post('/cde/{cde}/sendmails', [CdeController::class, 'sendMails'])->name('cde.sendmails');
+
 
     });
-
 });
 require __DIR__ . '/auth.php';

@@ -1,3 +1,7 @@
+@php
+    use Carbon\Carbon;
+@endphp
+
 <x-app-layout>
     <x-slot name="header">
         <div>
@@ -15,11 +19,24 @@
         <form action="{{ route('cde.validate', $cde->id) }}" method="POST">
             @csrf
             <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-6 rounded-md shadow-md">
-                <h1 class="text-3xl font-bold mb-6 text-center">{{ $cde->nom }}</h1>
+                <h1 class="text-3xl font-bold mb-6 text-left">{{ $cde->nom }}</h1>
+
+
+                {{--
+##     ##    ###    ##     ## ########      ########  ########      ########     ###     ######   ########
+##     ##   ## ##   ##     ##    ##         ##     ## ##            ##     ##   ## ##   ##    ##  ##
+##     ##  ##   ##  ##     ##    ##         ##     ## ##            ##     ##  ##   ##  ##        ##
+######### ##     ## ##     ##    ##         ##     ## ######        ########  ##     ## ##   #### ######
+##     ## ######### ##     ##    ##         ##     ## ##            ##        ######### ##    ##  ##
+##     ## ##     ## ##     ##    ##         ##     ## ##            ##        ##     ## ##    ##  ##
+##     ## ##     ##  #######     ##         ########  ########      ##        ##     ##  ######   ########
+ --}}
+                <h2 class="text-xl font-bold mb-6 text-left border-b-2 border-gray-200 dark:border-gray-700 p-2">Haut
+                    de page</h2>
                 <div class="flex justify-between">
                     <div class="flex flex-col gap-4 m-4">
                         <div class="flex gap-4">
-                            <div>
+                            <div class="flex flex-col gap-2">
                                 <div class="flex gap-4">
                                     <x-input-label value="Numéro d'affaire" />
                                     <small>(Optionnel)</small>
@@ -29,7 +46,7 @@
                                     <span class="text-red-500">{{ $message }}</span>
                                 @enderror
                             </div>
-                            <div>
+                            <div class="flex flex-col gap-2">
                                 <div class="flex gap-4">
                                     <x-input-label value="Nom d'affaire" />
                                     <small>(Optionnel)</small>
@@ -39,7 +56,7 @@
                                     <span class="text-red-500">{{ $message }}</span>
                                 @enderror
                             </div>
-                            <div>
+                            <div class="flex flex-col gap-2">
                                 <div class="flex gap-4">
                                     <x-input-label value="Numéro de devis" />
                                     <small>(Optionnel)</small>
@@ -50,13 +67,13 @@
                                 @enderror
                             </div>
                         </div>
-                        <div>
+                        <div class="flex flex-col gap-2">
                             <div class="flex gap-4">
                                 <x-input-label value="Affaire suivi par " />
                                 <small>(Optionnel)</small>
                             </div>
-                            <select name="affaire_suivi_par" required class="select w-fit min-w-96">
-                                <option value="0" {{ old('affaire_suivi_par') == 0 ? 'selected' : '' }}>Non
+                            <select name="affaire_suivi_par" class="select w-fit min-w-96">
+                                <option value="" {{ old('affaire_suivi_par') == 0 ? 'selected' : '' }}>Non
                                     suivi</option>
                                 @foreach ($users as $user)
                                     <option value="{{ $user->id }}"
@@ -69,13 +86,13 @@
                                 <span class="text-red-500">{{ $message }}</span>
                             @enderror
                         </div>
-                        <div>
+                        <div class="flex flex-col gap-2">
                             <div class="flex gap-4">
                                 <x-input-label value="Acheteur " />
                                 <small>(Optionnel)</small>
                             </div>
-                            <select name="acheteur_id" required class="select w-fit min-w-96">
-                                <option value="0"
+                            <select name="acheteur_id" class="select w-fit min-w-96">
+                                <option value=""
                                     {{ old('acheteur_id', $cde->acheteur_id) == 0 ? 'selected' : '' }}>
                                     Sans Acheteur
                                 </option>
@@ -91,33 +108,270 @@
                             @enderror
                         </div>
                         <div class="flex gap-4">
-                            <x-toggle :checked="old('afficher_destinataire', true)" :label="'Afficher le mail du destinataire dans le PDF ?'" id="afficher_destinataire"
+                            <x-toggle :checked="old('afficher_destinataire', true)" :label="'Afficher le destinataire dans le PDF ?'" id="afficher_destinataire"
                                 name="afficher_destinataire" class="toggle-class" />
                             @error('afficher_destinataire')
                                 <span class="text-red-500">{{ $message }}</span>
                             @enderror
                         </div>
-                        <div>
-                            <div class="flex gap-4">
-                                <x-input-label value="Date de rendu" />
-                                <small>(Optionnel)</small>
-                            </div>
-                            <x-date-input name="date_rendu" :value="old('date_rendu')" />
-                            @error('date_rendu')
-                                <span class="text-red-500">{{ $message }}</span>
-                            @enderror
-                        </div>
+
                     </div>
                     <img src="{{ asset($entite->logo) }}" alt="Logo"
                         class="w-1/4 h-1/4 mb-4 object-contain float-right">
                 </div>
+                {{--
+ ######   #######  ########  ########   ######
+##    ## ##     ## ##     ## ##     ## ##    ##
+##       ##     ## ##     ## ##     ## ##
+##       ##     ## ########  ########   ######
+##       ##     ## ##   ##   ##              ##
+##    ## ##     ## ##    ##  ##        ##    ##
+ ######   #######  ##     ## ##         ######
+--}}
+                <h2 class="text-xl font-bold mb-6 text-left border-b-2 border-gray-200 dark:border-gray-700 p-2">Corps
+                    de la commande</h2>
+                <div class="m-2">
+                    <x-input-label value="TVA (%)" />
+                    <x-text-input name="tva" type="number" :value="old('tva', $cde->tva)" />
+                    @error('tva')
+                        <span class="text-red-500">{{ $message }}</span>
+                    @enderror
+                </div>
+                <table class="min-w-0 bg-gray-100 dark:bg-gray-900 ">
+                    <thead>
+                        <tr>
+                            <th class="text-left">Référence</th>
+                            <th class="text-left">Désignation</th>
+                            <th class="text-left px-1">Quantité</th>
+                            <th class="text-left">Prix unitaire</th>
+                            <th class="text-left">Total HT</th>
+                            <th class="text-left">date de livraison</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($cde->cdeLignes as $ligne)
+                            <tr class="border-b border-gray-200 dark:border-gray-700">
+                                <td class="text-left ml-1 p-2">
+                                    <div class="flex flex-col {{ $showRefFournisseur ? '' : 'hidden' }}"
+                                        id="refs-{{ $ligne->matiere_id }}">
+                                        <div class="flex flex-col">
+                                            <span class="text-xs">Réf. Interne</span>
+                                            <span class="font-bold">{{ $ligne->ref_interne ?? '-' }}</span>
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <span class="text-xs">Réf. Fournisseur</span>
+                                            <span class="font-bold">{{ $ligne->ref_fournisseur ?? '-' }}</span>
 
-                <div class="flex justify-end">
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col {{ $showRefFournisseur ? 'hidden' : '' }}"
+                                        id="ref-{{ $ligne->matiere_id }}">
+                                        <div class="flex flex-col">
+                                            <span class="text-xs">Réf. Interne</span>
+                                            <span class="font-bold">{{ $ligne->ref_interne ?? '-' }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="p-2 text-left border border-gray-200 dark:border-gray-700">
+                                    {{ $ligne->designation }}</td>
+                                <td class="p-2 text-center border border-gray-200 dark:border-gray-700">
+                                    {{ formatNumber($ligne->quantite) }}</td>
+                                <td class="p-2 text-left border border-gray-200 dark:border-gray-700"
+                                    title="{{ formatNumber($ligne->prix_unitaire) }} euro(s) par {{ $ligne->unite->full }}">
+                                    {{ formatNumber($ligne->prix_unitaire) }} €/{{ $ligne->unite->short }}</td>
+                                <td class="p-2 text-left border border-gray-200 dark:border-gray-700">
+                                    {{ formatNumber($ligne->prix) }} €</td>
+                                <td class="p-2 text-left border border-gray-200 dark:border-gray-700">
+                                    {{ Carbon::parse($ligne->date_livraison)->format('d/m/Y') }}</td>
+                            </tr>
+                        @endforeach
+                        <tr class="border-t-2 border-gray-200 dark:border-gray-700">
+                            <td class="p-2 " colspan="400">
+                                <div class="w-full">
+
+                                    <table class="min-w-0 float-right text-right">
+                                        <tbody>
+                                            <tr>
+                                                <td class="pr-4">
+                                                    Total HT :
+                                                </td>
+                                                <td id="total_ht">
+                                                    {{ formatNumber($cde->total_ht) }} €
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="pr-4" id="tva_container">
+                                                    TVA ({{ $cde->tva }}%) :
+                                                </td>
+                                                <td id="total_tva_plus">
+                                                    {{ formatNumber(round(($cde->total_ht * $cde->tva) / 100, 3)) }} €
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="pr-4">
+                                                    Total TTC :
+                                                </td>
+                                                <td id="total_ttc">
+                                                    {{ formatNumber(round($cde->total_ht + ($cde->total_ht * $cde->tva) / 100, 3)) }}
+                                                    €
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                {{--
+########  #### ######## ########       ########  ########      ########     ###     ######   ########
+##     ##  ##  ##       ##     ##      ##     ## ##            ##     ##   ## ##   ##    ##  ##
+##     ##  ##  ##       ##     ##      ##     ## ##            ##     ##  ##   ##  ##        ##
+########   ##  ######   ##     ##      ##     ## ######        ########  ##     ## ##   #### ######
+##         ##  ##       ##     ##      ##     ## ##            ##        ######### ##    ##  ##
+##         ##  ##       ##     ##      ##     ## ##            ##        ##     ## ##    ##  ##
+##        #### ######## ########       ########  ########      ##        ##     ##  ######   ########
+--}}
+                <h2 class="text-xl font-bold mb-6 text-left border-b-2 border-gray-200 dark:border-gray-700 p-2">Pied
+                    de page</h2>
+                <div class="flex ">
+                    <div class="flex flex-col gap-4 m-4">
+                        <x-input-label value="type d'expédition" />
+                        <select name="type_expedition_id" required class="select w-fit min-w-96"
+                            onchange="changeTypeExpedition(this)">
+                            @foreach ($typesExpedition as $typeExpedition)
+                                <option value="{{ $typeExpedition->id }}"
+                                    {{ old('type_expedition_id', $cde->type_expedition_id) == $typeExpedition->id ? 'selected' : '' }}>
+                                    {{ $typeExpedition->nom }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @php
+                            if ($cde->adresse_livraison == null) {
+                                $adresse_livraison = new stdClass();
+                                $adresse_livraison->adresse = $entite->adresse;
+                                $adresse_livraison->ville = $entite->ville;
+                                $adresse_livraison->code_postal = $entite->code_postal;
+                                $adresse_livraison->pays = 'France';
+                            } else {
+                                $adresse_livraison = json_decode($cde->adresse_livraison);
+                            }
+                        @endphp
+                        <div class="flex flex-col gap-4 m-4" id="adresse_livraison">
+                            <div>
+                                <x-input-label value="Adresse de livraison" />
+                                <x-text-input name="adresse" :value="old('adresse', $adresse_livraison->adresse)" class="w-fit min-w-96" />
+                                @error('adresse')
+                                    <span class="text-red-500">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div>
+                                <x-input-label value="Ville" />
+                                <x-text-input name="ville" :value="old('ville', $adresse_livraison->ville)" />
+                                @error('ville')
+                                    <span class="text-red-500">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div>
+                                <x-input-label value="Code Postal" />
+                                <x-text-input name="code_postal" :value="old('code_postal', $adresse_livraison->code_postal)" />
+                                @error('code_postal')
+                                    <span class="text-red-500">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div>
+                                <x-input-label value="Pays" />
+                                <x-text-input name="pays" :value="old('pays', $adresse_livraison->pays)" />
+                                @error('pays')
+                                    <span class="text-red-500">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex flex-col gap-4 m-4">
+                            <x-input-label value="Conditions de paiement" />
+                            <div>
+                            <select name="condition_paiement_id" required class="select w-fit min-w-96" onchange="changeConditionPaiement()">
+
+                                @foreach ($conditionsPaiement as $conditionPaiement)
+                                    <option value="{{ $conditionPaiement->id }}"
+                                        {{ old('condition_paiement_id',
+                                            $cde->condition_paiement_id != null
+                                                ? ($cde->condition_paiement_id == $conditionPaiement->id ? 'selected' : '')
+                                                : ($cde->societeContact->etablissement->societe->condition_paiement_id == $conditionPaiement->id ? 'selected' : '')
+                                            )
+                                        }}>
+                                        {{ $conditionPaiement->nom }}
+                                    </option>
+                                @endforeach
+                                <option value="0">Autre</option>
+                            </select>
+                            <x-text-input name="condition_paiement_text" :value="old('condition_paiement_text')" class="w-fit min-w-96 rounded-t-none border-0 pt-2 -mt-2 hidden focus:border-t-0 focus:ring-0" />
+                            <script>
+                                function changeConditionPaiement() {
+                                    const select = document.querySelector('select[name="condition_paiement_id"]');
+                                    const input = document.querySelector('input[name="condition_paiement_text"]');
+                                    if (select.value == 0) {
+                                        input.classList.remove('hidden');
+                                        input.required = true;
+                                        input.focus();
+                                    } else {
+                                        input.classList.add('hidden');
+                                        input.value = '';
+                                        input.required = false;
+                                    }
+                                }
+                            </script>
+                            </div>
+
+                            @error('condition_paiement_id')
+                                <span class="text-red-500">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-between mt-4">
+                    <a href="{{ route('cde.show', $cde->id) }}" class="btn">{{ __('Retour') }}</a>
                     <button type="submit" class="btn">{{ __('Valider') }}</button>
                 </div>
             </div>
         </form>
     </div>
+    <script>
+        const tvaInput = document.querySelector('input[name="tva"]');
+
+        tvaInput.addEventListener('blur', function() {
+            const totalHtElement = document.getElementById('total_ht');
+            const tvatext = document.getElementById('tva_container');
+            const tvaElement = document.getElementById('total_tva_plus');
+            const totalTtcElement = document.getElementById('total_ttc');
+            const totalHt = @json($cde->total_ht);
+            const tva = parseFloat(tvaInput.value);
+            console.log(totalHt, tva);
+            const tvaAmount = (totalHt * tva / 100);
+            const totalTtc = (parseFloat(totalHt) + parseFloat(tvaAmount));
+
+            tvatext.textContent = 'TVA (' + tva + '%) :';
+            tvaElement.textContent = tvaAmount.toFixed(3) + ' €';
+            totalTtcElement.textContent = totalTtc.toFixed(3) + ' €';
+        });
+
+        function changeTypeExpedition(select) {
+            const adresse_livraison = document.getElementById('adresse_livraison');
+            const typeExpedition = select.value;
+            if (typeExpedition == 1) {
+                adresse_livraison.classList.remove('hidden');
+            } else {
+                adresse_livraison.classList.add('hidden');
+            }
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const typeExpedition = document.querySelector('select[name="type_expedition_id"]');
+            changeTypeExpedition(typeExpedition);
+            changeConditionPaiement();
+        });
+    </script>
 
 
 </x-app-layout>

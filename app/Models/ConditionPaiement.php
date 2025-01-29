@@ -9,4 +9,6 @@ class ConditionPaiement extends Model
 {
     /** @use HasFactory<\Database\Factories\ConditionPaiementFactory> */
     use HasFactory;
+
+    protected $fillable = ['nom'];
 }

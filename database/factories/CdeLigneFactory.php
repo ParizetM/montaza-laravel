@@ -29,6 +29,7 @@ class CdeLigneFactory extends Factory
             'ref_interne' => $this->faker->optional()->word(),
             'ref_fournisseur' => $this->faker->optional()->word(),
             'designation' => $this->faker->sentence(),
+            'prix_unitaire' => $this->faker->randomFloat(2, 0.01, 1000),
             'quantite' => $this->faker->numberBetween(1, 1000),
             'date_livraison' => $this->faker->optional()->date(),
         ];

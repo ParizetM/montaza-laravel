@@ -27,6 +27,7 @@ class Societe extends Model
         'forme_juridique_id',
         'code_ape_id',
         'societe_type_id',
+        'condition_paiement_id',
         'site_web'
     ];
     public function formeJuridique(): BelongsTo
@@ -62,6 +63,10 @@ class Societe extends Model
     public function societeContacts(): HasManyThrough
     {
         return $this->hasManyThrough(SocieteContact::class, Etablissement::class);
+    }
+    public function conditionPaiement(): BelongsTo
+    {
+        return $this->belongsTo(ConditionPaiement::class);
     }
     protected static function booted(): void
     {

@@ -158,6 +158,7 @@ class DatabaseSeeder extends Seeder
         $this->call(FormeJuridiqueSeeder::class);
         $this->call(CodeApeSeeder::class);
         $this->call(SocieteTypeSeeder::class);
+        $this->call(ConditionPaiementSeeder::class);
         SocieteContact::factory()->times(100)->create();
         $this->call(PredefinedShortcutsSeeder::class);
         foreach (PredefinedShortcut::all() as $shortcut) {
@@ -174,7 +175,6 @@ class DatabaseSeeder extends Seeder
         $this->call(DdpCdeStatutSeeder::class);
         $this->call(DdpSeeder::class);
         $this->call(MailTemplateSeeder::class);
-        $this->call(ConditionPaiementSeeder::class);
         $this->call(TypeExpeditionSeeder::class);
         $this->call(CdeSeeder::class);
     }
