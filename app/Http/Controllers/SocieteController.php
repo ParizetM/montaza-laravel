@@ -89,6 +89,7 @@ class SocieteController extends Controller
             'societeTypes' => SocieteType::all(),
             'formeJuridiques' => FormeJuridique::all(),
             'codeApes' => CodeApe::all(),
+            'conditionsPaiement' => ConditionPaiement::all(),
         ]);
     }
 
@@ -109,6 +110,8 @@ class SocieteController extends Controller
                 'siren' => 'required|digits:9|unique:societes',
                 'numero_tva' => 'required|string|min:13|max:13',
                 'commentaire' => 'nullable|string',
+                'condition_paiement_id' => 'required|integer',
+                'condition_paiement_text' => 'nullable|string|max:255',
             ],
             [
                 'raison_sociale.required' => 'La raison sociale est obligatoire',
@@ -137,6 +140,7 @@ class SocieteController extends Controller
                 'commentaire.string' => 'Le commentaire doit être une chaîne de caractères',
             ]
         );
+
         if ($request->site_web == 'http://') {
             $request->merge(['site_web' => null]);
         }
@@ -161,6 +165,18 @@ class SocieteController extends Controller
             $commentaire->contenu = '';
             $commentaire->save();
         }
+        if ($request->input('condition_paiement_id') == 0) {
+
+            if ($request->input('condition_paiement_text') == null || $request->input('condition_paiement_text') == '') {
+                return back()->with('error', 'Veuillez saisir une condition de paiement');
+            }
+            $condition_paiement = ConditionPaiement::create([
+                'nom' => $request->input('condition_paiement_text')
+            ]);
+            $condition_paiement_id = $condition_paiement->id;
+        } else {
+            $condition_paiement_id = $request->input('condition_paiement_id');
+        }
         $societe = new Societe();
         $societe->raison_sociale = $request->raison_sociale;
         $societe->societe_type_id = $request->societe_type_id;
@@ -172,12 +188,13 @@ class SocieteController extends Controller
         $societe->siren = $request->siren;
         $societe->numero_tva = $request->numero_tva;
         $societe->commentaire_id = $commentaire->id;
+        $societe->condition_paiement_id = $condition_paiement_id;
         $societe->save();
         Cache::flush(); // Clear the cache after saving a new Societe
 
 
 
-        return redirect()->route('societes.index')->with('success', 'Société créée avec succès');
+        return redirect()->route('etablissements.create')->with('success', 'Société créée avec succès');
     }
 
     /**

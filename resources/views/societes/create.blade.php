@@ -122,6 +122,43 @@
                                 <span class="text-red-500 text-sm">{{ $message }}</span>
                             @enderror
                         </div>
+                        <div class="col-span-1">
+                            <div class="flex flex-col">
+                                <x-input-label value="Conditions de paiement" />
+                                <div>
+                                <select name="condition_paiement_id" required class="block mt-1 w-full select" onchange="changeConditionPaiement()">
+
+                                    @foreach ($conditionsPaiement as $conditionPaiement)
+                                        <option value="{{ $conditionPaiement->id }}"
+                                            {{ old('condition_paiement_id') == $conditionPaiement->id ? 'selected' : '' }}>
+                                            {{ $conditionPaiement->nom }}
+                                        </option>
+                                    @endforeach
+                                    <option value="0">Autre</option>
+                                </select>
+                                <x-text-input name="condition_paiement_text" :value="old('condition_paiement_text')" class="w-full rounded-t-none border-0 pt-2 -mt-2 hidden focus:border-t-0 focus:ring-0" />
+                                <script>
+                                    function changeConditionPaiement() {
+                                        const select = document.querySelector('select[name="condition_paiement_id"]');
+                                        const input = document.querySelector('input[name="condition_paiement_text"]');
+                                        if (select.value == 0) {
+                                            input.classList.remove('hidden');
+                                            input.required = true;
+                                            input.focus();
+                                        } else {
+                                            input.classList.add('hidden');
+                                            input.value = '';
+                                            input.required = false;
+                                        }
+                                    }
+                                </script>
+                                </div>
+
+                                @error('condition_paiement_id')
+                                    <span class="text-red-500">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
 
                         <div class="col-span-3">
                             <x-input-label for="commentaire" :value="__('Commentaire')" />
@@ -132,6 +169,7 @@
                                 <span class="text-red-500 text-sm">{{ $message }}</span>
                             @enderror
                         </div>
+
 
                         <div class="flex items-center justify-end col-span-3 mt-4">
                             <button type="submit" class="btn ml-4">

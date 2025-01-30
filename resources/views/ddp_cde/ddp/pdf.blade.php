@@ -90,7 +90,7 @@
         .header {
             width: 100%;
             margin-bottom: 20px;
-            margin-left: 50px;
+            margin-left: 0;
             text-align: left;
         }
 
@@ -108,6 +108,8 @@
         }
 
         .right {
+            border: 2px solid #000;
+            padding: 5px;
             text-align: left;
             float: right;
         }
@@ -178,8 +180,8 @@
                         <tr>
                             <td>{{ $ligne->matiere->ref_interne }}</td>
                             <td>{{ $ligne->matiere->designation }}</td>
-                            <td>{{ formatNumber($ligne->quantite) }}</td>
-                            <td>{{ $ligne->matiere->unite->full }}</td>
+                            <td>{{ formatNumber(number: $ligne->quantite) }}</td>
+                            <td>{{ $ligne->unite->short }}</td>
                         </tr>
                     @endforeach
                 </tbody>

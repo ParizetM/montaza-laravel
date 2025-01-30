@@ -13,7 +13,7 @@ class DdpLigne extends Model
     /** @use HasFactory<\Database\Factories\DdpLigneFactory> */
     use HasFactory;
 
-    protected $fillable = ['ddp_id', 'matiere_id', 'quantite'];
+    protected $fillable = ['ddp_id', 'matiere_id', 'quantite','unite_id'];
 
     public function ddp(): BelongsTo
     {
@@ -35,5 +35,9 @@ class DdpLigne extends Model
     public function fournisseurs(): BelongsToMany
     {
         return $this->belongsToMany(Societe::class, 'ddp_ligne_fournisseurs', 'ddp_ligne_id', 'societe_id');
+    }
+    public function unite(): BelongsTo
+    {
+        return $this->belongsTo(Unite::class);
     }
 }

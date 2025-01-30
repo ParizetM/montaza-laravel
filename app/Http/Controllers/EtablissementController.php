@@ -115,7 +115,7 @@ class EtablissementController extends Controller
 
 
         Cache::flush();
-        return redirect()->route('societes.show', $request->societe_id)->with('success', 'Etablissement créé');
+        return redirect()->route('societes.show', ['societe' => $request->societe_id,'add_contact' => 1])->with('success', 'Etablissement créé');
     }
     public function edit(Societe $societe,Etablissement $etablissement)
     {

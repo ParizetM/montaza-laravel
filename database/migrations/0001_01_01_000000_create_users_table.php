@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('numero_tva');
             $table->string('code_ape');
             $table->string('logo')->nullable();
+            $table->string('horaires');
             $table->timestamps();
         });
         Schema::create('roles', function (Blueprint $table) {

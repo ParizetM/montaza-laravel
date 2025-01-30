@@ -171,6 +171,7 @@
                     @endphp
                     <x-modals.contacts name="contacts-modal-{{ $etablissement->id }}" :contacts="$contacts" />
                     <x-modal name="etablissement-quick-contact" focusable maxWidth="5xl">
+
                         @include('societes.contacts.quick-create', ['societes' => $societes,'selected_societe' => $societe, 'selected_etablissement' => $etablissement])
                     </x-modal>
                 </div>

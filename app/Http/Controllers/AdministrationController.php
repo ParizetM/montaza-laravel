@@ -32,6 +32,7 @@ class AdministrationController extends Controller
             'numero_tva' => 'required|string|max:255',
             'code_ape' => 'required|string|max:255',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'horaires' => 'required|string|max:255',
         ]);
 
         if ($request->hasFile('logo') && !$request->file('logo')->isValid()) {
@@ -55,6 +56,7 @@ class AdministrationController extends Controller
         $entite->numero_tva = $request->numero_tva;
         $entite->code_ape = $request->code_ape;
         $entite->logo = $logoPath;
+        $entite->horaires = $request->horaires;
         $entite->save();
 
         return redirect()->route('administration.info_entite', $id);

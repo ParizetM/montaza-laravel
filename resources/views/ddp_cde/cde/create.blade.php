@@ -112,7 +112,7 @@
                                 <select name="societe_select" id="societe_select"
                                     class="select w-48 {{ isset($cde->societe_contact_id) ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : '' }}"
                                     onchange="selectSociete()">
-                                    @if ($cde->societe_contact_id)
+                                    @if ($cde->societe_contact_id == null)
                                         <option value="" selected disabled>Choisir une société</option>
                                     @endif
                                     @foreach ($societes as $societe)
@@ -480,8 +480,7 @@
                                 '');
                             tr.setAttribute('data-matiere-designation', matiere.designation || '');
                             tr.setAttribute('data-prix', matiere.lastPrice || '');
-                            tr.setAttribute('data-matiere-basic-unite', matiere.Unite || '');
-                            tr.setAttribute('data-matiere-unite', matiere.lastPriceUnite || '');
+                            tr.setAttribute('data-matiere-unite', matiere.lastPriceUnite || matiere.Unite ||'');
                             tr.addEventListener('click', addMatiere);
                             if (matiere.lastPrice && matiere.lastPriceUnite) {
                                 tr.innerHTML = `
@@ -514,7 +513,6 @@
             const matiereId = event.currentTarget.getAttribute('data-matiere-id');
             var matiereRef = event.currentTarget.getAttribute('data-matiere-ref');
             var matiereRefFournisseur = event.currentTarget.getAttribute('data-matiere-ref-fournisseur');
-            const matiereBasicUnite = event.currentTarget.getAttribute('data-matiere-basic-unite');
             const matiereUnite = event.currentTarget.getAttribute('data-matiere-unite');
             const matiereDesignation = event.currentTarget.getAttribute('data-matiere-designation');
             const matiereChoisiTable = document.getElementById('matiere-choisi-table');
@@ -603,7 +601,7 @@
                 ${unites.map(unite => `
                                                 <option
                                                     value="${unite.id}" title="${unite.full}"
-                                                    ${unite.short === matiereUnite ? 'selected' : matiereBasicUnite === unite.short ? 'selected' : ''}
+                                                    ${unite.short === matiereUnite ? 'selected' : ''}
                                                 >
                                                     ${unite.short}
                                                 </option>

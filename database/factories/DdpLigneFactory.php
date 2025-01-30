@@ -23,6 +23,7 @@ class DdpLigneFactory extends Factory
         return [
             'ddp_id' => $random_ddp->id,
             'matiere_id' => $random_matiere->id,
+            'unite_id' => $random_matiere->unite_id,
             'quantite' => $this->faker->numberBetween(1, 100),
         ];
     }

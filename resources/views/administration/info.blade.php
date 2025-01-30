@@ -70,6 +70,14 @@
                         @enderror
                     </div>
                 </div>
+                <div>
+                    <x-input-label for="horaires" value="{{ __('horaires') }}" />
+                    <x-text-input id="horaires" class="block mt-1 w-2/3" type="text" name="horaires"
+                        value="{{ old('horaires', $entite->horaires) }}" required />
+                    @error('horaires')
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
                 <div class="flex gap-4 w-2/3">
 
                     <div class="w-full">

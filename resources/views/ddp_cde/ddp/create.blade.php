@@ -127,8 +127,18 @@
                                                         name="quantite[{{ $ddp_ligne->matiere->id }}]"
                                                         oninput="saveChanges()" class="w-20 mx-2"
                                                         value="{{ formatNumber($ddp_ligne->quantite) }}" min="1" />
-                                                    {{ $ddp_ligne->matiere->unite->short }}
+                                                        <select name="unite[{{ $ddp_ligne->matiere_id }}]"
+                                                            class="w-16 mx-2 select" onchange="saveChanges()">
+                                                            @foreach ($unites as $unite)
+                                                                <option value="{{ $unite->id }}"
+                                                                    title="{{ $unite->full }}"
+                                                                    {{ $unite->id === $ddp_ligne->unite_id ? 'selected' : '' }}>
+                                                                    {{ $unite->short }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
                                                 </td>
+
                                                 <td class="text-right px-4">
                                                     <button class="float-right"
                                                         data-matiere-id="{{ $ddp_ligne->matiere->id }}"
@@ -262,6 +272,7 @@
             </div>
     </x-modal>
     <script>
+        const unites = @json($unites);
         // Function to update sous-familles based on selected famille
         function updateSousFamilles() {
             var familleId = document.getElementById('famille_id_search').value;
@@ -318,13 +329,13 @@
                             tr.setAttribute('data-matiere-id', matiere.id || '');
                             tr.setAttribute('data-matiere-ref', matiere.refInterne || '');
                             tr.setAttribute('data-matiere-designation', matiere.designation || '');
-                            tr.setAttribute('data-matiere-unite', matiere.Unite || '');
-                            tr.setAttribute('data-matiere-unite-full', matiere.Unite_full || '');
+                            tr.setAttribute('data-matiere-basic-unite', matiere.lastPriceUnite || '');
+                            tr.setAttribute('data-matiere-unite', matiere.lastPriceUnite ||Unite || '');
                             tr.addEventListener('click', addMatiere);
                             tr.innerHTML = `
                 <td class="text-left px-4">${matiere.refInterne || '-'}</td>
                 <td class="text-left px-4">${matiere.designation || '-'}</td>
-                <td class="text-right px-4" title="${matiere.Unite_full || '-'}">${matiere.Unite || '-'}</td>
+                <td class="text-right px-4" title="${matiere.Unite_full || '-'}">${matiere.lastPriceUnite || matiere.Unite || '-'}</td>
                 <td class="text-right px-4">${matiere.sousFamille || '-'}</td>
                     `;
                             matiereTable.appendChild(tr);
@@ -342,7 +353,6 @@
             const matiereId = event.currentTarget.getAttribute('data-matiere-id');
             const matiereRef = event.currentTarget.getAttribute('data-matiere-ref');
             const matiereUnite = event.currentTarget.getAttribute('data-matiere-unite');
-            const matiereUniteFull = event.currentTarget.getAttribute('data-matiere-unite-full');
             const matiereDesignation = event.currentTarget.getAttribute('data-matiere-designation');
             const matiereChoisiTable = document.getElementById('matiere-choisi-table');
             const existingRow = matiereChoisiTable.querySelector(`tr[data-matiere-id="${matiereId}"]`);
@@ -360,10 +370,23 @@
                 tr.innerHTML = `
             <td class="text-left px-4">${matiereRef || '-'}</td>
             <td class="text-left px-4">${matiereDesignation || '-'}</td>
-            <td class="text-right px-4 flex items-center" title="${matiereUniteFull || '-'}">
+            <td class="text-right px-4 flex items-center">
                 <x-text-input type="number" name="quantite[${matiereId}]" class="w-20 mx-2" value="1" min="1" oninput="saveChanges()"
                 />
-                ${matiereUnite || '-'}
+                <select
+                name="unite[${matiereId}]"
+                class="w-16 mx-2 select"
+                onchange="saveChanges()"
+            >
+                ${unites.map(unite => `
+                                                <option
+                                                    value="${unite.id}" title="${unite.full}"
+                                                    ${unite.short === matiereUnite ? 'selected' : ''}
+                                                >
+                                                    ${unite.short}
+                                                </option>
+                                            `).join('')}
+            </select>
 
             </td>
             <td class="text-right px-4" >
@@ -603,6 +626,7 @@
                 const matiereId = row.getAttribute('data-matiere-id');
                 const quantity = row.querySelector(`input[name="quantite[${matiereId}]"]`).value;
                 const fournisseurs = row.querySelector(`input[name="fournisseur-${matiereId}"]`).value;
+                const unite_id = row.querySelector(`select[name="unite[${matiereId}]`).value;
                 row.classList.remove('border-r-green-500', 'dark:border-r-green-600');
                 if (quantity < 1) {
                     saveStatus0.classList.add('hidden');
@@ -613,6 +637,8 @@
                     matieres.push({
                         id: matiereId,
                         quantity: quantity,
+                        unite_id: unite_id,
+
                         fournisseurs: fournisseurs.split(';')
                     });
                     row.classList.add('border-r-green-500', 'dark:border-r-green-600');

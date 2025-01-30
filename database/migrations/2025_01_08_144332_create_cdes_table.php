@@ -30,8 +30,12 @@ return new class extends Migration
             $table->string('devis_numero')->nullable();
             $table->foreignId('affaire_suivi_par_id')->nullable()->constrained('users');
             $table->foreignId('acheteur_id')->nullable()->constrained('users');
+            $table->decimal('frais_de_port', 10, places: 3)->nullable();
+            $table->decimal('frais_divers', 10, places: 3)->nullable();
+            $table->string('frais_divers_texte')->nullable();
             $table->decimal('total_ht', 10, places: 3)->nullable();
             $table->integer('tva');
+            $table->decimal('total_ttc', 10, places: 3)->nullable();
             $table->foreignId('type_expedition_id')->nullable()->constrained('type_expeditions');
             $table->json('adresse_livraison')->nullable();
             $table->json('adresse_facturation')->nullable();

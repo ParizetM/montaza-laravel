@@ -23,7 +23,6 @@
             </div>
             <div class="flex flex-wrap gap-4">
                 {{-- @dd($pdfs) --}}
-                @foreach ($pdfs as $pdf)
                     @php
                         $cdeannee = explode('-', $cde->code)[1];
                     @endphp
@@ -42,7 +41,6 @@
                                     ici pour télécharger le fichier PDF.</a></p>
                         </object>
                     </div>
-                @endforeach
             </div>
             <div>
                 <div class="flex justify-between items-center border-b border-gray-300 dark:border-gray-700 mt-6 mb-4">

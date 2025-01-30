@@ -18,8 +18,10 @@
     <div class="max-w-8xl py-4 mx-auto sm:px-4 lg:px-6">
         <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-6 rounded-md shadow-md">
             <div class="flex justify-between items-center mb-6">
-                <h1 class="text-3xl font-bold mb-6 text-left">{{ $ddp->nom }} - Récapitulatif</h1>
-
+                <div>
+                    <h1 class="text-3xl font-bold mb-6 text-left">{{ $ddp->nom }} - Récapitulatif</h1>
+                    <p class="text-sm font-semibold text-gray-500 dark:text-gray-400">Ordre des colonnes : REF FOURNISSEUR <strong class="dark:text-white text-gray-900">|</strong> PU HT <strong class="dark:text-white text-gray-900">|</strong> UNITE <strong class="dark:text-white text-gray-900">|</strong> DATE DE LIVRAISON POSSIBLE</p>
+                </div>
                 <div class="flex items-center">
                     <h1 class="text-xl font-semibold text-gray-500 dark:text-gray-400 flex items-center hidden"
                         title="Demande de prix en cours d'enregistrement" id="save-status-0">Enregistrement
@@ -83,7 +85,7 @@
             </style>
             <div id="handsontable-container" class="ht-theme-main-dark-auto"></div>
             <div class="flex justify-between items-center mt-6">
-                <div></div>
+                <a href="{{ route('ddp.cancel_validate', $ddp->id) }}" class="btn float-right">Retour</a>
                 <a href="{{ route('ddp.terminer', $ddp->id) }}" class="btn float-right">Terminer</a>
             </div>
         </div>

@@ -8,6 +8,8 @@ use App\Models\ConditionPaiement;
 use App\Models\DdpCdeStatut;
 use App\Models\Entite;
 use App\Models\Famille;
+use App\Models\Mailtemplate;
+use App\Models\ModelChange;
 use App\Models\Societe;
 use App\Models\TypeExpedition;
 use App\Models\Unite;
@@ -16,17 +18,24 @@ use Auth;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Mail;
+use Response;
+use Storage;
 
 class CdeController extends Controller
 {
-    public function indexColCde()
+    public function indexColCdeSmall()
+    {
+        return $this->indexColCde(true);
+    }
+    public function indexColCde($isSmall = false)
     {
         $cdes = Cde::whereIn('ddp_cde_statut_id', [1, 2])->orderBy('ddp_cde_statut_id', 'asc')
             ->where('nom', '!=', 'undefined')
             ->take(7)->get();
         $cdes->load('user');
         $cdes->load('ddpCdeStatut');
-        return view('ddp_cde.cde.index_col', compact('cdes'));
+        return view('ddp_cde.cde.index_col', compact('cdes', 'isSmall'));
     }
     public function index(Request $request)
     {
@@ -74,10 +83,10 @@ class CdeController extends Controller
     {
         Cde::where('nom', 'undefined')->delete();
         $lastCde = Cde::latest()->first();
-        $code = $lastCde ? $lastCde->code : 'DDP-' . now()->format('Y') . '-0000';
+        $code = $lastCde ? $lastCde->code : 'CDE-' . now()->format('Y') . '-0000';
         $code = explode('-', $code);
         $code = $code[1] + 1;
-        $newCode = 'DDP-' . now()->format('y') . '-' . str_pad($code, 4, '0', STR_PAD_LEFT);
+        $newCode = 'CDE-' . now()->format('y') . '-' . str_pad($code, 4, '0', STR_PAD_LEFT);
         $cde = Cde::create([
             'code' => $newCode,
             'nom' => 'undefined',
@@ -198,6 +207,7 @@ class CdeController extends Controller
             'acheteur_id' => 'nullable|integer',
             'afficher_destinataire' => 'nullable',
             'tva' => 'required|numeric|min:0',
+            'horaires' => 'nullable|string|max:255',
             'adresse' => 'required|string|max:255',
             'ville' => 'required|string|max:255',
             'code_postal' => 'required|string|max:10',
@@ -205,10 +215,14 @@ class CdeController extends Controller
             'type_expedition_id' => 'required|integer|exists:type_expeditions,id',
             'condition_paiement_id' => 'required|integer',
             'condition_paiement_text' => 'nullable|string|max:255',
+            'frais_de_port' => 'nullable|numeric|min:0',
+            'frais_divers' => 'nullable|numeric|min:0',
+            'frais_divers_texte' => 'nullable|string|max:255',
         ]);
 
         $type_expedition_id = $request->input('type_expedition_id');
         if ($type_expedition_id == 1) {
+            $adresse['horaires'] = $request->input('horaires');
             $adresse['adresse'] = $request->input('adresse');
             $adresse['ville'] = $request->input('ville');
             $adresse['code_postal'] = $request->input('code_postal');
@@ -232,19 +246,24 @@ class CdeController extends Controller
         $societe = $cde->societeContact->etablissement->societe;
         $societe->condition_paiement_id = $condition_paiement_id;
         $societe->save();
-        $cde->affaire_numero = $request->input('numero_affaire')?? null;
+        $cde->affaire_numero = $request->input('numero_affaire') ?? null;
         $cde->affaire_nom = $request->input('nom_affaire') ?? null;
-        $cde->devis_numero = $request->input('numero_devis')?? null;
-        $cde->affaire_suivi_par_id = $request->input('affaire_suivi_par')?? null;
-        $cde->acheteur_id = $request->input('acheteur_id')?? null;
+        $cde->devis_numero = $request->input('numero_devis') ?? null;
+        $cde->affaire_suivi_par_id = $request->input('affaire_suivi_par') ?? null;
+        $cde->acheteur_id = $request->input('acheteur_id') ?? null;
         $cde->afficher_destinataire = $request->input('afficher_destinataire') ? true : false;
         $cde->tva = $request->input('tva');
         $cde->adresse_livraison = $adresse;
         $cde->type_expedition_id = $request->input('type_expedition_id');
         $cde->condition_paiement_id = $condition_paiement_id;
+        $cde->frais_de_port = $request->input('frais_de_port') ?? null;
+        $cde->frais_divers = $request->input('frais_divers') ?? null;
+        $cde->frais_divers_texte = $request->input('frais_divers_texte') ?? null;
         $cde->save();
-
-        return view('ddp_cde.cde.pdf_preview', compact('cde'));
+        $pdf = $this->pdf($cde->id);
+        $mailtemplate = Mailtemplate::where('nom', 'cde')->first();
+        $mailtemplate->sujet = str_replace('{code_cde}', $cde->code, $mailtemplate->sujet);
+        return view('ddp_cde.cde.pdf_preview', compact('cde', ['pdf', 'mailtemplate']));
     }
     public function pdf($cde_id)
     {
@@ -253,11 +272,15 @@ class CdeController extends Controller
         $lignes = $cde->cdeLignes;
         $etablissement = $contacts->etablissement;
         $afficher_destinataire = $cde->afficher_destinataire;
-        $destinataire = $contacts->email;
-        $fileName = $cde->code . '_' . $etablissement->societe->raison_sociale . '.pdf';
+        $fileName = $cde->code . '.pdf';
         $entite = $cde->entite;
+        $showRefFournisseur = $cde->show_ref_fournisseur;
+        $total_ht = $cde->total_ht + $cde->frais_de_port + $cde->frais_divers;
+        $total_ttc = $total_ht * (1 + ($cde->tva / 100));
+        $cde->total_ttc = $total_ttc;
+        $cde->save();
         $pdf = app('dompdf.wrapper');
-        $pdf->loadView('ddp_cde.cde.pdf', ['etablissement' => $etablissement, 'cde' => $cde, 'lignes' => $lignes, 'afficher_destinataire' => $afficher_destinataire, 'destinataire' => $destinataire, 'entite' => $entite]);
+        $pdf->loadView('ddp_cde.cde.pdf', ['etablissement' => $etablissement, 'contact' => $contacts, 'cde' => $cde, 'lignes' => $lignes, 'afficher_destinataire' => $afficher_destinataire, 'entite' => $entite, 'showRefFournisseur' => $showRefFournisseur, 'total_ttc' => $total_ttc, 'total_ht' => $total_ht]);
         $pdf->setOption(['isRemoteEnabled' => true, 'isHtml5ParserEnabled' => true, 'isPhpEnabled' => true]);
         $pdf->output();
         $domPdf = $pdf->getDomPDF();
@@ -270,9 +293,84 @@ class CdeController extends Controller
             8,
             [0, 0, 0]
         );
-
         $year = now()->format('y');
         Storage::put('CDE/' . $year . '/' . $fileName, $pdf->output());
-        $pdf = null;
+        return $fileName;
+    }
+    public function showPdf($cde, $dossier, $path)
+    {
+        $path = 'CDE/' . $dossier . '/' . $path;
+        $file = Storage::get($path);
+        $type = 'application/pdf';
+        $response = Response::make($file, 200);
+        $response->header('Content-Type', $type);
+        return $response;
+    }
+    public function downloadPdfs($cde_id)
+    {
+        $cde = Cde::findOrFail($cde_id);
+        $cdeAnnee = explode('-', $cde->code)[1];
+        $pdfPath = 'CDE/' . $cdeAnnee . '/' . $cde->code . '.pdf';
+
+        if (!Storage::exists($pdfPath)) {
+            return redirect()->back()->with('error', 'Aucun fichier à télécharger');
+        }
+
+        return response()->download(storage_path('app/private/' . $pdfPath));
+    }
+    public function sendMails(Request $request, $id)
+    {
+        $cde = Cde::findOrFail($id);
+        $request->validate([
+            'sujet' => 'required|string|max:255',
+            'contenu' => 'required|string',
+        ]);
+        $contenu = str_replace("CHEVRON-GAUCHE", "<", $request->contenu);
+        $contenu = str_replace("CHEVRON-DROIT", ">", $contenu);
+        $cdeAnnee = explode('-', $cde->code)[1];
+        $pdfFileName = "{$cde->code}.pdf";
+        $pdfPath = storage_path("app/private/CDE/{$cdeAnnee}/{$pdfFileName}");
+
+        if (!file_exists($pdfPath)) {
+            return response()->json(['error' => 'PDF file not found'], 404);
+        }
+
+        $contact = $cde->societeContact;
+
+        try {
+            Mail::send([], [], function ($message) use ($request, $contact, $pdfPath, $contenu) {
+                $message->to($contact->email)
+                    ->subject($request->sujet)
+                    ->html($contenu)
+                    ->attach($pdfPath);
+            });
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'An error occurred while sending the email', 'message' => $e->getMessage()], 500);
+        }
+
+        $logmail = [];
+        $logmail['sujet'] = $request->sujet;
+        $logmail['contenu'] = $contenu;
+        $logmail['Destinataire'] = $contact->email;
+        $logmail['pdf'] = $pdfPath;
+        $logmail['cde_nom'] = $cde->nom;
+        $logmail['cde_id'] = $cde->id;
+        $logmail['societe_raison_sociale'] = $cde->societe->raison_sociale;
+        $logmail['societe_id'] = $cde->societe->id;
+        $logmail['contact_nom'] = $contact->nom;
+        $logmail['contact_id'] = $contact->id;
+
+        ModelChange::create([
+            'user_id' => Auth::id(),
+            'model_type' => 'Commentaire',
+            'before' => '',
+            'after' => $logmail,
+            'event' => 'creating',
+        ]);
+
+        $cde->ddp_cde_statut_id = 2;
+        $cde->save();
+
+        return redirect()->route('cde.show', $cde->id)->with('success', 'L\'email a été envoyé avec succès');
     }
 }

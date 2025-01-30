@@ -134,11 +134,13 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::get('/ddp&cde', [DdpController::class, 'indexDdp_cde'])->name('ddp_cde.index');
         Route::get('/ddp', [DdpController::class, 'index'])->name('ddp.index');
         Route::get('/colddp', [DdpController::class, 'indexColDdp'])->name('ddp.index_col_ddp');
+        Route::get('/colddp/small', [DdpController::class, 'indexColDdpSmall'])->name('ddp.index_col_ddp_small');
         Route::get('/ddp/create', [DdpController::class, 'create'])->name('ddp.create');
         Route::post('/ddp/save', [DdpController::class, 'save'])->name('ddp.save');
         Route::delete('/ddp/{ddp}/destroy', [DdpController::class, 'destroy'])->name('ddp.destroy');
         Route::get('/ddp/{ddp}/validate', [DdpController::class, 'validation'])->name('ddp.validation');
         Route::post('/ddp/{ddp}/validate', [DdpController::class, 'validate'])->name('ddp.validate');
+        Route::get('/ddp/{ddp}/cancelvalidate', [DdpController::class, 'cancelValidate'])->name('ddp.cancel_validate');
         Route::post('/ddp/{ddp}/save-retours', [DdpController::class, 'saveRetours'])->name('ddp.save_retours');
         Route::get('/ddp/{ddp}/pdfs', [DdpController::class, 'pdfs'])->name('ddp.pdfs');
         Route::get('/ddp/{ddp}/pdfs/download', [DdpController::class, 'pdfsDownload'])->name('ddp.pdfs.download');
@@ -155,6 +157,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
 
         Route::get('/cde', [CdeController::class, 'index'])->name('cde.index');
         Route::get('/colcde', [CdeController::class, 'indexColCde'])->name('ddp.index_col_cde');
+        Route::get('/colcde/small', [CdeController::class, 'indexColCdeSmall'])->name('ddp.index_col_cde_small');
         Route::get('/cde/create', [CdeController::class, 'create'])->name('cde.create');
         Route::get('/cde/{cde}', [CdeController::class, 'show'])->name('cde.show');
         Route::post('/cde/save', [CdeController::class, 'save'])->name('cde.save');

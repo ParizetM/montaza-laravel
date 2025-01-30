@@ -24,6 +24,7 @@ class EntiteSeeder extends Seeder
             'numero_tva' => 'FR37 480 426 717',
             'code_ape' => '3320A',
             'logo' => '/img/atlantis-montaza.png',
+            'horaires' => 'Du lundi au vendredi de 7h30 à 12h00 et de 13h00 à 15h30',
         ]);
         Entite::factory()->create([
             'name' => 'Atlantis Ventilation',
@@ -36,6 +37,7 @@ class EntiteSeeder extends Seeder
             'numero_tva' => 'FR96 885 144 816',
             'code_ape' => '4322B',
             'logo' => '/img/atlantis-ventilation.png',
+            'horaires' => 'Du lundi au vendredi de 7h30 à 12h00 et de 13h00 à 15h30',
         ]);
         Entite::factory()->create([
             'name' => 'AMB Navale',
@@ -48,6 +50,7 @@ class EntiteSeeder extends Seeder
             'numero_tva' => 'FR87 827 971 946',
             'code_ape' => '3011Z',
             'logo' => '/img/amb-navale.png',
+            'horaires' => 'Du lundi au vendredi de 7h30 à 12h00 et de 13h00 à 15h30',
         ]);
     }
 }

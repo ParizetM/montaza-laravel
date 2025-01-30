@@ -1,12 +1,17 @@
 <?php
 namespace App\Http\Resources;
 
+use App\Models\Unite;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class MatiereResource extends JsonResource
 {
     public function toArray($request)
     {
+
+            $lastPrice = $this->getLastPrice();
+            $lastPriceUnite = $lastPrice && $lastPrice->pivot->unite_id ? Unite::find($lastPrice->pivot->unite_id)->short : null;
+
         return [
             'id' => $this->id,
             'refInterne' => $this->ref_interne,
@@ -20,6 +25,8 @@ class MatiereResource extends JsonResource
             'Unite' => $this->unite->short ?? null,
             'Unite_id' => $this->unite->id ?? null,
             'Unite_full' => $this->unite->full ?? null,
+            'lastPriceUnite' => $lastPriceUnite ?? null,
+
         ];
 
     }

@@ -52,7 +52,8 @@
                             @enderror
                         </div>
                     </div>
-                    <img src="{{ asset($entite->logo) }}" alt="Logo" class="w-1/4 h-1/4 mb-4 object-contain float-right">
+                    <img src="{{ asset($entite->logo) }}" alt="Logo"
+                        class="w-1/4 h-1/4 mb-4 object-contain float-right">
                 </div>
                 @foreach ($societes as $societe)
                     <div class="mb-6">
@@ -62,30 +63,39 @@
                         </h2>
 
                         <div class="grid grid-cols-2 gap-4">
-                            <ul class="space-y-4 bg-gray-100 dark:bg-gray-900 py-4 rounded-b-md">
-                                @foreach ($ddp->ddpLigne as $ddpLigne)
-                                    @foreach ($ddpLigne->ddpLigneFournisseur as $ddpLigneFournisseur)
-                                        @if ($ddpLigneFournisseur->societe_id == $societe->id)
-                                            <li class="ml-4">
-                                                <div>
-                                                    <span>
-                                                        {{ $ddpLigne->matiere->ref_interne }}
-                                                    </span>
-                                                    <span>
-                                                        {{ $ddpLigne->matiere->designation }}
-                                                    </span>
-                                                    <span>
-                                                        {{ $ddpLigne->quantite }}
-                                                    </span>
-                                                    <span title="{{ $ddpLigne->matiere->unite->full }}">
-                                                        {{ $ddpLigne->matiere->unite->full }}
-                                                    </span>
-                                                </div>
-                                            </li>
-                                        @endif
-                                    @endforeach
-                                @endforeach
-                            </ul>
+                            <div class="">
+                                <div class="bg-white dark:bg-gray-900 w-fit h-full rounded-md overflow-auto">
+                                <table class="min-w-0  ">
+                                    <thead>
+                                        <tr>
+                                            <th class="py-2">Référence</th>
+                                            <th class="py-2">Désignation</th>
+                                            <th class="py-2">Quantité</th>
+                                            <th class="py-2">Unité</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($ddp->ddpLigne as $ddpLigne)
+                                            @foreach ($ddpLigne->ddpLigneFournisseur as $ddpLigneFournisseur)
+                                                @if ($ddpLigneFournisseur->societe_id == $societe->id)
+                                                    <tr>
+                                                        <td class="border border-gray-300 dark:border-gray-700 px-4 py-2">
+                                                            {{ $ddpLigne->matiere->ref_interne }}</td>
+                                                        <td class="border border-gray-300 dark:border-gray-700 px-4 py-2">
+                                                            {{ $ddpLigne->matiere->designation }}</td>
+                                                        <td class="border border-gray-300 dark:border-gray-700 px-4 py-2">{{ formatNumber($ddpLigne->quantite) }}</td>
+                                                        <td class="border border-gray-300 dark:border-gray-700 px-4 py-2"
+                                                            title="{{ $ddpLigne->unite->full }}">
+                                                            {{ $ddpLigne->unite->short }}
+                                                        </td>
+                                                    </tr>
+                                                @endif
+                                            @endforeach
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                             <div class="flex flex-col p-4 gap-1">
                                 <div class="flex flex-col gap-4">
                                     <x-input-label value="Établissement" />

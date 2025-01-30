@@ -24,6 +24,7 @@ class Entite extends Model
         'numero_tva',
         'code_ape',
         'logo',
+        'horaires',
     ];
     /**
  * @return HasMany<Role, Entite>

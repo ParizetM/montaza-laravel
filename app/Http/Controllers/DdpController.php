@@ -86,7 +86,10 @@ class DdpController extends Controller
         return view('ddp_cde.ddp.index', compact('ddps', 'ddp_statuts'));
     }
 
-    public function indexColDdp()
+    public function indexColDdpSmall() {
+        return DdpController::indexColDdp(true);
+    }
+    public function indexColDdp($isSmall = false)
     {
         $ddps = Ddp::whereIn('ddp_cde_statut_id', [1, 2])->orderBy('ddp_cde_statut_id', 'asc')
             ->where('nom', '!=', 'undefined')
@@ -94,7 +97,7 @@ class DdpController extends Controller
         $ddps->load('user');
         $ddps->load('ddpCdeStatut');
 
-        return view('ddp_cde.ddp.index_col', compact('ddps'));
+        return view('ddp_cde.ddp.index_col', compact('ddps','isSmall'));
     }
 /*
  ######  ##     ##  #######  ##      ##
@@ -248,6 +251,7 @@ class DdpController extends Controller
             'matieres' => 'required|array',
             'matieres.*.id' => 'required|integer|exists:matieres,id',
             'matieres.*.quantity' => 'required|numeric|min:0',
+            'matieres.*.unite_id' => 'required|integer|exists:unites,id',
             'matieres.*.fournisseurs' => 'required|array',
             'matieres.*.fournisseurs.*' => 'required|string|max:255',
         ]);
@@ -265,7 +269,11 @@ class DdpController extends Controller
             foreach ($request->matieres as $matiere) {
                 $ddpLigne = $ddp->ddpLigne()->updateOrCreate(
                     ['matiere_id' => $matiere['id']],
-                    ['quantite' => $matiere['quantity']]
+                    [
+                        'quantite' => $matiere['quantity'],
+                        'unite_id' => $matiere['unite_id'],
+                        'ddp_id' => $ddp->id
+                    ]
                 );
 
                 foreach ($matiere['fournisseurs'] as $fournisseur) {
@@ -273,7 +281,8 @@ class DdpController extends Controller
                         ['societe_id' => $fournisseur],
                         [
                             'ddp_ligne_id' => $ddpLigne->id,
-                            'ddp_cde_statut_id' => 1
+                            'ddp_cde_statut_id' => 1,
+                            'unite_id' => $matiere['unite_id'],
                         ]
                     );
                 }
@@ -359,9 +368,22 @@ class DdpController extends Controller
                 return str_replace('DDP/' . $ddpannee . '/', '', $file);
             }, $pdfs);
         }
+
         $mailtemplate = Mailtemplate::where('nom', 'ddp')->first();
         $mailtemplate->sujet = str_replace('{code_ddp}', $ddp->code, $mailtemplate->sujet);
         return view('ddp_cde.ddp.pdf_preview', ['ddp' => $ddp, 'pdfs' => $pdfs, 'mailtemplate' => $mailtemplate]);
+    }
+    public function cancelValidate($id): RedirectResponse
+    {
+        $ddp = Ddp::findOrFail($id);
+        $ddp->ddp_cde_statut_id = 1;
+        $ddp->save();
+        foreach ($ddp->ddpLigne as $ddpLigne) {
+            foreach ($ddpLigne->ddpLigneFournisseur as $ddpLigneFournisseur) {
+                DB::table('societe_matiere')->where('ddp_ligne_fournisseur_id', $ddpLigneFournisseur->id)->delete();
+            }
+        }
+        return redirect()->route('ddp.show', $ddp->id);
     }
     public function pdf($ddpi_id)
     {
@@ -423,7 +445,7 @@ class DdpController extends Controller
             return str_replace('DDP/' . $ddpannee . '/', '', $file);
         }, $pdfs);
         if (count($pdfs) == 0) {
-            return redirect()->route('ddp.show', $ddp->id)->with('error', 'Aucun fichier à télécharger');
+            return redirect()->back()->with('error', 'Aucun fichier à télécharger');
         }
         if (count($pdfs) == 1) {
             return response()->download(storage_path('app/private/DDP/' . $ddpannee . '/' . $pdfs[0]));
@@ -614,9 +636,13 @@ class DdpController extends Controller
                                 $prix = $fournisseur->pivot->prix;
                                 if ($fournisseur->pivot->unite_id) {
                                     $unite = Unite::find($fournisseur->pivot->unite_id)->short;
+                                } elseif ($ddpLigneFournisseur->ddpLigne->unite_id) {
+                                    $unite = $ddpLigneFournisseur->ddpLigne->unite->short;
                                 } else {
                                     $unite = '';
                                 }
+                            } elseif ($ddpLigneFournisseur->ddpLigne->unite_id) {
+                                $unite = $ddpLigneFournisseur->ddpLigne->unite->short;
                             } else {
                                 $prix = '';
                                 $unite = '';
@@ -701,6 +727,21 @@ class DdpController extends Controller
         $ddp = Ddp::findOrFail($id);
         $ddp->ddp_cde_statut_id = 3;
         $ddp->save();
+        foreach ($ddp->ddpLigne as $ddpLigne) {
+            foreach ($ddpLigne->ddpLigneFournisseur as $ddpLigneFournisseur) {
+                $existingEntry = DB::table('societe_matiere')
+                    ->where('ddp_ligne_fournisseur_id', $ddpLigneFournisseur->id)
+                    ->orderBy('date_dernier_prix', 'desc')
+                    ->first();
+
+                if ($existingEntry) {
+                    DB::table('societe_matiere')
+                        ->where('id', '!=', $existingEntry->id)
+                        ->where('ddp_ligne_fournisseur_id', $ddpLigneFournisseur->id)
+                        ->delete();
+                }
+            }
+        }
         return redirect()->route('ddp.show', $ddp->id);
     }
     public function annuler_terminer($id)

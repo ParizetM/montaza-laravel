@@ -15,6 +15,18 @@
             </h2>
         </div>
     </x-slot>
+    <style>
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* Pour Firefox */
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+    </style>
     <div class="max-w-8xl py-4 mx-auto sm:px-4 lg:px-6">
         <form action="{{ route('cde.validate', $cde->id) }}" method="POST">
             @csrf
@@ -41,7 +53,7 @@
                                     <x-input-label value="Numéro d'affaire" />
                                     <small>(Optionnel)</small>
                                 </div>
-                                <x-text-input name="numero_affaire" :value="old('numero_affaire', $cde->numero_affaire)" />
+                                <x-text-input name="numero_affaire" :value="old('numero_affaire', $cde->affaire_numero)" />
                                 @error('numero_affaire')
                                     <span class="text-red-500">{{ $message }}</span>
                                 @enderror
@@ -51,7 +63,7 @@
                                     <x-input-label value="Nom d'affaire" />
                                     <small>(Optionnel)</small>
                                 </div>
-                                <x-text-input name="nom_affaire" :value="old('nom_affaire', $cde->nom_affaire)" />
+                                <x-text-input name="nom_affaire" :value="old('nom_affaire', $cde->affaire_nom)" />
                                 @error('nom_affaire')
                                     <span class="text-red-500">{{ $message }}</span>
                                 @enderror
@@ -61,7 +73,7 @@
                                     <x-input-label value="Numéro de devis" />
                                     <small>(Optionnel)</small>
                                 </div>
-                                <x-text-input name="numero_devis" :value="old('numero_devis', $cde->numero_devis)" />
+                                <x-text-input name="numero_devis" :value="old('numero_devis', $cde->devis_numero)" />
                                 @error('numero_devis')
                                     <span class="text-red-500">{{ $message }}</span>
                                 @enderror
@@ -73,11 +85,13 @@
                                 <small>(Optionnel)</small>
                             </div>
                             <select name="affaire_suivi_par" class="select w-fit min-w-96">
-                                <option value="" {{ old('affaire_suivi_par') == 0 ? 'selected' : '' }}>Non
+                                <option value=""
+                                    {{ old('affaire_suivi_par', $cde->affaire_suivi_par_id) == 0 ? 'selected' : '' }}>
+                                    Non
                                     suivi</option>
                                 @foreach ($users as $user)
                                     <option value="{{ $user->id }}"
-                                        {{ old('affaire_suivi_par') == $user->id ? 'selected' : '' }}>
+                                        {{ old('affaire_suivi_par', $cde->affaire_suivi_par_id) == $user->id ? 'selected' : '' }}>
                                         {{ $user->first_name }} {{ $user->last_name }}
                                     </option>
                                 @endforeach
@@ -130,12 +144,63 @@
 --}}
                 <h2 class="text-xl font-bold mb-6 text-left border-b-2 border-gray-200 dark:border-gray-700 p-2">Corps
                     de la commande</h2>
-                <div class="m-2">
-                    <x-input-label value="TVA (%)" />
-                    <x-text-input name="tva" type="number" :value="old('tva', $cde->tva)" />
-                    @error('tva')
-                        <span class="text-red-500">{{ $message }}</span>
-                    @enderror
+                <div class="flex">
+                    <div class="m-2">
+                        <x-input-label value="TVA (%)" />
+                        <x-text-input name="tva" type="number" :value="old('tva', $cde->tva)" onblur="recalculateTotal()" />
+                        @error('tva')
+                            <span class="text-red-500">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    <div class="flex flex-col m-4">
+                        <div class="flex gap-4">
+                            <x-input-label value="Frais de port" />
+                            <small>(Optionnel)</small>
+                        </div>
+                        <div class="price-input-container">
+                            <x-text-input name="frais_de_port" type="number" step="0.01" :value="old('frais_de_port', $cde->frais_de_port)" onblur="recalculateTotal()"
+                                class=" price-input" />
+                        </div>
+                        @error('frais_de_port')
+                            <span class="text-red-500">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    <div>
+                        <div class="flex flex-col m-4">
+                            <div class="flex gap-4">
+                                <x-input-label value="Frais divers"  />
+                                <small>(Optionnel)</small>
+                            </div>
+                            <div class="price-input-container">
+                                <x-text-input name="frais_divers" type="number" step="0.01" :value="old('frais_divers', $cde->frais_divers)" onblur="fraisDiversChange();recalculateTotal()"
+                                    class="price-input" />
+                            </div>
+                            @error('frais_divers')
+                                <span class="text-red-500">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="flex flex-col m-4 {{ $cde->frais_divers == null ? 'hidden' : '' }}">
+                            <div class="flex gap-4">
+                                <x-input-label value="Description des frais divers" />
+                                <small>(Optionnel)</small>
+                            </div>
+                            <x-text-input name="frais_divers_texte" :value="old('frais_divers_texte', $cde->frais_divers_texte)" />
+                            @error('frais_divers_texte')
+                                <span class="text-red-500">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <script>
+                            function fraisDiversChange() {
+                                const fraisDivers = document.querySelector('input[name="frais_divers"]');
+                                const fraisDiversTexte = document.querySelector('input[name="frais_divers_texte"]');
+                                if (fraisDivers.value != '') {
+                                    fraisDiversTexte.parentElement.classList.remove('hidden');
+                                } else {
+                                    fraisDiversTexte.parentElement.classList.add('hidden');
+                                }
+                            }
+                        </script>
+                    </div>
                 </div>
                 <table class="min-w-0 bg-gray-100 dark:bg-gray-900 ">
                     <thead>
@@ -177,10 +242,10 @@
                                 <td class="p-2 text-center border border-gray-200 dark:border-gray-700">
                                     {{ formatNumber($ligne->quantite) }}</td>
                                 <td class="p-2 text-left border border-gray-200 dark:border-gray-700"
-                                    title="{{ formatNumber($ligne->prix_unitaire) }} euro(s) par {{ $ligne->unite->full }}">
-                                    {{ formatNumber($ligne->prix_unitaire) }} €/{{ $ligne->unite->short }}</td>
+                                    title="{{ formatNumberArgent($ligne->prix_unitaire) }} euro(s) par {{ $ligne->unite->full }}">
+                                    {{ formatNumberArgent($ligne->prix_unitaire) }}/{{ $ligne->unite->short }}</td>
                                 <td class="p-2 text-left border border-gray-200 dark:border-gray-700">
-                                    {{ formatNumber($ligne->prix) }} €</td>
+                                    {{ formatNumberArgent($ligne->prix) }} </td>
                                 <td class="p-2 text-left border border-gray-200 dark:border-gray-700">
                                     {{ Carbon::parse($ligne->date_livraison)->format('d/m/Y') }}</td>
                             </tr>
@@ -196,7 +261,7 @@
                                                     Total HT :
                                                 </td>
                                                 <td id="total_ht">
-                                                    {{ formatNumber($cde->total_ht) }} €
+                                                    {{ formatNumberArgent($cde->total_ht) }}
                                                 </td>
                                             </tr>
                                             <tr>
@@ -204,7 +269,7 @@
                                                     TVA ({{ $cde->tva }}%) :
                                                 </td>
                                                 <td id="total_tva_plus">
-                                                    {{ formatNumber(round(($cde->total_ht * $cde->tva) / 100, 3)) }} €
+                                                    {{ formatNumberArgent(round(($cde->total_ht * $cde->tva) / 100, 3)) }}
                                                 </td>
                                             </tr>
                                             <tr>
@@ -212,8 +277,8 @@
                                                     Total TTC :
                                                 </td>
                                                 <td id="total_ttc">
-                                                    {{ formatNumber(round($cde->total_ht + ($cde->total_ht * $cde->tva) / 100, 3)) }}
-                                                    €
+                                                    {{ formatNumberArgent(round($cde->total_ht + ($cde->total_ht * $cde->tva) / 100, 3)) }}
+
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -253,11 +318,20 @@
                                 $adresse_livraison->ville = $entite->ville;
                                 $adresse_livraison->code_postal = $entite->code_postal;
                                 $adresse_livraison->pays = 'France';
+                                $adresse_livraison->horaires = $entite->horaires;
                             } else {
                                 $adresse_livraison = json_decode($cde->adresse_livraison);
                             }
                         @endphp
                         <div class="flex flex-col gap-4 m-4" id="adresse_livraison">
+                            <div>
+                                <x-input-label value="horaires de livraison" />
+                                <textarea name="horaires"
+                                    class="mt-1 block px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-900 dark:text-gray-100 w-fit min-w-96">{{ old('horaires', $adresse_livraison->horaires) }}</textarea>
+                                @error('horaires')
+                                    <span class="text-red-500">{{ $message }}</span>
+                                @enderror
+                            </div>
                             <div>
                                 <x-input-label value="Adresse de livraison" />
                                 <x-text-input name="adresse" :value="old('adresse', $adresse_livraison->adresse)" class="w-fit min-w-96" />
@@ -292,39 +366,44 @@
                         <div class="flex flex-col gap-4 m-4">
                             <x-input-label value="Conditions de paiement" />
                             <div>
-                            <select name="condition_paiement_id" required class="select w-fit min-w-96" onchange="changeConditionPaiement()">
+                                <select name="condition_paiement_id" required class="select w-fit min-w-96"
+                                    onchange="changeConditionPaiement()">
 
-                                @foreach ($conditionsPaiement as $conditionPaiement)
-                                    <option value="{{ $conditionPaiement->id }}"
-                                        {{ old('condition_paiement_id',
-                                            $cde->condition_paiement_id != null
-                                                ? ($cde->condition_paiement_id == $conditionPaiement->id ? 'selected' : '')
-                                                : ($cde->societeContact->etablissement->societe->condition_paiement_id == $conditionPaiement->id ? 'selected' : '')
-                                            )
-                                        }}>
-                                        {{ $conditionPaiement->nom }}
-                                    </option>
-                                @endforeach
-                                <option value="0">Autre</option>
-                            </select>
-                            <x-text-input name="condition_paiement_text" :value="old('condition_paiement_text')" class="w-fit min-w-96 rounded-t-none border-0 pt-2 -mt-2 hidden focus:border-t-0 focus:ring-0" />
-                            <script>
-                                function changeConditionPaiement() {
-                                    const select = document.querySelector('select[name="condition_paiement_id"]');
-                                    const input = document.querySelector('input[name="condition_paiement_text"]');
-                                    if (select.value == 0) {
-                                        input.classList.remove('hidden');
-                                        input.required = true;
-                                        input.focus();
-                                    } else {
-                                        input.classList.add('hidden');
-                                        input.value = '';
-                                        input.required = false;
+                                    @foreach ($conditionsPaiement as $conditionPaiement)
+                                        <option value="{{ $conditionPaiement->id }}"
+                                            {{ old(
+                                                'condition_paiement_id',
+                                                $cde->condition_paiement_id != null
+                                                    ? ($cde->condition_paiement_id == $conditionPaiement->id
+                                                        ? 'selected'
+                                                        : '')
+                                                    : ($cde->societeContact->etablissement->societe->condition_paiement_id == $conditionPaiement->id
+                                                        ? 'selected'
+                                                        : ''),
+                                            ) }}>
+                                            {{ $conditionPaiement->nom }}
+                                        </option>
+                                    @endforeach
+                                    <option value="0">Autre</option>
+                                </select>
+                                <x-text-input name="condition_paiement_text" :value="old('condition_paiement_text')"
+                                    class="w-fit min-w-96 rounded-t-none border-0 pt-2 -mt-2 hidden focus:border-t-0 focus:ring-0" />
+                                <script>
+                                    function changeConditionPaiement() {
+                                        const select = document.querySelector('select[name="condition_paiement_id"]');
+                                        const input = document.querySelector('input[name="condition_paiement_text"]');
+                                        if (select.value == 0) {
+                                            input.classList.remove('hidden');
+                                            input.required = true;
+                                            input.focus();
+                                        } else {
+                                            input.classList.add('hidden');
+                                            input.value = '';
+                                            input.required = false;
+                                        }
                                     }
-                                }
-                            </script>
+                                </script>
                             </div>
-
                             @error('condition_paiement_id')
                                 <span class="text-red-500">{{ $message }}</span>
                             @enderror
@@ -339,23 +418,23 @@
         </form>
     </div>
     <script>
-        const tvaInput = document.querySelector('input[name="tva"]');
 
-        tvaInput.addEventListener('blur', function() {
+        function recalculateTotal() {
             const totalHtElement = document.getElementById('total_ht');
             const tvatext = document.getElementById('tva_container');
             const tvaElement = document.getElementById('total_tva_plus');
             const totalTtcElement = document.getElementById('total_ttc');
-            const totalHt = @json($cde->total_ht);
+            const tvaInput = document.querySelector('input[name="tva"]');
+            const totalHt = @json($cde->total_ht + $cde->frais_de_port + $cde->frais_divers);
             const tva = parseFloat(tvaInput.value);
-            console.log(totalHt, tva);
             const tvaAmount = (totalHt * tva / 100);
             const totalTtc = (parseFloat(totalHt) + parseFloat(tvaAmount));
 
             tvatext.textContent = 'TVA (' + tva + '%) :';
-            tvaElement.textContent = tvaAmount.toFixed(3) + ' €';
-            totalTtcElement.textContent = totalTtc.toFixed(3) + ' €';
-        });
+            tvaElement.textContent = tvaAmount.toFixed(2) + ' €';
+            totalHtElement.textContent = totalHt.toFixed(2) + ' €';
+            totalTtcElement.textContent = totalTtc.toFixed(2) + ' €';
+        };
 
         function changeTypeExpedition(select) {
             const adresse_livraison = document.getElementById('adresse_livraison');
