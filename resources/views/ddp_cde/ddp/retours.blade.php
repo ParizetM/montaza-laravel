@@ -8,7 +8,7 @@
                     >>
                     <a href="{{ route('ddp.show', $ddp->id) }}"
                         class="hover:bg-gray-100 hover:dark:bg-gray-700 p-1 rounded">{!! __('Créer une demande de prix') !!}</a>
-                    >> Validation
+                    >> Retours
                 </h2>
 
             </div>

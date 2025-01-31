@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('unites', function (Blueprint $table) {
             $table->id();
-            $table->string('short');
+            $table->string('short')->unique();
             $table->string('full');
             $table->string('full_plural')->nullable();
             $table->string('type')->nullable();
@@ -21,18 +21,18 @@ return new class extends Migration
         });
         Schema::create('familles', function (Blueprint $table) {
             $table->id();
-            $table->string('nom');
+            $table->string('nom')->unique();
             $table->timestamps();
         });
         Schema::create('sous_familles', function (Blueprint $table) {
             $table->id();
-            $table->string('nom');
+            $table->string('nom')->unique();
             $table->foreignId('famille_id')->constrained('familles');
             $table->timestamps();
         });
         Schema::create('dossier_standards', function (Blueprint $table) {
             $table->id();
-            $table->string('nom');
+            $table->string('nom')->unique();
             $table->timestamps();
         });
         Schema::create('standards', function (Blueprint $table) {

@@ -140,7 +140,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::delete('/ddp/{ddp}/destroy', [DdpController::class, 'destroy'])->name('ddp.destroy');
         Route::get('/ddp/{ddp}/validate', [DdpController::class, 'validation'])->name('ddp.validation');
         Route::post('/ddp/{ddp}/validate', [DdpController::class, 'validate'])->name('ddp.validate');
-        Route::get('/ddp/{ddp}/cancelvalidate', [DdpController::class, 'cancelValidate'])->name('ddp.cancel_validate');
+        Route::get('/ddp/{ddp}/annuler-validation', [DdpController::class, 'cancelValidate'])->name('ddp.cancel_validate');
         Route::post('/ddp/{ddp}/save-retours', [DdpController::class, 'saveRetours'])->name('ddp.save_retours');
         Route::get('/ddp/{ddp}/pdfs', [DdpController::class, 'pdfs'])->name('ddp.pdfs');
         Route::get('/ddp/{ddp}/pdfs/download', [DdpController::class, 'pdfsDownload'])->name('ddp.pdfs.download');
@@ -164,13 +164,17 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::delete('/cde/{cde}/destroy', [CdeController::class, 'destroy'])->name('cde.destroy');
         Route::get('/cde/{cde}/validate', [CdeController::class, 'validation'])->name('cde.validation');
         Route::post('/cde/{cde}/validate', [CdeController::class, 'validate'])->name('cde.validate');
+        Route::get('/cde/{cde}/annuler-validation', [CdeController::class, 'cancelValidate'])->name('cde.cancel_validate');
+        Route::post('/cde/{cde}/save-retours', [CdeController::class, 'saveRetours'])->name('cde.save_retours');
         Route::get('/cde/{cde}/reset', [CdeController::class, 'reset'])->name('cde.reset');
         Route::get('/cde/{cde}/pdfs/download', [CdeController::class, 'downloadPdfs'])->name('cde.pdfs.download');
         Route::get('/cde/{cde}/pdfshow/{annee}/{nom}', [CdeController::class, 'showPdf'])->name('cde.pdfshow');
         Route::get('/cde/{cde}/skipmails', [CdeController::class, 'skipMails'])->name('cde.skipmails');
         Route::post('/cde/{cde}/sendmails', [CdeController::class, 'sendMails'])->name('cde.sendmails');
-
-
+        Route::get('/cde/{cde}/terminer', [CdeController::class, 'terminer'])->name('cde.terminer');
+        Route::post('/cde/{cde}/upload-ar', [CdeController::class, 'uploadAr'])->name('cde.upload_ar');
+        Route::get('/cde/{cde}/annuler_terminer', [CdeController::class, 'annulerTerminer'])->name('cde.annuler_terminer');
+        Route::get('/cde/{cde}/terminer_controler', [CdeController::class, 'terminerControler'])->name('cde.terminer_controler');
     });
 });
 require __DIR__ . '/auth.php';

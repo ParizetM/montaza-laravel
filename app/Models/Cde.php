@@ -32,10 +32,11 @@ class Cde extends Model
         'adresse_facturation',
         'condition_paiement_id',
         'afficher_destinataire',
+        'accuse_reception',
     ];
     public function cdeLignes()
     {
-        return $this->hasMany(CdeLigne::class);
+        return $this->hasMany(CdeLigne::class)->orderBy('poste');
     }
     public function ddpCdeStatut(): BelongsTo
     {

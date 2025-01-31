@@ -13,7 +13,7 @@ class TypeExpeditionSeeder extends Seeder
      */
     public function run(): void
     {
-        TypeExpedition::create(['nom' => 'Livraison']);
-        TypeExpedition::create(['nom' => 'Enlèvement par nos soins']);
+        TypeExpedition::create(['nom' => 'Livraison', 'short' => 'livraison']);
+        TypeExpedition::create(['nom' => 'Enlèvement par nos soins', 'short' => 'enlèvement']);
     }
 }

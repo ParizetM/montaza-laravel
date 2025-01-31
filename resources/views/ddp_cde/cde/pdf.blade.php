@@ -57,6 +57,8 @@
             width: 100%;
             border-collapse: collapse;
             page-break-inside: auto;
+            border: 1px solid #f0f0f0;
+
         }
 
         .main-content table tr {
@@ -66,7 +68,8 @@
 
         .main-content table th,
         .main-content table td {
-            border: 1px solid #000;
+            border-left: 1px solid #f0f0f0;
+            border-right: 1px solid #f0f0f0;
             text-align: right;
             padding-right: 10px;
         }
@@ -84,7 +87,7 @@
             height: auto;
             text-align: center;
             font-size: 10px;
-            border-top: 1px solid #ddd;
+            border-top: 1px solid #f0f0f0;
             padding-top: 10px;
             background: white;
             padding-bottom: 30px;
@@ -111,10 +114,15 @@
         }
 
         .right {
-            border: 2px solid #000;
-            padding: 5px;
+
             text-align: left;
             float: right;
+        }
+
+        .company_info {
+            border: 2px solid #000;
+            padding: 5px;
+            margin-bottom: 10px;
         }
 
         .poste {
@@ -154,7 +162,6 @@
         }
 
         .reference-value {
-            font-weight: bold;
             text-align: left;
         }
 
@@ -187,6 +194,11 @@
             padding: 5px;
             vertical-align: top;
         }
+
+        .entreprise_nom {
+            font-size: 20px;
+            font-weight: bold;
+        }
     </style>
 </head>
 
@@ -198,7 +210,13 @@
     </div>
     <div class="container">
         <!-- Header -->
-        <img src="{{ public_path($entite->logo) }}" alt="Logo" style="width: 30%; margin-bottom: 20px;">
+        <div class="">
+            <img src="{{ public_path($entite->logo) }}" alt="Logo" style="width: 30%; margin-bottom: 20px;">
+            <div style="float: right; text-align: left; width: 48%;">
+                <h2 style="margin-bottom: 0px;">Commande d'achat {{ $cde->code }} </h2>
+                <p style="margin-top: 0px;">Le {{ Carbon\Carbon::parse($cde->created_at)->format('d/m/Y') }}</p>
+            </div>
+        </div>
         <div class="header">
             <div class="company-info left">
                 <strong>{{ strtoupper($entite->name) }}</strong><br>
@@ -207,23 +225,23 @@
                 FRANCE
             </div>
             <div class="company-info right">
-                <strong>{{ $etablissement->societe->raison_sociale }}</strong><br>
-                {{ $etablissement->adresse }}<br>
-                {{ $etablissement->code_postal }} {{ $etablissement->ville }}<br>
-                {{ $etablissement->pays->nom }}<br>
+                <div class="company_info">
+                    <strong class="entreprise_nom">{{ $etablissement->societe->raison_sociale }}</strong><br>
+                    {{ $etablissement->adresse }}<br>
+                    {{ $etablissement->code_postal }} &nbsp;{{ $etablissement->ville }}<br>
+                    {{ $etablissement->pays->nom }}<br>
+                </div>
                 @if ($afficher_destinataire)
                     À l'attention de : {{ $contact->nom }}<br>
                     {{ $contact->email }}
                 @endif
-
             </div>
         </div>
 
         <!-- Title -->
         <div class="title">
-            <strong>Ref : </strong> {{ $cde->code }}
             @if ($cde->affaire_numero != null)
-                <br><strong>Affaire n°</strong> : {{ $cde->affaire_numero }}
+                <strong>Affaire n°</strong> : {{ $cde->affaire_numero }}
             @else
                 <br>
             @endif
@@ -274,8 +292,7 @@
                 </thead>
                 <tbody>
                     @foreach ($lignes as $index => $ligne)
-                        <tr
-                            style="page-break-inside: avoid; {{ $index % 2 == 1 ? 'background-color: #f5f5f5;' : '' }}">
+                        <tr style="page-break-inside: avoid; {{-- {{ $index % 2 == 1 ? 'background-color: #f5f5f5;' : '' }} --}}">
                             <td class="poste_case" style="padding: 0%;">{{ $ligne->poste }}</td>
                             <td class="text-left ml-1 p-2">
                                 <div class="reference-container {{ $showRefFournisseur ? '' : 'hidden' }}"
@@ -284,10 +301,12 @@
                                         <span class="reference-label">Réf. Interne</span><br>
                                         <span class="reference-value">{{ $ligne->ref_interne ?? '' }}</span>
                                     </div>
-                                    <div class="reference-item">
-                                        <span class="reference-label">Réf. Fournisseur</span><br>
-                                        <span class="reference-value">{{ $ligne->ref_fournisseur ?? '' }}</span>
-                                    </div>
+                                    @if ($ligne->ref_fournisseur != null && $ligne->ref_fournisseur != '')
+                                        <div class="reference-item">
+                                            <span class="reference-label">Réf. Fournisseur</span><br>
+                                            <span class="reference-value">{{ $ligne->ref_fournisseur ?? '' }}</span>
+                                        </div>
+                                    @endif
                                 </div>
                                 <div class="reference-container {{ $showRefFournisseur ? 'hidden' : '' }}"
                                     id="ref-{{ $ligne->matiere_id }}">
@@ -297,7 +316,7 @@
                                     </div>
                                 </div>
                             </td>
-                            <td>{{ $ligne->matiere->designation }}</td>
+                            <td style="text-align: left; padding-left: 10px;">{{ $ligne->matiere->designation }}</td>
                             <td>{{ formatNumber($ligne->quantite) }} {{ $ligne->unite->short }}</td>
                             <td>{{ formatNumberArgent($ligne->prix_unitaire) }} </td>
                             <td>{{ formatNumberArgent($ligne->prix) }} </td>
@@ -327,7 +346,7 @@
                             <br><span>horaires : {{ $adresse->horaires }}</span>
                         @endif
                     </td>
-                    <td>
+                    <td style=" border-right: 2px solid #f0f0f0 ;">
                         <strong>Condition de paiement :</strong>
                         <br>{{ $cde->conditionPaiement->nom }}
                         @if ($cde->frais_de_port != null && $cde->frais_de_port != 0 && $cde->frais_de_port != '')

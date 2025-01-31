@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('type_expeditions', function (Blueprint $table) {
             $table->id();
+            $table->string('short')->unique();
             $table->string('nom');
             $table->timestamps();
         });
@@ -40,10 +41,12 @@ return new class extends Migration
             $table->json('adresse_livraison')->nullable();
             $table->json('adresse_facturation')->nullable();
             $table->foreignId('condition_paiement_id')->nullable()->constrained('condition_paiements');
+            $table->string('accuse_reception')->nullable();
             $table->boolean('show_ref_fournisseur')->default(false);
             $table->boolean('afficher_destinataire')->default(true);
             $table->timestamps();
         });
+
         Schema::create('cde_lignes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('cde_id')->constrained('cdes')->onDelete('cascade');
@@ -53,10 +56,13 @@ return new class extends Migration
             $table->foreignId('matiere_id')->nullable()->constrained('matieres');
             $table->string('designation')->nullable();
             $table->decimal('quantite', 10, places: 6);
+            $table->foreignId('ddp_cde_statut_id')->default(1)->constrained('ddp_cde_statuts');
+            $table->foreignId('type_expedition_id')->nullable()->constrained('type_expeditions');
             $table->foreignId('unite_id')->nullable()->constrained('unites');
             $table->decimal('prix_unitaire', 10, places: 3)->nullable();
             $table->decimal('prix', 10, places: 3)->nullable();
             $table->date('date_livraison')->nullable();
+            $table->date('date_livraison_reelle')->nullable();
             $table->timestamps();
         });
     }

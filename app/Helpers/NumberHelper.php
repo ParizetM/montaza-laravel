@@ -45,6 +45,6 @@ if (!function_exists('formatNumber')) {
         return $partie_entiere_formattee;
     }
     function formatNumberArgent($number) {
-        return number_format(formatNumber($number), 2, '.', ' ') . ' €';
+        return number_format($number, 2, '.', ' ') . ' €';
     }
 }

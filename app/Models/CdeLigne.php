@@ -22,6 +22,9 @@ class CdeLigne extends Model
         'prix_unitaire',
         'prix',
         'date_livraison',
+        'ddp_cde_statut_id',
+        'type_expedition_id',
+        'date_livraison_reele',
     ];
     public function unite()
     {
@@ -34,5 +37,13 @@ class CdeLigne extends Model
     public function cde()
     {
         return $this->belongsTo(Cde::class);
+    }
+    public function ddpCdeStatut()
+    {
+        return $this->belongsTo(DdpCdeStatut::class);
+    }
+    public function typeExpedition()
+    {
+        return $this->belongsTo(TypeExpedition::class);
     }
 }

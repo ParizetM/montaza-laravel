@@ -15,6 +15,7 @@ use App\Models\TypeExpedition;
 use App\Models\Unite;
 use App\Models\User;
 use Auth;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -121,6 +122,16 @@ class CdeController extends Controller
                     'showRefFournisseur' => $showRefFournisseur
                 ]
             );
+        } elseif ($cde->ddpCdeStatut->id == 2) {
+            $cdeid =  $cde->id;
+            $showRefFournisseur = $cde->show_ref_fournisseur;
+            $typeExpedition = TypeExpedition::all()->pluck('short');
+            $data = $this->getRetours($cdeid);
+            return view('ddp_cde.cde.retours', compact('cde',['data','showRefFournisseur','typeExpedition']));
+        } elseif ($cde->ddpCdeStatut->id == 3 || $cde->ddpCdeStatut->id == 4) {
+            $cdeid =  $cde->id;
+            $showRefFournisseur = $cde->show_ref_fournisseur;
+            return view('ddp_cde.cde.show', compact('cde',['showRefFournisseur']));
         }
     }
 
@@ -260,6 +271,11 @@ class CdeController extends Controller
         $cde->frais_divers = $request->input('frais_divers') ?? null;
         $cde->frais_divers_texte = $request->input('frais_divers_texte') ?? null;
         $cde->save();
+        foreach ($cde->cdeLignes as $ligne) {
+            $ligne->ddp_cde_statut_id = 2;
+            $ligne->type_expedition_id = $request->input('type_expedition_id');
+            $ligne->save();
+        }
         $pdf = $this->pdf($cde->id);
         $mailtemplate = Mailtemplate::where('nom', 'cde')->first();
         $mailtemplate->sujet = str_replace('{code_cde}', $cde->code, $mailtemplate->sujet);
@@ -372,5 +388,70 @@ class CdeController extends Controller
         $cde->save();
 
         return redirect()->route('cde.show', $cde->id)->with('success', 'L\'email a été envoyé avec succès');
+    }
+
+    public function skipMails($id)
+    {
+        $cde = Cde::findOrFail($id);
+        $cde->ddp_cde_statut_id = 2;
+        $cde->save();
+        return redirect()->route('cde.show', $cde->id);
+    }
+
+    public function getRetours($id) {
+        $cde = Cde::findOrFail($id);
+        $data = $cde->cdeLignes->map(function ($ligne) {
+            return [
+                $ligne->ddpCdeStatut->nom,
+                $ligne->quantite,
+                $ligne->prix_unitaire,
+                $ligne->typeExpedition->short,
+                $ligne->date_livraison_reelle ? Carbon::parse($ligne->date_livraison_reelle)->format('d/m/Y') : null,
+            ];
+        });
+        return $data;
+    }
+    public function saveRetours($id, Request $request) {
+        $cde = Cde::findOrFail($id);
+        $data = array_map('str_getcsv', array_filter(explode("\r\n", $request->data), 'strlen'));
+        $compteur = 0;
+        foreach ($cde->cdeLignes as $ligne) {
+            $ligne->ddp_cde_statut_id = DdpCdeStatut::where('nom', $data[$compteur][0])->first()->id ?? $ligne->ddp_cde_statut_id;
+            $ligne->quantite = $data[$compteur][1];
+            $ligne->prix_unitaire = $data[$compteur][2];
+            $ligne->type_expedition_id = TypeExpedition::where('short', $data[$compteur][3])->first()->id ?? $ligne->type_expedition_id;
+            $ligne->date_livraison_reelle = $data[$compteur][4] ? Carbon::createFromFormat('d/m/Y', $data[$compteur][4]) : null;
+            $ligne->save();
+            $compteur++;
+            $data2[] = $ligne;
+        }
+
+        return $data2;
+    }
+    public function uploadAr($id, Request $request) {
+        $cde = Cde::findOrFail($id);
+        $request->validate([
+            'accuse_reception' => 'required|file|mimes:pdf',
+        ]);
+        $cdeAnnee = explode('-', $cde->code)[1];
+        $pdfFileName = "AR-{$cde->code}.pdf";
+        $pdfPath = storage_path("private/CDE/{$cdeAnnee}/{$pdfFileName}");
+        $pdfPath = $request->file('accuse_reception')->storeAs("CDE/{$cdeAnnee}", $pdfFileName);
+        $cde->accuse_reception = $pdfFileName;
+        $cde->save();
+        return response()->json(['success' => true]);
+    }
+
+    public function terminer($id) {
+        $cde = Cde::findOrFail($id);
+        $cde->ddp_cde_statut_id = 3;
+        $cde->save();
+        return redirect()->route('cde.show', $cde->id);
+    }
+    public function annulerTerminer($id) {
+        $cde = Cde::findOrFail($id);
+        $cde->ddp_cde_statut_id = 2;
+        $cde->save();
+        return redirect()->route('cde.show', $cde->id);
     }
 }
