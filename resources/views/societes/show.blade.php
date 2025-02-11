@@ -210,6 +210,8 @@
                 class="btn dark:bg-gray-900">Ajouter un établissement</a>
             </a>
     </div>
+    @endif
+    </div>
     <script>
         function updateCommentaireSociete(element) {
             const societeId = element.dataset.societeId; // Récupère l'ID de la société
