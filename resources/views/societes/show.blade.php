@@ -116,6 +116,7 @@
                 </div>
             </div>
         </div>
+        @if (isset($etablissement))
         <div class="max-w-xl w-full sm:pr-6 lg:pr-8">
             <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden" id="etablissements">
                 <!-- En-tête Etablissement -->
@@ -200,6 +201,14 @@
                 </div>
             </div>
         </div>
+        @else
+        <div class="max-w-xl w-full sm:pr-6 lg:pr-8">
+            <h1 class="text-3xl font-bold mb-1">
+                Aucun établissement
+            </h1>
+            <a href="{{ route('etablissements.create', ['societe' => $societe->id]) }}"
+                class="btn dark:bg-gray-900">Ajouter un établissement</a>
+            </a>
     </div>
     <script>
         function updateCommentaireSociete(element) {
