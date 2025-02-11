@@ -128,7 +128,7 @@
                         @can('gerer_les_societes')
                             <div class="flex justify-end">
                                 <div>
-                                    <a href="{{ route('etablissements.edit', ['societe' => $societe->id, 'etablissement' => $etablissement->id]) }}"
+                                    <a href="{{ route('etablissements.edit', ['societe' => $societe->id, 'etablissement' => $etablissement->id ?? 0 ]) }}"
                                         class="btn dark:bg-gray-900 ">Modifier</a>
                                 </div>
                             </div>
