@@ -84,10 +84,10 @@ class CdeController extends Controller
     {
         Cde::where('nom', 'undefined')->delete();
         $lastCde = Cde::latest()->first();
-        $code = $lastCde ? $lastCde->code : 'CDE-' . now()->format('y') . '-0000';
+        $code = $lastCde ? $lastCde->code : 'CDE-' . now()->format('yy') . '-0000';
         $code = explode('-', $code);
         $code = $code[1] + 1;
-        $newCode = 'CDE-' . now()->format('y') . '-' . str_pad($code, 4, '0', STR_PAD_LEFT);
+        $newCode = 'CDE-' . now()->format('yy') . '-' . str_pad($code, 4, '0', STR_PAD_LEFT);
         $cde = Cde::create([
             'code' => $newCode,
             'nom' => 'undefined',
