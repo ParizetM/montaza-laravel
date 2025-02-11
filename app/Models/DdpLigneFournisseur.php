@@ -22,11 +22,11 @@ class DdpLigneFournisseur extends Model
 
     public function fournisseur(): BelongsTo
     {
-        return $this->belongsTo(societe::class);
+        return $this->belongsTo(Societe::class);
     }
     public function societe(): BelongsTo
     {
-        return $this->belongsTo(societe::class);
+        return $this->belongsTo(Societe::class);
     }
     public function ddp(): HasOneThrough
     {
