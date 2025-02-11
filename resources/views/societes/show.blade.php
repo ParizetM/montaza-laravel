@@ -209,14 +209,15 @@
         @else
             <div class="max-w-xl w-full sm:pr-6 lg:pr-8">
                 <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden" id="etablissements">
-                <h1 class="text-3xl font-bold mb-1">
-                    Aucun établissement
-                </h1>
-                <a href="{{ route('etablissements.create', ['societe' => $societe->id]) }}"
-                    class="btn dark:bg-gray-900">Ajouter un établissement</a>
-                </a>
+                    <div class=" py-6 px-8 text-gray-800 dark:text-gray-200 flex flex-col gap-4">
+                    <h1 class="text-3xl font-bold mb-1">
+                        Aucun établissement
+                    </h1>
+                    <a href="{{ route('etablissements.create', ['societe' => $societe->id]) }}"
+                        class="btn dark:bg-gray-900">Ajouter un établissement</a>
+                    </a>
+                </div>
             </div>
-        </div>
         @endif
     </div>
     <script>
