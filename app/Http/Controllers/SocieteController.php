@@ -194,7 +194,7 @@ class SocieteController extends Controller
 
 
 
-        return redirect()->route('etablissements.create')->with('success', 'Société créée avec succès');
+        return redirect()->route('etablissements.create',$societe->id)->with('success', 'Société créée avec succès');
     }
 
     /**
