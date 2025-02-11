@@ -228,7 +228,7 @@ class DdpController extends Controller
     {
         Ddp::where('nom', 'undefined')->delete();
         $lastDdp = Ddp::latest()->first();
-        $code = $lastDdp ? $lastDdp->code : 'DDP-' . now()->format('Y') . '-0000';
+        $code = $lastDdp ? $lastDdp->code : 'DDP-' . now()->format('y') . '-0000';
         $code = explode('-', $code);
         $code = $code[1] + 1;
         $newCode = 'DDP-' . now()->format('y') . '-' . str_pad($code, 4, '0', STR_PAD_LEFT);
@@ -760,7 +760,7 @@ class DdpController extends Controller
         $societe_contact = SocieteContact::findOrFail($societe_contact_id);
         $societe = $societe_contact->etablissement->societe;
         $cde = Cde::create([
-            'code' => 'CDE-' . now()->format('Y') . '-' . str_pad(Cde::whereYear('created_at', now()->year)->count() + 1, 4, '0', STR_PAD_LEFT),
+            'code' => 'CDE-' . now()->format('y') . '-' . str_pad(Cde::whereYear('created_at', now()->year)->count() + 1, 4, '0', STR_PAD_LEFT),
             'nom' => 'Commande de ' . $ddp->code.' chez '.$societe->raison_sociale,
             'ddp_cde_statut_id' => 1,
             'ddp_id' => $ddp->id,
