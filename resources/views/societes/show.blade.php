@@ -74,7 +74,8 @@
                                 <x-copiable_text text="{{ $societe->numero_tva }}" />
                             </div>
                             <div>
-                                <strong class="text-gray-800 dark:text-gray-200">{{ __('Condition de paiement :') }}</strong>
+                                <strong
+                                    class="text-gray-800 dark:text-gray-200">{{ __('Condition de paiement :') }}</strong>
                                 <x-copiable_text text="{{ $societe->conditionPaiement->nom }}" />
                             </div>
                         </div>
@@ -117,100 +118,106 @@
             </div>
         </div>
         @if (isset($etablissement))
-        <div class="max-w-xl w-full sm:pr-6 lg:pr-8">
-            <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden" id="etablissements">
-                <!-- En-tête Etablissement -->
-                <div class=" py-6 px-8 text-gray-800 dark:text-gray-200">
-                    <div class="flex justify-between">
+            <div class="max-w-xl w-full sm:pr-6 lg:pr-8">
+                <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden" id="etablissements">
+                    <!-- En-tête Etablissement -->
+                    <div class=" py-6 px-8 text-gray-800 dark:text-gray-200">
+                        <div class="flex justify-between">
 
-                        <h1 class="text-3xl font-bold mb-1">
-                            {{ __('Établissements') }}
-                        </h1>
-                        @can('gerer_les_societes')
-                            <div class="flex justify-end">
-                                <div>
-                                    <a href="{{ route('etablissements.edit', ['societe' => $societe->id, 'etablissement' => $etablissement->id ?? 0 ]) }}"
-                                        class="btn dark:bg-gray-900 ">Modifier</a>
+                            <h1 class="text-3xl font-bold mb-1">
+                                {{ __('Établissements') }}
+                            </h1>
+                            @can('gerer_les_societes')
+                                <div class="flex justify-end">
+                                    <div>
+                                        <a href="{{ route('etablissements.edit', ['societe' => $societe->id, 'etablissement' => $etablissement->id ?? 0]) }}"
+                                            class="btn dark:bg-gray-900 ">Modifier</a>
+                                    </div>
                                 </div>
-                            </div>
-                        @endcan
-                    </div>
-                    <div class="flex mt-4">
-                        <select name="etablissement_id" id="etablissement_id" class="select-left w-full"
-                            onchange="changeEtablissement(this)">
-                            @foreach ($societe->etablissements as $etablissement_select)
-                                <option value="{{ $etablissement_select->id }}"
-                                    {{ $etablissement_select->id == $etablissement->id ? 'selected' : '' }}>
-                                    {{ $etablissement_select->nom }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <a href="{{ route('etablissements.create', ['societe' => $societe->id]) }}"
-                            class="btn-select-right dark:bg-gray-900">+</a>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="mx-8 flex justify-between border-b-2">
-                    <h1 class="font-bold text-2xl text-gray-800 dark:text-gray-200 leading-tight">
-                        {{ $etablissement->nom }}
-                    </h1>
-                    <div class="flex gap-2">
-                        <button type="button" class="btn mb-2 dark:bg-gray-900" title="Contacts"
-                            x-data=""
-                            x-on:click.prevent="$dispatch('open-modal', 'contacts-modal-{{ $etablissement->id }}')">
-                            <x-icon :size="1" type="contact" class="icons-no_hover " />
-                        </button>
-                        <button type="button" class="btn mb-2 dark:bg-gray-900" title="Ajouter un contact"
-                            x-data=""
-                            x-on:click.prevent="$dispatch('open-modal', 'etablissement-quick-contact')">
-                            <x-icons.new-contact class="icons-no_hover" />
-                        </button>
-                    </div>
-                    @php
-                        $contacts = $etablissement->societeContacts;
-                    @endphp
-                    <x-modals.contacts name="contacts-modal-{{ $etablissement->id }}" :contacts="$contacts" />
-                    <x-modal name="etablissement-quick-contact" focusable maxWidth="5xl">
-
-                        @include('societes.contacts.quick-create', ['societes' => $societes,'selected_societe' => $societe, 'selected_etablissement' => $etablissement])
-                    </x-modal>
-                </div>
-                <!-- Contenu Principal -->
-                <div class="px-8 pb-6 mt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                    <!-- Informations Générales -->
-                    <div class="col-span-3 md:col-span-3">
-                        <div class="flex flex-col gap-3">
-                            <x-copiable_text titre="Adresse : " text="{{ $etablissement->adresse }}" />
-                            <x-copiable_text titre="Code postal : " text="{{ $etablissement->code_postal }}" />
-                            <x-copiable_text titre="Ville : " text="{{ $etablissement->ville }}" />
-                            <x-copiable_text titre="Région : " text="{{ $etablissement->region }}" />
-                            <x-copiable_text titre="Pays : " text="{{ $etablissement->pays->nom }}" />
-                            <x-copiable_text titre="Siret : " text="{{ $etablissement->siret }}" />
+                            @endcan
+                        </div>
+                        <div class="flex mt-4">
+                            <select name="etablissement_id" id="etablissement_id" class="select-left w-full"
+                                onchange="changeEtablissement(this)">
+                                @foreach ($societe->etablissements as $etablissement_select)
+                                    <option value="{{ $etablissement_select->id }}"
+                                        {{ $etablissement_select->id == $etablissement->id ? 'selected' : '' }}>
+                                        {{ $etablissement_select->nom }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <a href="{{ route('etablissements.create', ['societe' => $societe->id]) }}"
+                                class="btn-select-right dark:bg-gray-900">+</a>
+                            </a>
                         </div>
                     </div>
-                    <!-- Commentaire -->
-                    <div class="col-span-1 md:col-span-3">
-                        <h3 class="text-xl font-semibold mb-3 text-gray-800 dark:text-gray-200 mt-1">
-                            {{ __('Commentaire') }}</h3>
-                        <textarea rows="3" id="commentaire" name="commentaire"
-                            class=" block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-900 dark:text-gray-100"
-                            data-etablissement-id="{{ $etablissement->id }}" onblur="updateCommentaireEtablissement(this)">{{ $etablissement->commentaire ? $etablissement->commentaire->contenu : '' }}</textarea>
 
+                    <div class="mx-8 flex justify-between border-b-2">
+                        <h1 class="font-bold text-2xl text-gray-800 dark:text-gray-200 leading-tight">
+                            {{ $etablissement->nom }}
+                        </h1>
+                        <div class="flex gap-2">
+                            <button type="button" class="btn mb-2 dark:bg-gray-900" title="Contacts"
+                                x-data=""
+                                x-on:click.prevent="$dispatch('open-modal', 'contacts-modal-{{ $etablissement->id }}')">
+                                <x-icon :size="1" type="contact" class="icons-no_hover " />
+                            </button>
+                            <button type="button" class="btn mb-2 dark:bg-gray-900" title="Ajouter un contact"
+                                x-data=""
+                                x-on:click.prevent="$dispatch('open-modal', 'etablissement-quick-contact')">
+                                <x-icons.new-contact class="icons-no_hover" />
+                            </button>
+                        </div>
+                        @php
+                            $contacts = $etablissement->societeContacts;
+                        @endphp
+                        <x-modals.contacts name="contacts-modal-{{ $etablissement->id }}" :contacts="$contacts" />
+                        <x-modal name="etablissement-quick-contact" focusable maxWidth="5xl">
+
+                            @include('societes.contacts.quick-create', [
+                                'societes' => $societes,
+                                'selected_societe' => $societe,
+                                'selected_etablissement' => $etablissement,
+                            ])
+                        </x-modal>
+                    </div>
+                    <!-- Contenu Principal -->
+                    <div class="px-8 pb-6 mt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                        <!-- Informations Générales -->
+                        <div class="col-span-3 md:col-span-3">
+                            <div class="flex flex-col gap-3">
+                                <x-copiable_text titre="Adresse : " text="{{ $etablissement->adresse }}" />
+                                <x-copiable_text titre="Code postal : " text="{{ $etablissement->code_postal }}" />
+                                <x-copiable_text titre="Ville : " text="{{ $etablissement->ville }}" />
+                                <x-copiable_text titre="Région : " text="{{ $etablissement->region }}" />
+                                <x-copiable_text titre="Pays : " text="{{ $etablissement->pays->nom }}" />
+                                <x-copiable_text titre="Siret : " text="{{ $etablissement->siret }}" />
+                            </div>
+                        </div>
+                        <!-- Commentaire -->
+                        <div class="col-span-1 md:col-span-3">
+                            <h3 class="text-xl font-semibold mb-3 text-gray-800 dark:text-gray-200 mt-1">
+                                {{ __('Commentaire') }}</h3>
+                            <textarea rows="3" id="commentaire" name="commentaire"
+                                class=" block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-900 dark:text-gray-100"
+                                data-etablissement-id="{{ $etablissement->id }}" onblur="updateCommentaireEtablissement(this)">{{ $etablissement->commentaire ? $etablissement->commentaire->contenu : '' }}</textarea>
+
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
         @else
-        <div class="max-w-xl w-full sm:pr-6 lg:pr-8">
-            <h1 class="text-3xl font-bold mb-1">
-                Aucun établissement
-            </h1>
-            <a href="{{ route('etablissements.create', ['societe' => $societe->id]) }}"
-                class="btn dark:bg-gray-900">Ajouter un établissement</a>
-            </a>
-    </div>
-    @endif
+            <div class="max-w-xl w-full sm:pr-6 lg:pr-8">
+                <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden" id="etablissements">
+                <h1 class="text-3xl font-bold mb-1">
+                    Aucun établissement
+                </h1>
+                <a href="{{ route('etablissements.create', ['societe' => $societe->id]) }}"
+                    class="btn dark:bg-gray-900">Ajouter un établissement</a>
+                </a>
+            </div>
+        </div>
+        @endif
     </div>
     <script>
         function updateCommentaireSociete(element) {
