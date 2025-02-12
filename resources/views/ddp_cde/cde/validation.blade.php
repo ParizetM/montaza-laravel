@@ -256,7 +256,6 @@
 
                                     <table class="min-w-0 float-right text-right">
                                         <tbody>
-                                            @if ($cde->frais_de_port || $cde->frais_divers)
                                                 <tr class="{{ $cde->frais_de_port || $cde->frais_divers ? '' : 'hidden' }}">
                                                     <td class="pr-4 text-gray-500">
                                                         Total HT :
@@ -265,8 +264,6 @@
                                                         {{ formatNumberArgent($cde->total_ht) }}
                                                     </td>
                                                 </tr>
-                                            @endif
-                                            @if ($cde->frais_de_port)
                                             <tr class="{{ $cde->frais_de_port ? '' : 'hidden' }}">
                                                 <td class="pr-4 text-gray-500">
                                                     Frais de port :
@@ -275,8 +272,6 @@
                                                     {{ formatNumberArgent($cde->frais_de_port) }}
                                                 </td>
                                             </tr>
-                                            @endif
-                                            @if ($cde->frais_divers)
                                             <tr class="{{ $cde->frais_divers ? '' : 'hidden' }}">
                                                 <td class="pr-4 text-gray-500">
                                                     Frais divers :
@@ -285,7 +280,6 @@
                                                     {{ formatNumberArgent($cde->frais_divers) }}
                                                 </td>
                                             </tr>
-                                            @endif
                                             <tr>
                                                 <td class="pr-4">
                                                     Total HT :
