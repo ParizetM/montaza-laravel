@@ -257,19 +257,17 @@
                                     <table class="min-w-0 float-right text-right">
                                         <tbody>
                                             @if ($cde->frais_de_port || $cde->frais_divers)
-                                                <tr>
+                                                <tr class="{{ $cde->frais_de_port || $cde->frais_divers ? '' : 'hidden' }}">
                                                     <td class="pr-4 text-gray-500">
                                                         Total HT :
                                                     </td>
-                                                    <td id="total_ht">
+                                                    <td id="total_ht" class="text-gray-500">
                                                         {{ formatNumberArgent($cde->total_ht) }}
                                                     </td>
                                                 </tr>
-                                            @else
-
                                             @endif
                                             @if ($cde->frais_de_port)
-                                            <tr>
+                                            <tr class="{{ $cde->frais_de_port ? '' : 'hidden' }}">
                                                 <td class="pr-4 text-gray-500">
                                                     Frais de port :
                                                 </td>
@@ -279,7 +277,7 @@
                                             </tr>
                                             @endif
                                             @if ($cde->frais_divers)
-                                            <tr>
+                                            <tr class="{{ $cde->frais_divers ? '' : 'hidden' }}">
                                                 <td class="pr-4 text-gray-500">
                                                     Frais divers :
                                                 </td>
