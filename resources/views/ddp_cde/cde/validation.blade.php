@@ -260,7 +260,7 @@
                                                     <td class="pr-4 text-gray-500">
                                                         Total HT :
                                                     </td>
-                                                    <td id="total_ht" class="text-gray-500">
+                                                    <td id="total_ht_gray" class="text-gray-500">
                                                         {{ formatNumberArgent($cde->total_ht) }}
                                                     </td>
                                                 </tr>
@@ -451,11 +451,20 @@
             const tvaInput = document.querySelector('input[name="tva"]');
             const frais_de_portInput = document.querySelector('input[name="frais_de_port"]');
             const frais_diversInput = document.querySelector('input[name="frais_divers"]');
+            const total_ht_grayElement = document.getElementById('total_ht_gray');
+            const frais_de_portElement = document.getElementById('frais_de_port');
+            const frais_diversElement = document.getElementById('frais_divers');
+            const total_ht_gray = @json($cde->total_ht);
             const totalHt = @json($cde->total_ht + $cde->frais_de_port + $cde->frais_divers);
             const tva = parseFloat(tvaInput.value);
             const tvaAmount = (totalHt * tva / 100);
             const totalTtc = (parseFloat(totalHt) + parseFloat(tvaAmount));
+            const frais_de_port = parseFloat(frais_de_portInput.value);
+            const frais_divers = parseFloat(frais_diversInput.value);
 
+            frais_de_portElement.textContent = frais_de_port.toFixed(2) + ' €';
+            frais_diversElement.textContent = frais_divers.toFixed(2) + ' €';
+            total_ht_grayElement.textContent = total_ht_gray.toFixed(2) + ' €';
             tvatext.textContent = 'TVA (' + tva + '%) :';
             tvaElement.textContent = tvaAmount.toFixed(2) + ' €';
             totalHtElement.textContent = totalHt.toFixed(2) + ' €';
