@@ -256,12 +256,32 @@
 
                                     <table class="min-w-0 float-right text-right">
                                         <tbody>
+                                            @if ($cde->frais_de_port)
+                                            <tr>
+                                                <td class="pr-4 text-gray-500">
+                                                    Frais de port :
+                                                </td>
+                                                <td id="frais_de_port" class="text-gray-500">
+                                                    {{ formatNumberArgent($cde->frais_de_port) }}
+                                                </td>
+                                            </tr>
+                                            @endif
+                                            @if ($cde->frais_divers)
+                                            <tr>
+                                                <td class="pr-4 text-gray-500">
+                                                    Frais divers :
+                                                </td>
+                                                <td id="frais_divers" class="text-gray-500">
+                                                    {{ formatNumberArgent($cde->frais_divers) }}
+                                                </td>
+                                            </tr>
+                                            @endif
                                             <tr>
                                                 <td class="pr-4">
                                                     Total HT :
                                                 </td>
                                                 <td id="total_ht">
-                                                    {{ formatNumberArgent($cde->total_ht) }}
+                                                    {{ formatNumberArgent($cde->total_ht+$cde->frais_de_port+$cde->frais_divers) }}
                                                 </td>
                                             </tr>
                                             <tr>
@@ -425,6 +445,8 @@
             const tvaElement = document.getElementById('total_tva_plus');
             const totalTtcElement = document.getElementById('total_ttc');
             const tvaInput = document.querySelector('input[name="tva"]');
+            const frais_de_portInput = document.querySelector('input[name="frais_de_port"]');
+            const frais_diversInput = document.querySelector('input[name="frais_divers"]');
             const totalHt = @json($cde->total_ht + $cde->frais_de_port + $cde->frais_divers);
             const tva = parseFloat(tvaInput.value);
             const tvaAmount = (totalHt * tva / 100);
