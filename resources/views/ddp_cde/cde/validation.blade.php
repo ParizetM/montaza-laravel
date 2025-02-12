@@ -461,7 +461,16 @@
             const tva = parseFloat(tvaInput.value) || 0;
             const tvaAmount = (totalHt * tva / 100);
             const totalTtc = totalHt + tvaAmount;
-
+            if (frais_de_port > 0) {
+                frais_de_portElement.parentElement.classList.remove('hidden');
+            } else {
+                frais_de_portElement.parentElement.classList.add('hidden');
+            }
+            if (frais_divers > 0) {
+                frais_diversElement.parentElement.classList.remove('hidden');
+            } else {
+                frais_diversElement.parentElement.classList.add('hidden');
+            }
             frais_de_portElement.textContent = frais_de_port.toFixed(2) + ' €';
             frais_diversElement.textContent = frais_divers.toFixed(2) + ' €';
             total_ht_grayElement.textContent = total_ht_gray.toFixed(2) + ' €';
