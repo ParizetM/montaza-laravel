@@ -455,7 +455,7 @@
             const frais_de_portElement = document.getElementById('frais_de_port');
             const frais_diversElement = document.getElementById('frais_divers');
             const total_ht_gray = @json($cde->total_ht);
-            const totalHt = @json($cde->total_ht + $cde->frais_de_port + $cde->frais_divers);
+            const totalHt = @json($cde->total_ht) + parseFloat(frais_de_portInput.value) + parseFloat(frais_diversInput.value);
             const tva = parseFloat(tvaInput.value);
             const tvaAmount = (totalHt * tva / 100);
             const totalTtc = (parseFloat(totalHt) + parseFloat(tvaAmount));
