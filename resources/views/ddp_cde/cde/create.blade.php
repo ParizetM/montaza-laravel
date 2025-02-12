@@ -827,6 +827,7 @@
                 });
                 saveChanges();
             });
+            saveChanges();
         });
         // Add CSS for euro symbol
     </script>
