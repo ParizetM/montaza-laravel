@@ -256,6 +256,18 @@
 
                                     <table class="min-w-0 float-right text-right">
                                         <tbody>
+                                            @if ($cde->frais_de_port || $cde->frais_divers)
+                                                <tr>
+                                                    <td class="pr-4 text-gray-500">
+                                                        Total HT :
+                                                    </td>
+                                                    <td id="total_ht">
+                                                        {{ formatNumberArgent($cde->total_ht) }}
+                                                    </td>
+                                                </tr>
+                                            @else
+
+                                            @endif
                                             @if ($cde->frais_de_port)
                                             <tr>
                                                 <td class="pr-4 text-gray-500">
