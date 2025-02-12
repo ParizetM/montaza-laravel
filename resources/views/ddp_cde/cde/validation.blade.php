@@ -454,13 +454,13 @@
             const total_ht_grayElement = document.getElementById('total_ht_gray');
             const frais_de_portElement = document.getElementById('frais_de_port');
             const frais_diversElement = document.getElementById('frais_divers');
-            const total_ht_gray = parseFloat(@json($cde->total_ht));
-            const totalHt = parseFloat(@json($cde->total_ht) + parseFloat(frais_de_portInput.value) + parseFloat(frais_diversInput.value));
-            const tva = parseFloat(tvaInput.value);
+            const total_ht_gray = parseFloat(@json($cde->total_ht)) || 0;
+            const frais_de_port = parseFloat(frais_de_portInput.value) || 0;
+            const frais_divers = parseFloat(frais_diversInput.value) || 0;
+            const totalHt = parseFloat(@json($cde->total_ht)) + frais_de_port + frais_divers;
+            const tva = parseFloat(tvaInput.value) || 0;
             const tvaAmount = (totalHt * tva / 100);
-            const totalTtc = (parseFloat(totalHt) + parseFloat(tvaAmount));
-            const frais_de_port = parseFloat(frais_de_portInput.value);
-            const frais_divers = parseFloat(frais_diversInput.value);
+            const totalTtc = totalHt + tvaAmount;
 
             frais_de_portElement.textContent = frais_de_port.toFixed(2) + ' €';
             frais_diversElement.textContent = frais_divers.toFixed(2) + ' €';
