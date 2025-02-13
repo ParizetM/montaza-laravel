@@ -16,6 +16,7 @@ class MatiereResource extends JsonResource
             'id' => $this->id,
             'refInterne' => $this->ref_interne,
             'sousFamille' => $this->sousFamille->nom ?? null,
+            'quantite' => $this->quantite ?? null,
             'designation' => $this->designation,
             'standard' => $this->standardVersion->standard->nom ?? null,
             'standardVersion' => $this->standardVersion->version ?? null,

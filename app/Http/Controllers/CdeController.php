@@ -84,10 +84,10 @@ class CdeController extends Controller
     {
         Cde::where('nom', 'undefined')->delete();
         $lastCde = Cde::latest()->first();
-        $code = $lastCde ? $lastCde->code : 'CDE-' . now()->format('yy') . '-0000';
+        $code = $lastCde ? $lastCde->code : 'CDE-' . now()->format('y') . '-0000';
         $code = explode('-', $code);
         $code = $code[1] + 1;
-        $newCode = 'CDE-' . now()->format('yy') . '-' . str_pad($code, 4, '0', STR_PAD_LEFT);
+        $newCode = 'CDE-' . now()->format('y') . '-' . str_pad($code, 4, '0', STR_PAD_LEFT);
         $cde = Cde::create([
             'code' => $newCode,
             'nom' => 'undefined',
@@ -446,6 +446,15 @@ class CdeController extends Controller
         $cde = Cde::findOrFail($id);
         $cde->ddp_cde_statut_id = 3;
         $cde->save();
+        foreach ($cde->cdeLignes as $ligne) {
+            if ($ligne->date_livraison_reelle && $ligne->ddp_cde_statut_id != 4) {
+            $matiere = $ligne->matiere;
+            $matiereController = new MatiereController();
+            $matiereController->mouvement($matiere->id, $ligne->quantite, true);
+            $matiere->unite_id = $ligne->unite_id;
+            $matiere->save();
+            }
+        }
         return redirect()->route('cde.show', $cde->id);
     }
     public function annulerTerminer($id) {

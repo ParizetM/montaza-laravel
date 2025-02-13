@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\MatiereResource;
 use App\Http\Resources\MatiereResourceWithPrice;
+use App\MatiereMouvement;
 use App\Models\Famille;
 use App\Models\Matiere;
 use App\Models\Societe;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
+use Ramsey\Uuid\Type\Decimal;
 
 class MatiereController extends Controller
 {
@@ -60,7 +62,8 @@ class MatiereController extends Controller
                         ->orWhereHas('societe', function ($subQuery) use ($search) {
                             $subQuery->where('raison_sociale', 'ILIKE', "%{$search}%");
                         })
-                        ->orWhere('ref_interne', 'ILIKE', "%{$search}%");
+                        ->orWhere('ref_interne', 'ILIKE', "%{$search}%")
+                        ->orWhere('quantite', 'ILIKE', "%{$search}%");
                 });
             }
 
@@ -182,10 +185,18 @@ class MatiereController extends Controller
             ->orderBy('date_dernier_prix', 'desc')
             ->get()
             ->unique('pivot.societe_id');
-
+        $dates = $matiere->mouvements->isEmpty() ? null : $matiere->mouvements->pluck('created_at');
+        $quantites = $matiere->mouvements->pluck('pivot.quantite');
+        $quantiteActuelle = 0;
+        $quantites = $matiere->mouvements->sortBy('created_at')->map(function ($mouvement) use (&$quantiteActuelle) {
+            $quantiteActuelle += $mouvement->quantite * ($mouvement->type_mouvement ? 1 : -1);
+            return $quantiteActuelle;
+        });
         return view('matieres.show', [
             'matiere' => $matiere,
             'fournisseurs_dernier_prix' => $fournisseurs_dernier_prix,
+            'dates' => $dates,
+            'quantites' => $quantites,
         ]);
     }
     public function showPrix($matiere_id, $societe_id): View
@@ -205,5 +216,32 @@ class MatiereController extends Controller
             'dates' => $dates,
             'prix' => $prix,
         ]);
+    }
+
+    public function mouvement($matiere_id, float $quantite, bool $type) {
+        $matiere = Matiere::findOrFail($matiere_id);
+        if ($matiere->quantite + $quantite * ($type ? 1 : -1) < 0) {
+            return false;
+        }
+        $mouvement = new MatiereMouvement([
+            'quantite' => $quantite,
+            'type_mouvement' => $type,
+        ]);
+        $matiere->mouvements()->save($mouvement);
+        $matiere->quantite += $quantite * ($type ? 1 : -1);
+        $matiere->save();
+        return true;
+    }
+    public function retirerMouvement($matiere_id,Request $request) {
+        $matiere = Matiere::findOrFail($matiere_id);
+        $request->validate([
+            'quantite' => 'required|numeric',
+            'type' => 'required|boolean',
+        ]);
+        $test = $this->mouvement($matiere_id, $request->input('quantite'), type: $request->input('type'));
+        if (!$test) {
+            return back()->with('error', "Impossible de retirer {$request->input('quantite')} {$matiere->unite->short} à {$matiere->designation}");
+        }
+        return back()->with('success', "{$request->input('quantite')} {$matiere->unite->short} {$matiere->designation} a été retiré avec succès");
     }
 }

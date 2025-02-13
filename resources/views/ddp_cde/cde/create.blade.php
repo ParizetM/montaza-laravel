@@ -480,12 +480,14 @@
                                 '');
                             tr.setAttribute('data-matiere-designation', matiere.designation || '');
                             tr.setAttribute('data-prix', matiere.lastPrice || '');
-                            tr.setAttribute('data-matiere-unite', matiere.lastPriceUnite || matiere.Unite ||'');
+                            tr.setAttribute('data-matiere-unite', matiere.lastPriceUnite || matiere.Unite ||
+                            '');
                             tr.addEventListener('click', addMatiere);
                             if (matiere.lastPrice && matiere.lastPriceUnite) {
                                 tr.innerHTML = `
                                     <td class="text-left px-4">${matiere.refInterne || '-'}</td>
                                     <td class="text-left px-4">${matiere.designation || '-'}</td>
+                                    <td class="text-left px-4">${matiere.quantite || '-'}</td>
                                     <td class="text-right px-4 font-bold"> ${matiere.lastPrice + ' €/' + matiere.lastPriceUnite} </td>
                                     <td class="text-left px-4">${matiere.lastPriceDate || '-'}</td>
                                     <td class="text-right px-4">${matiere.sousFamille || '-'}</td>
@@ -494,6 +496,7 @@
                                 tr.innerHTML = `
                                     <td class="text-left px-4">${matiere.refInterne || '-'}</td>
                                     <td class="text-left px-4">${matiere.designation || '-'}</td>
+                                    <td class="text-left px-4">${matiere.quantite || '-'}</td>
                                     <td class="text-center pr-6" colspan="2"> Aucun prix </td>
                                     <td class="text-right px-4">${matiere.sousFamille || '-'}</td>
                                         `;
@@ -599,13 +602,13 @@
                 onchange="saveChanges()"
             >
                 ${unites.map(unite => `
-                                                <option
-                                                    value="${unite.id}" title="${unite.full}"
-                                                    ${unite.short === matiereUnite ? 'selected' : ''}
-                                                >
-                                                    ${unite.short}
-                                                </option>
-                                            `).join('')}
+                                                    <option
+                                                        value="${unite.id}" title="${unite.full}"
+                                                        ${unite.short === matiereUnite ? 'selected' : ''}
+                                                    >
+                                                        ${unite.short}
+                                                    </option>
+                                                `).join('')}
             </select>
 
             <!-- Champ de date -->
