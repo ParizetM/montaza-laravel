@@ -187,11 +187,18 @@ class MatiereController extends Controller
             ->unique('pivot.societe_id');
         $dates = $matiere->mouvements->isEmpty() ? null : $matiere->mouvements->pluck('created_at');
         $quantites = $matiere->mouvements->pluck('pivot.quantite');
-        $quantiteActuelle = 0;
-        $quantites = $matiere->mouvements->sortBy('created_at')->map(function ($mouvement) use (&$quantiteActuelle) {
-            $quantiteActuelle += $mouvement->quantite * ($mouvement->type_mouvement ? 1 : -1);
+
+        $quantitemouvement = 0;
+        foreach ($matiere->mouvements as $mouvement) {
+            $quantitemouvement += $mouvement->quantite  * ($mouvement->type_mouvement ? 1 : -1);
+        }
+        $quantiteActuelle = $matiere->quantite - $quantitemouvement;
+        $quantites = $matiere->mouvements->sortBy('created_at')->map(function ($mouvement) use (&$quantiteActuelle,$matiere) {
+
+            $quantiteActuelle += $mouvement->quantite  * ($mouvement->type_mouvement ? 1 : -1);
             return $quantiteActuelle;
         });
+
         return view('matieres.show', [
             'matiere' => $matiere,
             'fournisseurs_dernier_prix' => $fournisseurs_dernier_prix,
