@@ -121,6 +121,11 @@
                 </div>
             </form>
         </div>
+        @if ($dates == null)
+            <div class="mt-6">
+                <p class="text-red-500">Aucun mouvement pour cette matière</p>
+            </div>
+            @else
         <div>
             <div>
                 <x-input-label for="startDate" class="block">Date de début :</x-input-label>
@@ -203,7 +208,8 @@
                 'change', updateChartLimits);
         });
     </script>
-
+@endif
+    </div>
 
 
 </x-app-layout>
