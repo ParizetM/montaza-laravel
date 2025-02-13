@@ -84,7 +84,6 @@
                         @foreach ($matiere->mouvements as $mouvement)
                             <tr class="hover:bg-gray-100 hover:dark:bg-gray-700 cursor-pointer">
                                 <td class="border px-4 py-2 whitespace-nowrap">
-                                    <span>{{ $mouvement->type_mouvement }}</span>
                                     @if($mouvement->type_mouvement == 0)
 
                                         <span class="text-red-500">- {{ $mouvement->quantite }}</span>
