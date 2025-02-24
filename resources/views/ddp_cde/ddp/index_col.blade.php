@@ -62,6 +62,13 @@
                     <!-- Lien d'action -->
                 </tr>
             @endforeach
+            @if ($ddps->count() == 0)
+                <tr>
+                    <td colspan="6" class="text-center py-8">
+                        Aucune demande de prix en cours
+                    </td>
+                </tr>
+            @endif
             <tr>
                 <td colspan="6" class="">
                     <a href="{{ route('ddp.create') }}" class="btn-select-square rounded-b-md text-center">Créer une demande de prix</a>

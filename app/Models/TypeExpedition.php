@@ -9,4 +9,6 @@ class TypeExpedition extends Model
 {
     /** @use HasFactory<\Database\Factories\TypeExpeditionFactory> */
     use HasFactory;
+
+    protected $fillable = ['nom','short'];
 }

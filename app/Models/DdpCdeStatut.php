@@ -10,5 +10,5 @@ class DdpCdeStatut extends Model
     /** @use HasFactory<\Database\Factories\DdpCdeStatutFactory> */
     use HasFactory;
 
-    protected $fillable = ['nom'];
+    protected $fillable = ['nom', 'couleur', 'couleur_texte'];
 }

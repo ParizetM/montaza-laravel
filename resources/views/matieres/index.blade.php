@@ -192,6 +192,12 @@
         function updateTable(matieres) {
             const tbody = document.querySelector('tbody');
             tbody.innerHTML = ''; // Réinitialise le tableau
+            if (matieres.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = '<td class="text-center py-3 px-4" colspan="100">Aucun résultat</td>';
+                tbody.appendChild(row);
+                return;
+            }
             matieres.forEach(matiere => {
                 const row = document.createElement('tr');
                 row.innerHTML = `

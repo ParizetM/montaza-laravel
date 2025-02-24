@@ -64,6 +64,13 @@
             <!-- Lien d'action -->
             </tr>
             @endforeach
+            @if ($cdes->count() == 0)
+                <tr>
+                    <td colspan="6" class="text-center py-8">
+                        Aucune commande en cours
+                    </td>
+                </tr>
+            @endif
             <tr>
                 <td colspan="6" class="">
                     <a href="{{ route('cde.create') }}" class="btn-select-square rounded-b-md text-center">Créer une
