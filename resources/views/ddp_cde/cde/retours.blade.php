@@ -15,7 +15,7 @@
             <a href="{{ route('cde.pdfs.download', $cde) }}" class="btn">Télécharger tous les PDF</a>
         </div>
     </x-slot>
-    <div class="max-w-7xl py-4 mx-auto sm:px-4 lg:px-6">
+    <div class="max-w-8xl py-4 mx-auto sm:px-4 lg:px-6">
         <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-6 rounded-md shadow-md" id="retour-container">
             <div class="flex justify-between items-center mb-6">
                 <div>

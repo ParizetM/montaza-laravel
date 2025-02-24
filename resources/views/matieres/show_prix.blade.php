@@ -40,11 +40,18 @@
                     {{ $fournisseur->raison_sociale }}</h1>
             </div>
             <div class="block overflow-auto">
-
-                <div class="mb-6 chart-container">
-                    <canvas id="myChart" width="400" height="100"></canvas>
-                </div>
-
+                @if ($fournisseurs_prix->count() == 0)
+                    <p class="text-center">Aucun prix n'a été enregistré pour cette matière et ce fournisseur pour afficher un graphique.</p>
+                @endif
+                @if ($fournisseurs_prix->count() == 1)
+                    <p class="text-center">Il faut plus d'un prix pour cette matière et ce fournisseur pour afficher un graphique.</p>
+                @endif
+                @if ($fournisseurs_prix->count() > 1)
+                    <p class="text-center">Les prix sont affichés par ordre chronologique.</p>
+                    <div class="mb-6 chart-container">
+                        <canvas id="myChart" width="400" height="100"></canvas>
+                    </div>
+                @endif
                 <table class="mt-6 min-w-0">
                     <thead>
                         <tr>

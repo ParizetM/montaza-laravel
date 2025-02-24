@@ -22,7 +22,7 @@ class XSSProtection
         // Parcours des champs pour nettoyer les valeurs
         array_walk_recursive($input, function (&$value) {
             if (is_string($value)) {
-                $value = str_replace(['<', '>', ';', '(', ')', '--'], 'CARACTERE_NON_AUTORISE', $value);
+                $value = str_replace(['<', '>', ';', '--'], 'CARACTERE_NON_AUTORISE', $value);
                 $value = str_replace('\'','\'', $value);
             }
         });

@@ -65,6 +65,9 @@ return new class extends Migration
             $table->date('date_livraison_reelle')->nullable();
             $table->timestamps();
         });
+        Schema::table('societe_matiere', function (Blueprint $table) {
+            $table->foreignId('cde_ligne_fournisseur_id')->nullable()->constrained('cde_lignes')->onDelete('cascade');
+        });
     }
 
     /**
@@ -72,6 +75,9 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('societe_matiere', function (Blueprint $table) {
+            $table->dropForeign(['cde_ligne_fournisseur_id']);
+        });
         Schema::dropIfExists('cde_lignes');
         Schema::dropIfExists('cdes');
         Schema::dropIfExists('type_expeditions');

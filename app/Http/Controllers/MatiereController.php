@@ -59,9 +59,7 @@ class MatiereController extends Controller
                         ->orWhereHas('sousFamille', function ($subQuery) use ($search) {
                             $subQuery->where('nom', 'ILIKE', "%{$search}%");
                         })
-                        ->orWhereHas('societe', function ($subQuery) use ($search) {
-                            $subQuery->where('raison_sociale', 'ILIKE', "%{$search}%");
-                        })
+
                         ->orWhere('ref_interne', 'ILIKE', "%{$search}%")
                         ->orWhere('quantite', 'ILIKE', "%{$search}%");
                 });
@@ -116,9 +114,6 @@ class MatiereController extends Controller
                 $q->where('designation', 'ILIKE', "%{$search}%")
                     ->orWhereHas('sousFamille', function ($subQuery) use ($search) {
                         $subQuery->where('nom', 'ILIKE', "%{$search}%");
-                    })
-                    ->orWhereHas('societe', function ($subQuery) use ($search) {
-                        $subQuery->where('raison_sociale', 'ILIKE', "%{$search}%");
                     })
                     ->orWhere('ref_interne', 'ILIKE', "%{$search}%");
             });

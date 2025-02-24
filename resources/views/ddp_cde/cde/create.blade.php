@@ -160,10 +160,18 @@
                         <div class="min-h-96 overflow-x-auto bg-gray-100 dark:bg-gray-900 rounded">
                             <table>
                                 <thead>
-                                    <th colspan="100" class="border-r-4 border-gray-50 dark:border-gray-800">
-                                        Matières
-                                        sélectionnées</th>
-
+                                    <tr>
+                                        <th colspan="100" class="border-r-4 border-gray-50 dark:border-gray-800">
+                                            Matières
+                                            sélectionnées</th>
+                                    </tr>
+                                    <tr>
+                                        <th >Réference</th>
+                                        <th >Désignation</th>
+                                        <th ><div class="float-left">Quantité</div><div class="float-left ml-4">Unité</div><div class="float-right">Date de livraison</div></th>
+                                        <th >Prix unitaire</th>
+                                        <th class="border-r-4 border-gray-50 dark:border-gray-800"></th>
+                                    </tr>
                                 </thead>
                                 <tbody id="matiere-choisi-table">
                                     @if ($cde && $cde->cdeLignes->count() > 0)
@@ -481,14 +489,14 @@
                             tr.setAttribute('data-matiere-designation', matiere.designation || '');
                             tr.setAttribute('data-prix', matiere.lastPrice || '');
                             tr.setAttribute('data-matiere-unite', matiere.lastPriceUnite || matiere.Unite ||
-                            '');
+                                '');
                             tr.addEventListener('click', addMatiere);
                             if (matiere.lastPrice && matiere.lastPriceUnite) {
                                 tr.innerHTML = `
                                     <td class="text-left px-4">${matiere.refInterne || '-'}</td>
                                     <td class="text-left px-4">${matiere.designation || '-'}</td>
                                     <td class="text-left px-4">${matiere.quantite || '-'}</td>
-                                    <td class="text-right px-4 font-bold"> ${matiere.lastPrice + ' €/' + matiere.lastPriceUnite} </td>
+                                    <td class="text-right px-4 font-bold whitespace-nowrap"> ${matiere.lastPrice + ' €/' + matiere.lastPriceUnite} </td>
                                     <td class="text-left px-4">${matiere.lastPriceDate || '-'}</td>
                                     <td class="text-right px-4">${matiere.sousFamille || '-'}</td>
                                         `;
@@ -496,7 +504,7 @@
                                 tr.innerHTML = `
                                     <td class="text-left px-4">${matiere.refInterne || '-'}</td>
                                     <td class="text-left px-4">${matiere.designation || '-'}</td>
-                                    <td class="text-left px-4">${matiere.quantite || '-'}</td>
+                                    <td class="text-left px-4">${matiere.quantite || '0'}</td>
                                     <td class="text-center pr-6" colspan="2"> Aucun prix </td>
                                     <td class="text-right px-4">${matiere.sousFamille || '-'}</td>
                                         `;
@@ -602,13 +610,13 @@
                 onchange="saveChanges()"
             >
                 ${unites.map(unite => `
-                                                    <option
-                                                        value="${unite.id}" title="${unite.full}"
-                                                        ${unite.short === matiereUnite ? 'selected' : ''}
-                                                    >
-                                                        ${unite.short}
-                                                    </option>
-                                                `).join('')}
+                                                        <option
+                                                            value="${unite.id}" title="${unite.full}"
+                                                            ${unite.short === matiereUnite ? 'selected' : ''}
+                                                        >
+                                                            ${unite.short}
+                                                        </option>
+                                                    `).join('')}
             </select>
 
             <!-- Champ de date -->

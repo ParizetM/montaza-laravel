@@ -108,7 +108,7 @@ class CdeController extends Controller
             $familles = Famille::all();
             $unites = Unite::all();
             $entites = Entite::all();
-            $societes = Societe::where('societe_type_id', [2, 3])->get();
+            $societes = Societe::whereIn('societe_type_id', [2, 3])->get();
             $showRefFournisseur = $cde->show_ref_fournisseur;
             return view(
                 'ddp_cde.cde.create',
@@ -452,6 +452,16 @@ class CdeController extends Controller
             $matiereController = new MatiereController();
             $matiereController->mouvement($matiere->id, $ligne->quantite, true);
             $matiere->unite_id = $ligne->unite_id;
+            $matiere->fournisseurs()->sync([
+                $ligne->fournisseur_id => [
+                    'ref_fournisseur' => $ligne->ref_fournisseur ?? null,
+                    'prix' => $ligne->prix,
+                    'societe_id' => $cde->societe->id,
+                    'unite_id' => $ligne->unite_id,
+                    'date_dernier_prix' => now(),
+                    'cde_ligne_fournisseur_id' => $ligne->id,
+                ]
+            ]);
             $matiere->save();
             }
         }

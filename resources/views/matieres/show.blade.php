@@ -38,12 +38,20 @@
                         <td class="border px-4 py-2">{{ $matiere->sousFamille->nom }}</td>
                         <td class="border px-4 py-2">{{ $matiere->quantite }}</td>
                         <td class="border px-4 py-2">{{ $matiere->designation }}</td>
-                        <td class="border px-4 py-2 flex items-center">
-                            <x-icons.pdf class="w-6 h-6" />
-                            <a href="{{ $matiere->standardVersion->chemin_pdf }}" class="lien" target="_blank">
-                                {{ $matiere->standardVersion->standard->nom ?? '-' }} -
-                                {{ $matiere->standardVersion->version ?? '-' }}
-                            </a>
+                        <td class="border px-4 py-2 ">
+                            @if ($matiere->standardVersion == null)
+                                <span class="">Aucun standard</span>
+                            @else
+                                <div class="flex items-center">
+                                    <x-icons.pdf class="w-6 h-6" />
+                                    <a href="{{ $matiere->standardVersion->chemin_pdf ?? '-' }}" class="lien"
+                                        target="_blank">
+                                        {{ $matiere->standardVersion->standard->nom ?? '-' }} -
+                                        {{ $matiere->standardVersion->version ?? '-' }}
+                                    </a>
+                                </div>
+                            @endif
+
                         </td>
                         <td class="border px-4 py-2">{{ $matiere->dn }}</td>
                         <td class="border px-4 py-2">{{ $matiere->epaisseur }}</td>
@@ -53,99 +61,111 @@
                 </tbody>
             </table>
             <div class="flex justify-between flex-row-reverse">
-            <table class="mt-6 min-w-0">
-                <thead>
-                    <tr>
-                        <th class="px-4 py-2">Fournisseur</th>
-                        <th class="px-4 py-2">Dernier prix </th>
-                        <th class="px-4 py-2">Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($fournisseurs_dernier_prix as $fournisseur)
-                        <tr onclick="window.location.href = '{{ route('matieres.show_prix',['matiere' => $matiere->id,'fournisseur' => $fournisseur->id]) }}';"
-                            class="hover:bg-gray-100 hover:dark:bg-gray-700 cursor-pointer">
-                            <td class="border px-4 py-2 whitespace-nowrap">{{ $fournisseur->raison_sociale }}</td>
-                            <td class="border px-4 py-2 whitespace-nowrap">{{ $fournisseur->pivot->prix }} €</td>
-                            <td class="border px-4 py-2 whitespace-nowrap">{{ $fournisseur->pivot->date_dernier_prix }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-            <table class="mt-6 min-w-0">
-                <thead>
-                    <tr>
-                        <th class="px-4 py-2">mouvement</th>
-                        <th class="px-4 py-2">Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if ($matiere->mouvements && $matiere->mouvements->count() > 0)
-                        @foreach ($matiere->mouvements as $mouvement)
-                            <tr class="hover:bg-gray-100 hover:dark:bg-gray-700 cursor-pointer">
-                                <td class="border px-4 py-2 whitespace-nowrap">
-                                    @if($mouvement->type_mouvement == 0)
-
-                                        <span class="text-red-500">- {{ $mouvement->quantite }}</span>
-                                    @else
-                                        <span class="text-green-500">+ {{ $mouvement->quantite }}</span>
-                                    @endif
-                                </td>
-                                <td class="border px-4 py-2 whitespace-nowrap">{{ $mouvement->created_at->format('d/m/Y H:i') }}</td>
+                <div>
+                    <table class="mt-6 min-w-0 min-y-0">
+                        <thead>
+                            <tr>
+                                <th class="px-4 py-2">Fournisseur</th>
+                                <th class="px-4 py-2">Dernier prix </th>
+                                <th class="px-4 py-2">Date</th>
                             </tr>
-                        @endforeach
-                    @else
-                        <tr>
-                            <td class="border px-4 py-2 whitespace-nowrap" colspan="2">Aucun mouvement</td>
-                        </tr>
-                    @endif
-                </tbody>
-            </table>
-        </div>
-        <div class="w-1/3">
-            <form action="{{ route('matieres.mouvement', $matiere->id) }}" method="POST" class="mt-6">
-                @csrf
-                @method('POST')
-                <div class="flex flex-col">
-                    <h2 class="text-xl font-bold mb-2">retirer matière</h2>
-                    <x-input-label value="quantité" />
-                    <x-text-input type="number" name="quantite" class="w-1/2" value="{{ old('quantite') }}" />
-                    <input type="hidden" name="type" value="0">
-                    @error('quantite')
-                        <span class="text-red-500">{{ $message }}</span>
-                    @enderror
-                    <button type="submit"
-                        class="btn w-fit mt-2">retirer</button>
-
+                        </thead>
+                        <tbody>
+                            @foreach ($fournisseurs_dernier_prix as $fournisseur)
+                                <tr onclick="window.location.href = '{{ route('matieres.show_prix', ['matiere' => $matiere->id, 'fournisseur' => $fournisseur->id]) }}';"
+                                    class="hover:bg-gray-100 hover:dark:bg-gray-700 cursor-pointer h-fit">
+                                    <td class="border px-4 py-2 whitespace-nowrap">{{ $fournisseur->raison_sociale }}
+                                    </td>
+                                    <td class="border px-4 py-2 whitespace-nowrap">{{ $fournisseur->pivot->prix }} €
+                                    </td>
+                                    <td class="border px-4 py-2 whitespace-nowrap">
+                                        {{ $fournisseur->pivot->date_dernier_prix }}</td>
+                                </tr>
+                            @endforeach
+                            @if ($fournisseurs_dernier_prix->count() == 0)
+                                <tr>
+                                    <td class="border px-4 py-2 whitespace-nowrap" colspan="3">Aucun fournisseur pour
+                                        le moment</td>
+                                </tr>
+                            @endif
+                        </tbody>
+                    </table>
                 </div>
-            </form>
-        </div>
-        @if ($dates == null)
-            <div class="mt-6">
-                <p class="text-red-500">Aucun mouvement pour cette matière</p>
+                <div>
+                    <table class="mt-6 min-w-0">
+                        <thead>
+                            <tr>
+                                <th class="px-4 py-2">mouvement</th>
+                                <th class="px-4 py-2">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if ($matiere->mouvements && $matiere->mouvements->count() > 0)
+                                @foreach ($matiere->mouvements as $mouvement)
+                                    <tr class="hover:bg-gray-100 hover:dark:bg-gray-700 cursor-pointer">
+                                        <td class="border px-4 py-2 whitespace-nowrap">
+                                            @if ($mouvement->type_mouvement == 0)
+                                                <span class="text-red-500">- {{ $mouvement->quantite }}</span>
+                                            @else
+                                                <span class="text-green-500">+ {{ $mouvement->quantite }}</span>
+                                            @endif
+                                        </td>
+                                        <td class="border px-4 py-2 whitespace-nowrap">
+                                            {{ $mouvement->created_at->format('d/m/Y H:i') }}</td>
+                                    </tr>
+                                @endforeach
+                            @else
+                                <tr>
+                                    <td class="border px-4 py-2 whitespace-nowrap" colspan="2">Aucun mouvement</td>
+                                </tr>
+                            @endif
+                        </tbody>
+                    </table>
+                </div>
             </div>
+            <div class="w-1/3">
+                <form action="{{ route('matieres.mouvement', $matiere->id) }}" method="POST" class="mt-6">
+                    @csrf
+                    @method('POST')
+                    <div class="flex flex-col">
+                        <h2 class="text-xl font-bold mb-2">retirer matière</h2>
+                        <x-input-label value="quantité" />
+                        <x-text-input type="number" name="quantite" class="w-1/2" value="{{ old('quantite') }}" />
+                        <input type="hidden" name="type" value="0">
+                        @error('quantite')
+                            <span class="text-red-500">{{ $message }}</span>
+                        @enderror
+                        <button type="submit" class="btn w-fit mt-2">retirer</button>
+
+                    </div>
+                </form>
+            </div>
+            @if ($dates == null)
+                <div class="mt-6">
+                    <p class="text-red-500">Aucun mouvement pour cette matière</p>
+                </div>
             @else
-        <div>
-            <div>
-                <x-input-label for="startDate" class="block">Date de début :</x-input-label>
-                <select id="startDate" class="select w-auto">
-                    @foreach ($dates as $date)
-                        <option value="{{ $date }}">{{ $date }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div>
-                <x-input-label for="endDate" class="block">Date de fin :</x-input-label>
-                <select id="endDate" class="select w-auto">
-                    @foreach ($dates->reverse() as $date)
-                        <option value="{{ $date }}">{{ $date }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="mb-6 chart-container">
-                <canvas id="myChart" width="400" height="100"></canvas>
-            </div>
-        </div>
+                <div>
+                    <div>
+                        <x-input-label for="startDate" class="block">Date de début :</x-input-label>
+                        <select id="startDate" class="select w-auto">
+                            @foreach ($dates as $date)
+                                <option value="{{ $date }}">{{ $date }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <x-input-label for="endDate" class="block">Date de fin :</x-input-label>
+                        <select id="endDate" class="select w-auto">
+                            @foreach ($dates->reverse() as $date)
+                                <option value="{{ $date }}">{{ $date }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-6 chart-container">
+                        <canvas id="myChart" width="400" height="100"></canvas>
+                    </div>
+                </div>
         </div>
     </div>
     <script>
@@ -157,7 +177,7 @@
                 data: {
                     labels: @json($dates), // Limite à 10 dates passées par le contrôleur
                     datasets: [{
-                        label: 'Prix sur le temps',
+                        label: 'quantité sur le temps',
                         data: @json($quantites), // Les valeurs passées par le contrôleur
                         borderColor: 'rgba(75, 192, 192, 1)',
                         backgroundColor: 'white',
@@ -207,7 +227,7 @@
                 'change', updateChartLimits);
         });
     </script>
-@endif
+    @endif
     </div>
 
 
