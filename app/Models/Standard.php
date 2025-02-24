@@ -20,5 +20,8 @@ class Standard extends Model
     {
         return $this->belongsTo(DossierStandard::class);
     }
-
+    public function getLatestVersion()
+    {
+        return $this->versions()->latest()->first();
+    }
 }

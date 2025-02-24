@@ -107,15 +107,15 @@
                 @csrf
                 @method('POST')
                 <div class="flex flex-col">
-                    <h2 class="text-xl font-bold mb-2">ajouter matière</h2>
+                    <h2 class="text-xl font-bold mb-2">retirer matière</h2>
                     <x-input-label value="quantité" />
-                    <x-text-input type="number" name="quantite" value="{{ old('quantite') }}" />
+                    <x-text-input type="number" name="quantite" class="w-1/2" value="{{ old('quantite') }}" />
                     <input type="hidden" name="type" value="0">
                     @error('quantite')
                         <span class="text-red-500">{{ $message }}</span>
                     @enderror
                     <button type="submit"
-                        class="btn w-fit mt-2">ajouter matière</button>
+                        class="btn w-fit mt-2">retirer</button>
 
                 </div>
             </form>

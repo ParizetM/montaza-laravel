@@ -23,7 +23,6 @@ class MatiereFactory extends Factory
         return [
             'ref_interne' => strtoupper($this->faker->lexify('??')) . '-' . $this->faker->numerify('####'),
             'designation' => $this->faker->word(),
-            'societe_id' => $societe,
             'unite_id' => $unite,
             'sous_famille_id' => $sous_famille,
             'standard_version_id' => $standard,

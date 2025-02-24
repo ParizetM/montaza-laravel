@@ -18,6 +18,7 @@ class Matiere extends Model
         'sous_famille_id',
         'dn',
         'epaisseur',
+        'standard_version_id',
         'prix_moyen',
         'quantite',
         'stock_min',
@@ -79,7 +80,7 @@ class Matiere extends Model
     }
     public function standard()
     {
-        return $this->belongsTo(Standard::class);
+        return $this->hasOneThrough(Standard::class, StandardVersion::class, 'id', 'id', 'standard_version_id', 'standard_id');
     }
     public function mouvements()
     {

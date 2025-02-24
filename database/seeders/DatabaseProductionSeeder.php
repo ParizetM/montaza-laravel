@@ -171,6 +171,8 @@ class DatabaseProductionSeeder extends Seeder
         $this->call(FamilleSeeder::class);
         $this->call(SousFamilleSeeder::class);
         $this->call(StandardSeeder::class);
+        $this->call(MaterialSeeder::class);
+        $this->call(MatiereProductionSeeder::class);
         // $this->call(MatiereSeeder::class);
         $this->call(DdpCdeStatutSeeder::class);
         // $this->call(DdpSeeder::class);

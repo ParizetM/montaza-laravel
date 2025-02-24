@@ -50,21 +50,25 @@ return new class extends Migration
             $table->string('chemin_pdf'); // Chemin du fichier PDF
             $table->timestamps();
         });
-
+        Schema::create('materials', function (Blueprint $table) {
+            $table->id();
+            $table->string('nom')->unique();
+            $table->timestamps();
+        });
         Schema::create('matieres', function (Blueprint $table) {
             $table->id();
             $table->string('ref_interne')->unique();
             $table->foreignId('standard_version_id')->nullable()->constrained('standard_versions');
             $table->string('designation');
-            $table->foreignId('societe_id')->constrained('societes');
             $table->foreignId('unite_id')->constrained('unites');
             $table->foreignId(column: 'sous_famille_id')->constrained('sous_familles');
-            $table->integer('dn');
-            $table->float('epaisseur');
-            $table->decimal('prix_moyen', 8, 2);
+            $table->foreignId(column: 'material_id')->nullable()->constrained('materials');
+            $table->string('dn');
+            $table->string('epaisseur');
+            $table->decimal('prix_moyen', 8, 2)->nullable();
             $table->integer('quantite');
             $table->integer('stock_min');
-            $table->date('date_dernier_achat');
+            $table->date('date_dernier_achat')->nullable();
             $table->timestamps();
         });
         Schema::create('societe_matiere', function (Blueprint $table) {

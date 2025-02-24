@@ -330,7 +330,7 @@
                             tr.setAttribute('data-matiere-ref', matiere.refInterne || '');
                             tr.setAttribute('data-matiere-designation', matiere.designation || '');
                             tr.setAttribute('data-matiere-basic-unite', matiere.lastPriceUnite || '');
-                            tr.setAttribute('data-matiere-unite', matiere.lastPriceUnite ||Unite || '');
+                            tr.setAttribute('data-matiere-unite', matiere.lastPriceUnite || matiere.Unite || '');
                             tr.addEventListener('click', addMatiere);
                             tr.innerHTML = `
                 <td class="text-left px-4">${matiere.refInterne || '-'}</td>

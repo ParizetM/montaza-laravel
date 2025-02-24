@@ -20,7 +20,7 @@ class MatiereController extends Controller
         // Validation des données d'entrée
         $request->validate([
             'search' => 'nullable|string|max:255',
-            'nombre' => 'nullable|integer|min:1|max:100',
+            'nombre' => 'nullable|integer|min:1|max:10000',
             'famille' => 'nullable|integer|exists:familles,id',
             'sous_famille' => 'nullable|integer|exists:sous_familles,id',
             'page' => 'nullable|integer|min:1',
@@ -126,12 +126,6 @@ class MatiereController extends Controller
 
         $query->orderBy('sous_famille_id')->limit(15)->get();
         $matieres = $query->get();
-        if ($request->input('with_last_price')) {
-            return response()->json(data: [
-            'matieres' => MatiereResourceWithPrice::collection($matieres),
-            ]);
-        }
-
         return response()->json(data: [
             'matieres' => MatiereResource::collection($matieres),
         ]);
