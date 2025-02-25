@@ -27,10 +27,11 @@
                         <thead class="">
                             <tr
                                 class="bg-gray-200 dark:bg-gray-700 border-r-2 border-r-gray-200 dark:border-r-gray-700">
+                                <th style="width: 5px; padding: 0%;padding-top:5px;">
+                                    <div class="poste">Poste</div>
+                                    </th>
                                 <th colspan="2" class=" p-2 text-center">
                                     Matière</th>
-                                <th colspan="1" class=" p-2 text-center">
-                                    Statut</th>
                                 <th colspan="1" class=" p-2 text-center"> Quantité</th>
                                 <th colspan="1" class=" p-2 text-center"> PU HT</th>
                                 <th colspan="1" class=" p-2 text-center"> Montant HT</th>
@@ -42,53 +43,150 @@
                             @foreach ($cde->cdeLignes as $ligne)
                                 @if ($ligne->ddpCdeStatut->nom == 'Annulée')
                                     <tr class="bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400">
-                                    @else
-                                    <tr>
-                                @endif
-                                <td class="text-left ml-1 p-2">
-                                    <div class="flex flex-col {{ $showRefFournisseur ? '' : 'hidden' }}"
-                                        id="refs-{{ $ligne->matiere_id }}">
-                                        <div class="flex flex-col">
-                                            <span class="text-xs">Réf. Interne</span>
-                                            <span class="font-bold">{{ $ligne->ref_interne ?? '-' }}</span>
-                                        </div>
-                                        <div class="flex flex-col">
-                                            <span class="text-xs">Réf. Fournisseur</span>
-                                            <span class="font-bold">{{ $ligne->ref_fournisseur ?? '-' }}</span>
+                                        <td class="text-center ml-1 p-2">
+                                            {{ $ligne->poste }}
+                                        </td>
+                                        <td class="text-left ml-1 p-2">
+                                            <div class="flex flex-col {{ $showRefFournisseur ? '' : 'hidden' }}"
+                                                id="refs-{{ $ligne->matiere_id }}">
+                                                <div class="flex flex-col">
+                                                    <span class="text-xs">Réf. Interne</span>
+                                                    <span class="font-bold">{{ $ligne->ref_interne ?? '-' }}</span>
+                                                </div>
+                                                <div class="flex flex-col">
+                                                    <span class="text-xs">Réf. Fournisseur</span>
+                                                    <span class="font-bold">{{ $ligne->ref_fournisseur ?? '-' }}</span>
 
-                                        </div>
-                                    </div>
-                                    <div class="flex flex-col {{ $showRefFournisseur ? 'hidden' : '' }}"
-                                        id="ref-{{ $ligne->matiere_id }}">
-                                        <div class="flex flex-col">
-                                            <span class="text-xs">Réf. Interne</span>
-                                            <span class="font-bold">{{ $ligne->ref_interne ?? '-' }}</span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="p-2 text-left">{{ $ligne->designation }}</td>
-                                @if ($ligne->ddpCdeStatut->nom == 'Annulée')
-                                    <td class="p-2 text-center font-bold text-gray-600 dark:text-gray-300">
-                                        {{ $ligne->ddpCdeStatut->nom }}</td>
+                                                </div>
+                                            </div>
+                                            <div class="flex flex-col {{ $showRefFournisseur ? 'hidden' : '' }}"
+                                                id="ref-{{ $ligne->matiere_id }}">
+                                                <div class="flex flex-col">
+                                                    <span class="text-xs">Réf. Interne</span>
+                                                    <span class="font-bold">{{ $ligne->ref_interne ?? '-' }}</span>
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                        <td class="p-2 text-left"><span
+                                                class="text-red-500 dark:text-red-400 font-bold">Annulée </span>
+                                            <span class="line-through">{{ $ligne->designation }}</span>
+                                        </td>
+                                        <td class="p-2 text-right line-through whitespace-nowrap"
+                                            title="{{ formatNumber($ligne->quantite) }} {{ $ligne->unite->full }}">
+                                            {{ formatNumber($ligne->quantite) }} {{ $ligne->unite->short }}</td>
+                                        <td class="p-2 text-center line-through whitespace-nowrap">{{ formatNumberArgent($ligne->prix_unitaire) }}
+                                        </td>
+                                        <td class="p-2 text-center line-through whitespace-nowrap">{{ formatNumberArgent($ligne->prix) }}</td>
+                                        <td class="p-2 text-center line-through">{{ $ligne->typeExpedition->short }}</td>
+                                        <td class="p-2">
+                                        </td>
+                                    </tr>
                                 @else
-                                    <td class="p-2 text-center">{{ $ligne->ddpCdeStatut->nom }}</td>
+                                    <tr>
+                                        <td class="text-center ml-1 p-2">
+                                            {{ $ligne->poste }}
+                                        </td>
+                                        <td class="text-left ml-1 p-2">
+                                            <div class="flex flex-col {{ $showRefFournisseur ? '' : 'hidden' }}"
+                                                id="refs-{{ $ligne->matiere_id }}">
+                                                <div class="flex flex-col">
+                                                    <span class="text-xs">Réf. Interne</span>
+                                                    <span class="font-bold">{{ $ligne->ref_interne ?? '-' }}</span>
+                                                </div>
+                                                <div class="flex flex-col">
+                                                    <span class="text-xs">Réf. Fournisseur</span>
+                                                    <span class="font-bold">{{ $ligne->ref_fournisseur ?? '-' }}</span>
+
+                                                </div>
+                                            </div>
+                                            <div class="flex flex-col {{ $showRefFournisseur ? 'hidden' : '' }}"
+                                                id="ref-{{ $ligne->matiere_id }}">
+                                                <div class="flex flex-col">
+                                                    <span class="text-xs">Réf. Interne</span>
+                                                    <span class="font-bold">{{ $ligne->ref_interne ?? '-' }}</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="p-2 text-left">{{ $ligne->designation }}</td>
+                                        <td class="p-2 text-right"
+                                            title="{{ formatNumber($ligne->quantite) }} {{ $ligne->unite->full }}">
+                                            {{ formatNumber($ligne->quantite) }} {{ $ligne->unite->short }}</td>
+                                        <td class="p-2 text-center whitespace-nowrap">{{ formatNumberArgent($ligne->prix_unitaire) }}
+                                        </td>
+                                        <td class="p-2 text-center whitespace-nowrap">{{ formatNumberArgent($ligne->prix) }}</td>
+                                        <td class="p-2 text-center">{{ $ligne->typeExpedition->short }}</td>
+                                        <td class="p-2 text-center">
+                                            {{ $ligne->date_livraison_reelle ? \Carbon\Carbon::parse($ligne->date_livraison_reelle)->format('d/m/Y') : '-' }}
+                                        </td>
+                                    </tr>
                                 @endif
-                                <td class="p-2 text-right"
-                                    title="{{ formatNumber($ligne->quantite) }} {{ $ligne->unite->full }}">
-                                    {{ formatNumber($ligne->quantite) }} {{ $ligne->unite->short }}</td>
-                                <td class="p-2 text-center">{{ formatNumberArgent($ligne->prix_unitaire) }}</td>
-                                <td class="p-2 text-center">{{ formatNumberArgent($ligne->prix) }}</td>
-                                <td class="p-2 text-center">{{ $ligne->typeExpedition->short }}</td>
-                                <td class="p-2 text-center">
-                                    {{ $ligne->date_livraison_reelle ? \Carbon\Carbon::parse($ligne->date_livraison_reelle)->format('d/m/Y') : '-' }}
-                                </td>
-                                </tr>
                             @endforeach
+                            <tr class="border-t-2 border-gray-200 dark:border-gray-700">
+                                <td class="p-2 " colspan="400">
+                                    <div class="w-full">
+
+                                        <table class="min-w-0 float-right text-right">
+                                            <tbody>
+                                                    <tr class="{{ $cde->frais_de_port || $cde->frais_divers ? '' : 'hidden' }}">
+                                                        <td class="pr-4 text-gray-500">
+                                                            Total HT :
+                                                        </td>
+                                                        <td id="total_ht_gray" class="text-gray-500">
+                                                            {{ formatNumberArgent($cde->total_ht - $cde->frais_de_port - $cde->frais_divers) }}
+                                                        </td>
+                                                    </tr>
+                                                <tr class="{{ $cde->frais_de_port ? '' : 'hidden' }}">
+                                                    <td class="pr-4 text-gray-500">
+                                                        Frais de port :
+                                                    </td>
+                                                    <td id="frais_de_port" class="text-gray-500">
+                                                        {{ formatNumberArgent($cde->frais_de_port) }}
+                                                    </td>
+                                                </tr>
+                                                <tr class="{{ $cde->frais_divers ? '' : 'hidden' }}">
+                                                    <td class="pr-4 text-gray-500">
+                                                        Frais divers :
+                                                    </td>
+                                                    <td id="frais_divers" class="text-gray-500">
+                                                        {{ formatNumberArgent($cde->frais_divers) }}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="pr-4">
+                                                        Total HT :
+                                                    </td>
+                                                    <td id="total_ht">
+                                                        {{ formatNumberArgent($cde->total_ht) }}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="pr-4" id="tva_container">
+                                                        TVA ({{ $cde->tva }}%) :
+                                                    </td>
+                                                    <td id="total_tva_plus">
+                                                        {{ formatNumberArgent(round((($cde->total_ht) * $cde->tva) / 100, 3)) }}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="pr-4">
+                                                        Total TTC :
+                                                    </td>
+                                                    <td id="total_ttc">
+                                                        {{ formatNumberArgent(round($cde->total_ht + (($cde->total_ht + $cde->frais_de_port + $cde->frais_divers) * $cde->tva) / 100, 3)) }}
+
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
                 @if ($cde->accuse_reception)
-                    <div class="flex flex-wrap gap-4 float-right mr-12">
+                    <div class="flex flex-wrap gap-4 float-right m-12">
                         <div class="flex flex-col flex-wrap gap-4">
                             {{-- @dd($pdfs) --}}
                             @php
@@ -111,6 +209,17 @@
                                             href="{{ route('cde.pdfshow', ['cde' => $cde, 'annee' => $cdeannee, 'nom' => $pdf]) }}">cliquer
                                             ici pour télécharger le fichier PDF.</a></p>
                                 </object>
+                            </div>
+                        </div>
+                    </div>
+                @else
+                    <div class="flex flex-col gap-4 float-right m-12">
+                        <div class="flex flex-col gap-4">
+                            <div class="flex flex-col gap-2 bg-gray-100 dark:bg-gray-700 p-4 rounded-md">
+                                <h2 class="text-xl font-semibold text-gray-700 dark:text-gray-200">Pas d'accusé de
+                                    réception</h2>
+                                <a href="{{ route('cde.annuler_terminer', $cde->id) }}"
+                                    class="btn dark:hover:bg-gray-800 bg-gray-200 dark:bg-gray-900 hover:bg-gray-300">Ajouter un AR</a>
                             </div>
                         </div>
                     </div>

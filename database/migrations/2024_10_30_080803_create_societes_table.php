@@ -51,8 +51,8 @@ return new class extends Migration
             $table->foreignId('forme_juridique_id')->constrained('forme_juridiques');
             $table->foreignId('code_ape_id')->constrained('code_apes');
             $table->foreignId('societe_type_id')->constrained('societe_types');
-            $table->string('telephone', length: 20);
-            $table->string('email', length: 100);
+            $table->string('telephone', length: 20)->nullable();
+            $table->string('email', length: 100)->nullable();
             $table->string('site_web', length: 100)->nullable();
             $table->string('numero_tva', length: 100);
             $table->foreignId('condition_paiement_id')->constrained('condition_paiements');

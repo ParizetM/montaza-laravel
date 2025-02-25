@@ -20,7 +20,7 @@ class MatiereProductionSeeder extends Seeder
         $tour = 0;
         $recap = [];
         foreach ($csv as $row) {
-            echo 'TOUR :'.$tour . "\n";
+
             if ($row[7] === '') {
                 $row[7] = 'U';
             }
@@ -36,12 +36,15 @@ class MatiereProductionSeeder extends Seeder
             $standard = $standardModel ? $standardModel->getLatestVersion()->id : null;
 
             if ($unite === null) {
+                echo 'TOUR :'.$tour . "\n";
                 echo "ERREUR Unite :  \n - " . $row[3] . "\n - " . $row[7] . "\n";
             }
             if ($sous_famille === null) {
+                echo 'TOUR :'.$tour . "\n";
                 echo "ERREUR SousFamille :  \n - " . $row[3] . "\n - " . $row[0] . "\n";
             }
             if ($standard === null) {
+                echo 'TOUR :'.$tour . "\n";
                 echo "ERREUR Standard :  \n - " . $row[3] . "\n - " . $row[4] . "\n";
             }
             Matiere::create([

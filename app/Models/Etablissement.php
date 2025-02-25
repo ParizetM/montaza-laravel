@@ -24,7 +24,8 @@ class Etablissement extends Model
         'region',
         'pay_id',
         'societe_id',
-        'siret'
+        'siret',
+        'commentaire_id'
     ];
 
     /**

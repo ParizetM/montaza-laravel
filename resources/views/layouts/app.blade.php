@@ -47,8 +47,8 @@
                 window.onload = function() {
                     showFlashMessage();
 
-                   // Masque le message après 5 secondes, sauf si la souris est dessus
-                   let hideTimeout = setTimeout(function() {
+                    // Masque le message après 5 secondes, sauf si la souris est dessus
+                    let hideTimeout = setTimeout(function() {
                         hideFlashMessage();
                     }, 5000); // 5000 millisecondes = 5 secondes
 
@@ -244,6 +244,8 @@
                 hideFlashMessage();
             }, duree);
         }
+
+
     </script>
 </body>
 

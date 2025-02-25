@@ -204,6 +204,14 @@
                                         </td>
                                     </tr>
                                 @endforeach
+                                @if ($societes->isEmpty())
+                                    <tr>
+                                        <td colspan="100" class="text-center py-4">
+                                            {!! __('Aucune société trouvée') !!}
+                                        </td>
+                                    </tr>
+
+                                @endif
                             </tbody>
                         </table>
                     </div>

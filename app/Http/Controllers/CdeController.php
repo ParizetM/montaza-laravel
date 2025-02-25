@@ -281,6 +281,13 @@ class CdeController extends Controller
         $mailtemplate->sujet = str_replace('{code_cde}', $cde->code, $mailtemplate->sujet);
         return view('ddp_cde.cde.pdf_preview', compact('cde', ['pdf', 'mailtemplate']));
     }
+    public function cancelValidate($id)
+    {
+        $cde = Cde::findOrFail($id);
+        $cde->ddp_cde_statut_id = 1;
+        $cde->save();
+        return redirect()->route('cde.show', $cde->id);
+    }
     public function pdf($cde_id)
     {
         $cde = Cde::findOrFail($cde_id)->load('cdeLignes', 'cdeLignes.matiere');
@@ -445,7 +452,7 @@ class CdeController extends Controller
     public function terminer($id) {
         $cde = Cde::findOrFail($id);
         $cde->ddp_cde_statut_id = 3;
-        $cde->save();
+        $total_ht = 0;
         foreach ($cde->cdeLignes as $ligne) {
             if ($ligne->date_livraison_reelle && $ligne->ddp_cde_statut_id != 4) {
             $matiere = $ligne->matiere;
@@ -455,7 +462,7 @@ class CdeController extends Controller
             $matiere->fournisseurs()->sync([
                 $ligne->fournisseur_id => [
                     'ref_fournisseur' => $ligne->ref_fournisseur ?? null,
-                    'prix' => $ligne->prix,
+                    'prix' => $ligne->prix_unitaire * $ligne->quantite,
                     'societe_id' => $cde->societe->id,
                     'unite_id' => $ligne->unite_id,
                     'date_dernier_prix' => now(),
@@ -463,8 +470,12 @@ class CdeController extends Controller
                 ]
             ]);
             $matiere->save();
+            $total_ht += $ligne->prix_unitaire * $ligne->quantite;
             }
         }
+        // dd($total_ht_table);
+        $cde->total_ht = $total_ht + $cde->frais_de_port + $cde->frais_divers;
+        $cde->save();
         return redirect()->route('cde.show', $cde->id);
     }
     public function annulerTerminer($id) {

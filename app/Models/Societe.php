@@ -26,9 +26,13 @@ class Societe extends Model
         'siren',
         'forme_juridique_id',
         'code_ape_id',
+        'numero_tva',
+        'telephone',
+        'email',
         'societe_type_id',
         'condition_paiement_id',
-        'site_web'
+        'site_web',
+        'commentaire_id'
     ];
     public function formeJuridique(): BelongsTo
     {

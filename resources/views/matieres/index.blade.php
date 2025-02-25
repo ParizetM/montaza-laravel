@@ -34,6 +34,7 @@
                         {!! __('Rechercher') !!}
                     </button>
                 </form>
+                <x-quick_matiere class="mb-1" />
 
             </div>
         </div>

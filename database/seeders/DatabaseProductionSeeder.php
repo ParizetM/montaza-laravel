@@ -160,6 +160,7 @@ class DatabaseProductionSeeder extends Seeder
         $this->call(SocieteTypeSeeder::class);
         $this->call(ConditionPaiementSeeder::class);
         // SocieteContact::factory()->times(100)->create();
+        $this->call(SocieteProductionSeeder::class);
         $this->call(PredefinedShortcutsSeeder::class);
         foreach (PredefinedShortcut::all() as $shortcut) {
             UserShortcut::create([

@@ -152,5 +152,15 @@
         padding-right: 15px; /* Ajoutez un padding pour éviter que le texte ne chevauche le symbole */
         @apply w-28;
     }
+    .poste {
+            /* Texte vertical de droite à gauche */
+            white-space: nowrap;
+            /* Empêche le texte de passer à la ligne */
+            transform: rotate(-90deg);
+            /* Rotation de 180 degrés */
+            height: 40px;
+            padding-top: 10px;
+            margin-bottom: 5px;
+    }
 }
 

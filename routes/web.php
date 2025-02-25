@@ -111,8 +111,10 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
     Route::middleware('permission:voir_les_matieres')->group(function () {
         Route::get('/matieres', [MatiereController::class, 'index'])->name('matieres.index');
         Route::get('/matieres/search', [MatiereController::class, 'searchResult'])->name('matieres.search');
+        Route::get('/matieres/quickcreate/{modalId}', [MatiereController::class, 'quickCreate'])->name('matieres.quickCreate');
         Route::get('/matieres/quickSearch', [MatiereController::class, 'quickSearch'])->name('matieres.quickSearch');
         Route::get('/matieres/famille/{famille}/sous-familles/json', [MatiereController::class, 'sousFamillesJson'])->name('matieres.sous_familles.json');
+        Route::post('/matieres/sous-famille/create', [MatiereController::class, 'createSousFamille'])->name('matieres.create_sous_famille');
         Route::get('/matieres/{matiere}/fournisseurs/json', [MatiereController::class, 'fournisseursJson'])->name('matieres.fournisseurs.json');
         Route::get('/matieres/standards', [StandardController::class, 'index'])->name('standards.index');
         Route::get('/matieres/{matiere}', [MatiereController::class, 'show'])->name('matieres.show');

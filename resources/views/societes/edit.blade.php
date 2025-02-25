@@ -67,27 +67,27 @@
                         </div>
 
                         <div class="col-span-1">
-                            <x-input-label for="telephone" :value="__('Téléphone')" />
+                            <x-input-label for="telephone" :value="__('Téléphone')" optionnel />
                             <x-text-input id="telephone" class="block mt-1 w-full" type="text" name="telephone" maxlength="30"
-                                placeholder="+33 XX XX XX XX XX" value="{{ old('telephone', $societe->telephone) }}" required />
+                                placeholder="+33 XX XX XX XX XX" value="{{ old('telephone', $societe->telephone) }}"  />
                             @error('telephone')
                                 <span class="text-red-500 text-sm">{{ $message }}</span>
                             @enderror
                         </div>
 
                         <div class="col-span-1">
-                            <x-input-label for="email" :value="__('Email')" />
+                            <x-input-label for="email" :value="__('Email')" optionnel/>
                             <x-text-input id="email" class="block mt-1 w-full" type="email" name="email"
-                                placeholder="info@atlantismontaza.fr" value="{{ old('email', $societe->email) }}" required />
+                                placeholder="info@atlantismontaza.fr" value="{{ old('email', $societe->email) }}"  />
                             @error('email')
                                 <span class="text-red-500 text-sm">{{ $message }}</span>
                             @enderror
                         </div>
 
                         <div class="col-span-1">
-                            <x-input-label for="site_web" :value="__('Site Web')" />
+                            <x-input-label for="site_web" :value="__('Site Web')" optionnel/>
                             <x-text-input id="site_web" class="block mt-1 w-full" type="text" name="site_web"
-                                placeholder="(Optionnel) https://www.exemle.com" value="{{ old('site_web', $societe->site_web) }}" />
+                                placeholder="https://www.exemple.com" value="{{ old('site_web', $societe->site_web) }}" />
                             @error('site_web')
                                 <span class="text-red-500 text-sm">{{ $message }}</span>
                             @enderror

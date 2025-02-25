@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\MatiereResource;
 use App\Http\Resources\MatiereResourceWithPrice;
 use App\MatiereMouvement;
+use App\Models\DossierStandard;
 use App\Models\Famille;
 use App\Models\Matiere;
 use App\Models\Societe;
@@ -239,5 +240,17 @@ class MatiereController extends Controller
             return back()->with('error', "Impossible de retirer {$request->input('quantite')} {$matiere->unite->short} à {$matiere->designation}");
         }
         return back()->with('success', "{$request->input('quantite')} {$matiere->unite->short} {$matiere->designation} a été retiré avec succès");
+    }
+    public function quickCreate($modal_id): View
+    {
+
+        $familles = Famille::all();
+        $dossier_standards = DossierStandard::all();
+        return view('matieres.quick_create', [
+            'familles' => $familles,
+            'modal_id' => $modal_id,
+            'dossier_standards' => $dossier_standards,
+        ]);
+
     }
 }
