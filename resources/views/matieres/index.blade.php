@@ -206,7 +206,7 @@
             <td class="text-left py-3 px-4">${matiere.designation || '-'}</td>
             <td class="text-left py-3 px-4">${matiere.sousFamille || '-'}</td>
             <td class="text-left py-3 px-4">${matiere.quantite || '-'}</td>
-            <td class="text-left py-3 px-4 flex items-center">
+            <td class="text-left py-3 px-4 flex items-center whitespace-nowrap">
                 ${matiere.standard ? `<x-icons.pdf class="w-6 h-6" /><a href="/matieres/${matiere.standardPath}" class="lien" target="_blank">${matiere.standard} ${matiere.standardVersion || '-'}</a>` : 'Aucun standard'}
             </td>
             <td class="text-left py-3 px-4">${matiere.dn || '-'}</td>

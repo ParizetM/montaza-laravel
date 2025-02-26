@@ -1,4 +1,5 @@
 <x-app-layout>
+    @section('title', 'Commande - ' . $cde->code)
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <div>
@@ -7,8 +8,11 @@
                         class="hover:bg-gray-100 hover:dark:bg-gray-700 p-1 rounded">Demandes de prix et commandes</a>
                     >>
                     <a href="{{ route('cde.show', $cde->id) }}"
-                        class="hover:bg-gray-100 hover:dark:bg-gray-700 p-1 rounded">{!! __('Créer une demande de prix') !!}</a>
-                    >> Validation
+                        class="hover:bg-gray-100 hover:dark:bg-gray-700 p-1 rounded">{!! __('Créer une commande') !!}</a>
+                        >>
+                        <a href="{{ route('cde.annuler_terminer', $cde->id) }}"
+                            class="hover:bg-gray-100 hover:dark:bg-gray-700 p-1 rounded">{!! __('Retours') !!}</a>
+                        >> Récapitulatif
                 </h2>
 
             </div>
@@ -18,8 +22,11 @@
 
     <div class="max-w-8xl py-4 mx-auto sm:px-4 lg:px-6">
         <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-6 rounded-md shadow-md ">
-            <div class="flex justify-between items-center mb-6">
-                <h1 class="text-3xl font-bold mb-6 text-left">{{ $cde->nom }} - Récapitulatif</h1>
+            <div class="flex items-center mb-12">
+                <h1 class="text-3xl font-bold  text-left mr-2">{{ $cde->nom }} - Récapitulatif</h1>
+                <div class="text-center w-fit px-2 text-xs leading-5 flex rounded-full font-bold items-center justify-center"
+                    style="background-color: {{ $cde->statut->couleur }}; color: {{ $cde->statut->couleur_texte }}">
+                    {{ $cde->statut->nom }}</div>
             </div>
             <div class="overflow-x-auto overflow-y-visible">
                 <div class="float-left">
@@ -29,7 +36,7 @@
                                 class="bg-gray-200 dark:bg-gray-700 border-r-2 border-r-gray-200 dark:border-r-gray-700">
                                 <th style="width: 5px; padding: 0%;padding-top:5px;">
                                     <div class="poste">Poste</div>
-                                    </th>
+                                </th>
                                 <th colspan="2" class=" p-2 text-center">
                                     Matière</th>
                                 <th colspan="1" class=" p-2 text-center"> Quantité</th>
@@ -75,10 +82,13 @@
                                         <td class="p-2 text-right line-through whitespace-nowrap"
                                             title="{{ formatNumber($ligne->quantite) }} {{ $ligne->unite->full }}">
                                             {{ formatNumber($ligne->quantite) }} {{ $ligne->unite->short }}</td>
-                                        <td class="p-2 text-center line-through whitespace-nowrap">{{ formatNumberArgent($ligne->prix_unitaire) }}
+                                        <td class="p-2 text-center line-through whitespace-nowrap">
+                                            {{ formatNumberArgent($ligne->prix_unitaire) }}
                                         </td>
-                                        <td class="p-2 text-center line-through whitespace-nowrap">{{ formatNumberArgent($ligne->prix) }}</td>
-                                        <td class="p-2 text-center line-through">{{ $ligne->typeExpedition->short }}</td>
+                                        <td class="p-2 text-center line-through whitespace-nowrap">
+                                            {{ formatNumberArgent($ligne->prix) }}</td>
+                                        <td class="p-2 text-center line-through">{{ $ligne->typeExpedition->short }}
+                                        </td>
                                         <td class="p-2">
                                         </td>
                                     </tr>
@@ -112,9 +122,11 @@
                                         <td class="p-2 text-right"
                                             title="{{ formatNumber($ligne->quantite) }} {{ $ligne->unite->full }}">
                                             {{ formatNumber($ligne->quantite) }} {{ $ligne->unite->short }}</td>
-                                        <td class="p-2 text-center whitespace-nowrap">{{ formatNumberArgent($ligne->prix_unitaire) }}
+                                        <td class="p-2 text-center whitespace-nowrap">
+                                            {{ formatNumberArgent($ligne->prix_unitaire) }}
                                         </td>
-                                        <td class="p-2 text-center whitespace-nowrap">{{ formatNumberArgent($ligne->prix) }}</td>
+                                        <td class="p-2 text-center whitespace-nowrap">
+                                            {{ formatNumberArgent($ligne->prix) }}</td>
                                         <td class="p-2 text-center">{{ $ligne->typeExpedition->short }}</td>
                                         <td class="p-2 text-center">
                                             {{ $ligne->date_livraison_reelle ? \Carbon\Carbon::parse($ligne->date_livraison_reelle)->format('d/m/Y') : '-' }}
@@ -128,14 +140,15 @@
 
                                         <table class="min-w-0 float-right text-right">
                                             <tbody>
-                                                    <tr class="{{ $cde->frais_de_port || $cde->frais_divers ? '' : 'hidden' }}">
-                                                        <td class="pr-4 text-gray-500">
-                                                            Total HT :
-                                                        </td>
-                                                        <td id="total_ht_gray" class="text-gray-500">
-                                                            {{ formatNumberArgent($cde->total_ht - $cde->frais_de_port - $cde->frais_divers) }}
-                                                        </td>
-                                                    </tr>
+                                                <tr
+                                                    class="{{ $cde->frais_de_port || $cde->frais_divers ? '' : 'hidden' }}">
+                                                    <td class="pr-4 text-gray-500">
+                                                        Total HT :
+                                                    </td>
+                                                    <td id="total_ht_gray" class="text-gray-500">
+                                                        {{ formatNumberArgent($cde->total_ht - $cde->frais_de_port - $cde->frais_divers) }}
+                                                    </td>
+                                                </tr>
                                                 <tr class="{{ $cde->frais_de_port ? '' : 'hidden' }}">
                                                     <td class="pr-4 text-gray-500">
                                                         Frais de port :
@@ -165,7 +178,7 @@
                                                         TVA ({{ $cde->tva }}%) :
                                                     </td>
                                                     <td id="total_tva_plus">
-                                                        {{ formatNumberArgent(round((($cde->total_ht) * $cde->tva) / 100, 3)) }}
+                                                        {{ formatNumberArgent(round(($cde->total_ht * $cde->tva) / 100, 3)) }}
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -182,55 +195,108 @@
                                     </div>
                                 </td>
                             </tr>
-                        </tbody>
-                    </table>
+                            <tr>
+                                <td colspan="100">
+                                        <div class="w-full">
+                                            <div class=" flex transition-all duration-500 max-h-0 overflow-hidden border-t border-gray-200 dark:border-gray-700"
+                                                id="slide-down-AR">
+                                                <div class="flex p-4">
+                                                    @if ($cde->accuse_reception)
+                                                    <div class="flex flex-wrap gap-4">
+                                                        <div class="flex flex-col flex-wrap gap-4">
+                                                            {{-- @dd($pdfs) --}}
+                                                            @php
+                                                                $pdf = $cde->accuse_reception;
+                                                                $cdeannee = explode('-', $cde->code)[1];
+                                                            @endphp
+                                                            <div class="flex flex-col gap-2 bg-gray-100 dark:bg-gray-700 p-4 rounded-md hover:scale-105 cursor-pointer transition-all relative"
+                                                                id="pdf" title="Ouvrir le PDF">
+                                                                <h2
+                                                                    class="text-xl font-semibold text-gray-700 dark:text-gray-200  border border-gray-300 dark:border-gray-700 pb-2 hover">
+                                                                    {{ explode('_', $pdf)[count(explode('_', $pdf)) - 1] }}
+                                                                </h2>
+                                                                <div style="background-color: rgba(0,0,0,0); height: 409px; width: 285px; margin-bottom: 15px;"
+                                                                    class="absolute bottom-4"></div>
+                                                                <object
+                                                                    data="{{ route('cde.pdfshow', ['cde' => $cde, 'annee' => $cdeannee, 'nom' => $pdf]) }}"
+                                                                    type="application/pdf" height="424px"
+                                                                    width="300px">
+                                                                    <p>Il semble que vous n'ayez pas de plugin PDF pour
+                                                                        ce navigateur. Pas de
+                                                                        problème... vous
+                                                                        pouvez <a
+                                                                            href="{{ route('cde.pdfshow', ['cde' => $cde, 'annee' => $cdeannee, 'nom' => $pdf]) }}">cliquer
+                                                                            ici pour télécharger le fichier PDF.</a></p>
+                                                                </object>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @else
+                                                <div class="flex flex-col gap-4 float-right m-12">
+                                                    <div class="flex flex-col gap-4">
+                                                        <div
+                                                            class="flex flex-col gap-2 bg-gray-100 dark:bg-gray-700 p-4 rounded-md">
+                                                            <h2
+                                                                class="text-xl font-semibold text-gray-700 dark:text-gray-200">
+                                                                Pas d'accusé de
+                                                                réception</h2>
+                                                            <a href="{{ route('cde.annuler_terminer', $cde->id) }}"
+                                                                class="btn dark:hover:bg-gray-800 bg-gray-200 dark:bg-gray-900 hover:bg-gray-300">Ajouter
+                                                                un AR</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                    @endif
                 </div>
-                @if ($cde->accuse_reception)
-                    <div class="flex flex-wrap gap-4 float-right m-12">
-                        <div class="flex flex-col flex-wrap gap-4">
-                            {{-- @dd($pdfs) --}}
-                            @php
-                                $pdf = $cde->accuse_reception;
-                                $cdeannee = explode('-', $cde->code)[1];
-                            @endphp
-                            <div class="flex flex-col gap-2 bg-gray-100 dark:bg-gray-700 p-4 rounded-md hover:scale-105 cursor-pointer transition-all relative"
-                                id="pdf" title="Ouvrir le PDF">
-                                <h2
-                                    class="text-xl font-semibold text-gray-700 dark:text-gray-200  border border-gray-300 dark:border-gray-700 pb-2 hover">
-                                    {{ explode('_', $pdf)[count(explode('_', $pdf)) - 1] }}</h2>
-                                <div style="background-color: rgba(0,0,0,0); height: 409px; width: 285px; margin-bottom: 15px;"
-                                    class="absolute bottom-4"></div>
-                                <object
-                                    data="{{ route('cde.pdfshow', ['cde' => $cde, 'annee' => $cdeannee, 'nom' => $pdf]) }}"
-                                    type="application/pdf" height="424px" width="300px">
-                                    <p>Il semble que vous n'ayez pas de plugin PDF pour ce navigateur. Pas de
-                                        problème... vous
-                                        pouvez <a
-                                            href="{{ route('cde.pdfshow', ['cde' => $cde, 'annee' => $cdeannee, 'nom' => $pdf]) }}">cliquer
-                                            ici pour télécharger le fichier PDF.</a></p>
-                                </object>
-                            </div>
-                        </div>
-                    </div>
-                @else
-                    <div class="flex flex-col gap-4 float-right m-12">
-                        <div class="flex flex-col gap-4">
-                            <div class="flex flex-col gap-2 bg-gray-100 dark:bg-gray-700 p-4 rounded-md">
-                                <h2 class="text-xl font-semibold text-gray-700 dark:text-gray-200">Pas d'accusé de
-                                    réception</h2>
-                                <a href="{{ route('cde.annuler_terminer', $cde->id) }}"
-                                    class="btn dark:hover:bg-gray-800 bg-gray-200 dark:bg-gray-900 hover:bg-gray-300">Ajouter un AR</a>
-                            </div>
-                        </div>
-                    </div>
-                @endif
+                <button class="w-full  justify-center flex hover:bg-gray-100 dark:hover:bg-gray-700"
+                    onclick="toggleSlide()">
+                    <x-icon :size="2" type="arrow_back"
+                        class="-rotate-90 icons-no_hover -mt-2 mb-1 transition-all duration-500"
+                        id="arrow-slide-down-AR" />
+                </button>
+
+
+                <script>
+                    function toggleSlide() {
+                        const slideDown = document.getElementById('slide-down-AR');
+                        const arrow = document.getElementById('arrow-slide-down-AR');
+                        if (slideDown.classList.contains('max-h-0')) {
+                            slideDown.classList.remove('max-h-0');
+                            slideDown.classList.add('max-h-120'); // Adjust max height as needed
+                            arrow.classList.remove('-rotate-90');
+                            arrow.classList.add('rotate-90');
+                            arrow.classList.remove('-mt-2');
+                            arrow.classList.add('-mb-2');
+                        } else {
+                            slideDown.classList.remove('max-h-120');
+                            slideDown.classList.add('max-h-0');
+                            arrow.classList.remove('rotate-90');
+                            arrow.classList.add('-rotate-90');
+                            arrow.classList.remove('-mb-2');
+                            arrow.classList.add('-mt-2');
+                        }
+                    }
+                </script>
             </div>
-            <div class="flex justify-between items-center mt-6">
-                <a href="{{ route('cde.annuler_terminer', $cde->id) }}" class="btn float-right">Retour</a>
-                <a href="{{ route('cde.terminer_controler', $cde->id) }}" class="btn float-right">Terminer et
-                    controlé</a>
-            </div>
+
+
+            </td>
+            </tr>
+            </tbody>
+            </table>
         </div>
+
+    </div>
+    <div class="flex justify-between items-center mt-6">
+        <a href="{{ route('cde.annuler_terminer', $cde->id) }}" class="btn float-right">Retour</a>
+        @if ($cde->statut->id == 3)
+            <a href="{{ route('cde.terminer_controler', $cde->id) }}" class="btn float-right">Terminer et
+                controlé</a>
+        @endif
+
+    </div>
+    </div>
     </div>
 
 

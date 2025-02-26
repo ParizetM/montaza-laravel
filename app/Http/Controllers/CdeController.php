@@ -128,7 +128,7 @@ class CdeController extends Controller
             $typeExpedition = TypeExpedition::all()->pluck('short');
             $data = $this->getRetours($cdeid);
             return view('ddp_cde.cde.retours', compact('cde',['data','showRefFournisseur','typeExpedition']));
-        } elseif ($cde->ddpCdeStatut->id == 3 || $cde->ddpCdeStatut->id == 4) {
+        } elseif ($cde->ddpCdeStatut->id == 3 || $cde->ddpCdeStatut->id == 4 || $cde->ddpCdeStatut->id == 5) {
             $cdeid =  $cde->id;
             $showRefFournisseur = $cde->show_ref_fournisseur;
             return view('ddp_cde.cde.show', compact('cde',['showRefFournisseur']));
@@ -481,6 +481,12 @@ class CdeController extends Controller
     public function annulerTerminer($id) {
         $cde = Cde::findOrFail($id);
         $cde->ddp_cde_statut_id = 2;
+        $cde->save();
+        return redirect()->route('cde.show', $cde->id);
+    }
+    public function terminerControler($id) {
+        $cde = Cde::findOrFail($id);
+        $cde->ddp_cde_statut_id = 5;
         $cde->save();
         return redirect()->route('cde.show', $cde->id);
     }

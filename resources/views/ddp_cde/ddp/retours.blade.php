@@ -120,7 +120,7 @@
             // Construire les en-têtes des colonnes
             const colHeaders = [];
             ddp_societes.forEach(societe => {
-                colHeaders.push(`(Prix €)`, `(Date)`);
+                colHeaders.push(`Réf`,`PU HT`,`U`,`DDL`);
             });
 
             // Construire les colonnes (read-only pour matières, saisie pour les autres)
@@ -212,7 +212,7 @@
                 rowHeaders: rowHeaders,
                 rowHeaderWidth: rowHeaders.reduce((maxLength, header) => Math.max(maxLength, header.length),
                     0) * 10,
-                colHeaders: false,
+                colHeaders: colHeaders,
                 columns: columns,
                 mergeCells: mergeCells,
                 manualColumnResize: true,

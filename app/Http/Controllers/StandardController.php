@@ -156,4 +156,9 @@ class StandardController extends Controller
         cache()->forget('standards_dossiers');
         return back()->with('success', 'Dossier '.$request->nom.' ajouté avec succès.');
             }
+    public function showStandardsJson($dossier) {
+        $dossier_id = DossierStandard::where('nom', $dossier)->first()->id;
+        $standards = Standard::where('dossier_standard_id', $dossier_id)->get();
+        return response()->json($standards);
+    }
 }

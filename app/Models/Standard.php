@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Standard extends Model
 {
-    protected $fillable = ['nom'];
+    protected $fillable = ['nom', 'dossier_standard_id'];
 
     public function matieres()
     {

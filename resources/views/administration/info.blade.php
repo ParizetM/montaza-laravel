@@ -1,4 +1,6 @@
 <x-app-layout>
+    @section('title', 'Informations entreprise')
+
     <x-slot name="header">
         <div class="flex items-center">
             <a href="{{ route('administration.index') }}"
@@ -30,7 +32,7 @@
                 @csrf
                 @method('PATCH')
                 <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                    {{ __('informations entreprise') }}
+                    {{ __('Informations entreprise') }}
                 </h2>
 
                 <div>

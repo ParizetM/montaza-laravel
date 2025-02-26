@@ -1,4 +1,6 @@
 <x-app-layout>
+    @section('title', 'Validation - '. $cde->code)
+
     <x-slot name="header">
         <div>
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
@@ -15,7 +17,7 @@
         <form action="{{ route('ddp.validate', $ddp->id) }}" method="POST">
             @csrf
             <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-6 rounded-md shadow-md">
-                <h1 class="text-3xl font-bold mb-6 text-center">{{ $ddp->nom }}</h1>
+                <h1 class="text-3xl font-bold mb-6 text-left">{{ $ddp->nom }}</h1>
                 <div class="flex justify-between">
                     <div class="flex flex-col gap-4 m-4">
                         <div>
@@ -97,7 +99,7 @@
                             </div>
                         </div>
                             <div class="flex flex-col p-4 gap-1">
-                                <div class="flex flex-col gap-4">
+                                <div class="flex flex-col mb-2">
                                     <x-input-label value="Établissement" />
                                     <select name="etablissement-{{ $societe->id }}" required
                                         id="etablissement-{{ $societe->id }}" class="select w-fit min-w-96"
@@ -120,7 +122,7 @@
                                         <span class="text-red-500">{{ $message }}</span>
                                     @enderror
                                 </div>
-                                <div class="flex flex-col gap-4">
+                                <div class="flex flex-col mb-2">
                                     <x-input-label value="Destinataire" />
                                     <select name="contact-{{ $societe->id }}" id="contact-{{ $societe->id }}"
                                         required class="select w-fit min-w-96">

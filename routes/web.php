@@ -114,7 +114,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::get('/matieres/quickcreate/{modalId}', [MatiereController::class, 'quickCreate'])->name('matieres.quickCreate');
         Route::get('/matieres/quickSearch', [MatiereController::class, 'quickSearch'])->name('matieres.quickSearch');
         Route::get('/matieres/famille/{famille}/sous-familles/json', [MatiereController::class, 'sousFamillesJson'])->name('matieres.sous_familles.json');
-        Route::post('/matieres/sous-famille/create', [MatiereController::class, 'createSousFamille'])->name('matieres.create_sous_famille');
+        Route::post('/matieres/sous-famille/store', [MatiereController::class, 'storeSousFamille'])->name('matieres.sous_familles.store');
         Route::get('/matieres/{matiere}/fournisseurs/json', [MatiereController::class, 'fournisseursJson'])->name('matieres.fournisseurs.json');
         Route::get('/matieres/standards', [StandardController::class, 'index'])->name('standards.index');
         Route::get('/matieres/{matiere}', [MatiereController::class, 'show'])->name('matieres.show');
@@ -122,12 +122,13 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::post('/matieres/{matiere}/mouvement', [MatiereController::class, 'retirerMouvement'])->name('matieres.mouvement');
 
 
-        Route::get('/matieres/standards/{dossier}/{standard}', [StandardController::class, 'show'])->name('standards.show');
         Route::delete('/matieres/standards/delete', [StandardController::class, 'destroy'])->name('standards.destroy');
         Route::delete('/matieres/standards/deleteDossier', [StandardController::class, 'destroyDossier'])->name('standards.destroy_dossier');
         Route::post('/matieres/standards/create', [StandardController::class, 'store'])->name('standards.store');
         Route::post('/matieres/standards/createDossier', [StandardController::class, 'storeDossier'])->name('standards.store_dossier');
+        Route::get('/matieres/standards/{dossier}/standards/json', [StandardController::class, 'showStandardsJson'])->name('standards.show_json');
         Route::get('/matieres/standards/{dossier}/{standard}/versions/json', [StandardController::class, 'showVersionsJson'])->name('standards.show_versions_json');
+        Route::get('/matieres/standards/{dossier}/{standard}', [StandardController::class, 'show'])->name('standards.show');
     });
     Route::middleware('permission:gerer_mail_templates')->group(function () {
         Route::get('/mailtemplates', [MailtemplateController::class, 'index'])->name('mailtemplates.index');

@@ -3,6 +3,7 @@
 @endphp
 
 <x-app-layout>
+    @section('title', 'Validation - '. $cde->code)
     <x-slot name="header">
         <div>
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
@@ -31,7 +32,12 @@
         <form action="{{ route('cde.validate', $cde->id) }}" method="POST">
             @csrf
             <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-6 rounded-md shadow-md">
-                <h1 class="text-3xl font-bold mb-6 text-left">{{ $cde->nom }}</h1>
+                <div class="flex items-center mb-6">
+                    <h1 class="text-3xl font-bold  text-left mr-2">{{ $cde->code }} - {{ $cde->nom }}</h1>
+                    <div class="text-center w-fit px-2 text-xs leading-5 flex rounded-full font-bold items-center justify-center"
+                        style="background-color: {{ $cde->statut->couleur }}; color: {{ $cde->statut->couleur_texte }}">
+                        {{ $cde->statut->nom }}</div>
+                </div>
 
 
                 {{--

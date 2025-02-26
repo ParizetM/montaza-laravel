@@ -107,6 +107,10 @@
     .bg-gray-850 {
         background-color: #18202F;
     }
+    .bg-gray-1000 {
+        --tw-bg-opacity: 1;
+        background-color: rgb(10 15 25 / var(--tw-bg-opacity, 1));
+    }
 
     .btn-contact {
         padding-top: 0.25rem;

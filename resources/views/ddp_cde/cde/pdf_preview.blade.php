@@ -1,4 +1,5 @@
 <x-app-layout>
+    @section('title', 'Validation - ' . $cde->code)
     <x-slot name="header">
         <div>
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
@@ -6,7 +7,7 @@
                     class="hover:bg-gray-100 hover:dark:bg-gray-700 p-1 rounded">Demandes de prix et commandes</a>
                 >>
                 <a href="{{ route('cde.show', $cde->id) }}"
-                    class="hover:bg-gray-100 hover:dark:bg-gray-700 p-1 rounded">{!! __('Créer une demande de prix') !!}</a>
+                    class="hover:bg-gray-100 hover:dark:bg-gray-700 p-1 rounded">{!! __('Créer une Commande') !!}</a>
                 >> Validation
             </h2>
         </div>
@@ -17,30 +18,35 @@
 
         <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-6 rounded-md shadow-md">
             <div class="flex justify-between items-center">
-                <h1 class="text-3xl font-bold mb-6 text-left">{{ $cde->nom }} - Récapitulatif</h1>
+                <div class="flex items-center mb-6">
+                    <h1 class="text-3xl font-bold  text-left mr-2">{{ $cde->code }} - {{ $cde->nom }}</h1>
+                    <div class="text-center w-fit px-2 text-xs leading-5 flex rounded-full font-bold items-center justify-center"
+                        style="background-color: {{ $cde->statut->couleur }}; color: {{ $cde->statut->couleur_texte }}">
+                        {{ $cde->statut->nom }}</div>
+                </div>
                 <a href="{{ route('cde.pdfs.download', $cde) }}" class="btn">Télécharger tous les PDF</a>
 
             </div>
             <div class="flex flex-wrap gap-4">
                 {{-- @dd($pdfs) --}}
-                    @php
-                        $cdeannee = explode('-', $cde->code)[1];
-                    @endphp
-                    <div class="flex flex-col gap-2 bg-gray-100 dark:bg-gray-700 p-4 rounded-md hover:scale-105 cursor-pointer transition-all relative"
-                        id="pdf-{{ $pdf }}" title="Ouvrir le PDF">
-                        <h2
-                            class="text-xl font-semibold text-gray-700 dark:text-gray-200  border border-gray-300 dark:border-gray-700 pb-2 hover">
-                            {{ explode('_', $pdf)[count(explode('_', $pdf)) - 1] }}</h2>
-                        <div style="background-color: rgba(0,0,0,0); height: 409px; width: 285px; margin-bottom: 15px;"
-                            class="absolute bottom-4"></div>
-                        <object data="{{ route('cde.pdfshow', ['cde' => $cde, 'annee' => $cdeannee, 'nom' => $pdf]) }}"
-                            type="application/pdf" height="424px" width="300px">
-                            <p>Il semble que vous n'ayez pas de plugin PDF pour ce navigateur. Pas de problème... vous
-                                pouvez <a
-                                    href="{{ route('cde.pdfshow', ['cde' => $cde, 'annee' => $cdeannee, 'nom' => $pdf]) }}">cliquer
-                                    ici pour télécharger le fichier PDF.</a></p>
-                        </object>
-                    </div>
+                @php
+                    $cdeannee = explode('-', $cde->code)[1];
+                @endphp
+                <div class="flex flex-col gap-2 bg-gray-100 dark:bg-gray-700 p-4 rounded-md hover:scale-105 cursor-pointer transition-all relative"
+                    id="pdf-{{ $pdf }}" title="Ouvrir le PDF">
+                    <h2
+                        class="text-xl font-semibold text-gray-700 dark:text-gray-200  border border-gray-300 dark:border-gray-700 pb-2 hover">
+                        {{ explode('_', $pdf)[count(explode('_', $pdf)) - 1] }}</h2>
+                    <div style="background-color: rgba(0,0,0,0); height: 409px; width: 285px; margin-bottom: 15px;"
+                        class="absolute bottom-4"></div>
+                    <object data="{{ route('cde.pdfshow', ['cde' => $cde, 'annee' => $cdeannee, 'nom' => $pdf]) }}"
+                        type="application/pdf" height="424px" width="300px">
+                        <p>Il semble que vous n'ayez pas de plugin PDF pour ce navigateur. Pas de problème... vous
+                            pouvez <a
+                                href="{{ route('cde.pdfshow', ['cde' => $cde, 'annee' => $cdeannee, 'nom' => $pdf]) }}">cliquer
+                                ici pour télécharger le fichier PDF.</a></p>
+                    </object>
+                </div>
             </div>
             <div>
                 <div class="flex justify-between items-center border-b border-gray-300 dark:border-gray-700 mt-6 mb-4">
@@ -60,7 +66,12 @@
                             <div id="editor-container" style="height: 150px;" class=""></div>
                             <textarea name="contenu" id="contenu" hidden></textarea>
                         </div>
-                        <button type="submit" class="btn float-right -mt-6">Envoyer les mails</button>
+                        <div class="flex justify-between -mt-6">
+                            <div>
+                                <a href="{{ route('cde.cancel_validate', $cde->id) }}" class="btn h-fit">Retour</a>
+                            </div>
+                            <button type="submit" class="btn">Envoyer les mails</button>
+                        </div>
                     </form>
 
                 </div>

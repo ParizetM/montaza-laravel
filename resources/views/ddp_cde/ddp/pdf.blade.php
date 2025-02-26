@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>{{ $ddp->code . ' ' . $etablissement->societe->raison_sociale }}</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
     <style>
@@ -65,9 +65,9 @@
 
         .main-content table th,
         .main-content table td {
-            border: 1px solid #000;
+            /* border: 1px solid #000; */
             padding: 5px;
-            text-align: center;
+            text-align: left;
         }
 
         .main-content table th {

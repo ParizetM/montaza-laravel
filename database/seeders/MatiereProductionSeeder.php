@@ -18,7 +18,7 @@ class MatiereProductionSeeder extends Seeder
             return str_getcsv($line, ';');
         }, file($path));
         $tour = 0;
-        $recap = [];
+        $erreur_standard = 0;
         foreach ($csv as $row) {
 
             if ($row[7] === '') {
@@ -44,8 +44,8 @@ class MatiereProductionSeeder extends Seeder
                 echo "ERREUR SousFamille :  \n - " . $row[3] . "\n - " . $row[0] . "\n";
             }
             if ($standard === null) {
-                echo 'TOUR :'.$tour . "\n";
-                echo "ERREUR Standard :  \n - " . $row[3] . "\n - " . $row[4] . "\n";
+                echo 'TOUR :'.$tour . "\n ERREUR Standard :  \n - " . $row[3] . "\n - " . $row[4] . "\n";
+                $erreur_standard++;
             }
             Matiere::create([
                 'ref_interne' => 'AA-' . str_pad($tour, 5, '0', STR_PAD_LEFT),
@@ -66,6 +66,7 @@ class MatiereProductionSeeder extends Seeder
 
             $tour++;
         }
+        echo $erreur_standard . " erreurs sur " . $tour . " lignes.\n";
         // echo "RECAP : \n";
         // foreach ($recap as $item) {
         //     echo $item . "\n";

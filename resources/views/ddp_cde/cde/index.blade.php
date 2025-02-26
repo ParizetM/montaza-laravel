@@ -1,4 +1,5 @@
 <x-app-layout>
+    @section('title', 'Commandes')
     <x-slot name="header">
         <div class="flex justify-between ">
             <div>

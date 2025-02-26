@@ -1,4 +1,5 @@
 <x-app-layout>
+    @section('title', 'Créer - ' . $ddp->code)
     <x-slot name="header">
         <div>
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
@@ -109,7 +110,8 @@
                         <div class="min-h-96 overflow-x-auto bg-gray-100 dark:bg-gray-900 rounded">
                             <table>
                                 <thead>
-                                    <th colspan="100" class="border-r-4 border-gray-50 dark:border-gray-800">Matières sélectionnées</th>
+                                    <th colspan="100" class="border-r-4 border-gray-50 dark:border-gray-800">Matières
+                                        sélectionnées</th>
 
                                 </thead>
                                 <tbody id="matiere-choisi-table">
@@ -121,12 +123,15 @@
                                                 class="border-b border-gray-200 dark:border-gray-700 rounded-r-md overflow-hidden bg-white dark:bg-gray-800 border-r-4 border-r-green-500 dark:border-r-green-600">
                                                 <td class="text-left px-4">{{ $ddp_ligne->matiere->ref_interne }}</td>
                                                 <td class="text-left px-4">{{ $ddp_ligne->matiere->designation }}</td>
-                                                <td class="text-right px-4 flex items-center"
+                                                <td class="text-right px-4"
                                                     title="{{ $ddp_ligne->matiere->unite->full }}">
-                                                    <x-text-input type="number"
-                                                        name="quantite[{{ $ddp_ligne->matiere->id }}]"
-                                                        oninput="saveChanges()" class="w-20 mx-2"
-                                                        value="{{ formatNumber($ddp_ligne->quantite) }}" min="1" />
+                                                    <div class="flex items-center mt-1">
+
+                                                        <x-text-input type="number"
+                                                            name="quantite[{{ $ddp_ligne->matiere->id }}]"
+                                                            oninput="saveChanges()" class="w-20 mx-2"
+                                                            value="{{ formatNumber($ddp_ligne->quantite) }}"
+                                                            min="1" />
                                                         <select name="unite[{{ $ddp_ligne->matiere_id }}]"
                                                             class="w-16 mx-2 select" onchange="saveChanges()">
                                                             @foreach ($unites as $unite)
@@ -137,21 +142,25 @@
                                                                 </option>
                                                             @endforeach
                                                         </select>
+                                                    </div>
                                                 </td>
 
-                                                <td class="text-right px-4">
-                                                    <button class="float-right"
-                                                        data-matiere-id="{{ $ddp_ligne->matiere->id }}"
-                                                        onclick="removeMatiere(event)">
-                                                        <x-icons.close size="2" class="icons" />
-                                                    </button>
-                                                    <button class="float-right"
-                                                        data-matiere-id="{{ $ddp_ligne->matiere->id }}"
-                                                        onclick="showFournisseurs(event)"
-                                                        x-on:click.prevent="$dispatch('open-modal', 'fournisseurs-modal')"
-                                                        title="Fournisseurs">
-                                                        <x-icons.list size="2" class="icons" />
-                                                    </button>
+                                                <td class="text-right px-4 ">
+                                                    <div class="flex">
+                                                        <button class="float-right"
+                                                            data-matiere-id="{{ $ddp_ligne->matiere->id }}"
+                                                            onclick="showFournisseurs(event)"
+                                                            x-on:click.prevent="$dispatch('open-modal', 'fournisseurs-modal')"
+                                                            title="Fournisseurs">
+                                                            <x-icons.list size="2" class="icons" />
+                                                        </button>
+                                                        <button class="float-right"
+                                                            data-matiere-id="{{ $ddp_ligne->matiere->id }}"
+                                                            onclick="removeMatiere(event)">
+                                                            <x-icons.close size="2" class="icons" />
+                                                        </button>
+
+                                                    </div>
                                                     <input type="hidden"
                                                         name="fournisseur-{{ $ddp_ligne->matiere->id }}"
                                                         value="{{ $ddp_ligne->fournisseurs->pluck('id')->join(';') }}">
@@ -330,7 +339,8 @@
                             tr.setAttribute('data-matiere-ref', matiere.refInterne || '');
                             tr.setAttribute('data-matiere-designation', matiere.designation || '');
                             tr.setAttribute('data-matiere-basic-unite', matiere.lastPriceUnite || '');
-                            tr.setAttribute('data-matiere-unite', matiere.lastPriceUnite || matiere.Unite || '');
+                            tr.setAttribute('data-matiere-unite', matiere.lastPriceUnite || matiere.Unite ||
+                                '');
                             tr.addEventListener('click', addMatiere);
                             tr.innerHTML = `
                 <td class="text-left px-4">${matiere.refInterne || '-'}</td>
@@ -370,7 +380,8 @@
                 tr.innerHTML = `
             <td class="text-left px-4">${matiereRef || '-'}</td>
             <td class="text-left px-4">${matiereDesignation || '-'}</td>
-            <td class="text-right px-4 flex items-center">
+            <td class="text-right px-4">
+                <div class="flex items-center mt-1">
                 <x-text-input type="number" name="quantite[${matiereId}]" class="w-20 mx-2" value="1" min="1" oninput="saveChanges()"
                 />
                 <select
@@ -379,26 +390,29 @@
                 onchange="saveChanges()"
             >
                 ${unites.map(unite => `
-                                                <option
-                                                    value="${unite.id}" title="${unite.full}"
-                                                    ${unite.short === matiereUnite ? 'selected' : ''}
-                                                >
-                                                    ${unite.short}
-                                                </option>
-                                            `).join('')}
+                                                        <option
+                                                            value="${unite.id}" title="${unite.full}"
+                                                            ${unite.short === matiereUnite ? 'selected' : ''}
+                                                        >
+                                                            ${unite.short}
+                                                        </option>
+                                                    `).join('')}
             </select>
-
+                </div>
             </td>
             <td class="text-right px-4" >
-                <button class=" float-right" data-matiere-id="${matiereId}" onclick="removeMatiere(event)">
-                <x-icons.close size="2" class="icons" />
-                </button>
-
-                <button class=" float-right" data-matiere-id="${matiereId}" onclick="showFournisseurs(event)"
+                <div class="flex">
+                    <button class=" float-right" data-matiere-id="${matiereId}" onclick="showFournisseurs(event)"
                 x-on:click.prevent="$dispatch('open-modal', 'fournisseurs-modal')"
                 title="Fournisseurs">
                 <x-icons.list size="2" class="icons" />
                 </button>
+                <button class=" float-right" data-matiere-id="${matiereId}" onclick="removeMatiere(event)">
+                <x-icons.close size="2" class="icons" />
+                </button>
+
+
+                </div>
                 <input type="hidden" name="fournisseur-${matiereId}" value="">
             </td>
             `;
@@ -436,6 +450,7 @@
 
             if (isRefresh == 1) {
                 matiereId = fournisseursTable.querySelector('tr:first-child').getAttribute('data-matiere-id');
+
             } else {
                 matiereId = event.currentTarget.getAttribute('data-matiere-id');
             }
@@ -498,6 +513,18 @@
                     }
                     FinalDataIds = [...new Set(FinalDataIds)];
                     FinalDataNoms = [...new Set(FinalDataNoms)];
+                    if (FinalDataIds.length == 0) {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                        <td colspan="100" class="text-gray-500 dark:text-gray-400 text-center ">
+                            Aucun fournisseur trouvé
+                        </td>
+                    `;
+                    tr.setAttribute('data-matiere-id', matiereId);
+                    tr.id = 'no-fournisseur';
+                    fournisseursTable.appendChild(tr);
+                    }
+
                     FinalDataIds.forEach((fournisseurId, index) => {
                         const tr = document.createElement('tr');
                         const fournisseursSelected = fournisseurInput.value.split(';').find(f => f ==
@@ -561,6 +588,10 @@
                         'dark:hover:bg-gray-700');
                     event.currentTarget.classList.add('bg-green-500', 'dark:bg-green-600', 'hover:bg-green-600',
                         'dark:hover:bg-green-700');
+                        const firstChild = document.getElementById('fournisseurs-table').querySelector('tr:first-child');
+                        if (firstChild && firstChild.id == 'no-fournisseur') {
+                            firstChild.remove();
+                        }
                 } else {
                     // Remove fournisseur
                     currentFournisseurs.splice(index, 1);

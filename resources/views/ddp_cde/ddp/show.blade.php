@@ -78,7 +78,7 @@
                                 @foreach ($ligne as $key => $value)
                                     @if ($value == 'UNDEFINED')
                                         <td
-                                            class="border border-gray-300 dark:border-gray-700 p-2 bg-gray-200 dark:bg-gray-700 {{ $key % 3 == 0 ? 'border-l-2 border-l-gray-500 dark:border-l-gray-300' : '' }}">
+                                            class="border border-gray-300 dark:border-gray-700 p-2 bg-gray-200 dark:bg-gray-1000 {{ $key % 3 == 0 ? 'border-l-2 border-l-gray-500 dark:border-l-gray-300' : '' }}">
                                         </td>
                                     @else
                                         <td
@@ -108,7 +108,34 @@
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                let minValue = Infinity;
+                let minCells = [];
 
+                cells.forEach((cell, index) => {
+                    if (index % 3 === 0) { // Only look at every 3rd column
+                        const value = parseFloat(cell.textContent.trim().replace(/,/g, ''));
+                        if (!isNaN(value)) {
+                            if (value < minValue) {
+                                minValue = value;
+                                minCells = [cell];
+                            } else if (value === minValue) {
+                                minCells.push(cell);
+                            }
+                        }
+                    }
+                });
+
+                minCells.forEach(cell => {
+                    cell.style.color = 'green';
+                });
+            });
+        });
+    </script>
 
 
 </x-app-layout>

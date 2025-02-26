@@ -1,4 +1,5 @@
 <x-app-layout>
+    @section('title', 'Demandes de prix et commandes')
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
 

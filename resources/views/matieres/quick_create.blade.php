@@ -3,6 +3,7 @@
         <x-icons.close class="float-right mb-1 icons" size="1.5" unfocus />
     </a>
     <div class="p-6 ">
+        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Ajouter une Matière</h2>
         <form method="POST" action="{{ route('societes.contacts.store') }}"
             class="w-full text-gray-900 dark:text-gray-100" id="quick-create-form">
             @csrf
@@ -13,19 +14,27 @@
             {{-- FAMILLE --}}
             <div class="mb-4 flex">
                 <div class="mb-4 w-full mr-2">
-                    <x-input-label for="famille_id"> Famille</x-input-label>
-                    <select name="famille_id" id="famille_id" class="select" required>
-                        <!-- Options should be populated dynamically -->
+                    <x-input-label for="famille_id-{{ $modal_id }}"> Famille</x-input-label>
+                    <select name="famille_id" id="famille_id-{{ $modal_id }}" class="select" required
+                        onchange="updateSousFamilleSelect(this.value)">
+                        <option value="" disabled selected>Sélectionner une famille</option>
+                        @foreach ($familles as $famille)
+                            <option value="{{ $famille->id }}">{{ $famille->nom }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div class="mb-4 w-full">
-                    <x-input-label for="sous_famille_id">Sous Famille</x-input-label>
+                    <x-input-label for="sous_famille_id-{{ $modal_id }}">Sous Famille</x-input-label>
                     <div class="flex">
-                        <select name="sous_famille_id" id="sous_famille_id" class="select-left w-full" required>
-                            <!-- Options should be populated dynamically -->
+                        <select name="sous_famille_id" id="sous_famille_id-{{ $modal_id }}"
+                            class="select-left w-full" required>
+                            <option value="" disabled selected>Sélectionner d'abord une famille</option>
                         </select>
-                        <a href="{{ route('matieres.create_sous_famille') }}" target="_blank"
-                            class="btn-select-right"><x-icons.add /></a>
+                        {{-- <a href="{{ route('matieres.create_sous_famille') }}" target="_blank"
+                            class="btn-select-right"><x-icons.add /></a> --}}
+                        <button class="btn-select-right" x-data id="addSousFamille-{{ $modal_id }}" disabled
+                            x-on:click.prevent="$dispatch('open-modal', 'addSousFamille-{{ $modal_id }}')"><x-icons.add /></button>
+
                     </div>
                 </div>
             </div>
@@ -33,15 +42,25 @@
             <div class="mb-4 flex">
                 <div class="mb-4 w-full mr-2">
                     <x-input-label for="dossier_standard_id">Dossier Standard</x-input-label>
-                    <select name="dossier_standard_id" id="dossier_standard_id" class="select">
-                        <!-- Options should be populated dynamically -->
+                    <select name="dossier_standard_id" id="dossier_standard_id" class="select"
+                        onchange="updateStandardSelect(this.value)">
+                        <option value="" disabled selected>Sélectionner un dossier</option>
+                        @foreach ($dossier_standards as $dossier)
+                            <option value="{{ $dossier->nom }}">{{ $dossier->nom }}</option>
+                        @endforeach
                     </select>
                 </div>
-                <div class="mb-4 w-full">
-                    <x-input-label for="standard_version_id">Standard
-                        Version</x-input-label>
+                <div class="mb-4 w-full mr-2">
+                    <x-input-label for="standard_id">Standard</x-input-label>
+                    <select name="standard_id" id="standard_id" class="select"
+                        onchange="updateVersionSelect(this.value)">
+                        <option value="" disabled selected>Sélectionner d'abord un dossier</option>
+                    </select>
+                </div>
+                <div class="mb-4 w-fit">
+                    <x-input-label for="standard_version_id">Version</x-input-label>
                     <select name="standard_version_id" id="standard_version_id" class="select">
-                        <!-- Options should be populated dynamically -->
+                        <option value="" disabled selected>Sélectionner d'abord un standard</option>
                     </select>
                 </div>
             </div>
@@ -75,8 +94,138 @@
                 <button type="submit" class="btn">Ajouter</button>
             </div>
 
+        </form>
+        <x-modal name="addSousFamille-{{ $modal_id }}" id="addSousFamille-{{ $modal_id }}">
+            <div class="p-2">
+                <a x-on:click="$dispatch('close')">
+                    <x-icons.close class="float-right mb-1 icons" size="1.5" unfocus />
+                </a>
+                <div class="p-6 ">
+                    <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Ajouter une Sous Famille</h2>
+                    <form method="POST" action="{{ route('matieres.sous_familles.store') }}"
+                        onsubmit="handleSousFamilleSubmit(event)" class="w-full text-gray-900 dark:text-gray-100">
+                        <div class="mb-4">
+                            <x-input-label for="addSousFamille-famille_id-{{ $modal_id }}">Famille</x-input-label>
+                            <select name="famille_id" id="addSousFamille-famille_id-{{ $modal_id }}"
+                                class="select">
+                                @foreach ($familles as $famille)
+                                    <option value="{{ $famille->id }}" disabled>{{ $famille->nom }}</option>
+                                @endforeach
+                            </select>
+                            <select name="famille_id" id="addSousFamille-famille_id_hidden-{{ $modal_id }}"
+                                class="hidden">
+                                @foreach ($familles as $famille)
+                                    <option value="{{ $famille->id }}" >{{ $famille->nom }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <x-input-label for="nom" :value="__('Nom')" />
+                            <x-text-input type="text" name="nom" id="nom" class="mt-1 block w-full"
+                                required />
+                        </div>
+                        <div class="col-span-2 flex justify-between">
+                            <button type="button" class="btn" id="addSousFamille-button_cancel-{{ $modal_id }}" x-on:click="$dispatch('close')">Annuler</button>
+                            <button type="submit" class="btn">Ajouter</button>
+                        </div>
+                    </form>
+                    <script class="SCRIPT">
+                        function handleSousFamilleSubmit(event) {
+                            event.preventDefault();
+                            var form = event.target;
+                            var formData = new FormData(form);
+                            var url = form.action;
+
+                            fetch(url, {
+                                    method: 'POST',
+                                    body: formData,
+                                    headers: {
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                    }
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        var sousFamilleSelect = document.getElementById('sous_famille_id-{{ $modal_id }}');
+                                        var option = document.createElement('option');
+                                        option.value = data.sousFamille.id;
+                                        option.textContent = data.sousFamille.nom;
+                                        sousFamilleSelect.appendChild(option);
+                                        sousFamilleSelect.value = data.sousFamille.id;
+                                        showFlashMessageFromJs('Sous Famille ajoutée avec succès !', 2000, 'success');
+                                        document.getElementById('addSousFamille-button_cancel-{{ $modal_id }}').click();
+                                    } else {
+                                        showFlashMessageFromJs('Erreur lors de l\'ajout de la Sous Famille.', 2000, 'error');
+                                    }
+                                })
+                                .catch(error => {
+                                    showFlashMessageFromJs('Erreur lors de l\'ajout de la Sous Famille.', 2000, 'error');
+                                    console.error('Erreur lors de l\'ajout de la Sous Famille :', error);
+                                });
+                        }
+                    </script>
+                </div>
+            </div>
+        </x-modal>
     </div>
 </div>
-</form>
-<script></script>
-</div>
+<script class="SCRIPT">
+    function updateSousFamilleSelect(familleId) {
+        var sousFamilleSelect = document.getElementById('sous_famille_id-{{ $modal_id }}');
+        sousFamilleSelect.innerHTML =
+            '<option value="" disabled selected>Sélectionner une sous famille</option>';
+        fetch(`/matieres/famille/${familleId}/sous-familles/json`)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(sousFamille => {
+                    var option = document.createElement('option');
+                    option.value = sousFamille.id;
+                    option.textContent = sousFamille.nom;
+                    sousFamilleSelect.appendChild(option);
+                });
+                document.getElementById('addSousFamille-{{ $modal_id }}').disabled = false;
+                document.getElementById('addSousFamille-famille_id-{{ $modal_id }}').value = familleId;
+                document.getElementById('addSousFamille-famille_id_hidden-{{ $modal_id }}').value = familleId;
+            })
+
+            .catch(error => {
+                console.error('Erreur lors de la récupération des sous familles :', error);
+            });
+    }
+    function updateStandardSelect(dossierId) {
+        var standardSelect = document.getElementById('standard_id');
+        standardSelect.innerHTML = '<option value="" disabled selected>Sélectionner un standard</option>';
+        fetch(`/matieres/standards/${dossierId}/standards/json`)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(standard => {
+                    var option = document.createElement('option');
+                    option.value = standard.id;
+                    option.textContent = standard.nom;
+                    standardSelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Erreur lors de la récupération des standards :', error);
+            });
+    }
+
+    function updateVersionSelect(standardId) {
+        var versionSelect = document.getElementById('standard_version_id');
+        var dossierId = document.getElementById('dossier_standard_id').value;
+        versionSelect.innerHTML = '<option value="" disabled selected>Sélectionner une version</option>';
+        fetch(`/matieres/standards/${dossierId}/${standard}/versions/json`)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(version => {
+                    var option = document.createElement('option');
+                    option.value = version.id;
+                    option.textContent = version.nom;
+                    versionSelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Erreur lors de la récupération des versions :', error);
+            });
+    }
+</script>
