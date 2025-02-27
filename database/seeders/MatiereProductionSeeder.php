@@ -44,7 +44,7 @@ class MatiereProductionSeeder extends Seeder
                 echo "ERREUR SousFamille :  \n - " . $row[3] . "\n - " . $row[0] . "\n";
             }
             if ($standard === null) {
-                echo 'TOUR :'.$tour . "\n ERREUR Standard :  \n - " . $row[3] . "\n - " . $row[4] . "\n";
+                // echo 'TOUR :'.$tour . "\n ERREUR Standard :  \n - " . $row[3] . "\n - " . $row[4] . "\n";
                 $erreur_standard++;
             }
             Matiere::create([

@@ -102,13 +102,25 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="w-2/3">
+                            <div class="">
                                 <x-input-label for="ddp-nom" value="Nom" />
                                 <x-text-input label="Nom" name="ddp-nom" id="ddp-nom"
                                     placeholder="Nom de la demande de prix" autofocus
                                     value="{{ isset($ddp) && $ddp->nom != 'undefined' ? $ddp->nom : '' }}"
-                                    class="w-1/2 {{ isset($ddp) && $ddp->nom != 'undefined' ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : '' }}" />
-                            </div>
+                                    class=" {{ isset($ddp) && $ddp->nom != 'undefined' ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : '' }}" />
+                                </div>
+                                <div>
+                                    <x-input-label for="ddp-code" value="Code" />
+                                    <div class="flex items-center bg-gray-100 dark:bg-gray-900 rounded focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-600">
+                                        <span class="ml-2"> DDP-</span>
+                                        <x-text-input label="Code" name="ddp-code" id="ddp-code"
+                                            placeholder="0000" autofocus maxlength="4"
+                                            value="{{ isset($ddp) && $ddp->nom != 'undefined' ? $ddp->nom : '' }}"
+                                            class="border-0 focus:border-0 dark:border-0 focus:ring-0 dark:focus:ring-0 pl-1 w-16
+                                            {{ isset($ddp) && $ddp->nom != 'undefined' ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : '' }}" />
+                                    </div>
+                                </div>
+
                         </div>
                         <div class="min-h-96 overflow-x-auto bg-gray-100 dark:bg-gray-900 rounded">
                             <table>
@@ -627,6 +639,7 @@
         function saveChanges() {
             const ddpEntite = document.getElementById('ddp-entite');
             const ddpNom = document.querySelector('input[name="ddp-nom"]');
+            const ddpCode = document.querySelector('input[name="ddp-code"]');
             const ddpId = document.getElementById('new-ddp').textContent.trim();
             const saveStatus0 = document.getElementById('save-status-0');
             const saveStatus1 = document.getElementById('save-status-1');
@@ -636,6 +649,11 @@
             saveStatus1.classList.add('hidden');
             saveStatus2.classList.add('hidden');
             if ('' === ddpNom.value.trim()) {
+                saveStatus0.classList.add('hidden');
+                saveStatus2.classList.remove('hidden');
+                return;
+            }
+            if ('' === ddpCode.value.trim()) {
                 saveStatus0.classList.add('hidden');
                 saveStatus2.classList.remove('hidden');
                 return;
@@ -678,6 +696,7 @@
                     });
                     row.classList.add('border-r-green-500', 'dark:border-r-green-600');
                     ddpNom.classList.add('border-r-green-500', 'dark:border-r-green-600', 'border-r-4');
+                    ddpCode.classList.add('border-r-green-500', 'dark:border-r-green-600', 'border-r-4');
                     ddpEntite.classList.add('border-r-green-500', 'dark:border-r-green-600', 'border-r-4');
                 }
             });
@@ -691,6 +710,7 @@
                         ddp_id: ddpId,
                         entite_id: ddpEntite.value,
                         nom: ddpNom.value,
+                        code: ddpCode.value,
                         matieres: matieres
                     })
                 })
@@ -761,6 +781,7 @@
             const matiereTable = document.getElementById('matiere-table');
             const ddpEntite = document.getElementById('ddp-entite');
             const ddpNom = document.getElementById('ddp-nom');
+            const ddpCode = document.getElementById('ddp-code');
 
             // Event listener for search bar input
 
@@ -775,6 +796,11 @@
 
             ddpNom.addEventListener('input', function() {
                 if (ddpNom.value !== undefined && ddpNom.value.trim() !== '') {
+                    saveChanges();
+                }
+            });
+            ddpCode.addEventListener('input', function() {
+                if (ddpCode.value !== undefined && ddpCode.value.trim() !== '') {
                     saveChanges();
                 }
             });

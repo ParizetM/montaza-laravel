@@ -228,13 +228,8 @@ class DdpController extends Controller
     public function create()
     {
         Ddp::where('nom', 'undefined')->delete();
-        $lastDdp = Ddp::latest()->first();
-        $code = $lastDdp ? $lastDdp->code : 'DDP-' . now()->format('y') . '-0000';
-        $code = explode('-', $code);
-        $code = $code[1] + 1;
-        $newCode = 'DDP-' . now()->format('y') . '-' . str_pad($code, 4, '0', STR_PAD_LEFT);
         $ddp = Ddp::create([
-            'code' => $newCode,
+            'code' => 'undefined',
             'nom' => 'undefined',
             'ddp_cde_statut_id' => 1,
             'entite_id' => 1,
@@ -248,6 +243,7 @@ class DdpController extends Controller
         $validator = \Validator::make($request->all(), [
             'ddp_id' => 'required|integer|exists:ddps,id',
             'entite_id' => 'required|integer|exists:entites,id',
+            'code' => 'required|string|max:4',
             'nom' => 'required|string|max:255',
             'matieres' => 'required|array',
             'matieres.*.id' => 'required|integer|exists:matieres,id',
@@ -260,11 +256,19 @@ class DdpController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 400);
         }
-
+        $entite_code = Entite::findOrFail($request->entite_id)->id;
+        if ($entite_code == 1) {
+            $entite_code = '';
+        } elseif ($entite_code == 2) {
+            $entite_code = 'av';
+        } elseif ($entite_code == 3) {
+            $entite_code = 'amb';
+        }
         try {
             $ddp = Ddp::findOrFail($request->ddp_id);
             $ddp->entite_id = $request->entite_id;
             $ddp->nom = $request->nom;
+            $ddp->code = "DDP-".date('y') . "-". $request->code."-".$entite_code;
             $ddp->save();
             $ddp->ddpLigne()->delete();
             foreach ($request->matieres as $matiere) {
