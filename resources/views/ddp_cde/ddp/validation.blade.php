@@ -1,5 +1,5 @@
 <x-app-layout>
-    @section('title', 'Validation - '. $cde->code)
+    @section('title', 'Validation - '. $ddp->code)
 
     <x-slot name="header">
         <div>
@@ -17,8 +17,12 @@
         <form action="{{ route('ddp.validate', $ddp->id) }}" method="POST">
             @csrf
             <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-6 rounded-md shadow-md">
-                <h1 class="text-3xl font-bold mb-6 text-left">{{ $ddp->nom }}</h1>
-                <div class="flex justify-between">
+                <div class="flex items-center mb-12">
+                    <h1 class="text-3xl font-bold  text-left mr-2">{{ $ddp->nom }} - Récapitulatif</h1>
+                    <div class="text-center w-fit px-2 text-xs leading-5 flex rounded-full font-bold items-center justify-center"
+                        style="background-color: {{ $ddp->statut->couleur }}; color: {{ $ddp->statut->couleur_texte }}">
+                        {{ $ddp->statut->nom }}</div>
+                </div>                <div class="flex justify-between">
                     <div class="flex flex-col gap-4 m-4">
                         <div>
                             <x-input-label value="Dossier suivi par ?" />

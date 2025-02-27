@@ -59,22 +59,22 @@ class DdpController extends Controller
 
         // Construire la requête de base
         $query = Ddp::query()
-                    ->where('nom', '!=', 'undefined')
-                    ->when($search, function ($query, $search) {
-                        $query->where(function ($subQuery) use ($search) {
-                            $subQuery->where('nom', 'ILIKE', "%{$search}%")
-                                ->orWhere('code', 'ILIKE', "%{$search}%")
-                                ->orWhereHas('user', function ($subQuery) use ($search) {
-                                    $subQuery->where('first_name', 'ILIKE', "%{$search}%")
-                                        ->orWhere('last_name', 'ILIKE', "%{$search}%");
-                                });
+            ->where('nom', '!=', 'undefined')
+            ->when($search, function ($query, $search) {
+                $query->where(function ($subQuery) use ($search) {
+                    $subQuery->where('nom', 'ILIKE', "%{$search}%")
+                        ->orWhere('code', 'ILIKE', "%{$search}%")
+                        ->orWhereHas('user', function ($subQuery) use ($search) {
+                            $subQuery->where('first_name', 'ILIKE', "%{$search}%")
+                                ->orWhere('last_name', 'ILIKE', "%{$search}%");
                         });
-                    })
-                    ->when($statut, function ($query, $statut) {
-                        $query->where('ddp_cde_statut_id', $statut);
-                    })
-                    ->orderBy('ddp_cde_statut_id', 'asc')
-                    ->orderBy('created_at', 'desc');
+                });
+            })
+            ->when($statut, function ($query, $statut) {
+                $query->where('ddp_cde_statut_id', $statut);
+            })
+            ->orderBy('ddp_cde_statut_id', 'asc')
+            ->orderBy('created_at', 'desc');
 
         // Récupérer les résultats paginés
         $ddps = $query->paginate($quantite);
@@ -86,7 +86,8 @@ class DdpController extends Controller
         return view('ddp_cde.ddp.index', compact('ddps', 'ddp_statuts'));
     }
 
-    public function indexColDdpSmall() {
+    public function indexColDdpSmall()
+    {
         return DdpController::indexColDdp(true);
     }
     public function indexColDdp($isSmall = false)
@@ -97,9 +98,9 @@ class DdpController extends Controller
         $ddps->load('user');
         $ddps->load('ddpCdeStatut');
 
-        return view('ddp_cde.ddp.index_col', compact('ddps','isSmall'));
+        return view('ddp_cde.ddp.index_col', compact('ddps', 'isSmall'));
     }
-/*
+    /*
  ######  ##     ##  #######  ##      ##
 ##    ## ##     ## ##     ## ##  ##  ##
 ##       ##     ## ##     ## ##  ##  ##
@@ -199,12 +200,12 @@ class DdpController extends Controller
                 foreach ($table_data as $dataRow) {
                     $sum += (float)$dataRow[$indexSociete];
                 }
-                $row[] = ($sum != 0) ? $sum . '€' : '';
+                $row[] = ($sum != 0) ? formatNumberArgent($sum) : '';
                 $sum = 0;
                 foreach ($table_data as $dataRow) {
                     $sum += (float)$dataRow[$indexSociete + 1];
                 }
-                $row[] = ($sum != 0) ? $sum . '€' : '';
+                $row[] = ($sum != 0) ? formatNumberArgent($sum) : '';
 
                 $dates = array_filter(array_column($table_data, $indexSociete + 2));
                 $closestDate = null;
@@ -221,7 +222,7 @@ class DdpController extends Controller
             }
             $data[] = $row;
             $ddplignes = $ddp->ddpLigne;
-            return view('ddp_cde.ddp.show', compact('ddp', ['ddp_societes', 'data', 'ddplignes','ddp_societe_contacts']));
+            return view('ddp_cde.ddp.show', compact('ddp', ['ddp_societes', 'data', 'ddplignes', 'ddp_societe_contacts']));
         }
     }
     public function create()
@@ -381,6 +382,8 @@ class DdpController extends Controller
         foreach ($ddp->ddpLigne as $ddpLigne) {
             foreach ($ddpLigne->ddpLigneFournisseur as $ddpLigneFournisseur) {
                 DB::table('societe_matiere')->where('ddp_ligne_fournisseur_id', $ddpLigneFournisseur->id)->delete();
+                $ddpLigneFournisseur->date_livraison = null;
+                $ddpLigneFournisseur->save();
             }
         }
         return redirect()->route('ddp.show', $ddp->id);
@@ -405,7 +408,7 @@ class DdpController extends Controller
             $fileName = $ddp->code . '_' . $etablissement->societe->raison_sociale . '.pdf';
             $entite = $ddp->entite;
             $pdf = app('dompdf.wrapper');
-            $pdf->loadView('ddp_cde.ddp.pdf', ['etablissement' => $etablissement, 'ddp' => $ddp, 'lignes' => $lignes, 'afficher_destinataire' => $afficher_destinataire, 'destinataire' => $destinataire,'entite' => $entite]);
+            $pdf->loadView('ddp_cde.ddp.pdf', ['etablissement' => $etablissement, 'ddp' => $ddp, 'lignes' => $lignes, 'afficher_destinataire' => $afficher_destinataire, 'destinataire' => $destinataire, 'entite' => $entite]);
             $pdf->setOption(['isRemoteEnabled' => true, 'isHtml5ParserEnabled' => true, 'isPhpEnabled' => true]);
             $pdf->output();
             $domPdf = $pdf->getDomPDF();
@@ -559,51 +562,63 @@ class DdpController extends Controller
         //     }
         //     $data2[] = $row;
         // }
+
         foreach ($ddp->ddpLigne as $index0 => $ddpLigne) {
             $row = [];
+            $index_societe = 0;
             foreach ($ddp_societes as $index1 => $societe) {
-            $matiereid = $ddpLigne->matiere_id;
-            $societeid = $societe->id;
-            $matiere = Matiere::findOrNew($matiereid);
-            $existingFournisseur = $matiere->fournisseurs()->where('societe_id', $societeid)->orderBy('date_dernier_prix', 'desc')->first();
-            $ref_fournisseur = $data[$index0][$index1 * 4] ?? null;
-            $newPrix = $data[$index0][$index1 * 4 + 1] ?? null;
-            $newUnite = Unite::where('short', $data[$index0][$index1 * 4 + 2] ?? '')->first()->id ?? null;
-            $dateString = $data[$index0][$index1 * 4 + 3] ?? '';
-            $date = (!empty($dateString) && $dateString != 'UNDEFINED') ? Carbon::createFromFormat('d/m/Y', $dateString) : null;
+                $matiereid = $ddpLigne->matiere_id;
+                $societeid = $societe->id;
+                $matiere = Matiere::findOrNew($matiereid);
+                $existingFournisseur = $matiere->fournisseurs()->where('societe_id', $societeid)->orderBy('date_dernier_prix', 'desc')->first();
 
-            if ($newPrix && (!$existingFournisseur || $existingFournisseur->pivot->prix != $newPrix) && $newPrix != 'UNDEFINED' && $newPrix != '' && $newPrix ) {
-                $matiere->fournisseurs()->attach($societeid, [
-                'ref_fournisseur' => $ref_fournisseur,
-                'prix' => $newPrix,
-                'unite_id' => $newUnite,
-                'date_dernier_prix' => now(),
-                'ddp_ligne_fournisseur_id' => $ddpLigne->ddpLigneFournisseur->where('societe_id', $societeid)->first()->id
-                ]);
-            } elseif ($existingFournisseur && $newPrix != 'UNDEFINED' && $newPrix != '' && $newPrix) {
-                $existingFournisseur->pivot->update([
-                'ref_fournisseur' => $ref_fournisseur,
-                'prix' => $newPrix,
-                'unite_id' => $newUnite,
-                'date_dernier_prix' => now()
-                ]);
-            }
+                // Récupération des valeurs
+                $ref_fournisseur = $data[$index0][$index_societe] ?? null;
+                $newPrix = $data[$index0][$index_societe + 1] ?? null;
+                $newUnite = Unite::where('short', $data[$index0][$index_societe + 2] ?? '')->first()->id ?? null;
+                $dateString = $data[$index0][$index_societe + 3] ?? '';
 
-            $ddpLigneFournisseur = $ddpLigne->ddpLigneFournisseur->where('societe_id', $societeid)->first();
-            if ($ddpLigneFournisseur && $date) {
-                $ddpLigneFournisseur->date_livraison = $date->format('Y-m-d');
-                $ddpLigneFournisseur->save();
-                $date = 'date_enregistrement';
-            }
+                // Traitement de la date
+                $date = (!empty($dateString) && $dateString != 'UNDEFINED') ? Carbon::createFromFormat('d/m/Y', $dateString)->format('Y-m-d') : null;
 
-            $row[] = $ref_fournisseur;
-            $row[] = $newPrix;
-            $row[] = $newUnite;
-            $row[] = $date;
+                // Vérification et mise à jour ou insertion
+                if ($newPrix && $newPrix != 'UNDEFINED' && (!$existingFournisseur || $existingFournisseur->pivot->prix != $newPrix)) {
+                    $matiere->fournisseurs()->attach($societeid, [
+                        'ref_fournisseur' => $ref_fournisseur,
+                        'prix' => $newPrix,
+                        'unite_id' => $newUnite,
+                        'date_dernier_prix' => now(),
+                        'ddp_ligne_fournisseur_id' => $ddpLigne->ddpLigneFournisseur->where('societe_id', $societeid)->first()->id ?? null
+                    ]);
+                } elseif ($existingFournisseur && $newPrix != 'UNDEFINED' && $newPrix != '') {
+                    $existingFournisseur->pivot->update([
+                        'ref_fournisseur' => $ref_fournisseur,
+                        'prix' => $newPrix,
+                        'unite_id' => $newUnite,
+                        'date_dernier_prix' => now()
+                    ]);
+                }
+
+                // Mise à jour de la date de livraison dans ddpLigneFournisseur
+                $ddpLigneFournisseur = $ddpLigne->ddpLigneFournisseur->where('societe_id', $societeid)->first();
+                if ($ddpLigneFournisseur && $date) {
+                    $ddpLigneFournisseur->date_livraison = $date;
+                    $ddpLigneFournisseur->save();
+                }
+
+                // Ajouter à la ligne de données pour exporter
+                $row[] = $index0.'-'.$index_societe.'-'.$ref_fournisseur;
+                $row[] = $index0.'-'.$index_societe.'-'.$newPrix;
+                $row[] = $index0.'-'.$index_societe.'-'.$newUnite;
+                $row[] = $index0.'-'.$index_societe.'-'.$date;
+                $index_societe += 4;
             }
             $data2[] = $row;
         }
-        return $data2;
+
+        $data3[] = $data2;
+        $data3[] = $data;
+        return $data3;
         // Assuming you have some logic to save the data here
 
     }
@@ -699,13 +714,13 @@ class DdpController extends Controller
                             $unite = '';
                         }
                         $date_livraison = $ddpLigneFournisseur->date_livraison ? Carbon::parse($ddpLigneFournisseur->date_livraison)->format('d/m/Y') : '';
-                        if ($prix != '' ) {
+                        if ($prix != '') {
                             if ($unite != '') {
-                                $row[] = $prix . ' €/' . $unite;
+                                $row[] = formatNumberArgent($prix) . '/' . $unite;
                             } else {
-                                $row[] = $prix . ' €';
+                                $row[] = formatNumberArgent($prix);
                             }
-                            $row[] = $prix * $ddpLigne->quantite . ' €';
+                            $row[] = formatNumberArgent($prix * $ddpLigne->quantite);
                         } else {
                             $row[] = '';
                             $row[] = '';
@@ -755,13 +770,14 @@ class DdpController extends Controller
         }
         return redirect()->route('ddp.show', $ddp->id);
     }
-    public function commander($id,$societe_contact_id) {
+    public function commander($id, $societe_contact_id)
+    {
         $ddp = Ddp::findOrFail($id);
         $societe_contact = SocieteContact::findOrFail($societe_contact_id);
         $societe = $societe_contact->etablissement->societe;
         $cde = Cde::create([
             'code' => 'CDE-' . now()->format('y') . '-' . str_pad(Cde::whereYear('created_at', now()->year)->count() + 1, 4, '0', STR_PAD_LEFT),
-            'nom' => 'Commande de ' . $ddp->code.' chez '.$societe->raison_sociale,
+            'nom' => 'Commande de ' . $ddp->code . ' chez ' . $societe->raison_sociale,
             'ddp_cde_statut_id' => 1,
             'ddp_id' => $ddp->id,
             'entite_id' => $ddp->entite_id,

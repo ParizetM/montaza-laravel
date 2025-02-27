@@ -64,6 +64,10 @@
                                 </tr>
                             </tbody>
                         </table>
+
+                    </div>
+                    <div class="flex justify-center">
+                        <x-quick-matiere />
                     </div>
                 </div>
                 <div class="bg-white dark:bg-gray-800 p-4 flex flex-col gap-4 rounded-md">
@@ -514,7 +518,7 @@
                         });
                     } else {
                         matiereTable.innerHTML =
-                            '<tr><td colspan="100" class="text-gray-500 dark:text-gray-400 text-center ">Aucune matière trouvée</td></tr>';
+                            `<tr><td colspan="100" class="text-gray-500 dark:text-gray-400 text-center ">Aucune matière trouvée</td></tr> `;
                     }
                 });
         }

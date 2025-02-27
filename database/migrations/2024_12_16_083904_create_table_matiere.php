@@ -63,8 +63,8 @@ return new class extends Migration
             $table->foreignId('unite_id')->constrained('unites');
             $table->foreignId(column: 'sous_famille_id')->constrained('sous_familles');
             $table->foreignId(column: 'material_id')->nullable()->constrained('materials');
-            $table->string('dn');
-            $table->string('epaisseur');
+            $table->string('dn')->nullable();
+            $table->string('epaisseur')->nullable();
             $table->decimal('prix_moyen', 8, 2)->nullable();
             $table->integer('quantite');
             $table->integer('stock_min');

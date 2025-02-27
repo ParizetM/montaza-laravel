@@ -1,4 +1,5 @@
 <x-app-layout>
+    @section('title', 'Matières')
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
 
@@ -34,7 +35,7 @@
                         {!! __('Rechercher') !!}
                     </button>
                 </form>
-                <x-quick_matiere class="mb-1" />
+                <x-quick-matiere class="mb-1" />
 
             </div>
         </div>

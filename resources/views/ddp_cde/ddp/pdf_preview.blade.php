@@ -1,5 +1,5 @@
 <x-app-layout>
-    @section('title', 'Validation - '. $ddp->code)
+    @section('title', 'Validation - ' . $ddp->code)
     <x-slot name="header">
         <div>
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
@@ -18,8 +18,13 @@
 
         <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-6 rounded-md shadow-md">
             <div class="flex justify-between items-center">
-                <h1 class="text-3xl font-bold mb-6 text-left">{{ $ddp->nom }} - Récapitulatif</h1>
-                <a href="{{ route('ddp.pdfs.download', $ddp) }}" class="btn">Télécharger tous les PDF</a>
+                <div class="flex items-center mb-12">
+                    <h1 class="text-3xl font-bold  text-left mr-2">{{ $ddp->nom }} - Récapitulatif</h1>
+                    <div class="text-center w-fit px-2 text-xs leading-5 flex rounded-full font-bold items-center justify-center"
+                        style="background-color: {{ $ddp->statut->couleur }}; color: {{ $ddp->statut->couleur_texte }}">
+                        {{ $ddp->statut->nom }}</div>
+                </div>
+                 <a href="{{ route('ddp.pdfs.download', $ddp) }}" class="btn">Télécharger tous les PDF</a>
 
             </div>
             <div class="flex flex-wrap gap-4">

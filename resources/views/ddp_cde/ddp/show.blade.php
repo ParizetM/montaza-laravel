@@ -1,4 +1,5 @@
 <x-app-layout>
+    @section('title', 'Récapitulatif - ' . $ddp->code)
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <div>
@@ -18,8 +19,11 @@
 
     <div class="max-w-8xl py-4 mx-auto sm:px-4 lg:px-6">
         <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-6 rounded-md shadow-md ">
-            <div class="flex justify-between items-center mb-6">
-                <h1 class="text-3xl font-bold mb-6 text-left">{{ $ddp->nom }} - Récapitulatif</h1>
+            <div class="flex items-center mb-12">
+                <h1 class="text-3xl font-bold  text-left mr-2">{{ $ddp->nom }} - Récapitulatif</h1>
+                <div class="text-center w-fit px-2 text-xs leading-5 flex rounded-full font-bold items-center justify-center"
+                    style="background-color: {{ $ddp->statut->couleur }}; color: {{ $ddp->statut->couleur_texte }}">
+                    {{ $ddp->statut->nom }}</div>
             </div>
             <div class="overflow-x-auto overflow-y-visible">
                 <table class="w-auto table-auto bg-white dark:bg-gray-900 min-w-0">

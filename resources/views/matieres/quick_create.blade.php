@@ -4,7 +4,8 @@
     </a>
     <div class="p-6 ">
         <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Ajouter une Matière</h2>
-        <form method="POST" action="{{ route('societes.contacts.store') }}"
+        <form method="POST" action="{{ route('matieres.quickStore',$modal_id) }}"
+            onsubmit="handleFormSubmit(event)"
             class="w-full text-gray-900 dark:text-gray-100" id="quick-create-form">
             @csrf
             <div class="mb-4">
@@ -40,9 +41,9 @@
             </div>
             {{-- STANDARD --}}
             <div class="mb-4 flex">
-                <div class="mb-4 w-full mr-2">
-                    <x-input-label for="dossier_standard_id">Dossier Standard</x-input-label>
-                    <select name="dossier_standard_id" id="dossier_standard_id" class="select"
+                <div class="mb-4 w-fit mr-2">
+                    <x-input-label for="dossier_standard_id-{{ $modal_id }}" optionnel class="whitespace-nowrap">Dossier Standard</x-input-label>
+                    <select name="dossier_standard_id" id="dossier_standard_id-{{ $modal_id }}" class="select"
                         onchange="updateStandardSelect(this.value)">
                         <option value="" disabled selected>Sélectionner un dossier</option>
                         @foreach ($dossier_standards as $dossier)
@@ -51,15 +52,15 @@
                     </select>
                 </div>
                 <div class="mb-4 w-full mr-2">
-                    <x-input-label for="standard_id">Standard</x-input-label>
-                    <select name="standard_id" id="standard_id" class="select"
+                    <x-input-label for="standard_id-{{ $modal_id }}" optionnel>Standard</x-input-label>
+                    <select name="standard_id" id="standard_id-{{ $modal_id }}" class="select"
                         onchange="updateVersionSelect(this.value)">
                         <option value="" disabled selected>Sélectionner d'abord un dossier</option>
                     </select>
                 </div>
                 <div class="mb-4 w-fit">
-                    <x-input-label for="standard_version_id">Version</x-input-label>
-                    <select name="standard_version_id" id="standard_version_id" class="select">
+                    <x-input-label for="standard_version_id-{{ $modal_id }}" optionnel>Rév</x-input-label>
+                    <select name="standard_version_id" id="standard_version_id-{{ $modal_id }}" class="select">
                         <option value="" disabled selected>Sélectionner d'abord un standard</option>
                     </select>
                 </div>
@@ -68,12 +69,15 @@
                 <div class=" w-full mr-2">
                     <x-input-label for="quantite" value="{{ __('Quantité') }}" />
                     <x-text-input type="number" name="quantite" id="quantite" class="mt-1 block w-full"
-                        value="0" />
+                        value="0" required />
                 </div>
                 <div class="w-1/4">
                     <x-input-label for="unite_id">Unité</x-input-label>
                     <select name="unite_id" id="unite_id" class="mt-1 pt-4 select" required>
-                        <!-- Options should be populated dynamically -->
+                        <option value="" disabled selected>Sélectionner une unité</option>
+                        @foreach ($unites as $unite)
+                            <option value="{{ $unite->id }}" title="{{ $unite->full }}">{{ $unite->short }}</option>
+                        @endforeach
                     </select>
                 </div>
             </div>
@@ -86,15 +90,16 @@
                 <x-text-input type="text" name="epaisseur" id="epaisseur" class="mt-1 block w-full" />
             </div>
             <div class="mb-4">
-                <x-input-label for="stock_min" value="{{ __('Stock Minimum') }}" optionnel />
-                <x-text-input type="number" name="stock_min" id="stock_min" class="mt-1 block w-full" value="0" />
+                <x-input-label for="stock_min" value="{{ __('Stock Minimum') }}" />
+                <x-text-input type="number" name="stock_min" id="stock_min" class="mt-1 block w-full" value="0" required />
             </div>
             <div class="col-span-2 flex justify-between">
-                <button type="button" class="btn" x-on:click="$dispatch('close')">Annuler</button>
+                <button type="button" class="btn" x-on:click="$dispatch('close')" id="quick-create-matiere-cancel-{{ $modal_id }}">>Annuler</button>
                 <button type="submit" class="btn">Ajouter</button>
             </div>
 
         </form>
+        {{-- FORMULAIRE AJOUTER SOUS FAMILLE --}}
         <x-modal name="addSousFamille-{{ $modal_id }}" id="addSousFamille-{{ $modal_id }}">
             <div class="p-2">
                 <a x-on:click="$dispatch('close')">
@@ -193,14 +198,14 @@
             });
     }
     function updateStandardSelect(dossierId) {
-        var standardSelect = document.getElementById('standard_id');
+        var standardSelect = document.getElementById('standard_id-{{ $modal_id }}');
         standardSelect.innerHTML = '<option value="" disabled selected>Sélectionner un standard</option>';
         fetch(`/matieres/standards/${dossierId}/standards/json`)
             .then(response => response.json())
             .then(data => {
                 data.forEach(standard => {
                     var option = document.createElement('option');
-                    option.value = standard.id;
+                    option.value = standard.nom;
                     option.textContent = standard.nom;
                     standardSelect.appendChild(option);
                 });
@@ -211,16 +216,17 @@
     }
 
     function updateVersionSelect(standardId) {
-        var versionSelect = document.getElementById('standard_version_id');
-        var dossierId = document.getElementById('dossier_standard_id').value;
+        var versionSelect = document.getElementById('standard_version_id-{{ $modal_id }}');
+        var dossierId = document.getElementById('dossier_standard_id-{{ $modal_id }}').value;
+        var standard = document.getElementById('standard_id-{{ $modal_id }}').value;
         versionSelect.innerHTML = '<option value="" disabled selected>Sélectionner une version</option>';
         fetch(`/matieres/standards/${dossierId}/${standard}/versions/json`)
             .then(response => response.json())
             .then(data => {
                 data.forEach(version => {
                     var option = document.createElement('option');
-                    option.value = version.id;
-                    option.textContent = version.nom;
+                    option.value = version;
+                    option.textContent = version;
                     versionSelect.appendChild(option);
                 });
             })
@@ -228,4 +234,32 @@
                 console.error('Erreur lors de la récupération des versions :', error);
             });
     }
+    function handleFormSubmit(event) {
+        event.preventDefault();
+        var form = event.target;
+        var formData = new FormData(form);
+        var url = form.action;
+
+        fetch(url, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showFlashMessageFromJs('Matière ajoutée avec succès !', 2000, 'success');
+                    document.getElementById('quick-create-matiere-cancel-{{ $modal_id }}').click();
+                } else {
+                    showFlashMessageFromJs('Erreur lors de l\'ajout de la matière.', 2000, 'error');
+                }
+            })
+            .catch(error => {
+                showFlashMessageFromJs('Erreur lors de l\'ajout de la matière.', 2000, 'error');
+                console.error('Erreur lors de l\'ajout de la matière :', error);
+            });
+    }
 </script>
+

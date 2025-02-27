@@ -1,4 +1,5 @@
 <x-app-layout>
+    @section('title', 'Retours - ' . $ddp->code)
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <div>

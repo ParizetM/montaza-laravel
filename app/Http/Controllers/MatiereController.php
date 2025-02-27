@@ -10,6 +10,9 @@ use App\Models\Famille;
 use App\Models\Matiere;
 use App\Models\Societe;
 use App\Models\SousFamille;
+use App\Models\Standard;
+use App\Models\StandardVersion;
+use App\Models\Unite;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
@@ -247,8 +250,10 @@ class MatiereController extends Controller
 
         $familles = Famille::all();
         $dossier_standards = DossierStandard::all();
+        $unites = Unite::all();
         return view('matieres.quick_create', [
             'familles' => $familles,
+            'unites' => $unites,
             'modal_id' => $modal_id,
             'dossier_standards' => $dossier_standards,
         ]);
@@ -257,21 +262,52 @@ class MatiereController extends Controller
     public function quickStore(Request $request)
     {
         $request->validate([
-            'ref_interne' => 'required|string|unique:matieres,ref_interne',
-            'standard_id' => 'nullable|exists:standards,id',
+            'standard_id' => 'nullable|exists:standards,nom',
+            'standard_version_id' => 'nullable|exists:standard_versions,version',
             'designation' => 'required|string|max:255',
-            'societe_id' => 'required|exists:societes,id',
             'unite_id' => 'required|exists:unites,id',
             'sous_famille_id' => 'required|exists:sous_familles,id',
-            'dn' => 'nullable|integer',
-            'epaisseur' => 'nullable|numeric',
+            'dn' => 'nullable|string|max:50',
+            'epaisseur' => 'nullable|string|max:50',
             'quantite' => 'required|integer',
-            'stock_min' => 'nullable|integer',
+            'stock_min' => 'required|integer',
         ]);
+        $lastref = Matiere::max('id') + 1;
+        $dn = $request->input('dn') ?: null;
+        $epaisseur = $request->input('epaisseur') ?: null;
+        if ($request->input('standard_version_id') === '' || $request->input('standard_id') === '') {
+            $standard_version = null;
+        } else {
+            $standard_id = Standard::where('nom', 'ILIKE', $request->input('standard_id'))->first()->id;
+            if ($standard_id === null) {
+                return response()->json(['error' => 'Le standard n\'existe pas'], 422);
+            }
+            $standard_version_id = StandardVersion::where('version', 'ILIKE', $request->input('standard_version_id'))
+                ->where('standard_id', $standard_id)
+                ->first()->id;
+            if ($standard_version_id === null) {
+                return response()->json(['error' => 'La version du standard n\'existe pas'], 422);
+            }
+        }
+        $matiere = Matiere::create([
+            'ref_interne' => 'AA-' . str_pad($lastref, 5, '0', STR_PAD_LEFT),
+                'designation' => $request->input('designation'),
+                'unite_id' => $request->input('unite_id'),
+                'sous_famille_id' => $request->input('sous_famille_id'),
+                'standard_version_id' => $standard_version_id,
+                'dn' => $dn,
+                'epaisseur' => $epaisseur,
+                'prix_moyen' => null,
+                'date_dernier_achat' => null,
+                'quantite' => $request->input('quantite'),
+                'stock_min' => $request->input('stock_min'),
+        ]
+        );
 
-        $matiere = Matiere::create($request->all());
-
-        return response()->json(new MatiereResource($matiere), 201);
+        return response()->json([
+            'success' => true,
+            'matiere' => $matiere,
+        ], 201);
     }
     public function storeSousFamille(Request $request)
     {
@@ -287,4 +323,7 @@ class MatiereController extends Controller
             'sousFamille' => $sousFamille,
         ], 201);
     }
+
+
+
 }

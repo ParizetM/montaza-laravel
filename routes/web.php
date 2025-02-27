@@ -112,6 +112,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::get('/matieres', [MatiereController::class, 'index'])->name('matieres.index');
         Route::get('/matieres/search', [MatiereController::class, 'searchResult'])->name('matieres.search');
         Route::get('/matieres/quickcreate/{modalId}', [MatiereController::class, 'quickCreate'])->name('matieres.quickCreate');
+        Route::POST('/matieres/quickcreate/{modalId}', [MatiereController::class, 'quickStore'])->name('matieres.quickStore');
         Route::get('/matieres/quickSearch', [MatiereController::class, 'quickSearch'])->name('matieres.quickSearch');
         Route::get('/matieres/famille/{famille}/sous-familles/json', [MatiereController::class, 'sousFamillesJson'])->name('matieres.sous_familles.json');
         Route::post('/matieres/sous-famille/store', [MatiereController::class, 'storeSousFamille'])->name('matieres.sous_familles.store');

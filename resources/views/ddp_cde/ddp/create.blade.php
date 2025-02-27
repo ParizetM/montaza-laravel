@@ -65,6 +65,9 @@
                             </tbody>
                         </table>
                     </div>
+                    <div class="flex justify-center">
+                        <x-quick-matiere />
+                    </div>
                 </div>
                 <div class="bg-white dark:bg-gray-800 p-4 flex flex-col gap-4 rounded-md">
                     <form class="bg-white dark:bg-gray-800 flex flex-col gap-4 rounded-md">
@@ -279,6 +282,7 @@
                     </tbody>
                 </table>
             </div>
+        </div>
     </x-modal>
     <script>
         const unites = @json($unites);
