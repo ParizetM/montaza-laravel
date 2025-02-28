@@ -47,7 +47,7 @@
         countdown--;
 
         if (countdown < 0) {
-            location.reload();
+            window.location.reload();
         }
     }, 1000);
 </script>

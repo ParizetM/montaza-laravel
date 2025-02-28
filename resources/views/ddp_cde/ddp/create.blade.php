@@ -1,5 +1,5 @@
 <x-app-layout>
-    @section('title', 'Créer - ' . $ddp->code)
+    @section('title', 'Créer ' . $ddp->code)
     <x-slot name="header">
         <div>
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
@@ -116,7 +116,7 @@
                                         <x-text-input label="Code" name="ddp-code" id="ddp-code"
                                             placeholder="0000" autofocus maxlength="4"
                                             value="{{ isset($ddp) && $ddp->code != 'undefined' ? substr($ddp->code, 7, 4) : '' }}"
-                                            class="border-0 focus:border-0 dark:border-0 focus:ring-0 dark:focus:ring-0 pl-1 w-14 px-0 mx-0" />
+                                            class="border-0 focus:border-0 dark:border-0 focus:ring-0 dark:focus:ring-0 w-14 px-0 mx-0" />
                                         <span class="-ml-2 mr-2" id="ddp-code-entite">{{ isset($entite_code) ? $entite_code : "" }}</span>
                                     </div>
                                 </div>
@@ -827,7 +827,7 @@
                         return response.json();
                     })
                     .then(data => {
-                        document.title = `Créer - DDP-${new Date().getFullYear().toString().slice(-2)}-${data.code}${data.entite_code}`;
+                        document.title = `Créer DDP-${new Date().getFullYear().toString().slice(-2)}-${data.code}${data.entite_code}`;
                         document.getElementById('ddp-code').value = data.code;
                         document.getElementById('ddp-code-entite').textContent = data.entite_code;
                     })

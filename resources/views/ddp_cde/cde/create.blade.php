@@ -1,5 +1,5 @@
 <x-app-layout>
-    @section('title', 'Créer commande - '.$cde->code)
+    @section('title', 'Créer commande '.$cde->code)
     <x-slot name="header">
         <div>
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
@@ -117,7 +117,7 @@
                                     <x-text-input label="Code" name="cde-code" id="cde-code"
                                         placeholder="0000" autofocus maxlength="4"
                                         value="{{ isset($cde) && $cde->code != 'undefined' ? substr($cde->code, 7, 4) : '' }}"
-                                        class="border-0 focus:border-0 dark:border-0 focus:ring-0 dark:focus:ring-0 pl-1 w-14 px-0 mx-0" />
+                                        class="border-0 focus:border-0 dark:border-0 focus:ring-0 dark:focus:ring-0 w-14 px-0 mx-0" />
                                     <span class="-ml-2 mr-2" id="cde-code-entite">{{ isset($entite_code) ? $entite_code : "" }}</span>
                                 </div>
                             </div>
@@ -868,7 +868,7 @@
                         return response.json();
                     })
                     .then(data => {
-                        document.title = `Créer - CDE-${new Date().getFullYear().toString().slice(-2)}-${data.code}${data.entite_code}`;
+                        document.title = `Créer CDE-${new Date().getFullYear().toString().slice(-2)}-${data.code}${data.entite_code}`;
                         document.getElementById('cde-code').value = data.code;
                         document.getElementById('cde-code-entite').textContent = data.entite_code;
                     })
