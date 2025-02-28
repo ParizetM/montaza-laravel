@@ -853,6 +853,28 @@
                 }
             });
             cdeEntite.addEventListener('change', function() {
+
+                fetch('/cde/get-last-code/' + cdeEntite.value, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        document.title = `Créer - CDE-${new Date().getFullYear().toString().slice(-2)}-${data.code}${data.entite_code}`;
+                        document.getElementById('cde-code').value = data.code;
+                        document.getElementById('cde-code-entite').textContent = data.entite_code;
+                    })
+                    .catch(error => {
+                        console.error('Erreur lors de la récupération du code :', error);
+                    });
                 saveChanges();
             });
             toggleShowRefFournisseur.addEventListener('change', function() {

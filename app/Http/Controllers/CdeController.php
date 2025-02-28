@@ -93,7 +93,7 @@ class CdeController extends Controller
             'ddp_cde_statut_id' => 1,
             'entite_id' => 1,
             'user_id' => Auth::id(),
-            'tva' => 0,
+            'tva' => 20,
             'type_expedition_id' => 1,
         ]);
         $cdeid =  $cde->id;
@@ -109,10 +109,11 @@ class CdeController extends Controller
             $entites = Entite::all();
             $societes = Societe::whereIn('societe_type_id', [2, 3])->get();
             $showRefFournisseur = $cde->show_ref_fournisseur;
-            $lastcode = CDE::where('code', 'LIKE', 'CDE-' . date('y') . '-%')
+            $entite_code = Entite::findOrFail($cde->entite_id)->id;
+            $lastcode = CDE::where('code', 'LIKE', 'CDE-' . date('y') . '%')
+                ->where('entite_id', $cde->entite_id)
                 ->orderBy('code', 'desc')
                 ->first();
-            $entite_code = Entite::findOrFail($cde->entite_id)->id;
             if ($entite_code == 1) {
                 $entite_code = '';
             } elseif ($entite_code == 2) {
@@ -123,7 +124,7 @@ class CdeController extends Controller
             $lastNumber = $lastcode ? intval(explode('-', $lastcode->code)[2]) : 0;
             $newNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
             if ($cde->code == 'undefined') {
-                $cde->code = "CDE-" . date('y') . "-" . $newNumber .$entite_code;
+                $cde->code = "CDE-" . date('y') . "-" . $newNumber . $entite_code;
                 $cde->save();
             }
             return view(
@@ -144,11 +145,11 @@ class CdeController extends Controller
             $showRefFournisseur = $cde->show_ref_fournisseur;
             $typeExpedition = TypeExpedition::all()->pluck('short');
             $data = $this->getRetours($cdeid);
-            return view('ddp_cde.cde.retours', compact('cde',['data','showRefFournisseur','typeExpedition']));
+            return view('ddp_cde.cde.retours', compact('cde', ['data', 'showRefFournisseur', 'typeExpedition']));
         } elseif ($cde->ddpCdeStatut->id == 3 || $cde->ddpCdeStatut->id == 4 || $cde->ddpCdeStatut->id == 5) {
             $cdeid =  $cde->id;
             $showRefFournisseur = $cde->show_ref_fournisseur;
-            return view('ddp_cde.cde.show', compact('cde',['showRefFournisseur']));
+            return view('ddp_cde.cde.show', compact('cde', ['showRefFournisseur']));
         }
     }
 
@@ -195,7 +196,7 @@ class CdeController extends Controller
         $cde->show_ref_fournisseur = $request->input('show_ref_fournisseur');
         $cde->nom = $request->input('nom');
         $cde->total_ht = $request->input('total_ht');
-        $cde->code = "CDE-" . date('y') . "-" . $code .$entite_code;
+        $cde->code = "CDE-" . date('y') . "-" . $code . $entite_code;
         $cde->save();
         $poste = 1;
         $cde->cdeLignes()->delete();
@@ -436,7 +437,8 @@ class CdeController extends Controller
         return redirect()->route('cde.show', $cde->id);
     }
 
-    public function getRetours($id) {
+    public function getRetours($id)
+    {
         $cde = Cde::findOrFail($id);
         $data = $cde->cdeLignes->map(function ($ligne) {
             return [
@@ -449,7 +451,8 @@ class CdeController extends Controller
         });
         return $data;
     }
-    public function saveRetours($id, Request $request) {
+    public function saveRetours($id, Request $request)
+    {
         $cde = Cde::findOrFail($id);
         $data = array_map('str_getcsv', array_filter(explode("\r\n", $request->data), 'strlen'));
         $compteur = 0;
@@ -466,7 +469,8 @@ class CdeController extends Controller
 
         return $data2;
     }
-    public function uploadAr($id, Request $request) {
+    public function uploadAr($id, Request $request)
+    {
         $cde = Cde::findOrFail($id);
         $request->validate([
             'accuse_reception' => 'required|file|mimes:pdf',
@@ -480,28 +484,29 @@ class CdeController extends Controller
         return response()->json(['success' => true]);
     }
 
-    public function terminer($id) {
+    public function terminer($id)
+    {
         $cde = Cde::findOrFail($id);
         $cde->ddp_cde_statut_id = 3;
         $total_ht = 0;
         foreach ($cde->cdeLignes as $ligne) {
             if ($ligne->date_livraison_reelle && $ligne->ddp_cde_statut_id != 4) {
-            $matiere = $ligne->matiere;
-            $matiereController = new MatiereController();
-            $matiereController->mouvement($matiere->id, $ligne->quantite, true);
-            $matiere->unite_id = $ligne->unite_id;
-            $matiere->fournisseurs()->sync([
-                $ligne->fournisseur_id => [
-                    'ref_fournisseur' => $ligne->ref_fournisseur ?? null,
-                    'prix' => $ligne->prix_unitaire * $ligne->quantite,
-                    'societe_id' => $cde->societe->id,
-                    'unite_id' => $ligne->unite_id,
-                    'date_dernier_prix' => now(),
-                    'cde_ligne_fournisseur_id' => $ligne->id,
-                ]
-            ]);
-            $matiere->save();
-            $total_ht += $ligne->prix_unitaire * $ligne->quantite;
+                $matiere = $ligne->matiere;
+                $matiereController = new MatiereController();
+                $matiereController->mouvement($matiere->id, $ligne->quantite, true);
+                $matiere->unite_id = $ligne->unite_id;
+                $matiere->fournisseurs()->sync([
+                    $ligne->fournisseur_id => [
+                        'ref_fournisseur' => $ligne->ref_fournisseur ?? null,
+                        'prix' => $ligne->prix_unitaire * $ligne->quantite,
+                        'societe_id' => $cde->societe->id,
+                        'unite_id' => $ligne->unite_id,
+                        'date_dernier_prix' => now(),
+                        'cde_ligne_fournisseur_id' => $ligne->id,
+                    ]
+                ]);
+                $matiere->save();
+                $total_ht += $ligne->prix_unitaire * $ligne->quantite;
             }
         }
         // dd($total_ht_table);
@@ -509,16 +514,41 @@ class CdeController extends Controller
         $cde->save();
         return redirect()->route('cde.show', $cde->id);
     }
-    public function annulerTerminer($id) {
+    public function annulerTerminer($id)
+    {
         $cde = Cde::findOrFail($id);
         $cde->ddp_cde_statut_id = 2;
         $cde->save();
         return redirect()->route('cde.show', $cde->id);
     }
-    public function terminerControler($id) {
+    public function terminerControler($id)
+    {
         $cde = Cde::findOrFail($id);
         $cde->ddp_cde_statut_id = 5;
         $cde->save();
         return redirect()->route('cde.show', $cde->id);
+    }
+    /**
+     * Retourne le prochain code de CDE
+     * @param mixed $entite_id
+     * @return string
+     */
+    function getLastCode($entite_id)
+    {
+        $entite = Entite::findOrFail($entite_id);
+        $lastcode = CDE::where('code', 'LIKE', 'CDE-' . date('y') . '%')
+            ->where('entite_id', $entite->id)
+            ->orderBy('code', 'desc')
+            ->first();
+        $lastnumber = $lastcode ? intval(substr($lastcode->code, 8, 4)) : '0000';
+        $lastnumber = str_pad($lastnumber + 1, 4, '0', STR_PAD_LEFT);
+        if ($entite->id == 1) {
+            $entite_code = '';
+        } elseif ($entite->id == 2) {
+            $entite_code = 'AV';
+        } elseif ($entite->id == 3) {
+            $entite_code = 'AMB';
+        }
+        return response()->json(['code' => $lastnumber, 'entite_code' => $entite_code]);
     }
 }

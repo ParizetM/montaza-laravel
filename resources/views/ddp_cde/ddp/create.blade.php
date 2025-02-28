@@ -564,11 +564,11 @@
                     });
                     existingRow.setAttribute('data-fournisseurs-ids', FinalDataIds.join(';'));
                     existingRow.setAttribute('data-fournisseurs-noms', FinalDataNoms.join(';'));
-                    liveSearchFournisseurs();
                 })
                 .catch(error => {
                     console.error('Erreur lors de la récupération des fournisseurs :', error);
                 });
+                liveSearchFournisseurs();
         }
 
         // Function to add selected supplier to the material
@@ -744,9 +744,6 @@
 
         async function liveSearchFournisseurs() {
             const search = document.getElementById('searchbarFournisseur').value;
-            if (search.length < 1) {
-                return;
-            }
             const response = await fetch(
                 `/societes/fournisseurs/quickSearch?search=${encodeURIComponent(search)}`
             );
@@ -812,11 +809,31 @@
                 }
             });
             ddpCode.addEventListener('input', function() {
-                if (ddpCode.value !== undefined && ddpCode.value.trim() !== '') {
-                    saveChanges();
-                }
+
+                saveChanges();
             });
             ddpEntite.addEventListener('change', function() {
+                fetch('/ddp/get-last-code/' + ddpEntite.value, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        document.title = `Créer - DDP-${new Date().getFullYear().toString().slice(-2)}-${data.code}${data.entite_code}`;
+                        document.getElementById('ddp-code').value = data.code;
+                        document.getElementById('ddp-code-entite').textContent = data.entite_code;
+                    })
+                    .catch(error => {
+                        console.error('Erreur lors de la récupération du code :', error);
+                    });
                 saveChanges();
             });
 

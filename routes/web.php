@@ -144,6 +144,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::get('/colddp/small', [DdpController::class, 'indexColDdpSmall'])->name('ddp.index_col_ddp_small');
         Route::get('/ddp/create', [DdpController::class, 'create'])->name('ddp.create');
         Route::post('/ddp/save', [DdpController::class, 'save'])->name('ddp.save');
+        Route::post('/ddp/get-last-code/{entite}', [DdpController::class, 'getLastCode'])->name('ddp.get_last_code');
         Route::delete('/ddp/{ddp}/destroy', [DdpController::class, 'destroy'])->name('ddp.destroy');
         Route::get('/ddp/{ddp}/validate', [DdpController::class, 'validation'])->name('ddp.validation');
         Route::post('/ddp/{ddp}/validate', [DdpController::class, 'validate'])->name('ddp.validate');
@@ -166,8 +167,9 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::get('/colcde', [CdeController::class, 'indexColCde'])->name('ddp.index_col_cde');
         Route::get('/colcde/small', [CdeController::class, 'indexColCdeSmall'])->name('ddp.index_col_cde_small');
         Route::get('/cde/create', [CdeController::class, 'create'])->name('cde.create');
-        Route::get('/cde/{cde}', [CdeController::class, 'show'])->name('cde.show');
         Route::post('/cde/save', [CdeController::class, 'save'])->name('cde.save');
+        Route::post('/cde/get-last-code/{entite}', [CdeController::class, 'getLastCode'])->name('cde.get_last_code');
+        Route::get('/cde/{cde}', [CdeController::class, 'show'])->name('cde.show');
         Route::delete('/cde/{cde}/destroy', [CdeController::class, 'destroy'])->name('cde.destroy');
         Route::get('/cde/{cde}/validate', [CdeController::class, 'validation'])->name('cde.validation');
         Route::post('/cde/{cde}/validate', [CdeController::class, 'validate'])->name('cde.validate');
