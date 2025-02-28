@@ -74,7 +74,7 @@
             <tr>
                 <td colspan="6" class="">
                     <a href="{{ route('cde.create') }}" class="btn-select-square rounded-b-md text-center">Créer une
-                        commandes</a>
+                        commande</a>
                 </td>
             </tr>
         </tbody>
