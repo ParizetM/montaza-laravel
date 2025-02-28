@@ -103,12 +103,23 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="w-2/3">
+                            <div class="">
                                 <x-input-label for="cde-nom" value="Nom" />
                                 <x-text-input label="Nom" name="cde-nom" id="cde-nom"
                                     placeholder="Nom de la commande" autofocus
                                     value="{{ isset($cde) && $cde->nom != 'undefined' ? $cde->nom : '' }}"
                                     class="min-w-full {{ isset($cde) && $cde->nom != 'undefined' ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : '' }}" />
+                            </div>
+                            <div>
+                                <x-input-label for="cde-code" value="Code" />
+                                <div class="flex items-center bg-gray-100 dark:bg-gray-900 rounded focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-600  {{ isset($cde) && $cde->nom != 'undefined' ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : '' }}">
+                                    <span class="ml-2"> CDE-{{ date('y') }}-</span>
+                                    <x-text-input label="Code" name="cde-code" id="cde-code"
+                                        placeholder="0000" autofocus maxlength="4"
+                                        value="{{ isset($cde) && $cde->code != 'undefined' ? substr($cde->code, 7, 4) : '' }}"
+                                        class="border-0 focus:border-0 dark:border-0 focus:ring-0 dark:focus:ring-0 pl-1 w-14 px-0 mx-0" />
+                                    <span class="-ml-2 mr-2" id="cde-code-entite">{{ isset($entite_code) ? $entite_code : "" }}</span>
+                                </div>
                             </div>
                         </div>
                         <div class="flex flex-wrap gap-4">
@@ -253,7 +264,7 @@
                                                     <button class="float-right"
                                                         data-matiere-id="{{ $cde_ligne->matiere_id }}"
                                                         onclick="removeMatiere(event)">
-                                                        <x-icons.close size="2" class="icons" />
+                                                        <x-icons.close size="2" class="icons" tabindex="-1"/>
                                                     </button>
                                                 </td>
                                             </tr>
@@ -651,6 +662,7 @@
             class="float-right"
             data-matiere-id="${matiereId}"
             onclick="removeMatiere(event)"
+            tabindex="-1"
         >
             <x-icons.close size="2" class="icons" />
         </button>
@@ -690,6 +702,8 @@
         function saveChanges() {
             const cdeEntite = document.getElementById('cde-entite');
             const cdeNom = document.querySelector('input[name="cde-nom"]');
+            const cdeCode = document.getElementById('cde-code');
+            const cdeCodeEntite = document.getElementById('cde-code-entite');
             const cdeId = document.getElementById('new-cde').textContent.trim();
             const saveStatus0 = document.getElementById('save-status-0');
             const saveStatus1 = document.getElementById('save-status-1');
@@ -704,6 +718,11 @@
             saveStatus1.classList.add('hidden');
             saveStatus2.classList.add('hidden');
             if ('' === cdeNom.value.trim()) {
+                saveStatus0.classList.add('hidden');
+                saveStatus2.classList.remove('hidden');
+                return;
+            }
+            if ('' === cdeCode.value.trim()) {
                 saveStatus0.classList.add('hidden');
                 saveStatus2.classList.remove('hidden');
                 return;
@@ -753,7 +772,18 @@
                 });
                 row.classList.add('border-r-green-500', 'dark:border-r-green-600');
                 cdeNom.classList.add('border-r-green-500', 'dark:border-r-green-600', 'border-r-4');
+                cdeCode.classList.add('border-r-green-500', 'dark:border-r-green-600', 'border-r-4');
                 cdeEntite.classList.add('border-r-green-500', 'dark:border-r-green-600', 'border-r-4');
+                if (cdeEntite.value == 1) {
+                    cdeCodeEntite.textContent = '';
+                } else if (cdeEntite.value == 2) {
+                    cdeCodeEntite.textContent = 'AV';
+                } else if (cdeEntite.value == 3) {
+                    cdeCodeEntite.textContent = 'AMB';
+                } else {
+                    cdeCodeEntite.textContent = '';
+                }
+                document.title = `Créer - CDE-${new Date().getFullYear().toString().slice(-2)}-${cdeCode.value}${cdeCodeEntite.textContent}`;
                 Total += parseFloat(row.querySelector(`input[name="prix[${matiereId}]`).value) * quantity;
             });
             montantTotal.textContent = Total.toFixed(3) + ' €';
@@ -771,6 +801,7 @@
                     body: JSON.stringify({
                         cde_id: cdeId,
                         entite_id: cdeEntite.value,
+                        code: cdeCode.value,
                         show_ref_fournisseur: showRefFournisseur,
                         contact_id: document.getElementById('societe_contact_select').value,
                         total_ht: Total,

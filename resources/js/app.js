@@ -18,6 +18,7 @@ import { HyperFormula } from 'hyperformula';
 registerLanguageDictionary(frFR);
 import 'chartjs-adapter-date-fns';
 import Chart from 'chart.js/auto';
+import './form-navigation';
 
 // Exposition des librairies dans la fenêtre globale
 window.Chart = Chart;

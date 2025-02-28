@@ -87,9 +87,8 @@ class CdeController extends Controller
         $code = $lastCde ? $lastCde->code : 'CDE-' . now()->format('y') . '-0000';
         $code = explode('-', $code);
         $code = $code[1] + 1;
-        $newCode = 'CDE-' . now()->format('y') . '-' . str_pad($code, 4, '0', STR_PAD_LEFT);
         $cde = Cde::create([
-            'code' => $newCode,
+            'code' => 'undefined',
             'nom' => 'undefined',
             'ddp_cde_statut_id' => 1,
             'entite_id' => 1,
@@ -110,6 +109,23 @@ class CdeController extends Controller
             $entites = Entite::all();
             $societes = Societe::whereIn('societe_type_id', [2, 3])->get();
             $showRefFournisseur = $cde->show_ref_fournisseur;
+            $lastcode = CDE::where('code', 'LIKE', 'CDE-' . date('y') . '-%')
+                ->orderBy('code', 'desc')
+                ->first();
+            $entite_code = Entite::findOrFail($cde->entite_id)->id;
+            if ($entite_code == 1) {
+                $entite_code = '';
+            } elseif ($entite_code == 2) {
+                $entite_code = 'AV';
+            } elseif ($entite_code == 3) {
+                $entite_code = 'AMB';
+            }
+            $lastNumber = $lastcode ? intval(explode('-', $lastcode->code)[2]) : 0;
+            $newNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+            if ($cde->code == 'undefined') {
+                $cde->code = "CDE-" . date('y') . "-" . $newNumber .$entite_code;
+                $cde->save();
+            }
             return view(
                 'ddp_cde.cde.create',
                 [
@@ -119,7 +135,8 @@ class CdeController extends Controller
                     'entites' => $entites,
                     'cdeid' => $cdeid,
                     'societes' => $societes,
-                    'showRefFournisseur' => $showRefFournisseur
+                    'showRefFournisseur' => $showRefFournisseur,
+                    'entite_code' => $entite_code,
                 ]
             );
         } elseif ($cde->ddpCdeStatut->id == 2) {
@@ -140,6 +157,7 @@ class CdeController extends Controller
         $validator = \Validator::make($request->all(), [
             'cde_id' => 'required|integer|exists:cdes,id',
             'entite_id' => 'required|integer|exists:entites,id',
+            'code' => 'required|string|max:4',
             'show_ref_fournisseur' => 'required|boolean',
             'total_ht' => 'required|numeric|min:0',
             'contact_id' => 'required|integer|exists:societe_contacts,id',
@@ -158,13 +176,26 @@ class CdeController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-
+        $entite_code = Entite::findOrFail($request->entite_id)->id;
+        if ($entite_code == 1) {
+            $entite_code = '';
+        } elseif ($entite_code == 2) {
+            $entite_code = 'AV';
+        } elseif ($entite_code == 3) {
+            $entite_code = 'AMB';
+        }
+        if ($request->code && ctype_digit($request->code)) {
+            $code = str_pad($request->code, 4, '0', STR_PAD_LEFT);
+        } else {
+            response()->json(['error' => 'Invalid code format'], 400);
+        }
         $cde = Cde::findOrFail($request->input('cde_id'));
         $cde->entite_id = $request->input('entite_id');
         $cde->societe_contact_id = $request->input('contact_id');
         $cde->show_ref_fournisseur = $request->input('show_ref_fournisseur');
         $cde->nom = $request->input('nom');
         $cde->total_ht = $request->input('total_ht');
+        $cde->code = "CDE-" . date('y') . "-" . $code .$entite_code;
         $cde->save();
         $poste = 1;
         $cde->cdeLignes()->delete();

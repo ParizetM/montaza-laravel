@@ -111,13 +111,13 @@
                                 </div>
                                 <div>
                                     <x-input-label for="ddp-code" value="Code" />
-                                    <div class="flex items-center bg-gray-100 dark:bg-gray-900 rounded focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-600">
-                                        <span class="ml-2"> DDP-</span>
+                                    <div class="flex items-center bg-gray-100 dark:bg-gray-900 rounded focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-600  {{ isset($ddp) && $ddp->nom != 'undefined' ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : '' }}">
+                                        <span class="ml-2"> DDP-{{ date('y') }}-</span>
                                         <x-text-input label="Code" name="ddp-code" id="ddp-code"
                                             placeholder="0000" autofocus maxlength="4"
-                                            value="{{ isset($ddp) && $ddp->nom != 'undefined' ? $ddp->nom : '' }}"
-                                            class="border-0 focus:border-0 dark:border-0 focus:ring-0 dark:focus:ring-0 pl-1 w-16
-                                            {{ isset($ddp) && $ddp->nom != 'undefined' ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : '' }}" />
+                                            value="{{ isset($ddp) && $ddp->code != 'undefined' ? substr($ddp->code, 7, 4) : '' }}"
+                                            class="border-0 focus:border-0 dark:border-0 focus:ring-0 dark:focus:ring-0 pl-1 w-14 px-0 mx-0" />
+                                        <span class="-ml-2 mr-2" id="ddp-code-entite">{{ isset($entite_code) ? $entite_code : "" }}</span>
                                     </div>
                                 </div>
 
@@ -172,7 +172,7 @@
                                                         <button class="float-right"
                                                             data-matiere-id="{{ $ddp_ligne->matiere->id }}"
                                                             onclick="removeMatiere(event)">
-                                                            <x-icons.close size="2" class="icons" />
+                                                            <x-icons.close size="2" class="icons" tabindex="-1" />
                                                         </button>
 
                                                     </div>
@@ -423,7 +423,7 @@
                 title="Fournisseurs">
                 <x-icons.list size="2" class="icons" />
                 </button>
-                <button class=" float-right" data-matiere-id="${matiereId}" onclick="removeMatiere(event)">
+                <button class=" float-right" data-matiere-id="${matiereId}" onclick="removeMatiere(event)" tabindex="-1">
                 <x-icons.close size="2" class="icons" />
                 </button>
 
@@ -640,6 +640,7 @@
             const ddpEntite = document.getElementById('ddp-entite');
             const ddpNom = document.querySelector('input[name="ddp-nom"]');
             const ddpCode = document.querySelector('input[name="ddp-code"]');
+            const ddpCodeEntite = document.getElementById('ddp-code-entite');
             const ddpId = document.getElementById('new-ddp').textContent.trim();
             const saveStatus0 = document.getElementById('save-status-0');
             const saveStatus1 = document.getElementById('save-status-1');
@@ -698,6 +699,17 @@
                     ddpNom.classList.add('border-r-green-500', 'dark:border-r-green-600', 'border-r-4');
                     ddpCode.classList.add('border-r-green-500', 'dark:border-r-green-600', 'border-r-4');
                     ddpEntite.classList.add('border-r-green-500', 'dark:border-r-green-600', 'border-r-4');
+                    if (ddpEntite.value == 1) {
+                        ddpCodeEntite.textContent = '';
+                    } else if (ddpEntite.value == 2) {
+                        ddpCodeEntite.textContent = 'AV';
+                    } else if (ddpEntite.value == 3) {
+                        ddpCodeEntite.textContent = 'AMB';
+                    } else {
+                        ddpCodeEntite.textContent = '';
+                    }
+                    document.title = `Créer - DDP-${new Date().getFullYear().toString().slice(-2)}-${ddpCode.value}${ddpCodeEntite.textContent}`;
+
                 }
             });
             fetch('/ddp/save', {

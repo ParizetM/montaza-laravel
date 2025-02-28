@@ -118,7 +118,24 @@ class DdpController extends Controller
             $familles = Famille::all();
             $unites = Unite::all();
             $entites = Entite::all();
-            return view('ddp_cde.ddp.create', ['ddp' => $ddp, 'ddpid' => $ddpid, 'familles' => $familles, 'unites' => $unites, 'entites' => $entites]);
+            $lastcode = Ddp::where('code', 'LIKE', 'DDP-' . date('y') . '-%')
+                ->orderBy('code', 'desc')
+                ->first();
+            $entite_code = Entite::findOrFail($ddp->entite_id)->id;
+            if ($entite_code == 1) {
+                $entite_code = '';
+            } elseif ($entite_code == 2) {
+                $entite_code = 'AV';
+            } elseif ($entite_code == 3) {
+                $entite_code = 'AMB';
+            }
+            $lastNumber = $lastcode ? intval(explode('-', $lastcode->code)[2]) : 0;
+            $newNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+            if ($ddp->code == 'undefined') {
+                $ddp->code = "DDP-" . date('y') . "-" . $newNumber .$entite_code;
+                $ddp->save();
+            }
+            return view('ddp_cde.ddp.create', ['ddp' => $ddp, 'ddpid' => $ddpid, 'familles' => $familles, 'unites' => $unites, 'entites' => $entites,'entite_code' => $entite_code]);
         }
         if ($ddp->ddp_cde_statut_id == 2) {
             $ddp_societes = $ddp->ddpLigne->map(function ($ligne) {
@@ -236,8 +253,16 @@ class DdpController extends Controller
             'user_id' => Auth::id(),
         ]);
         $ddpid =  $ddp->id;
-        return DdpController::show($ddpid);
+        return redirect()->route('ddp.show', $ddpid);
     }
+ ######     ###    ##     ## ########
+##    ##   ## ##   ##     ## ##
+##        ##   ##  ##     ## ##
+ ######  ##     ## ##     ## ######
+      ## #########  ##   ##  ##
+##    ## ##     ##   ## ##   ##
+ ######  ##     ##    ###    ########
+
     public function save(Request $request)
     {
         $validator = \Validator::make($request->all(), [
@@ -260,15 +285,20 @@ class DdpController extends Controller
         if ($entite_code == 1) {
             $entite_code = '';
         } elseif ($entite_code == 2) {
-            $entite_code = 'av';
+            $entite_code = 'AV';
         } elseif ($entite_code == 3) {
-            $entite_code = 'amb';
+            $entite_code = 'AMB';
+        }
+        if ($request->code && ctype_digit($request->code)) {
+            $code = str_pad($request->code, 4, '0', STR_PAD_LEFT);
+        } else {
+            response()->json(['error' => 'Invalid code format'], 400);
         }
         try {
             $ddp = Ddp::findOrFail($request->ddp_id);
             $ddp->entite_id = $request->entite_id;
             $ddp->nom = $request->nom;
-            $ddp->code = "DDP-".date('y') . "-". $request->code."-".$entite_code;
+            $ddp->code = "DDP-".date('y') . "-". $code.$entite_code;
             $ddp->save();
             $ddp->ddpLigne()->delete();
             foreach ($request->matieres as $matiere) {
