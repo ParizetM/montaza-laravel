@@ -32,7 +32,7 @@
 
         </div>
         <div class="max-w-xl mx-auto sm:px-6 lg:px-8 mt-10">
-            <a href="{{ url()->previous() }}" class="btn bg-white dark:bg-gray-800 rounded-full p-4 text-base">
+            <a href="" class="btn bg-white dark:bg-gray-800 rounded-full p-4 text-base">
                 Réessayer
             </a>
 
