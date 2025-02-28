@@ -47,14 +47,25 @@
                             <option value="" selected>{!! __('Toutes les sous-familles &nbsp;&nbsp;') !!}</option>
                         </select>
                         <!-- Search bar for materials -->
-                        <x-text-input placeholder="Recherchez une matière" id="searchbar" class="w-full" />
+                        <div class="flex w-full">
+                            <x-text-input placeholder="Recherchez une matière" id="searchbar" class="w-full" />
+                            <button class="btn-select-right -ml-1 border-gray-300 dark:border-gray-700" type="button"
+                                onclick="liveSearch()">Rechercher</button>
+                        </div>
                     </div>
                     <div class="min-h-96 overflow-x-auto bg-gray-100 dark:bg-gray-900 rounded">
                         <table>
                             <thead>
-                                <th colspan="100">
-                                    matières
-                                </th>
+                                <tr>
+                                    <th>Réference</th>
+                                    <th>Désignation</th>
+                                    <th>DN</th>
+                                    <th>EP</th>
+                                    <th>Qté</th>
+                                    <th>PU</th>
+                                    <th>Date prix</th>
+                                    <th>Sous-famille</th>
+                                </tr>
                             </thead>
                             <tbody id="matiere-table">
                                 <tr>
@@ -112,10 +123,11 @@
                             </div>
                             <div>
                                 <x-input-label for="cde-code" value="Code" />
-                                <div class="flex items-center bg-gray-100 dark:bg-gray-900 rounded focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-600  {{ isset($cde) && $cde->nom != 'undefined' ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : '' }}">
+                                <div
+                                    class="flex items-center bg-gray-100 dark:bg-gray-900 rounded focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-600  {{ isset($cde) && $cde->nom != 'undefined' ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : '' }}">
                                     <span class="ml-2"> CDE-{{ date('y') }}-</span>
-                                    <x-text-input label="Code" name="cde-code" id="cde-code"
-                                        placeholder="0000" autofocus maxlength="4"
+                                    <x-text-input label="Code" name="cde-code" id="cde-code" placeholder="0000"
+                                        autofocus maxlength="4"
                                         value="{{ isset($cde) && $cde->code != 'undefined' ? substr($cde->code, 7, 4) : '' }}"
                                         class="border-0 focus:border-0 dark:border-0 focus:ring-0 dark:focus:ring-0 w-14 px-0 mx-0" />
                                     <span class="-ml-2 mr-2" id="cde-code-entite">{{ isset($entite_code) ? $entite_code : "" }}</span>
@@ -182,10 +194,14 @@
                                             sélectionnées</th>
                                     </tr>
                                     <tr>
-                                        <th >Réference</th>
-                                        <th >Désignation</th>
-                                        <th ><div class="float-left">Quantité</div><div class="float-left ml-4">Unité</div><div class="float-right">Date de livraison</div></th>
-                                        <th >Prix unitaire</th>
+                                        <th>Réference</th>
+                                        <th>Désignation</th>
+                                        <th>
+                                            <div class="float-left">Quantité</div>
+                                            <div class="float-left ml-4">Unité</div>
+                                            <div class="float-right">Date de livraison</div>
+                                        </th>
+                                        <th>Prix unitaire</th>
                                         <th class="border-r-4 border-gray-50 dark:border-gray-800"></th>
                                     </tr>
                                 </thead>
@@ -264,7 +280,8 @@
                                                     <button class="float-right"
                                                         data-matiere-id="{{ $cde_ligne->matiere_id }}"
                                                         onclick="removeMatiere(event)">
-                                                        <x-icons.close size="2" class="icons" tabindex="-1"/>
+                                                        <x-icons.close size="2" class="icons"
+                                                            tabindex="-1" />
                                                     </button>
                                                 </td>
                                             </tr>
@@ -511,6 +528,8 @@
                                 tr.innerHTML = `
                                     <td class="text-left px-4">${matiere.refInterne || '-'}</td>
                                     <td class="text-left px-4">${matiere.designation || '-'}</td>
+                                    <td class="text-left px-4">${matiere.dn || '-'}</td>
+                                    <td class="text-left px-4">${matiere.epaisseur || '-'}</td>
                                     <td class="text-left px-4">${matiere.quantite || '-'}</td>
                                     <td class="text-right px-4 font-bold whitespace-nowrap"> ${matiere.lastPrice + ' €/' + matiere.lastPriceUnite} </td>
                                     <td class="text-left px-4">${matiere.lastPriceDate || '-'}</td>
@@ -520,6 +539,8 @@
                                 tr.innerHTML = `
                                     <td class="text-left px-4">${matiere.refInterne || '-'}</td>
                                     <td class="text-left px-4">${matiere.designation || '-'}</td>
+                                    <td class="text-left px-4">${matiere.dn || '-'}</td>
+                                    <td class="text-left px-4">${matiere.epaisseur || '-'}</td>
                                     <td class="text-left px-4">${matiere.quantite || '0'}</td>
                                     <td class="text-center pr-6" colspan="2"> Aucun prix </td>
                                     <td class="text-right px-4">${matiere.sousFamille || '-'}</td>
@@ -626,13 +647,13 @@
                 onchange="saveChanges()"
             >
                 ${unites.map(unite => `
-                                                        <option
-                                                            value="${unite.id}" title="${unite.full}"
-                                                            ${unite.short === matiereUnite ? 'selected' : ''}
-                                                        >
-                                                            ${unite.short}
-                                                        </option>
-                                                    `).join('')}
+                                                            <option
+                                                                value="${unite.id}" title="${unite.full}"
+                                                                ${unite.short === matiereUnite ? 'selected' : ''}
+                                                            >
+                                                                ${unite.short}
+                                                            </option>
+                                                        `).join('')}
             </select>
 
             <!-- Champ de date -->
@@ -783,7 +804,8 @@
                 } else {
                     cdeCodeEntite.textContent = '';
                 }
-                document.title = `Créer - CDE-${new Date().getFullYear().toString().slice(-2)}-${cdeCode.value}${cdeCodeEntite.textContent}`;
+                document.title =
+                    `Créer - CDE-${new Date().getFullYear().toString().slice(-2)}-${cdeCode.value}${cdeCodeEntite.textContent}`;
                 Total += parseFloat(row.querySelector(`input[name="prix[${matiereId}]`).value) * quantity;
             });
             montantTotal.textContent = Total.toFixed(3) + ' €';
@@ -858,7 +880,8 @@
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                .getAttribute('content')
                         }
                     })
                     .then(response => {
