@@ -59,14 +59,32 @@ class MatiereController extends Controller
             }
 
             if (!empty($search)) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('designation', 'ILIKE', "%{$search}%")
-                        ->orWhereHas('sousFamille', function ($subQuery) use ($search) {
-                            $subQuery->where('nom', 'ILIKE', "%{$search}%");
+                $terms = explode(' ', $search);
+                $query->where(function ($q) use ($terms) {
+                if (count($terms) === 1) {
+                    $q->where('designation', 'ILIKE', "%{$terms[0]}%")
+                    ->orWhereHas('sousFamille', function ($subQuery) use ($terms) {
+                        $subQuery->where('nom', 'ILIKE', "%{$terms[0]}%");
+                    })
+                    ->orWhere('ref_interne', 'ILIKE', "%{$terms[0]}%");
+                }
+                foreach ($terms as $term) {
+                    $q->where(function ($subQuery) use ($term) {
+                    if (stripos($term, 'dn') === 0) {
+                        $value = substr($term, 2);
+                        $subQuery->where('dn', 'ILIKE', "{$value}");
+                    } elseif (stripos($term, 'ep') === 0) {
+                        $value = str_replace([',', '.'], ['.', ','], substr($term, 2));
+                        $subQuery->where('epaisseur', 'ILIKE', "{$value}");
+                    } else {
+                        $subQuery->where('designation', 'ILIKE', "%{$term}%")
+                        ->orWhereHas('sousFamille', function ($subSubQuery) use ($term) {
+                            $subSubQuery->where('nom', 'ILIKE', "%{$term}%");
                         })
-
-                        ->orWhere('ref_interne', 'ILIKE', "%{$search}%")
-                        ->orWhere('quantite', 'ILIKE', "%{$search}%");
+                        ->orWhere('ref_interne', 'ILIKE', "%{$term}%");
+                    }
+                    });
+                }
                 });
             }
 
@@ -115,18 +133,38 @@ class MatiereController extends Controller
         }
 
         if (!empty($search)) {
-            $query->where(function ($q) use ($search) {
-                $q->where('designation', 'ILIKE', "%{$search}%")
-                    ->orWhereHas('sousFamille', function ($subQuery) use ($search) {
-                        $subQuery->where('nom', 'ILIKE', "%{$search}%");
+            $terms = explode(' ', $search);
+            $query->where(function ($q) use ($terms) {
+            if (count($terms) === 1) {
+                $q->where('designation', 'ILIKE', "%{$terms[0]}%")
+                ->orWhereHas('sousFamille', function ($subQuery) use ($terms) {
+                    $subQuery->where('nom', 'ILIKE', "%{$terms[0]}%");
+                })
+                ->orWhere('ref_interne', 'ILIKE', "%{$terms[0]}%");
+            }
+            foreach ($terms as $term) {
+                $q->where(function ($subQuery) use ($term) {
+                if (stripos($term, 'dn') === 0) {
+                    $value = substr($term, 2);
+                    $subQuery->where('dn', 'ILIKE', "{$value}");
+                } elseif (stripos($term, 'ep') === 0) {
+                    $value = str_replace([',', '.'], ['.', ','], substr($term, 2));
+                    $subQuery->where('epaisseur', 'ILIKE', "{$value}");
+                } else {
+                    $subQuery->where('designation', 'ILIKE', "%{$term}%")
+                    ->orWhereHas('sousFamille', function ($subSubQuery) use ($term) {
+                        $subSubQuery->where('nom', 'ILIKE', "%{$term}%");
                     })
-                    ->orWhere('ref_interne', 'ILIKE', "%{$search}%");
+                    ->orWhere('ref_interne', 'ILIKE', "%{$term}%");
+                }
+                });
+            }
             });
         }
 
-        $query->orderBy('sous_famille_id')->limit(15)->get();
+        $query->orderBy('sous_famille_id')->limit(50);
         $matieres = $query->get();
-        return response()->json(data: [
+        return response()->json([
             'matieres' => MatiereResource::collection($matieres),
         ]);
     }

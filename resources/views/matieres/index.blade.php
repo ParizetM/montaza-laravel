@@ -90,6 +90,7 @@
                                 <tr c>
                                     <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Référence</th>
                                     <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Désignation</th>
+                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Matière</th>
                                     <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Sous-famille</th>
                                     <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Qté</th>
                                     <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Standard</th>
@@ -205,6 +206,7 @@
                 row.innerHTML = `
             <td class="text-left py-3 px-4">${matiere.refInterne || '-'}</td>
             <td class="text-left py-3 px-4">${matiere.designation || '-'}</td>
+            <td class="text-left py-3 px-4">${matiere.material || '-'}</td>
             <td class="text-left py-3 px-4">${matiere.sousFamille || '-'}</td>
             <td class="text-left py-3 px-4">${matiere.quantite || '-'}</td>
             <td class="text-left py-3 px-4 flex items-center whitespace-nowrap">

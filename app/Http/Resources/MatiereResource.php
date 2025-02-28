@@ -16,6 +16,7 @@ class MatiereResource extends JsonResource
             'sousFamille' => $this->sousFamille->nom ?? null,
             'quantite' => $this->quantite,
             'designation' => $this->designation,
+            'material' => $this->material->nom ?? null,
             'standard' => $this->standardVersion->standard->nom ?? null,
             'standardVersion' => $this->standardVersion->version ?? null,
             'standardPath' => $this->standardVersion->chemin_pdf ?? 'none',

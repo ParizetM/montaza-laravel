@@ -5,11 +5,10 @@ namespace App\Models;
 use App\MatiereMouvement;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Log;
-
 class Matiere extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'ref_interne',
         'designation',
@@ -85,5 +84,9 @@ class Matiere extends Model
     public function mouvements()
     {
         return $this->hasMany(MatiereMouvement::class);
+    }
+    public function material()
+    {
+        return $this->belongsTo(Material::class);
     }
 }

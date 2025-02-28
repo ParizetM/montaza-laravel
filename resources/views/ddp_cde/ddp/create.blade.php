@@ -47,14 +47,21 @@
                             <option value="" selected>{!! __('Toutes les sous-familles &nbsp;&nbsp;') !!}</option>
                         </select>
                         <!-- Search bar for materials -->
-                        <x-text-input placeholder="Recherchez une matière" id="searchbar" class="w-full" />
+                        <div class="flex w-full">
+                            <x-text-input placeholder="Recherchez une matière" id="searchbar" class="w-full" />
+                            <button class="btn-select-right -ml-1 border-gray-300 dark:border-gray-700" type="button"
+                            onclick="liveSearch()">Rechercher</button>
+                        </div>
                     </div>
                     <div class="min-h-96 overflow-x-auto bg-gray-100 dark:bg-gray-900 rounded">
                         <table>
                             <thead>
-                                <th colspan="100">
-                                    matières
-                                </th>
+                                <th class="text-sm">Référence</th>
+                                <th class="text-sm">Désignation</th>
+                                <th class="text-sm">DN</th>
+                                <th class="text-sm">Epaisseur</th>
+                                <th class="text-sm">Unité</th>
+                                <th class="text-sm">Sous-famille</th>
                             </thead>
                             <tbody id="matiere-table">
                                 <tr>
@@ -108,18 +115,20 @@
                                     placeholder="Nom de la demande de prix" autofocus
                                     value="{{ isset($ddp) && $ddp->nom != 'undefined' ? $ddp->nom : '' }}"
                                     class=" {{ isset($ddp) && $ddp->nom != 'undefined' ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : '' }}" />
+                            </div>
+                            <div>
+                                <x-input-label for="ddp-code" value="Code" />
+                                <div
+                                    class="flex items-center bg-gray-100 dark:bg-gray-900 rounded focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-600  {{ isset($ddp) && $ddp->nom != 'undefined' ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : '' }}">
+                                    <span class="ml-2"> DDP-{{ date('y') }}-</span>
+                                    <x-text-input label="Code" name="ddp-code" id="ddp-code" placeholder="0000"
+                                        autofocus maxlength="4"
+                                        value="{{ isset($ddp) && $ddp->code != 'undefined' ? substr($ddp->code, 7, 4) : '' }}"
+                                        class="border-0 focus:border-0 dark:border-0 focus:ring-0 dark:focus:ring-0 pl-1 w-14 px-0 mx-0" />
+                                    <span class="-ml-2 mr-2"
+                                        id="ddp-code-entite">{{ isset($entite_code) ? $entite_code : '' }}</span>
                                 </div>
-                                <div>
-                                    <x-input-label for="ddp-code" value="Code" />
-                                    <div class="flex items-center bg-gray-100 dark:bg-gray-900 rounded focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-600  {{ isset($ddp) && $ddp->nom != 'undefined' ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : '' }}">
-                                        <span class="ml-2"> DDP-{{ date('y') }}-</span>
-                                        <x-text-input label="Code" name="ddp-code" id="ddp-code"
-                                            placeholder="0000" autofocus maxlength="4"
-                                            value="{{ isset($ddp) && $ddp->code != 'undefined' ? substr($ddp->code, 7, 4) : '' }}"
-                                            class="border-0 focus:border-0 dark:border-0 focus:ring-0 dark:focus:ring-0 pl-1 w-14 px-0 mx-0" />
-                                        <span class="-ml-2 mr-2" id="ddp-code-entite">{{ isset($entite_code) ? $entite_code : "" }}</span>
-                                    </div>
-                                </div>
+                            </div>
 
                         </div>
                         <div class="min-h-96 overflow-x-auto bg-gray-100 dark:bg-gray-900 rounded">
@@ -172,7 +181,8 @@
                                                         <button class="float-right"
                                                             data-matiere-id="{{ $ddp_ligne->matiere->id }}"
                                                             onclick="removeMatiere(event)">
-                                                            <x-icons.close size="2" class="icons" tabindex="-1" />
+                                                            <x-icons.close size="2" class="icons"
+                                                                tabindex="-1" />
                                                         </button>
 
                                                     </div>
@@ -361,6 +371,8 @@
                             tr.innerHTML = `
                 <td class="text-left px-4">${matiere.refInterne || '-'}</td>
                 <td class="text-left px-4">${matiere.designation || '-'}</td>
+                <td class="text-left px-4">${matiere.dn || '-'}</td>
+                <td class="text-left px-4">${matiere.epaisseur || '-'}</td>
                 <td class="text-right px-4" title="${matiere.Unite_full || '-'}">${matiere.lastPriceUnite || matiere.Unite || '-'}</td>
                 <td class="text-right px-4">${matiere.sousFamille || '-'}</td>
                     `;
@@ -406,13 +418,13 @@
                 onchange="saveChanges()"
             >
                 ${unites.map(unite => `
-                                                        <option
-                                                            value="${unite.id}" title="${unite.full}"
-                                                            ${unite.short === matiereUnite ? 'selected' : ''}
-                                                        >
-                                                            ${unite.short}
-                                                        </option>
-                                                    `).join('')}
+                                                            <option
+                                                                value="${unite.id}" title="${unite.full}"
+                                                                ${unite.short === matiereUnite ? 'selected' : ''}
+                                                            >
+                                                                ${unite.short}
+                                                            </option>
+                                                        `).join('')}
             </select>
                 </div>
             </td>
@@ -536,9 +548,9 @@
                             Aucun fournisseur trouvé
                         </td>
                     `;
-                    tr.setAttribute('data-matiere-id', matiereId);
-                    tr.id = 'no-fournisseur';
-                    fournisseursTable.appendChild(tr);
+                        tr.setAttribute('data-matiere-id', matiereId);
+                        tr.id = 'no-fournisseur';
+                        fournisseursTable.appendChild(tr);
                     }
 
                     FinalDataIds.forEach((fournisseurId, index) => {
@@ -568,7 +580,7 @@
                 .catch(error => {
                     console.error('Erreur lors de la récupération des fournisseurs :', error);
                 });
-                liveSearchFournisseurs();
+            liveSearchFournisseurs();
         }
 
         // Function to add selected supplier to the material
@@ -604,10 +616,10 @@
                         'dark:hover:bg-gray-700');
                     event.currentTarget.classList.add('bg-green-500', 'dark:bg-green-600', 'hover:bg-green-600',
                         'dark:hover:bg-green-700');
-                        const firstChild = document.getElementById('fournisseurs-table').querySelector('tr:first-child');
-                        if (firstChild && firstChild.id == 'no-fournisseur') {
-                            firstChild.remove();
-                        }
+                    const firstChild = document.getElementById('fournisseurs-table').querySelector('tr:first-child');
+                    if (firstChild && firstChild.id == 'no-fournisseur') {
+                        firstChild.remove();
+                    }
                 } else {
                     // Remove fournisseur
                     currentFournisseurs.splice(index, 1);
@@ -708,7 +720,8 @@
                     } else {
                         ddpCodeEntite.textContent = '';
                     }
-                    document.title = `Créer - DDP-${new Date().getFullYear().toString().slice(-2)}-${ddpCode.value}${ddpCodeEntite.textContent}`;
+                    document.title =
+                        `Créer - DDP-${new Date().getFullYear().toString().slice(-2)}-${ddpCode.value}${ddpCodeEntite.textContent}`;
 
                 }
             });
@@ -817,7 +830,8 @@
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                .getAttribute('content')
                         }
                     })
                     .then(response => {
@@ -827,7 +841,8 @@
                         return response.json();
                     })
                     .then(data => {
-                        document.title = `Créer - DDP-${new Date().getFullYear().toString().slice(-2)}-${data.code}${data.entite_code}`;
+                        document.title =
+                            `Créer - DDP-${new Date().getFullYear().toString().slice(-2)}-${data.code}${data.entite_code}`;
                         document.getElementById('ddp-code').value = data.code;
                         document.getElementById('ddp-code-entite').textContent = data.entite_code;
                     })

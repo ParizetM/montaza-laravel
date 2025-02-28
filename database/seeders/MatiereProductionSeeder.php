@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Material;
 use App\Models\Matiere;
 use App\Models\SousFamille;
 use App\Models\Standard;
@@ -30,6 +31,7 @@ class MatiereProductionSeeder extends Seeder
             if ($row[1] === '') {
                 $row[1] = 'Autre';
             }
+            $matierial_id = Material::where('nom', 'ILIKE', $row[2])->first()->id ?? null;
             $sous_famille_model = SousFamille::where('nom','ILIKE',trim($row[1]))->first();
             $sous_famille = $sous_famille_model ? $sous_famille_model->id : null;
             $standardModel = Standard::where('nom', 'ILIKE', $row[5])->first();
@@ -57,6 +59,7 @@ class MatiereProductionSeeder extends Seeder
                 'unite_id' => $unite ?? throw new \Exception("Unite ID is null for row: " . json_encode($row)),
                 'sous_famille_id' => $sous_famille ?? throw new \Exception("SousFamille ID is null for row: " . json_encode($row)),
                 'standard_version_id' => $standard,
+                'material_id' => $matierial_id,
                 'dn' => $row[6],
                 'epaisseur' => $row[7],
                 'prix_moyen' => null,
