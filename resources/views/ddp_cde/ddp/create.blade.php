@@ -102,13 +102,25 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="w-2/3">
+                            <div class="">
                                 <x-input-label for="ddp-nom" value="Nom" />
                                 <x-text-input label="Nom" name="ddp-nom" id="ddp-nom"
                                     placeholder="Nom de la demande de prix" autofocus
                                     value="{{ isset($ddp) && $ddp->nom != 'undefined' ? $ddp->nom : '' }}"
-                                    class="w-1/2 {{ isset($ddp) && $ddp->nom != 'undefined' ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : '' }}" />
-                            </div>
+                                    class=" {{ isset($ddp) && $ddp->nom != 'undefined' ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : '' }}" />
+                                </div>
+                                <div>
+                                    <x-input-label for="ddp-code" value="Code" />
+                                    <div class="flex items-center bg-gray-100 dark:bg-gray-900 rounded focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-600  {{ isset($ddp) && $ddp->nom != 'undefined' ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : '' }}">
+                                        <span class="ml-2"> DDP-{{ date('y') }}-</span>
+                                        <x-text-input label="Code" name="ddp-code" id="ddp-code"
+                                            placeholder="0000" autofocus maxlength="4"
+                                            value="{{ isset($ddp) && $ddp->code != 'undefined' ? substr($ddp->code, 7, 4) : '' }}"
+                                            class="border-0 focus:border-0 dark:border-0 focus:ring-0 dark:focus:ring-0 pl-1 w-14 px-0 mx-0" />
+                                        <span class="-ml-2 mr-2" id="ddp-code-entite">{{ isset($entite_code) ? $entite_code : "" }}</span>
+                                    </div>
+                                </div>
+
                         </div>
                         <div class="min-h-96 overflow-x-auto bg-gray-100 dark:bg-gray-900 rounded">
                             <table>
@@ -160,7 +172,7 @@
                                                         <button class="float-right"
                                                             data-matiere-id="{{ $ddp_ligne->matiere->id }}"
                                                             onclick="removeMatiere(event)">
-                                                            <x-icons.close size="2" class="icons" />
+                                                            <x-icons.close size="2" class="icons" tabindex="-1" />
                                                         </button>
 
                                                     </div>
@@ -411,7 +423,7 @@
                 title="Fournisseurs">
                 <x-icons.list size="2" class="icons" />
                 </button>
-                <button class=" float-right" data-matiere-id="${matiereId}" onclick="removeMatiere(event)">
+                <button class=" float-right" data-matiere-id="${matiereId}" onclick="removeMatiere(event)" tabindex="-1">
                 <x-icons.close size="2" class="icons" />
                 </button>
 
@@ -552,11 +564,11 @@
                     });
                     existingRow.setAttribute('data-fournisseurs-ids', FinalDataIds.join(';'));
                     existingRow.setAttribute('data-fournisseurs-noms', FinalDataNoms.join(';'));
-                    liveSearchFournisseurs();
                 })
                 .catch(error => {
                     console.error('Erreur lors de la récupération des fournisseurs :', error);
                 });
+                liveSearchFournisseurs();
         }
 
         // Function to add selected supplier to the material
@@ -627,6 +639,8 @@
         function saveChanges() {
             const ddpEntite = document.getElementById('ddp-entite');
             const ddpNom = document.querySelector('input[name="ddp-nom"]');
+            const ddpCode = document.querySelector('input[name="ddp-code"]');
+            const ddpCodeEntite = document.getElementById('ddp-code-entite');
             const ddpId = document.getElementById('new-ddp').textContent.trim();
             const saveStatus0 = document.getElementById('save-status-0');
             const saveStatus1 = document.getElementById('save-status-1');
@@ -636,6 +650,11 @@
             saveStatus1.classList.add('hidden');
             saveStatus2.classList.add('hidden');
             if ('' === ddpNom.value.trim()) {
+                saveStatus0.classList.add('hidden');
+                saveStatus2.classList.remove('hidden');
+                return;
+            }
+            if ('' === ddpCode.value.trim()) {
                 saveStatus0.classList.add('hidden');
                 saveStatus2.classList.remove('hidden');
                 return;
@@ -678,7 +697,19 @@
                     });
                     row.classList.add('border-r-green-500', 'dark:border-r-green-600');
                     ddpNom.classList.add('border-r-green-500', 'dark:border-r-green-600', 'border-r-4');
+                    ddpCode.classList.add('border-r-green-500', 'dark:border-r-green-600', 'border-r-4');
                     ddpEntite.classList.add('border-r-green-500', 'dark:border-r-green-600', 'border-r-4');
+                    if (ddpEntite.value == 1) {
+                        ddpCodeEntite.textContent = '';
+                    } else if (ddpEntite.value == 2) {
+                        ddpCodeEntite.textContent = 'AV';
+                    } else if (ddpEntite.value == 3) {
+                        ddpCodeEntite.textContent = 'AMB';
+                    } else {
+                        ddpCodeEntite.textContent = '';
+                    }
+                    document.title = `Créer - DDP-${new Date().getFullYear().toString().slice(-2)}-${ddpCode.value}${ddpCodeEntite.textContent}`;
+
                 }
             });
             fetch('/ddp/save', {
@@ -691,6 +722,7 @@
                         ddp_id: ddpId,
                         entite_id: ddpEntite.value,
                         nom: ddpNom.value,
+                        code: ddpCode.value,
                         matieres: matieres
                     })
                 })
@@ -712,9 +744,6 @@
 
         async function liveSearchFournisseurs() {
             const search = document.getElementById('searchbarFournisseur').value;
-            if (search.length < 1) {
-                return;
-            }
             const response = await fetch(
                 `/societes/fournisseurs/quickSearch?search=${encodeURIComponent(search)}`
             );
@@ -761,6 +790,7 @@
             const matiereTable = document.getElementById('matiere-table');
             const ddpEntite = document.getElementById('ddp-entite');
             const ddpNom = document.getElementById('ddp-nom');
+            const ddpCode = document.getElementById('ddp-code');
 
             // Event listener for search bar input
 
@@ -778,7 +808,32 @@
                     saveChanges();
                 }
             });
+            ddpCode.addEventListener('input', function() {
+
+                saveChanges();
+            });
             ddpEntite.addEventListener('change', function() {
+                fetch('/ddp/get-last-code/' + ddpEntite.value, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        document.title = `Créer - DDP-${new Date().getFullYear().toString().slice(-2)}-${data.code}${data.entite_code}`;
+                        document.getElementById('ddp-code').value = data.code;
+                        document.getElementById('ddp-code-entite').textContent = data.entite_code;
+                    })
+                    .catch(error => {
+                        console.error('Erreur lors de la récupération du code :', error);
+                    });
                 saveChanges();
             });
 

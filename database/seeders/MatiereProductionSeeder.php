@@ -21,40 +21,44 @@ class MatiereProductionSeeder extends Seeder
         $erreur_standard = 0;
         foreach ($csv as $row) {
 
-            if ($row[7] === '') {
-                $row[7] = 'U';
+            if ($row[8] === '' || $row[8] === 'PI') {
+                $row[8] = 'U';
             }
-            $unite = Unite::where('short', 'ILIKE', $row[7])->first()->id ?? null;
-            $row[0] = preg_replace('/^\x{FEFF}/u', '', $row[0]);
-            if ($row[0] === '') {
-                $row[0] = 'Autre';
+
+            $unite = Unite::where('short', 'ILIKE', $row[8])->first()->id ?? null;
+            $row[1] = preg_replace('/^\x{FEFF}/u', '', $row[1]);
+            if ($row[1] === '') {
+                $row[1] = 'Autre';
             }
-            $sous_famille_model = SousFamille::where('nom','ILIKE',trim($row[0]))->first();
+            $sous_famille_model = SousFamille::where('nom','ILIKE',trim($row[1]))->first();
             $sous_famille = $sous_famille_model ? $sous_famille_model->id : null;
-            $standardModel = Standard::where('nom', 'ILIKE', $row[4])->first();
+            $standardModel = Standard::where('nom', 'ILIKE', $row[5])->first();
 
             $standard = $standardModel ? $standardModel->getLatestVersion()->id : null;
 
             if ($unite === null) {
                 echo 'TOUR :'.$tour . "\n";
-                echo "ERREUR Unite :  \n - " . $row[3] . "\n - " . $row[7] . "\n";
+                echo "ERREUR Unite :  \n - " . $row[4] . "\n - " . $row[8] . "\n";
             }
             if ($sous_famille === null) {
                 echo 'TOUR :'.$tour . "\n";
-                echo "ERREUR SousFamille :  \n - " . $row[3] . "\n - " . $row[0] . "\n";
+                echo "ERREUR SousFamille :  \n - " . $row[4] . "\n - " . $row[1] . "\n";
             }
             if ($standard === null) {
-                echo 'TOUR :'.$tour . "\n ERREUR Standard :  \n - " . $row[3] . "\n - " . $row[4] . "\n";
+                // echo 'TOUR :'.$tour . "\n ERREUR Standard :  \n - " . $row[4] . "\n - " . $row[5] . "\n";
                 $erreur_standard++;
             }
+            if (Matiere::where('ref_interne', $row[0])->exists()) {
+                continue;
+            }
             Matiere::create([
-                'ref_interne' => 'AA-' . str_pad($tour, 5, '0', STR_PAD_LEFT),
-                'designation' => "{$row[3]}",
+                'ref_interne' => $row[0] ?? null,
+                'designation' => "{$row[4]}",
                 'unite_id' => $unite ?? throw new \Exception("Unite ID is null for row: " . json_encode($row)),
                 'sous_famille_id' => $sous_famille ?? throw new \Exception("SousFamille ID is null for row: " . json_encode($row)),
                 'standard_version_id' => $standard,
-                'dn' => $row[5],
-                'epaisseur' => $row[6],
+                'dn' => $row[6],
+                'epaisseur' => $row[7],
                 'prix_moyen' => null,
                 'date_dernier_achat' => null,
                 'quantite' => 0,

@@ -340,11 +340,12 @@ class SocieteController extends Controller
     public function quickSearchFournisseur(Request $request)
     {
         $request->validate([
-            'search' => 'required|string|max:255',
+            'search' => 'nullable|string|max:255',
         ]);
         $search = $request->input('search', '');
         $societes = Societe::where('raison_sociale', 'ILIKE', "%{$search}%")
             ->whereIn('societe_type_id', [2, 3])
+            ->limit(20)
             ->get();
         return response()->json($societes);
 
