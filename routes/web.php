@@ -187,3 +187,4 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
     });
 });
 require __DIR__ . '/auth.php';
+require __DIR__ . '/lourd-api.php';
