@@ -17,7 +17,7 @@ class CommentaireFactory extends Factory
     public function definition(): array
     {
         return [
-            'contenu' => $this->faker->paragraph,
+            'contenu' => null,
         ];
     }
 }

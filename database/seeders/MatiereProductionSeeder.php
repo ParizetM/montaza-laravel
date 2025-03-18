@@ -7,6 +7,7 @@ use App\Models\Matiere;
 use App\Models\SousFamille;
 use App\Models\Standard;
 use App\Models\StandardVersion;
+use App\Models\Stock;
 use App\Models\Unite;
 use Illuminate\Database\Seeder;
 
@@ -14,7 +15,7 @@ class MatiereProductionSeeder extends Seeder
 {
     public function run() {
         Matiere::truncate();
-        $path = storage_path('app/public/ressources/test.csv');
+        $path = storage_path('app/public/ressources/test2.csv');
         $csv = array_map(function($line) {
             return str_getcsv($line, ';');
         }, file($path));
@@ -22,9 +23,6 @@ class MatiereProductionSeeder extends Seeder
         $erreur_standard = 0;
         foreach ($csv as $row) {
 
-            if ($row[8] === '' || $row[8] === 'PI') {
-                $row[8] = 'U';
-            }
 
             $unite = Unite::where('short', 'ILIKE', $row[8])->first()->id ?? null;
             $row[1] = preg_replace('/^\x{FEFF}/u', '', $row[1]);
@@ -62,9 +60,6 @@ class MatiereProductionSeeder extends Seeder
                 'material_id' => $matierial_id,
                 'dn' => $row[6],
                 'epaisseur' => $row[7],
-                'prix_moyen' => null,
-                'date_dernier_achat' => null,
-                'quantite' => 0,
                 'stock_min' => 0,
             ]);
             // if ($sous_famille == null) {

@@ -152,33 +152,51 @@ class DatabaseProductionSeeder extends Seeder
             'updated_at' => now(),
             'created_at' => now(),
         ]);
-
-        Notification::factory()->times(100)->create();
+        $temps = now();
+        // Notification::factory()->times(100)->create();
+        echo "Les utilisateurs ont été créés avec succès en " . $temps->diffInSeconds(now()) . " secondes.\n";
         $this->call(PaysSeeder::class);
+        echo "Les pays ont été créés avec succès en " . $temps->diffInSeconds(now()) . " secondes.\n";
         $this->call(FormeJuridiqueSeeder::class);
+        echo "Les formes juridiques à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
         $this->call(CodeApeSeeder::class);
+        echo "Les codes APE ont été créés avec succès en " . $temps->diffInSeconds(now()) . " secondes.\n";
         $this->call(SocieteTypeSeeder::class);
+        echo "Les types de société ont été créés avec succès en " . $temps->diffInSeconds(now()) . " secondes.\n";
         $this->call(ConditionPaiementSeeder::class);
+        echo "Les conditions de paiement à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
         // SocieteContact::factory()->times(100)->create();
         $this->call(SocieteProductionSeeder::class);
+        echo "Les sociétés à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
         $this->call(PredefinedShortcutsSeeder::class);
+        echo "Les raccourcis prédéfinis ont été créés avec succès en " . $temps->diffInSeconds(now()) . " secondes.\n";
         foreach (PredefinedShortcut::all() as $shortcut) {
             UserShortcut::create([
-                'user_id' => 1,
-                'shortcut_id' => $shortcut->id,
+            'user_id' => 1,
+            'shortcut_id' => $shortcut->id,
             ]);
         }
+        echo "raccourcis utilisateur à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
         $this->call(UniteSeeder::class);
+        echo "unités à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
         $this->call(FamilleSeeder::class);
+        echo "familles à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
         $this->call(SousFamilleSeeder::class);
+        echo "sous-familles à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
         $this->call(StandardSeeder::class);
+        echo "standards à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
         $this->call(MaterialSeeder::class);
+        echo "matériaux à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
         $this->call(MatiereProductionSeeder::class);
+        echo "matières de production à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
         // $this->call(MatiereSeeder::class);
         $this->call(DdpCdeStatutSeeder::class);
+        echo "statuts des DDP et CDE à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
         // $this->call(DdpSeeder::class);
         $this->call(MailTemplateSeeder::class);
+        echo "modèles de mail à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
         $this->call(TypeExpeditionSeeder::class);
+        echo "types d'expédition à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
         // $this->call(CdeSeeder::class);
     }
 }

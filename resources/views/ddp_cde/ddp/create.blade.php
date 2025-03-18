@@ -632,6 +632,7 @@
                         `#fournisseurs-table tr[data-fournisseur-id="${fournisseurId}"]`);
                     if (!existingFournisseur) {
                         const clonedRow = event.currentTarget.cloneNode(true);
+                        clonedRow.setAttribute('data-matiere-id', matiereId);
                         document.getElementById('fournisseurs-table').appendChild(clonedRow);
                         existingRow.setAttribute('data-fournisseurs-ids',
                             `${existingRow.getAttribute('data-fournisseurs-ids')};${fournisseurId}`);

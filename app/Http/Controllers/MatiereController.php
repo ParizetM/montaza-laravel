@@ -213,10 +213,8 @@ class MatiereController extends Controller
     {
         $matiere = Matiere::with(['sousFamille', 'societe', 'standardVersion'])->findOrFail($matiere_id);
         $fournisseurs_dernier_prix = $matiere->fournisseurs()
-            ->where('societe_type_id', ['3', '2'])
-            ->orderBy('date_dernier_prix', 'desc')
             ->get()
-            ->unique('pivot.societe_id');
+            ->unique('societe_id');
         $dates = $matiere->mouvements->isEmpty() ? null : $matiere->mouvements->pluck('created_at');
         $quantites = $matiere->mouvements->pluck('pivot.quantite');
 
@@ -224,7 +222,7 @@ class MatiereController extends Controller
         foreach ($matiere->mouvements as $mouvement) {
             $quantitemouvement += $mouvement->quantite  * ($mouvement->type_mouvement ? 1 : -1);
         }
-        $quantiteActuelle = $matiere->quantite - $quantitemouvement;
+        $quantiteActuelle = $matiere->quantite() - $quantitemouvement;
         $quantites = $matiere->mouvements->sortBy('created_at')->map(function ($mouvement) use (&$quantiteActuelle,$matiere) {
 
             $quantiteActuelle += $mouvement->quantite  * ($mouvement->type_mouvement ? 1 : -1);
@@ -257,20 +255,20 @@ class MatiereController extends Controller
         ]);
     }
 
-    public function mouvement($matiere_id, float $quantite, bool $type) {
-        $matiere = Matiere::findOrFail($matiere_id);
-        if ($matiere->quantite + $quantite * ($type ? 1 : -1) < 0) {
-            return false;
-        }
-        $mouvement = new MatiereMouvement([
-            'quantite' => $quantite,
-            'type_mouvement' => $type,
-        ]);
-        $matiere->mouvements()->save($mouvement);
-        $matiere->quantite += $quantite * ($type ? 1 : -1);
-        $matiere->save();
-        return true;
-    }
+    // public function mouvement($matiere_id, float $quantite, bool $type) {
+    //     $matiere = Matiere::findOrFail($matiere_id);
+    //     if ($matiere->quantite() + $quantite * ($type ? 1 : -1) < 0) {
+    //         return false;
+    //     }
+    //     $mouvement = new MatiereMouvement([
+    //         'quantite' => $quantite,
+    //         'type_mouvement' => $type,
+    //     ]);
+    //     $matiere->mouvements()->save($mouvement);
+    //     $matiere->quantite() += $quantite * ($type ? 1 : -1);
+    //     $matiere->save();
+    //     return true;
+    // }
     public function retirerMouvement($matiere_id,Request $request) {
         $matiere = Matiere::findOrFail($matiere_id);
         $request->validate([

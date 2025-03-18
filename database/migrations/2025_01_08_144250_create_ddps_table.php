@@ -48,7 +48,7 @@ return new class extends Migration
             $table->date('date_livraison')->nullable();
             $table->timestamps();
         });
-        Schema::table('societe_matiere', function (Blueprint $table) {
+        Schema::table('societe_matiere_prixs', function (Blueprint $table) {
             $table->foreignId('ddp_ligne_fournisseur_id')->nullable()->constrained('ddp_ligne_fournisseurs')->onDelete('cascade');
         });
     }

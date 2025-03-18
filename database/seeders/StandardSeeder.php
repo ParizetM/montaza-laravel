@@ -14,35 +14,30 @@ use App\Models\StandardVersion;
 
 class StandardSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        $stockagePath = Storage::path('standards');
+        $p = Storage::path('standards');
+        $ds = File::directories($p);
+        foreach ($ds as $d) {
+            $fs = File::files($d);
+            $doss = new DossierStandard;
+            $doss->nom = basename($d);
+            $doss->save();
+            foreach ($fs as $f) {
+            if ($f->getExtension() === 'pdf') {
+                $std = new Standard();
+                $std->nom = str_replace('.pdf', '', $f->getFilename());
+                $std->dossier_standard_id = $doss->id;
+                $std->save();
 
-        $directories = File::directories($stockagePath);
-
-        foreach ($directories as $directory) {
-            $pdfFiles = File::files($directory);
-            $dossierStandard = new DossierStandard;
-            $dossierStandard->nom = basename($directory);
-            $dossierStandard->save();
-
-            foreach ($pdfFiles as $file) {
-            if ($file->getExtension() === 'pdf') {
-                $standard = new Standard();
-                $standard->nom = str_replace('.pdf', '', $file->getFilename());
-                $standard->dossier_standard_id = $dossierStandard->id;
-                $standard->save();
-
-                $standardVersion = new StandardVersion();
-                $standardVersion->standard_id = $standard->id;
-                $standardVersion->version = 'A';
-                $standardVersion->chemin_pdf = 'standards/' . $dossierStandard->nom . '/' . $standard->nom . '.pdf';
-                $standardVersion->save();
+                $ver = new StandardVersion();
+                $ver->standard_id = $std->id;
+                $ver->version = 'A';
+                $ver->chemin_pdf = 'standards/' . $doss->nom . '/' . $std->nom . '.pdf';
+                $ver->save();
             }
             }
         }
-    }
-}
+            }
+        }
+

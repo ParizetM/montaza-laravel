@@ -28,6 +28,7 @@ return new class extends Migration
             $table->id();
             $table->string('nom')->unique();
             $table->foreignId('famille_id')->constrained('familles');
+            $table->integer('type_affichage_stock')->default(1);
             $table->timestamps();
         });
         Schema::create('dossier_standards', function (Blueprint $table) {
@@ -60,29 +61,51 @@ return new class extends Migration
             $table->string('ref_interne')->unique();
             $table->foreignId('standard_version_id')->nullable()->constrained('standard_versions');
             $table->string('designation');
-            $table->foreignId('unite_id')->constrained('unites');
             $table->foreignId(column: 'sous_famille_id')->constrained('sous_familles');
             $table->foreignId(column: 'material_id')->nullable()->constrained('materials');
+            $table->foreignId(column: 'unite_id')->constrained('unites');
             $table->string('dn')->nullable();
             $table->string('epaisseur')->nullable();
-            $table->decimal('prix_moyen', 8, 2)->nullable();
-            $table->integer('quantite');
             $table->integer('stock_min');
-            $table->date('date_dernier_achat')->nullable();
             $table->timestamps();
         });
-        Schema::create('societe_matiere', function (Blueprint $table) {
+        Schema::create('col_supp_noms', function (Blueprint $table) {
+            $table->id();
+            $table->string('nom');
+            $table->timestamps();
+        });
+        Schema::create('col_supp_vals', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('col_supp_nom_id')->constrained('col_supp_noms');
+            $table->string('valeur');
+            $table->foreignId('matiere_id')->constrained('matieres');
+            $table->timestamps();
+        });
+        Schema::create('societe_matieres', function (Blueprint $table) {
             $table->id();
             $table->foreignId('matiere_id')->constrained('matieres')->cascadeOnDelete();
             $table->foreignId('societe_id')->constrained('societes')->cascadeOnDelete();
-            $table->string('ref_fournisseur')->nullable(); // Référence fournisseur
-            $table->string('designation_fournisseur')->nullable(); // Désignation spécifique au fournisseur
-            $table->decimal('prix', 8, 2); // Prix associé
-            $table->foreignId('unite_id')->nullable()->constrained('unites');
-            $table->dateTime('date_dernier_prix'); // Date du dernier prix
+            $table->string('ref_externe')->nullable(); // Référence fournisseur
+            $table->foreignId('standard_version_id')->nullable()->constrained('standard_versions');
             $table->timestamps();
         });
-
+        Schema::create('societe_matiere_prixs', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('societe_matiere_id')->constrained('societe_matieres')->cascadeOnDelete();
+            $table->foreignId('unite_id')->constrained('unites'); // Unité dans laquelle le fournisseur vend
+            $table->decimal('prix_unitaire', 8, 3)->nullable(); // Prix dans l’unité du fournisseur
+            $table->decimal('taux_conversion_unite', 8, 3)->nullable(); // Conversion vers l'unité principale
+            $table->string('description')->nullable();
+            $table->date('date')->nullable();
+            $table->timestamps();
+        });
+        Schema::create('stocks', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('matiere_id')->constrained('matieres')->cascadeOnDelete();
+            $table->integer('quantite')->default(0);
+            $table->decimal('nombre', 8, 3)->default(0);
+            $table->timestamps();
+        });
     }
 
     /**
@@ -92,7 +115,12 @@ return new class extends Migration
     {
         Schema::dropIfExists('standard_versions');
         Schema::dropIfExists('standards');
-        Schema::dropIfExists('societe_matiere');
+        Schema::dropIfExists('dossier_standards');
+        Schema::dropIfExists('materials');
+        Schema::dropIfExists('societe_matiere_prixs');
+        Schema::dropIfExists('societe_matieres');
+        Schema::dropIfExists('col_supp_vals');
+        Schema::dropIfExists('col_supp_noms');
         Schema::dropIfExists('matieres');
         Schema::dropIfExists('sous_familles');
         Schema::dropIfExists('familles');

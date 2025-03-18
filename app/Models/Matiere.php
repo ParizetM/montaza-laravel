@@ -5,6 +5,7 @@ namespace App\Models;
 use App\MatiereMouvement;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 class Matiere extends Model
 {
     use HasFactory;
@@ -18,48 +19,36 @@ class Matiere extends Model
         'dn',
         'epaisseur',
         'standard_version_id',
-        'prix_moyen',
-        'quantite',
         'stock_min',
     ];
 
-    public function fournisseurs()
+    protected static function booted()
     {
-        return $this->belongsToMany(Societe::class, 'societe_matiere')
-            ->withPivot(['ref_fournisseur', 'designation_fournisseur', 'prix', 'unite_id', 'date_dernier_prix'])
+        static::created(function ($matiere) {
+            Stock::create([
+                'matiere_id' => $matiere->id,
+                'quantite' => 0,
+                'nombre' => 0,
+            ]);
+        });
+    }
+    public function societes()
+    {
+        return $this->belongsToMany(Societe::class, 'societe_matieres')
             ->withTimestamps();
     }
+    public function fournisseurs()
+    {
+        return $this->belongsToMany(Societe::class, 'societe_matieres')
+            ->where('societe_type_id', ['3', '2'])
+            ->withTimestamps();
+    }
+
     public function getLastPrice($societe_id = null)
     {
-        // Log::info('societe_id: ' . $societe_id);
         if ($societe_id) {
-            $lastPrice = $this->fournisseurs()
-                ->where('societe_id', $societe_id)
-                ->whereNotNull('prix')
-                ->whereNotNull('unite_id')
-                ->orderBy('date_dernier_prix', 'desc')
-                ->first();
-            if (!$lastPrice) {
-                $lastPrice = $this->fournisseurs()
-                    ->where('societe_id', $societe_id)
-                    ->orderBy('date_dernier_prix', 'desc')
-                    ->first();
-            }
-        } else {
-            $lastPrice = $this->fournisseurs()
-                ->whereNotNull('prix')
-                ->whereNotNull('unite_id')
-                ->orderBy('date_dernier_prix', 'desc')
-                ->first();
-
-            if (!$lastPrice) {
-                $lastPrice = $this->fournisseurs()
-                    ->orderBy('date_dernier_prix', 'desc')
-                    ->first();
-            }
+            return $this->societes()->where('societe_id', $societe_id)->first()->getLastPrice();
         }
-
-        return $lastPrice;
     }
     public function unite()
     {
@@ -88,5 +77,23 @@ class Matiere extends Model
     public function material()
     {
         return $this->belongsTo(Material::class);
+    }
+    public function stock()
+    {
+        return $this->hasOne(Stock::class);
+    }
+    public function typeAffichageStock(): int
+    {
+        return $this->sousFamille->type_affichage_stock;
+    }
+    public function quantite()
+    {
+        if ($this->typeAffichageStock() === 1) {
+            return $this->stock->quantite;
+        } elseif ($this->typeAffichageStock() === 2) {
+            return $this->stock->nombre * $this->stock->quantite;
+        } else {
+            return $this->stock->quantite;
+        }
     }
 }

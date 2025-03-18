@@ -24,11 +24,12 @@
                     <tr>
                         <th class="px-4 py-2">Référence Interne</th>
                         <th class="px-4 py-2">Sous Famille</th>
-                        <th class="px-4 py-2">Qté</th>
+                        <th class="px-4 py-2">Matière</th>
                         <th class="px-4 py-2">Désignation</th>
+                        <th class="px-4 py-2">Qté</th>
                         <th class="px-4 py-2">Standard</th>
                         <th class="px-4 py-2">DN</th>
-                        <th class="px-4 py-2">Épaisseur</th>
+                        <th class="px-4 py-2">Ép</th>
                         <th class="px-4 py-2">Unité</th>
                     </tr>
                 </thead>
@@ -36,8 +37,10 @@
                     <tr>
                         <td class="border px-4 py-2">{{ $matiere->ref_interne }}</td>
                         <td class="border px-4 py-2">{{ $matiere->sousFamille->nom }}</td>
-                        <td class="border px-4 py-2">{{ $matiere->quantite }}</td>
+                        <td class="border px-4 py-2">{{ $matiere->material->nom ?? '-' }}</td>
                         <td class="border px-4 py-2">{{ $matiere->designation }}</td>
+
+                        <td class="border px-4 py-2">{{ $matiere->quantite() }}</td>
                         <td class="border px-4 py-2 ">
                             @if ($matiere->standardVersion == null)
                                 <span class="">Aucun standard</span>
@@ -76,10 +79,10 @@
                                     class="hover:bg-gray-100 hover:dark:bg-gray-700 cursor-pointer h-fit">
                                     <td class="border px-4 py-2 whitespace-nowrap">{{ $fournisseur->raison_sociale }}
                                     </td>
-                                    <td class="border px-4 py-2 whitespace-nowrap">{{ $fournisseur->pivot->prix }} €
+                                    <td class="border px-4 py-2 whitespace-nowrap">{{ $fournisseur->prix }} €
                                     </td>
                                     <td class="border px-4 py-2 whitespace-nowrap">
-                                        {{ $fournisseur->pivot->date_dernier_prix }}</td>
+                                        {{ $fournisseur->date }}</td>
                                 </tr>
                             @endforeach
                             @if ($fournisseurs_dernier_prix->count() == 0)

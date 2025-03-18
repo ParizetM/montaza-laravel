@@ -98,6 +98,7 @@
                                                 @endif
                                             @endforeach
                                         @endforeach
+                                        <tr class="h-14"></tr>
                                     </tbody>
                                 </table>
                             </div>

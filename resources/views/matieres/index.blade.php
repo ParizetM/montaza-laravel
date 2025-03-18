@@ -92,10 +92,10 @@
                                     <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Désignation</th>
                                     <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Matière</th>
                                     <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Sous-famille</th>
-                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Qté</th>
+                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Qté stock</th>
                                     <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Standard</th>
                                     <th class="text-left py-3 px-4 uppercase font-semibold text-sm">DN</th>
-                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Épaisseur</th>
+                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">EP</th>
                                     <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Unité</th>
                                     <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Action</th>
                                 </tr>

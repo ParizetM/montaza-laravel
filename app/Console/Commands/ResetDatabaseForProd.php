@@ -34,6 +34,6 @@ class ResetDatabaseForProd extends Command
         $this->call(DatabaseProductionSeeder::class);
         $fin = microtime(true);
         $this->info('Toutes les tables ont été remplies avec des données.');
-        $this->info('Temps d\'exécution : ' . round($fin - $depart, 3) . ' secondes.');
+        $this->info('[' . date('Y-m-d H:i:s') . '] Temps d\'exécution : ' . round($fin - $depart, 3) . ' secondes.');
     }
 }

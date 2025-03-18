@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class SousFamille extends Model
 {
-    protected $fillable = ['nom', 'famille_id'];
+    protected $fillable = ['nom', 'famille_id', 'type_affichage_stock'];
     public $timestamps = false;
     public function famille()
     {

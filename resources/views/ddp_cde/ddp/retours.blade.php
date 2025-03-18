@@ -37,39 +37,6 @@
                     </button>
                 </div>
             </div>
-            {{-- <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead class="bg-gray-50 dark:bg-gray-700">
-                    <tr>
-                        <th class="bg-white dark:bg-gray-800"></th>
-                        <th colspan="9" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Fournisseurs</th>
-                    </tr>
-                    <tr>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Matières</th>
-                        @foreach ($ddp_societes as $societe)
-                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider bg-white dark:bg-gray-800">{{ $societe->raison_sociale }}</th>
-                        @endforeach
-                    </tr>
-                </thead>
-                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                    @for ($i = 1; $i <= 23; $i++)
-                        <tr class="">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-center bg-white dark:bg-gray-800">Matière {{ $i }}</td>
-                            @foreach ($ddp_societes as $societe)
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-center bg-gray-100 dark:bg-gray-900">
-                                    <x-text-input name="matiere_{{ $i }}_{{ $societe->id }}" type="text" class="w-20" />
-                                    <x-date-input name="date_{{ $i }}_{{ $societe->id }}" class="w-20" />
-                                </td>
-                            @endforeach
-                        </tr>
-                    @endfor
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap font-bold text-sm text-gray-900 dark:text-gray-100 text-center">Total</td>
-                        @foreach ($ddp_societes as $societe)
-                            <td class="px-6 py-4 whitespace-nowrap font-bold text-sm text-gray-900 dark:text-gray-100 text-center bg-gray-100 dark:bg-gray-900">23 €</td>
-                        @endforeach
-                    </tr>
-                </tbody>
-            </table> --}}
             <style>
                 /* Style pour centrer le texte de la première ligne */
                 .ht-center-first-row {
@@ -86,9 +53,28 @@
             </style>
             <div id="handsontable-container" class="ht-theme-main-dark-auto"></div>
             <div class="flex justify-between items-center mt-6">
-                <a href="{{ route('ddp.cancel_validate', $ddp->id) }}" class="btn float-right">Retour</a>
+                <button x-data x-on:click="$dispatch('open-modal', 'confirm-retour')" class="btn float-right">
+                    Retour
+                </button>
                 <a href="{{ route('ddp.terminer', $ddp->id) }}" class="btn float-right">Terminer</a>
             </div>
+            <x-modal name="confirm-retour" :show="$errors->any()">
+                <div class="p-4">
+                <a x-on:click="$dispatch('close')">
+                    <x-icons.close class="float-right mb-1 icons" size="1.5" unfocus />
+                </a>
+                <h2 class="text-xl font-semibold mb-4">Voulez-vous vraiment retourner en arrière ?</h2>
+                <p class="mb-4">Vous allez perdre toute modification faite dans le tableau de retours.</p>
+                <p class="mb-4">Cette action est irréversible.</p>
+                <div class="flex justify-end gap-4">
+                    <button x-on:click="$dispatch('close')"
+                        class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+                        Annuler
+                    </button>
+                    <a href="{{ route('ddp.cancel_validate',$ddp->id) }}"
+                        class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Retour</a>
+                </div>
+            </x-modal>
         </div>
     </div>
     <script>
