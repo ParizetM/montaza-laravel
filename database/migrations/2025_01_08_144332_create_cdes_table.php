@@ -58,7 +58,7 @@ return new class extends Migration
             $table->decimal('quantite', 10, places: 6);
             $table->foreignId('ddp_cde_statut_id')->default(1)->constrained('ddp_cde_statuts');
             $table->foreignId('type_expedition_id')->nullable()->constrained('type_expeditions');
-            $table->foreignId('unite_id')->nullable()->constrained('unites');
+            // $table->foreignId('unite_id')->nullable()->constrained('unites');
             $table->decimal('prix_unitaire', 10, places: 3)->nullable();
             $table->decimal('prix', 10, places: 3)->nullable();
             $table->date('date_livraison')->nullable();

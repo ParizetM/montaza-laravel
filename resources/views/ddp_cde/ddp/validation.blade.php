@@ -70,7 +70,7 @@
 
                         <div class="grid grid-cols-2 gap-4">
                             <div class="">
-                                <div class="bg-white dark:bg-gray-900 w-fit h-full rounded-md overflow-auto">
+                                <div class="bg-white dark:bg-gray-900 w-fit h-full rounded-md overflow-auto mt-2">
                                 <table class="min-w-0  ">
                                     <thead>
                                         <tr>
@@ -91,8 +91,8 @@
                                                             {{ $ddpLigne->matiere->designation }}</td>
                                                         <td class="border border-gray-300 dark:border-gray-700 px-4 py-2">{{ formatNumber($ddpLigne->quantite) }}</td>
                                                         <td class="border border-gray-300 dark:border-gray-700 px-4 py-2"
-                                                            title="{{ $ddpLigne->unite->full }}">
-                                                            {{ $ddpLigne->unite->short }}
+                                                            title="{{ $ddpLigne->matiere->unite->full }}">
+                                                            {{ $ddpLigne->matiere->unite->short }}
                                                         </td>
                                                     </tr>
                                                 @endif

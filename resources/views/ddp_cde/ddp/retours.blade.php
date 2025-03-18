@@ -21,7 +21,10 @@
             <div class="flex justify-between items-center mb-6">
                 <div>
                     <h1 class="text-3xl font-bold mb-6 text-left">{{ $ddp->nom }} - Récapitulatif</h1>
-                    <p class="text-sm font-semibold text-gray-500 dark:text-gray-400">Ordre des colonnes : REF FOURNISSEUR <strong class="dark:text-white text-gray-900">|</strong> PU HT <strong class="dark:text-white text-gray-900">|</strong> UNITE <strong class="dark:text-white text-gray-900">|</strong> DATE DE LIVRAISON POSSIBLE</p>
+                    <p class="text-sm font-semibold text-gray-500 dark:text-gray-400">Ordre des colonnes : REF
+                        FOURNISSEUR <strong class="dark:text-white text-gray-900">|</strong> PU HT <strong
+                            class="dark:text-white text-gray-900">|</strong> UNITE <strong
+                            class="dark:text-white text-gray-900">|</strong> DATE DE LIVRAISON POSSIBLE</p>
                 </div>
                 <div class="flex items-center">
                     <h1 class="text-xl font-semibold text-gray-500 dark:text-gray-400 flex items-center hidden"
@@ -37,21 +40,25 @@
                     </button>
                 </div>
             </div>
-            <style>
-                /* Style pour centrer le texte de la première ligne */
-                .ht-center-first-row {
-                    text-align: center;
-                }
+            <div class="">
+                <style>
+                    /* Style pour centrer le texte de la première ligne */
+                    .ht-center-first-row {
+                        text-align: center;
+                    }
 
-                thead {
-                    background: none;
-                }
+                    thead {
+                        background: none;
+                    }
 
-                .rowHeader {
-                    text-align: left !important;
-                }
-            </style>
-            <div id="handsontable-container" class="ht-theme-main-dark-auto"></div>
+                    .rowHeader {
+                        text-align: left !important;
+                    }
+                </style>
+
+                <div id="handsontable-container" class="ht-theme-main-dark-auto"></div>
+            </div>
+            </div>
             <div class="flex justify-between items-center mt-6">
                 <button x-data x-on:click="$dispatch('open-modal', 'confirm-retour')" class="btn float-right">
                     Retour
@@ -60,20 +67,20 @@
             </div>
             <x-modal name="confirm-retour" :show="$errors->any()">
                 <div class="p-4">
-                <a x-on:click="$dispatch('close')">
-                    <x-icons.close class="float-right mb-1 icons" size="1.5" unfocus />
-                </a>
-                <h2 class="text-xl font-semibold mb-4">Voulez-vous vraiment retourner en arrière ?</h2>
-                <p class="mb-4">Vous allez perdre toute modification faite dans le tableau de retours.</p>
-                <p class="mb-4">Cette action est irréversible.</p>
-                <div class="flex justify-end gap-4">
-                    <button x-on:click="$dispatch('close')"
-                        class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-sm">
-                        Annuler
-                    </button>
-                    <a href="{{ route('ddp.cancel_validate',$ddp->id) }}"
-                        class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-sm">Retour</a>
-                </div>
+                    <a x-on:click="$dispatch('close')">
+                        <x-icons.close class="float-right mb-1 icons" size="1.5" unfocus />
+                    </a>
+                    <h2 class="text-xl font-semibold mb-4">Voulez-vous vraiment retourner en arrière ?</h2>
+                    <p class="mb-4">Vous allez perdre toute modification faite dans le tableau de retours.</p>
+                    <p class="mb-4">Cette action est irréversible.</p>
+                    <div class="flex justify-end gap-4">
+                        <button x-on:click="$dispatch('close')"
+                            class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-sm">
+                            Annuler
+                        </button>
+                        <a href="{{ route('ddp.cancel_validate', $ddp->id) }}"
+                            class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-sm">Retour</a>
+                    </div>
             </x-modal>
         </div>
     </div>
@@ -107,7 +114,7 @@
             // Construire les en-têtes des colonnes
             const colHeaders = [];
             ddp_societes.forEach(societe => {
-                colHeaders.push(`Réf`,`PU HT`,`U`,`DDL`);
+                colHeaders.push(`Réf`, `PU HT`, `U`, `DDL`);
             });
 
             // Construire les colonnes (read-only pour matières, saisie pour les autres)
@@ -120,7 +127,7 @@
                     }, // Colonne prix
                     {
                         type: 'select',
-                        selectOptions: ['t', 'kg', 'ml', 'u', 'm²', 'm³', 'l'],
+                        selectOptions: [''],
                     },
                     {
                         type: 'date',
@@ -148,7 +155,7 @@
 
             const borders = [];
 
-            // Générer les bordures toutes les deux colonnes
+            // Générer les bordures toutes les quatres colonnes
             for (let col = 0; col < (societe_count * 4); col += 4) {
                 borders.push({
                     range: {
@@ -205,6 +212,7 @@
                 manualColumnResize: true,
                 manualRowResize: true,
                 contextMenu: false,
+                fixedColumnsLeft: 0,
                 customBorders: borders,
                 formulas: {
                     engine: HyperFormula,
@@ -242,6 +250,9 @@
                         cellProperties.readOnly = true;
 
                     }
+                    if (col % 4 === 2) {
+                        cellProperties.readOnly = true; // Marquez la ligne comme readonly
+                    }
                     cellProperties.renderer = function(instance, td, row, col, prop, value) {
                         Handsontable.renderers.TextRenderer.apply(this, arguments);
                         const rowData = instance.getDataAtRow(
@@ -262,7 +273,15 @@
                                 td.style.color = '#145214'; // Changer la couleur du texte
                             }
                         }
-
+                        if (col % 4 === 2) {
+                            if (isDarkMode) {
+                                td.style.backgroundColor = '#1e1e1f';
+                                td.style.color = '#fff'; // Changer la couleur du texte
+                            } else {
+                                td.style.backgroundColor = '#f3f3f5';
+                                td.style.color = '#000'; // Changer la couleur du texte
+                            }
+                        }
                         if (data[row][col] === 'UNDEFINED') {
                             if (isDarkMode) {
                                 td.style.backgroundColor = '#1e1e1f';

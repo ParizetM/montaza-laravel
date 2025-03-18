@@ -67,6 +67,7 @@ return new class extends Migration
             $table->string('dn')->nullable();
             $table->string('epaisseur')->nullable();
             $table->integer('stock_min');
+            $table->integer('ref_valeur_unitaire')->nullable();
             $table->timestamps();
         });
         Schema::create('col_supp_noms', function (Blueprint $table) {
@@ -92,9 +93,7 @@ return new class extends Migration
         Schema::create('societe_matiere_prixs', function (Blueprint $table) {
             $table->id();
             $table->foreignId('societe_matiere_id')->constrained('societe_matieres')->cascadeOnDelete();
-            $table->foreignId('unite_id')->constrained('unites'); // Unité dans laquelle le fournisseur vend
-            $table->decimal('prix_unitaire', 8, 3)->nullable(); // Prix dans l’unité du fournisseur
-            $table->decimal('taux_conversion_unite', 8, 3)->nullable(); // Conversion vers l'unité principale
+            $table->decimal('prix_unitaire', 8, 3)->nullable();
             $table->string('description')->nullable();
             $table->date('date')->nullable();
             $table->timestamps();
@@ -103,7 +102,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('matiere_id')->constrained('matieres')->cascadeOnDelete();
             $table->integer('quantite')->default(0);
-            $table->decimal('nombre', 8, 3)->default(0);
+            $table->decimal('valeur_unitaire', 8, 3)->nullable();
+            $table->string('certificat')->nullable();
             $table->timestamps();
         });
     }

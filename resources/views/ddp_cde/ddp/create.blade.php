@@ -50,7 +50,7 @@
                         <div class="flex w-full">
                             <x-text-input placeholder="Recherchez une matière" id="searchbar" class="w-full" />
                             <button class="btn-select-right -ml-1 border-gray-300 dark:border-gray-700" type="button"
-                            onclick="liveSearch()">Rechercher</button>
+                                onclick="liveSearch()">Rechercher</button>
                         </div>
                     </div>
                     <div class="min-h-96 overflow-x-auto bg-gray-100 dark:bg-gray-900 rounded-sm">
@@ -115,18 +115,20 @@
                                     placeholder="Nom de la demande de prix" autofocus
                                     value="{{ isset($ddp) && $ddp->nom != 'undefined' ? $ddp->nom : '' }}"
                                     class=" {{ isset($ddp) && $ddp->nom != 'undefined' ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : '' }}" />
+                            </div>
+                            <div>
+                                <x-input-label for="ddp-code" value="Code" />
+                                <div
+                                    class="flex items-center bg-gray-100 dark:bg-gray-900 rounded-sm focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-600">
+                                    <span class="ml-2 font-bold"> DDP-{{ date('y') }}-</span>
+                                    <x-text-input label="Code" name="ddp-code" id="ddp-code" placeholder="0000"
+                                        autofocus maxlength="4"
+                                        value="{{ isset($ddp) && $ddp->code != 'undefined' ? substr($ddp->code, 7, 4) : '' }}"
+                                        class="border-0 focus:border-0 dark:border-0 focus:ring-0 dark:focus:ring-0 w-14 px-0 mx-0 {{ isset($ddp) && $ddp->nom != 'undefined' ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : '' }}" />
+                                    <span class="-ml-2 mr-2"
+                                        id="ddp-code-entite">{{ isset($entite_code) ? $entite_code : '' }}</span>
                                 </div>
-                                <div>
-                                    <x-input-label for="ddp-code" value="Code" />
-                                    <div class="flex items-center bg-gray-100 dark:bg-gray-900 rounded-sm focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-600">
-                                        <span class="ml-2"> DDP-{{ date('y') }}-</span>
-                                        <x-text-input label="Code" name="ddp-code" id="ddp-code"
-                                            placeholder="0000" autofocus maxlength="4"
-                                            value="{{ isset($ddp) && $ddp->code != 'undefined' ? substr($ddp->code, 7, 4) : '' }}"
-                                            class="border-0 focus:border-0 dark:border-0 focus:ring-0 dark:focus:ring-0 w-14 px-0 mx-0 {{ isset($ddp) && $ddp->nom != 'undefined' ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : '' }}" />
-                                        <span class="-ml-2 mr-2" id="ddp-code-entite">{{ isset($entite_code) ? $entite_code : "" }}</span>
-                                    </div>
-                                </div>
+                            </div>
 
                         </div>
                         <div class="min-h-96 overflow-x-auto bg-gray-100 dark:bg-gray-900 rounded-sm">
@@ -147,14 +149,16 @@
                                                 <td class="text-left px-4">{{ $ddp_ligne->matiere->designation }}</td>
                                                 <td class="text-right px-4"
                                                     title="{{ $ddp_ligne->matiere->unite->full }}">
-                                                    <div class="flex items-center mt-1">
+                                                    <div
+                                                        class="flex items-center m-1 focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-600 focus-within:focus:border-indigo-600 rounded-sm">
 
                                                         <x-text-input type="number"
                                                             name="quantite[{{ $ddp_ligne->matiere->id }}]"
-                                                            oninput="saveChanges()" class="w-20 mx-2"
+                                                            oninput="saveChanges()"
+                                                            class="w-20 border-r-0 rounded-r-none  dark:border-0 focus:ring-0 focus:border-0 dark:focus:ring-0"
                                                             value="{{ formatNumber($ddp_ligne->quantite) }}"
                                                             min="1" />
-                                                        <select name="unite[{{ $ddp_ligne->matiere_id }}]"
+                                                        {{-- <select name="unite[{{ $ddp_ligne->matiere_id }}]"
                                                             class="w-16 mx-2 select" onchange="saveChanges()">
                                                             @foreach ($unites as $unite)
                                                                 <option value="{{ $unite->id }}"
@@ -163,7 +167,10 @@
                                                                     {{ $unite->short }}
                                                                 </option>
                                                             @endforeach
-                                                        </select>
+                                                        </select> --}}
+                                                        <div
+                                                            class="text-right bg-gray-100 dark:bg-gray-800 w-fit p-2 pl-0 border-1 border-l-0 rounded-r-sm border-gray-300">
+                                                            {{ $ddp_ligne->matiere->unite->short }}</div>
                                                     </div>
                                                 </td>
 
@@ -204,7 +211,7 @@
                         </div>
                     </form>
                     <div class="flex justify-between gap-4">
-                        <button class="bg-red-500 hover:bg-red-600 btn"
+                        <button class="bg-red-500 hover:bg-red-600 btn text-white"
                             onclick="event.preventDefault(); document.getElementById('confirm-delete-modal').classList.remove('hidden');">Supprimer</button>
                         <div id="confirm-delete-modal"
                             class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 hidden">
@@ -407,23 +414,17 @@
             <td class="text-left px-4">${matiereRef || '-'}</td>
             <td class="text-left px-4">${matiereDesignation || '-'}</td>
             <td class="text-right px-4">
-                <div class="flex items-center mt-1">
-                <x-text-input type="number" name="quantite[${matiereId}]" class="w-20 mx-2" value="1" min="1" oninput="saveChanges()"
+                <div class="flex items-center m-1 focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-600 focus-within:focus:border-indigo-600 rounded-sm">
+                <x-text-input type="number" name="quantite[${matiereId}]" value="1" min="1" oninput="saveChanges()" class="w-20 border-r-0 rounded-r-none  dark:border-0 focus:ring-0 focus:border-0 dark:focus:ring-0"
+
+
                 />
-                <select
-                name="unite[${matiereId}]"
-                class="w-16 mx-2 select"
-                onchange="saveChanges()"
-            >
-                ${unites.map(unite => `
-                                                            <option
-                                                                value="${unite.id}" title="${unite.full}"
-                                                                ${unite.short === matiereUnite ? 'selected' : ''}
-                                                            >
-                                                                ${unite.short}
-                                                            </option>
-                                                        `).join('')}
-            </select>
+                    ${unites.map(unite => `
+
+                        ${unite.short === matiereUnite ? '<div class="text-right bg-gray-100 dark:bg-gray-800 w-fit p-2 pl-0 border-1 border-l-0 rounded-r-sm border-gray-300" title="'+unite.full+'">' : ''}
+
+                        ${unite.short === matiereUnite ? unite.short+'</div>' : ''}
+                `).join('')}
                 </div>
             </td>
             <td class="text-right px-4" >
@@ -448,7 +449,21 @@
                 matiereChoisiTable.appendChild(tr);
             }
         }
-
+        // SELECT PLUS UTILISE
+        // <select
+        //         name="unite[${matiereId}]"
+        //         class="w-16 mx-2 select"
+        //         onchange="saveChanges()"
+        //     >
+        //         ${unites.map(unite => `
+    //                                                     <option
+    //                                                         value="${unite.id}" title="${unite.full}"
+    //                                                         ${unite.short === matiereUnite ? 'selected' : ''}
+    //                                                     >
+    //                                                         ${unite.short}
+    //                                                     </option>
+    //                                                 `).join('')}
+        //     </select>
         // Function to remove selected material from the chosen list
         function removeMatiere(event) {
             const matiereId = event.target.getAttribute('data-matiere-id');
@@ -694,7 +709,7 @@
                 const matiereId = row.getAttribute('data-matiere-id');
                 const quantity = row.querySelector(`input[name="quantite[${matiereId}]"]`).value;
                 const fournisseurs = row.querySelector(`input[name="fournisseur-${matiereId}"]`).value;
-                const unite_id = row.querySelector(`select[name="unite[${matiereId}]`).value;
+                // const unite_id = row.querySelector(`select[name="unite[${matiereId}]`).value;
                 row.classList.remove('border-r-green-500', 'dark:border-r-green-600');
                 if (quantity < 1) {
                     saveStatus0.classList.add('hidden');
@@ -705,7 +720,7 @@
                     matieres.push({
                         id: matiereId,
                         quantity: quantity,
-                        unite_id: unite_id,
+                        // unite_id: unite_id,
 
                         fournisseurs: fournisseurs.split(';')
                     });
@@ -843,7 +858,8 @@
                         return response.json();
                     })
                     .then(data => {
-                        document.title = `Créer DDP-${new Date().getFullYear().toString().slice(-2)}-${data.code}${data.entite_code}`;
+                        document.title =
+                            `Créer DDP-${new Date().getFullYear().toString().slice(-2)}-${data.code}${data.entite_code}`;
                         document.getElementById('ddp-code').value = data.code;
                         document.getElementById('ddp-code-entite').textContent = data.entite_code;
                     })

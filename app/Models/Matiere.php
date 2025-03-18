@@ -28,7 +28,7 @@ class Matiere extends Model
             Stock::create([
                 'matiere_id' => $matiere->id,
                 'quantite' => 0,
-                'nombre' => 0,
+                'valeur_unitaire' => 0,
             ]);
         });
     }
@@ -91,7 +91,7 @@ class Matiere extends Model
         if ($this->typeAffichageStock() === 1) {
             return $this->stock->quantite;
         } elseif ($this->typeAffichageStock() === 2) {
-            return $this->stock->nombre * $this->stock->quantite;
+            return $this->stock->valeur_unitaire * $this->stock->quantite;
         } else {
             return $this->stock->quantite;
         }
@@ -115,6 +115,11 @@ class Matiere extends Model
             'id' // Clé primaire de `societe_matieres`
         );
     }
+    /**
+     * Summary of prixPourSociete
+     * @param mixed $societeId
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough<SocieteMatierePrix, SocieteMatiere, Matiere>
+     */
     public function prixPourSociete($societeId)
     {
         return $this->prix()->whereHas('societeMatiere', function ($query) use ($societeId) {

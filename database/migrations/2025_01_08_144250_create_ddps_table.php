@@ -35,7 +35,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('ddp_id')->constrained('ddps')->onDelete('cascade');
             $table->foreignId('matiere_id')->constrained('matieres');
-            $table->foreignId('unite_id')->constrained('unites');
+            // $table->foreignId('unite_id')->constrained('unites');
             $table->decimal('quantite', 10, places: 6);
             $table->timestamps();
         });
