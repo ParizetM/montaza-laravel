@@ -4,7 +4,7 @@
         <div>
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 <a href="{{ route('ddp_cde.index') }}"
-                    class="hover:bg-gray-100 hover:dark:bg-gray-700 p-1 rounded">Demandes de prix et commandes</a>
+                    class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">Demandes de prix et commandes</a>
                 >>
                 {!! __('Créer une demande de prix') !!}
             </h2>
@@ -26,7 +26,7 @@
     <div class="py-4">
         <div class="max-w-8xl mx-auto sm:px-4 lg:px-6">
             <div
-                class="shadow-sm sm:rounded-lg text-gray-900 dark:text-gray-100 px-2 grid grid-cols-1 sm:grid-cols-2  gap-4">
+                class="shadow-xs sm:rounded-lg text-gray-900 dark:text-gray-100 px-2 grid grid-cols-1 sm:grid-cols-2  gap-4">
                 <div class="bg-white dark:bg-gray-800 p-4 flex flex-col gap-4 rounded-md">
                     <h1 class="text-xl font-semibold mb-2">Sélection des matières</h1>
                     <div class="flex flex-wrap gap-2">
@@ -53,7 +53,7 @@
                             onclick="liveSearch()">Rechercher</button>
                         </div>
                     </div>
-                    <div class="min-h-96 overflow-x-auto bg-gray-100 dark:bg-gray-900 rounded">
+                    <div class="min-h-96 overflow-x-auto bg-gray-100 dark:bg-gray-900 rounded-sm">
                         <table>
                             <thead>
                                 <th class="text-sm">Référence</th>
@@ -118,18 +118,18 @@
                                 </div>
                                 <div>
                                     <x-input-label for="ddp-code" value="Code" />
-                                    <div class="flex items-center bg-gray-100 dark:bg-gray-900 rounded focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-600  {{ isset($ddp) && $ddp->nom != 'undefined' ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : '' }}">
+                                    <div class="flex items-center bg-gray-100 dark:bg-gray-900 rounded-sm focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-600">
                                         <span class="ml-2"> DDP-{{ date('y') }}-</span>
                                         <x-text-input label="Code" name="ddp-code" id="ddp-code"
                                             placeholder="0000" autofocus maxlength="4"
                                             value="{{ isset($ddp) && $ddp->code != 'undefined' ? substr($ddp->code, 7, 4) : '' }}"
-                                            class="border-0 focus:border-0 dark:border-0 focus:ring-0 dark:focus:ring-0 w-14 px-0 mx-0" />
+                                            class="border-0 focus:border-0 dark:border-0 focus:ring-0 dark:focus:ring-0 w-14 px-0 mx-0 {{ isset($ddp) && $ddp->nom != 'undefined' ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : '' }}" />
                                         <span class="-ml-2 mr-2" id="ddp-code-entite">{{ isset($entite_code) ? $entite_code : "" }}</span>
                                     </div>
                                 </div>
 
                         </div>
-                        <div class="min-h-96 overflow-x-auto bg-gray-100 dark:bg-gray-900 rounded">
+                        <div class="min-h-96 overflow-x-auto bg-gray-100 dark:bg-gray-900 rounded-sm">
                             <table>
                                 <thead>
                                     <th colspan="100" class="border-r-4 border-gray-50 dark:border-gray-800">Matières
@@ -212,13 +212,13 @@
                                 <h2 class="text-xl font-semibold mb-4">Voulez-vous vraiment supprimer ?</h2>
                                 <p class="mb-4">Cette action est irréversible.</p>
                                 <div class="flex justify-end gap-4">
-                                    <button class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
+                                    <button class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-sm"
                                         onclick="document.getElementById('confirm-delete-modal').classList.add('hidden');">Annuler</button>
                                     <form action="{{ route('ddp.destroy', ['ddp' => $ddpid]) }}" method="POST">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit"
-                                            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">Supprimer</button>
+                                            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-sm">Supprimer</button>
                                     </form>
                                 </div>
                             </div>
@@ -510,6 +510,9 @@
                     tr.innerHTML = `
                     <td class="text-left px-4" colspan="2">${fournisseursNoms.split(';')[index] || '-'}</td>
                     `;
+                    if (fournisseursNoms.split(';')[index] == "") {
+                        tr.classList.add('hidden');
+                    }
                     fournisseursTable.appendChild(tr);
                 });
                 return;

@@ -19,17 +19,17 @@
                         <input id="Toggle1" type="checkbox" class="hidden peer" onchange="toggleDeletedProfiles(this)"
                             {{ request()->get('show_deleted') ? 'checked' : '' }} />
                         <div
-                            class="w-10 h-6 rounded-full shadow-inner bg-gray-400 dark:bg-gray-600 peer-checked:bg-violet-400 peer-checked:dark:bg-violet-600">
+                            class="w-10 h-6 rounded-full shadow-inner bg-gray-400 dark:bg-gray-600 peer-checked:bg-violet-400 dark:peer-checked:bg-violet-600">
                         </div>
                         <div
-                            class="absolute inset-y-0 left-0 w-4 h-4 m-1 rounded-full shadow peer-checked:right-0 peer-checked:left-auto bg-gray-800 dark:bg-gray-100">
+                            class="absolute inset-y-0 left-0 w-4 h-4 m-1 rounded-full shadow-sm peer-checked:right-0 peer-checked:left-auto bg-gray-800 dark:bg-gray-100">
                         </div>
                     </span>
                 </label>
 
-                <form method="GET" action="{{ route('profile.index') }}" class="mr-4 mb-1 sm:mr-0 sm:flex-grow">
+                <form method="GET" action="{{ route('profile.index') }}" class="mr-4 mb-1 sm:mr-0 sm:grow">
                     <input type="text" name="search" placeholder="Rechercher..." value="{{ request('search') }}"
-                        class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
                     <button type="submit" class=" ml-2 btn">
                         {{ __('Rechercher') }}
                     </button>
@@ -43,11 +43,11 @@
 
     <div class="py-12" id="container">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xs sm:rounded-lg">
                 <div class="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                            <thead class="bg-gradient-to-r from-gray-200 to-gray-50 dark:from-gray-700 dark:to-gray-800">
+                            <thead class="bg-linear-to-r from-gray-200 to-gray-50 dark:from-gray-700 dark:to-gray-800">
                                 <tr>
                                     <th scope="col"
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">

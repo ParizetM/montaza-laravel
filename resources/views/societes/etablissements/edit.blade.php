@@ -6,7 +6,7 @@
     </x-slot>
     <div class="py-8">
         <div class="max-w-8xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xs sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100 ">
                     <form method="POST" action="{{ route('etablissements.update',$etablissement->id) }}"
                         class="flex flex-col w-full grid-cols-6 gap-6 sm:grid">
@@ -114,7 +114,7 @@
                         <div class="col-span-6">
                             <x-input-label for="commentaire" :value="__('Commentaire')" />
                             <textarea rows="3" id="commentaire" name="commentaire"
-                                class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-900 dark:text-gray-100"
+                                class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-xs focus:outline-hidden focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-900 dark:text-gray-100"
                                 placeholder="(Optionnel) Votre commentaire ici">{{ old('commentaire',$etablissement->commentaire->contenu) }}</textarea>
                             @error('commentaire')
                                 <span class="text-red-500 text-sm">{{ $message }}</span>

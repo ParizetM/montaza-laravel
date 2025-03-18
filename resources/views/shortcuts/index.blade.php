@@ -10,7 +10,7 @@
 
     <div class="py-12">
         <div class="grid grid-cols-1 sm:grid-cols-6 gap-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="col-span-5 p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+            <div class="col-span-5 p-4 sm:p-8 bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg">
                 <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight ">
                     {{ __('Raccourcis') }}</h2>
                 <div class="">
@@ -48,10 +48,10 @@
                                                         class="hidden peer" onchange=""
                                                         {{ $shortcut->isAdded() ? 'checked' : '' }} />
                                                     <div
-                                                        class="w-10 h-6 rounded-full shadow-inner bg-gray-400 dark:bg-gray-600 peer-checked:bg-violet-400 peer-checked:dark:bg-violet-600">
+                                                        class="w-10 h-6 rounded-full shadow-inner bg-gray-400 dark:bg-gray-600 peer-checked:bg-violet-400 dark:peer-checked:bg-violet-600">
                                                     </div>
                                                     <div
-                                                        class="absolute inset-y-0 left-0 w-4 h-4 m-1 rounded-full shadow peer-checked:right-0 peer-checked:left-auto bg-gray-800 dark:bg-gray-100">
+                                                        class="absolute inset-y-0 left-0 w-4 h-4 m-1 rounded-full shadow-sm peer-checked:right-0 peer-checked:left-auto bg-gray-800 dark:bg-gray-100">
                                                     </div>
                                                 </span>
                                             </label>
@@ -74,7 +74,7 @@
                     <div class="flex justify-between mb-4">
                         <h2 class="font-semibold text-l text-gray-800 dark:text-gray-200 leading-tight ">
                             {{ __('raccourcis') }}</h2>
-                        <p class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150"
+                        <p class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-hidden transition ease-in-out duration-150"
                             title="Modifier les raccourcis">
                             <x-icons.apps-edit :size="1" class="icons-no_hover" />
                         </p>

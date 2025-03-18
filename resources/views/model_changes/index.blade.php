@@ -22,27 +22,27 @@
                 <form method="GET" action="{!! route('model_changes.index') !!}"
                     class="mr-4 mb-1 sm:mr-0 flex flex-col sm:flex-row items-start sm:items-center">
                     <input type="text" name="search" placeholder="Rechercher..." value="{!! request('search') !!}"
-                        class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
 
                     <div class="flex items-center my-1">
                         <label for="start_date"
                             class="mx-4 text-gray-900 dark:text-gray-100">{!! __('Après le ') !!}</label>
                         <input type="date" name="start_date" onblur="updateDateInputs(this)" id="start_date"
                             value="{!! old('start_date', request('start_date')) !!}"
-                            class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
                     </div>
                     <div class="flex items-center ml-4 my-1 ">
                         <label for="end_date"
                             class="mr-2 text-gray-900 dark:text-gray-100">{!! __('Avant le') !!}</label>
                         <input type="date" name="end_date" onblur="updateDateInputs(this)" id="end_date"
                             value="{!! old('end_date', request('end_date')) !!}"
-                            class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
                     </div>
                     <div class="flex items-center ml-4 my-1 ">
                         <label for="nombre"
                             class="mr-2 text-gray-900 dark:text-gray-100">{!! __('Quantité') !!}</label>
                         <input type="number" name="nombre" id="nombre" value="{!! old('nombre', request('nombre', 50)) !!}"
-                            class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
                     </div>
                     <button type="submit" class="ml-2 btn sm:mt-0 md:mt-0 lg:mt-0">
                         {!! __('Rechercher') !!}
@@ -54,7 +54,7 @@
 
     <div class="py-12">
         <div class="max-w-8xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xs sm:rounded-lg">
                 <div class="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">

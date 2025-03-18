@@ -10,7 +10,7 @@
     </div>
     <div class="mt-4">
         @if (session('notification'))
-            <div class="bg-green-500 text-white p-2 rounded mb-4">
+            <div class="bg-green-500 text-white p-2 rounded-sm mb-4">
                 {{ session('notification') }}
             </div>
         @endif

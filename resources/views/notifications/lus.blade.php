@@ -10,7 +10,7 @@
     <div x-data="{ activeTab: 'tab1' }">
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xs sm:rounded-lg">
                     <div class="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                         <div class="overflow-x-auto">
                             <div class="p-4">
@@ -19,7 +19,7 @@
                                 </h2>
                                 <div class="mt-4">
                                     @if (session('notification'))
-                                        <div class="bg-green-500 text-white p-2 rounded mb-4">
+                                        <div class="bg-green-500 text-white p-2 rounded-sm mb-4">
                                             {{ session('notification') }}
                                         </div>
                                     @endif

@@ -5,7 +5,7 @@
 
     <div class="py-12" id="container">
         <div class="max-w-8xl mx-auto sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xs sm:rounded-lg">
                 <div class=" p-6 text-gray-900 dark:text-gray-100 ">
                     <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
                         {{ __('Poste') }}
@@ -44,7 +44,7 @@
                     </form>
                 </div>
             </div>
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xs sm:rounded-lg">
                 <div class=" p-6 text-gray-900 dark:text-gray-100 ">
                     <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
                         {{ $users->count() }}
@@ -61,7 +61,7 @@
                         @endif
                     </p>
                     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead class="bg-gradient-to-r from-gray-200 to-gray-50 dark:from-gray-700 dark:to-gray-800">
+                        <thead class="bg-linear-to-r from-gray-200 to-gray-50 dark:from-gray-700 dark:to-gray-800">
                             <th scope="col">Prénom</th>
                             <th scope="col">Nom</th>
                             <th scope="col">Action</th>
@@ -102,7 +102,7 @@
             @if (!$role->undeletable)
                 @if ($role->deleted_at)
                     <div
-                        class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg  p-6 text-gray-900 dark:text-gray-100 ">
+                        class="bg-white dark:bg-gray-800 overflow-hidden shadow-xs sm:rounded-lg  p-6 text-gray-900 dark:text-gray-100 ">
                         <header>
                             <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
                                 {{ __('Activer le poste') }}
@@ -141,7 +141,7 @@
                     </div>
                 @else
                     <div
-                        class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg  p-6 text-gray-900 dark:text-gray-100 ">
+                        class="bg-white dark:bg-gray-800 overflow-hidden shadow-xs sm:rounded-lg  p-6 text-gray-900 dark:text-gray-100 ">
                         <header>
                             <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
                                 {{ __('Désactiver le poste') }}

@@ -96,4 +96,29 @@ class Matiere extends Model
             return $this->stock->quantite;
         }
     }
+    public function societeMatieres()
+    {
+        return $this->hasMany(SocieteMatiere::class);
+    }
+    public function societeMatiere($societeId)
+    {
+        return $this->hasOne(SocieteMatiere::class)->where('societe_id', $societeId);
+    }
+    public function prix()
+    {
+        return $this->hasManyThrough(
+            SocieteMatierePrix::class, // Table cible (les prix)
+            SocieteMatiere::class, // Table pivot (associe matières et sociétés)
+            'matiere_id', // Clé étrangère sur `societe_matieres`
+            'societe_matiere_id', // Clé étrangère sur `societe_matiere_prixs`
+            'id', // Clé primaire de `matieres`
+            'id' // Clé primaire de `societe_matieres`
+        );
+    }
+    public function prixPourSociete($societeId)
+    {
+        return $this->prix()->whereHas('societeMatiere', function ($query) use ($societeId) {
+            $query->where('societe_id', $societeId);
+        });
+    }
 }

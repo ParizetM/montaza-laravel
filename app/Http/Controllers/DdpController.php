@@ -677,10 +677,8 @@ class DdpController extends Controller
                         $prix = '';
                         $unite = '';
                         if ($ddpLigneFournisseur->ddpLigne->matiere) {
-                            $fournisseur = $ddpLigneFournisseur->ddpLigne->matiere->fournisseurs()
-                                ->where('societe_id', $societe->id)
-                                ->where('ddp_ligne_fournisseur_id', $ddpLigneFournisseur->id)
-                                ->orderBy('date_dernier_prix', 'desc')
+                            $fournisseur = $ddpLigneFournisseur->ddpLigne->matiere->prixPourSociete($societe->id)
+                                ->orderBy('date', 'desc')
                                 ->first();
                             if ($fournisseur) {
                                 $prix = $fournisseur->pivot->prix;
@@ -702,13 +700,11 @@ class DdpController extends Controller
                             $unite = '';
                         }
                         $date_livraison = $ddpLigneFournisseur->date_livraison ? Carbon::parse($ddpLigneFournisseur->date_livraison)->format('d/m/Y') : '';
-                        $reference_fournisseur = $ddpLigneFournisseur->ddpLigne->matiere->fournisseurs()
-                            ->where('societe_id', $societe->id)
-                            ->whereNotNull('ref_fournisseur')
-                            ->where('ref_fournisseur', '!=', '')
-                            ->orderBy('date_dernier_prix', 'desc')
-                            ->first();
-                        $reference_fournisseur = $reference_fournisseur ? $reference_fournisseur->pivot->ref_fournisseur : '';
+                        $reference_fournisseur = $ddpLigneFournisseur->ddpLigne->matiere->societeMatiere($societe->id)
+                            ->whereNotNull('ref_externe')
+                            ->where('ref_externe', '!=', '')
+                            ->first() ?? null;
+                        $reference_fournisseur = $reference_fournisseur ? $reference_fournisseur->ref_externe : '';
                         // dd($ddpLigneFournisseur->ddpLigne->matiere->id,[$societe->id,$reference_fournisseur]);
                         $row[] = $reference_fournisseur ?? '';
                         $row[] = $prix;

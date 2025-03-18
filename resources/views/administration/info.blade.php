@@ -4,11 +4,11 @@
     <x-slot name="header">
         <div class="flex items-center">
             <a href="{{ route('administration.index') }}"
-                class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight hover:bg-gray-100 hover:dark:bg-gray-700 p-1 rounded">
+                class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">
                 {{ __('Administration') }}
             </a>
             <h2
-                class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight hover:bg-gray-100 hover:dark:bg-gray-700 p-1 rounded">
+                class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">
                 >>
             </h2>
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
@@ -27,7 +27,7 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 flex">
             <form action="{{ route('administration.update', $entite->id) }}"
-                class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-4 gap-4 w-full flex flex-col mx-auto pl-4"
+                class="bg-white dark:bg-gray-800 overflow-hidden shadow-xs sm:rounded-lg p-4 gap-4 w-full flex flex-col mx-auto pl-4"
                 method="POST" id="info-container" enctype="multipart/form-data">
                 @csrf
                 @method('PATCH')

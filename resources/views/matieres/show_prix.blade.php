@@ -3,10 +3,10 @@
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 <a href="{{ route('matieres.index') }}"
-                    class="hover:bg-gray-100 hover:dark:bg-gray-700 p-1 rounded">Matières</a>
+                    class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">Matières</a>
                 >>
                 <a href="{{ route('matieres.show', $matiere->id) }}"
-                    class="hover:bg-gray-100 hover:dark:bg-gray-700 p-1 rounded">{{ $matiere->designation }}</a>
+                    class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">{{ $matiere->designation }}</a>
                 >> Prix par fournisseur
             </h2>
 

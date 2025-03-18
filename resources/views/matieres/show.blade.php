@@ -3,10 +3,10 @@
         <div>
             {{-- <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 <a href="{{ route('ddp_cde.index') }}"
-                    class="hover:bg-gray-100 hover:dark:bg-gray-700 p-1 rounded">Demandes de prix et commandes</a>
+                    class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">Demandes de prix et commandes</a>
                 >>
                 <a href="{{ route('ddp.show', $ddp->id) }}"
-                    class="hover:bg-gray-100 hover:dark:bg-gray-700 p-1 rounded">{!! __('Créer une demande de prix') !!}</a>
+                    class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">{!! __('Créer une demande de prix') !!}</a>
                 >> Validation
             </h2> --}}
         </div>
@@ -76,7 +76,7 @@
                         <tbody>
                             @foreach ($fournisseurs_dernier_prix as $fournisseur)
                                 <tr onclick="window.location.href = '{{ route('matieres.show_prix', ['matiere' => $matiere->id, 'fournisseur' => $fournisseur->id]) }}';"
-                                    class="hover:bg-gray-100 hover:dark:bg-gray-700 cursor-pointer h-fit">
+                                    class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer h-fit">
                                     <td class="border px-4 py-2 whitespace-nowrap">{{ $fournisseur->raison_sociale }}
                                     </td>
                                     <td class="border px-4 py-2 whitespace-nowrap">{{ $fournisseur->prix }} €
@@ -105,7 +105,7 @@
                         <tbody>
                             @if ($matiere->mouvements && $matiere->mouvements->count() > 0)
                                 @foreach ($matiere->mouvements as $mouvement)
-                                    <tr class="hover:bg-gray-100 hover:dark:bg-gray-700 cursor-pointer">
+                                    <tr class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
                                         <td class="border px-4 py-2 whitespace-nowrap">
                                             @if ($mouvement->type_mouvement == 0)
                                                 <span class="text-red-500">- {{ $mouvement->quantite }}</span>

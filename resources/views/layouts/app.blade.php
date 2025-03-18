@@ -32,7 +32,7 @@
     <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
         @if (session('status'))
             <div id="flash-message"
-                class="fixed top-0 left-1/2 transform -translate-x-1/2 -translate-y-full bg-green-500 text-white p-4 rounded shadow-lg z-50 transition-transform duration-500 ease-in-out">
+                class="fixed top-0 left-1/2 transform -translate-x-1/2 -translate-y-full bg-green-500 text-white p-4 rounded-sm shadow-lg z-50 transition-transform duration-500 ease-in-out">
                 <div class="container mx-auto flex justify-between items-center">
                     <span>{!! session('status') !!}</span>
                     <button onclick="hideFlashMessage()" class="text-white font-bold ml-3">X</button>
@@ -67,7 +67,7 @@
         @endif
         @if (session('success'))
             <div id="flash-message"
-                class="fixed top-0 left-1/2 transform -translate-x-1/2 -translate-y-full bg-green-500 text-white p-4 rounded shadow-lg z-50 transition-transform duration-500 ease-in-out">
+                class="fixed top-0 left-1/2 transform -translate-x-1/2 -translate-y-full bg-green-500 text-white p-4 rounded-sm shadow-lg z-50 transition-transform duration-500 ease-in-out">
                 <div class="container mx-auto flex justify-between items-center">
                     <span>{!! session('success') !!}</span>
                     <button onclick="hideFlashMessage()" class="text-white font-bold ml-3">X</button>
@@ -103,7 +103,7 @@
 
         @if (session('error'))
             <div
-                class="fixed top-0 left-1/2 transform -translate-x-1/2 bg-red-500 text-white p-4 rounded shadow-lg z-50 mt-4">
+                class="fixed top-0 left-1/2 transform -translate-x-1/2 bg-red-500 text-white p-4 rounded-sm shadow-lg z-50 mt-4">
                 <div class="container mx-auto flex justify-between items-center">
                     <span>{{ session('error') }}</span>
                     <button onclick="this.parentElement.parentElement.remove()"
@@ -115,9 +115,9 @@
 
         <!-- Page Heading -->
         @isset($header)
-            <header class="bg-white dark:bg-gray-800 shadow flex ">
+            <header class="bg-white dark:bg-gray-800 shadow-sm flex ">
                 <a href="{{ url()->previous() }}" onclick="window.history.go(-1); return false;"
-                    class="flex px-1.5 hover:bg-gray-100 hover:dark:bg-gray-700 items-center">
+                    class="flex px-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 items-center">
                     <x-icon size="1" type="arrow_back" class="fill-gray-500 dark:fill-gray-300" />
                 </a>
                 <div class="w-5/6 ml-0 py-6 px-4 sm:px-6 lg:px-8">
@@ -126,9 +126,9 @@
             </header>
         @endisset
         @isset($header_nav)
-            <header class="bg-white dark:bg-gray-800 shadow flex ">
+            <header class="bg-white dark:bg-gray-800 shadow-sm flex ">
                 <a href="{{ url()->previous() }}" onclick="window.history.go(-1); return false;"
-                    class="flex p-4 sm:p-6 lg:p-8 px-1.5 hover:bg-gray-100 hover:dark:bg-gray-700 items-center">
+                    class="flex p-4 sm:p-6 lg:p-8 px-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 items-center">
                     <x-icon size="1" type="arrow_back" class="fill-gray-500 dark:fill-gray-300" />
                 </a>
                 <div class="w-5/6 ml-0 mt-10 px-4 sm:px-6 lg:px-8">
@@ -182,7 +182,7 @@
             const flashMessage = document.createElement('div');
             flashMessage.id = 'flash-message';
             flashMessage.className =
-                'fixed top-0 left-1/2 transform -translate-x-1/2 -translate-y-full bg-green-500 text-white p-4 rounded shadow-lg z-50 transition-transform duration-500 ease-in-out';
+                'fixed top-0 left-1/2 transform -translate-x-1/2 -translate-y-full bg-green-500 text-white p-4 rounded-sm shadow-lg z-50 transition-transform duration-500 ease-in-out';
             flashMessage.innerHTML = `
                 <div class="container mx-auto flex justify-between items-center">
                     <span>Texte copié</span>
@@ -225,10 +225,10 @@
             flashMessage.id = 'flash-message';
             if (type === 'error') {
                 flashMessage.className =
-                    'fixed top-0 left-1/2 transform -translate-x-1/2 -translate-y-full bg-red-500 text-white p-4 rounded shadow-lg z-50 transition-transform duration-500 ease-in-out';
+                    'fixed top-0 left-1/2 transform -translate-x-1/2 -translate-y-full bg-red-500 text-white p-4 rounded-sm shadow-lg z-50 transition-transform duration-500 ease-in-out';
             } else if (type === 'success') {
                 flashMessage.className =
-                    'fixed top-0 left-1/2 transform -translate-x-1/2 -translate-y-full bg-green-500 text-white p-4 rounded shadow-lg z-50 transition-transform duration-500 ease-in-out';
+                    'fixed top-0 left-1/2 transform -translate-x-1/2 -translate-y-full bg-green-500 text-white p-4 rounded-sm shadow-lg z-50 transition-transform duration-500 ease-in-out';
             }
             flashMessage.innerHTML = `
                 <div class="container mx-auto flex justify-between items-center">

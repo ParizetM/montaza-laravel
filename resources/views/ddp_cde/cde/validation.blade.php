@@ -8,10 +8,10 @@
         <div>
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 <a href="{{ route('ddp_cde.index') }}"
-                    class="hover:bg-gray-100 hover:dark:bg-gray-700 p-1 rounded">Demandes de prix et commandes</a>
+                    class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">Demandes de prix et commandes</a>
                 >>
                 <a href="{{ route('cde.show', $cde->id) }}"
-                    class="hover:bg-gray-100 hover:dark:bg-gray-700 p-1 rounded">{!! __('Créer une commande') !!}</a>
+                    class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">{!! __('Créer une commande') !!}</a>
                 >> Validation
             </h2>
         </div>
@@ -357,7 +357,7 @@
                             <div>
                                 <x-input-label value="horaires de livraison" />
                                 <textarea name="horaires"
-                                    class="mt-1 block px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-900 dark:text-gray-100 w-fit min-w-96">{{ old('horaires', $adresse_livraison->horaires) }}</textarea>
+                                    class="mt-1 block px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-xs focus:outline-hidden focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-900 dark:text-gray-100 w-fit min-w-96">{{ old('horaires', $adresse_livraison->horaires) }}</textarea>
                                 @error('horaires')
                                     <span class="text-red-500">{{ $message }}</span>
                                 @enderror

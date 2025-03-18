@@ -4,7 +4,7 @@
         <div>
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 <a href="{{ route('ddp_cde.index') }}"
-                    class="hover:bg-gray-100 hover:dark:bg-gray-700 p-1 rounded">Demandes de prix et commandes</a>
+                    class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">Demandes de prix et commandes</a>
                 >>
                 {!! __('Créer une commande') !!}
             </h2>
@@ -26,7 +26,7 @@
     <div class="py-4">
         <div class="max-w-8xl mx-auto sm:px-4 lg:px-6">
             <div
-                class="shadow-sm sm:rounded-lg text-gray-900 dark:text-gray-100 px-2 grid grid-cols-1 sm:grid-cols-2  gap-4">
+                class="shadow-xs sm:rounded-lg text-gray-900 dark:text-gray-100 px-2 grid grid-cols-1 sm:grid-cols-2  gap-4">
                 <div class="bg-white dark:bg-gray-800 p-4 flex flex-col gap-4 rounded-md">
                     <h1 class="text-xl font-semibold mb-2">Sélection des matières</h1>
                     <div class="flex flex-wrap gap-2">
@@ -53,7 +53,7 @@
                                 onclick="liveSearch()">Rechercher</button>
                         </div>
                     </div>
-                    <div class="min-h-96 overflow-x-auto bg-gray-100 dark:bg-gray-900 rounded">
+                    <div class="min-h-96 overflow-x-auto bg-gray-100 dark:bg-gray-900 rounded-sm">
                         <table>
                             <thead>
                                 <tr>
@@ -124,7 +124,7 @@
                             <div>
                                 <x-input-label for="cde-code" value="Code" />
                                 <div
-                                    class="flex items-center bg-gray-100 dark:bg-gray-900 rounded focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-600  {{ isset($cde) && $cde->nom != 'undefined' ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : '' }}">
+                                    class="flex items-center bg-gray-100 dark:bg-gray-900 rounded-sm focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-600  {{ isset($cde) && $cde->nom != 'undefined' ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : '' }}">
                                     <span class="ml-2"> CDE-{{ date('y') }}-</span>
                                     <x-text-input label="Code" name="cde-code" id="cde-code" placeholder="0000"
                                         autofocus maxlength="4"
@@ -185,7 +185,7 @@
                             <x-toggle name="show_ref_fournisseur" id="show_ref_fournisseur" :checked="$showRefFournisseur"
                                 label="Afficher les références fournisseur" />
                         </div>
-                        <div class="min-h-96 overflow-x-auto bg-gray-100 dark:bg-gray-900 rounded">
+                        <div class="min-h-96 overflow-x-auto bg-gray-100 dark:bg-gray-900 rounded-sm">
                             <table>
                                 <thead>
                                     <tr>
@@ -299,7 +299,7 @@
                             </table>
                         </div>
                         <div
-                            class="bg-gradient-to-r from-gray-200 to-gray-50 dark:from-gray-700 dark:to-gray-800 w-full h-6 -mt-4 flex items-center justify-between px-6">
+                            class="bg-linear-to-r from-gray-200 to-gray-50 dark:from-gray-700 dark:to-gray-800 w-full h-6 -mt-4 flex items-center justify-between px-6">
                             <h2 class="text-sm font-semibold">Total :</h2>
                             <h2 class="text-sm font-semibold" id="montant-total"></h2>
                         </div>
@@ -322,9 +322,9 @@
                                 <p class="text-gray-500 dark:text-gray-400">Voulez-vous vraiment réinitialiser la
                                     commande ?</p>
                                 <div class="flex justify-end gap-4">
-                                    <button class=" text-white px-4 py-2 rounded btn"
+                                    <button class=" text-white px-4 py-2 rounded-sm btn"
                                         x-on:click="$dispatch('close')">Annuler</button>
-                                    <button class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+                                    <button class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-sm"
                                         onclick="window.location.href = '{{ route('cde.create') }}'">Réinitialiser</button>
                                 </div>
                             </div>
@@ -335,13 +335,13 @@
                                 <h2 class="text-xl font-semibold mb-4">Voulez-vous vraiment supprimer ?</h2>
                                 <p class="mb-4">Cette action est irréversible.</p>
                                 <div class="flex justify-end gap-4">
-                                    <button class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
+                                    <button class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-sm"
                                         onclick="document.getElementById('confirm-delete-modal').classList.add('hidden');">Annuler</button>
                                     <form action="{{ route('cde.destroy', ['cde' => $cdeid]) }}" method="POST">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit"
-                                            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">Supprimer</button>
+                                            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-sm">Supprimer</button>
                                     </form>
                                 </div>
                             </div>
@@ -493,7 +493,7 @@
             const societeContactSelect = document.getElementById('societe_contact_select');
             if (societeContactSelect.value == "") {
                 searchbar.classList.add('border-red-500', 'dark:border-red-600', 'border-2', 'focus:border-red-500',
-                    'focus:dark:border-red-600');
+                    'dark:focus:border-red-600');
                 showFlashMessageFromJs('Veuillez d\'abord sélectionner un destinataire', 2000, 'error');
                 searchbar.blur();
                 document.getElementById('societe_select').focus();
@@ -734,7 +734,7 @@
             const montantTotal = document.getElementById('montant-total');
             const showRefFournisseurToggle = document.getElementById('show_ref_fournisseur');
             searchbar.classList.remove('border-red-500', 'dark:border-red-600', 'border-2', 'focus:border-red-500',
-                'focus:dark:border-red-600');
+                'dark:focus:border-red-600');
             saveStatus0.classList.remove('hidden');
             saveStatus1.classList.add('hidden');
             saveStatus2.classList.add('hidden');

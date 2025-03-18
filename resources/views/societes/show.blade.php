@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex items-center">
             <a href="{{ route('societes.index') }}"
-                class="flex px-1.5 hover:bg-gray-100 hover:dark:bg-gray-700 items-center h-full rounded">
+                class="flex px-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 items-center h-full rounded-sm">
                 <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                     {{ __('Sociétés') }}
                 </h2>
@@ -110,7 +110,7 @@
                         <h3 class="text-xl font-semibold mb-3 text-gray-800 dark:text-gray-200">
                             {{ __('Commentaire') }}</h3>
                         <textarea rows="3" id="commentaire" name="commentaire"
-                            class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-900 dark:text-gray-100"
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-xs focus:outline-hidden focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-900 dark:text-gray-100"
                             data-societe-id="{{ $societe->id }}" onblur="updateCommentaireSociete(this)">{{ $societe->commentaire ? $societe->commentaire->contenu : '' }}</textarea>
 
                     </div>
@@ -199,7 +199,7 @@
                             <h3 class="text-xl font-semibold mb-3 text-gray-800 dark:text-gray-200 mt-1">
                                 {{ __('Commentaire') }}</h3>
                             <textarea rows="3" id="commentaire" name="commentaire"
-                                class=" block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-900 dark:text-gray-100"
+                                class=" block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-xs focus:outline-hidden focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-900 dark:text-gray-100"
                                 data-etablissement-id="{{ $etablissement->id }}" onblur="updateCommentaireEtablissement(this)">{{ $etablissement->commentaire ? $etablissement->commentaire->contenu : '' }}</textarea>
 
                         </div>

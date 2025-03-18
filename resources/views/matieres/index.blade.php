@@ -24,12 +24,12 @@
                         <option value="" selected>{!! __('Toutes les sous-familles &nbsp;&nbsp;') !!}</option>
                     </select>
                     <input type="text" name="search" placeholder="Rechercher..." value="{!! request('search') !!}"
-                        class="w-full sm:w-auto px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        class="w-full sm:w-auto px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
                     <div class="flex items-center ml-4 my-1 ">
                         <label for="nombre"
                             class="mr-2 text-gray-900 dark:text-gray-100">{!! __('Quantité') !!}</label>
                         <input type="number" name="nombre" id="nombre" value="{!! old('nombre', request('nombre', 50)) !!}"
-                            class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-20 mr-2 ">
+                            class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 w-20 mr-2 ">
                     </div>
                     <button type="submit" class="mr-2 btn w-full sm:w-auto sm:mt-0 md:mt-0 lg:mt-0">
                         {!! __('Rechercher') !!}
@@ -86,12 +86,12 @@
                     <div class="overflow-x-auto">
                         <table class="min-w-full bg-white dark:bg-gray-800">
                             <thead
-                                class="bg-gradient-to-r from-gray-200 to-gray-50 dark:from-gray-700 dark:to-gray-800 text-gray-700 dark:text-gray-100">
+                                class="bg-linear-to-r from-gray-200 to-gray-50 dark:from-gray-700 dark:to-gray-800 text-gray-700 dark:text-gray-100">
                                 <tr c>
                                     <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Référence</th>
-                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Désignation</th>
-                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Matière</th>
                                     <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Sous-famille</th>
+                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Matière</th>
+                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Désignation</th>
                                     <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Qté stock</th>
                                     <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Standard</th>
                                     <th class="text-left py-3 px-4 uppercase font-semibold text-sm">DN</th>
@@ -205,9 +205,9 @@
                 const row = document.createElement('tr');
                 row.innerHTML = `
             <td class="text-left py-3 px-4">${matiere.refInterne || '-'}</td>
-            <td class="text-left py-3 px-4">${matiere.designation || '-'}</td>
-            <td class="text-left py-3 px-4">${matiere.material || '-'}</td>
             <td class="text-left py-3 px-4">${matiere.sousFamille || '-'}</td>
+            <td class="text-left py-3 px-4">${matiere.material || '-'}</td>
+            <td class="text-left py-3 px-4">${matiere.designation || '-'}</td>
             <td class="text-left py-3 px-4">${matiere.quantite || '-'}</td>
             <td class="text-left py-3 px-4 flex items-center whitespace-nowrap">
                 ${matiere.standard ? `<x-icons.pdf class="w-6 h-6" /><a href="/matieres/${matiere.standardPath}" class="lien" target="_blank">${matiere.standard} ${matiere.standardVersion || '-'}</a>` : 'Aucun standard'}

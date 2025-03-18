@@ -12,7 +12,7 @@
     <div class="py-12">
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8 w-full">
             <div
-                class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-4 text-gray-700 dark:text-gray-300">
+                class="bg-white dark:bg-gray-800 overflow-hidden shadow-xs sm:rounded-lg p-4 text-gray-700 dark:text-gray-300">
                 @if ($errors->any())
                     <div class="alert alert-danger text-red-500">
                         <ul>

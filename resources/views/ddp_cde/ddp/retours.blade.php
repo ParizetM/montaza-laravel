@@ -5,10 +5,10 @@
             <div>
                 <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                     <a href="{{ route('ddp_cde.index') }}"
-                        class="hover:bg-gray-100 hover:dark:bg-gray-700 p-1 rounded">Demandes de prix et commandes</a>
+                        class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">Demandes de prix et commandes</a>
                     >>
                     <a href="{{ route('ddp.show', $ddp->id) }}"
-                        class="hover:bg-gray-100 hover:dark:bg-gray-700 p-1 rounded">{!! __('Créer une demande de prix') !!}</a>
+                        class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">{!! __('Créer une demande de prix') !!}</a>
                     >> Retours
                 </h2>
 
@@ -68,11 +68,11 @@
                 <p class="mb-4">Cette action est irréversible.</p>
                 <div class="flex justify-end gap-4">
                     <button x-on:click="$dispatch('close')"
-                        class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+                        class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-sm">
                         Annuler
                     </button>
                     <a href="{{ route('ddp.cancel_validate',$ddp->id) }}"
-                        class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Retour</a>
+                        class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-sm">Retour</a>
                 </div>
             </x-modal>
         </div>

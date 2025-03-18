@@ -4,7 +4,7 @@
             <div>
                 <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                     <a href="{{ route('matieres.index') }}"
-                        class="hover:bg-gray-100 hover:dark:bg-gray-700 p-1 rounded">Matière</a>
+                        class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">Matière</a>
                     >>
                     {!! __('Standards') !!}
                 </h2>
@@ -220,7 +220,7 @@
                 @foreach ($folders as $folder)
                     <li x-data="{ open: false }" class="">
                         <div @click="open = !open"
-                            class="cursor-pointer flex items-center hover:bg-gray-100 hover:dark:bg-gray-700 p-1 rounded group">
+                            class="cursor-pointer flex items-center hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm group">
 
                             <x-icons.folder show="!open" class="w-6 h-6 icons-no_hover" />
                             <x-icons.open-folder show="open" class="w-6 h-6 icons-no_hover" />
@@ -234,11 +234,11 @@
 
                         </div>
                         <ul x-show="open"
-                            class="list-inside ml-5 mt-2 transition-all duration-300 ease-in-out overflow-hidden bg-gray-100 dark:bg-gray-900 rounded">
+                            class="list-inside ml-5 mt-2 transition-all duration-300 ease-in-out overflow-hidden bg-gray-100 dark:bg-gray-900 rounded-sm">
                             @foreach ($folder->standards as $standard)
                                 @foreach ($standard->versions as $version)
                                     <li
-                                        class="text-gray-700 dark:text-gray-300 pl-8 flex border-l border-gray-500 dark:border-gray-200 hover:bg-gray-200 hover:dark:bg-gray-700 rounded-r group">
+                                        class="text-gray-700 dark:text-gray-300 pl-8 flex border-l border-gray-500 dark:border-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-r group">
                                         <x-icons.pdf class="w-6 h-6" /><a href="{{ $version->path() }}"
                                             class="lien" target="_blank">
                                             {{ $version->standard->nom }} - {{ $version->version }}
