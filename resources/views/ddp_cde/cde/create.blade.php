@@ -58,13 +58,14 @@
                             <thead>
                                 <tr>
                                     <th>Réference</th>
+                                    <th>Sous-famille</th>
+                                    <th>Matière</th>
                                     <th>Désignation</th>
                                     <th>DN</th>
                                     <th>EP</th>
                                     <th>Qté</th>
                                     <th>PU</th>
                                     <th>Date prix</th>
-                                    <th>Sous-famille</th>
                                 </tr>
                             </thead>
                             <tbody id="matiere-table">
@@ -114,17 +115,17 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="">
+                            <div class="w-full">
                                 <x-input-label for="cde-nom" value="Nom" />
                                 <x-text-input label="Nom" name="cde-nom" id="cde-nom"
                                     placeholder="Nom de la commande" autofocus
                                     value="{{ isset($cde) && $cde->nom != 'undefined' ? $cde->nom : '' }}"
                                     class="min-w-full {{ isset($cde) && $cde->nom != 'undefined' ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : '' }}" />
                             </div>
-                            <div>
+                            <div class="w-fit">
                                 <x-input-label for="cde-code" value="Code" />
                                 <div
-                                    class="flex items-center bg-gray-100 dark:bg-gray-900 rounded-sm focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-600  {{ isset($cde) && $cde->nom != 'undefined' ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : '' }}">
+                                    class="flex items-center whitespace-nowrap bg-gray-100 dark:bg-gray-900 rounded-sm focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-600  {{ isset($cde) && $cde->nom != 'undefined' ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : '' }}">
                                     <span class="ml-2"> CDE-{{ date('y') }}-</span>
                                     <x-text-input label="Code" name="cde-code" id="cde-code" placeholder="0000"
                                         autofocus maxlength="4"
@@ -198,7 +199,6 @@
                                         <th>Désignation</th>
                                         <th>
                                             <div class="float-left">Quantité</div>
-                                            <div class="float-left ml-4">Unité</div>
                                             <div class="float-right">Date de livraison</div>
                                         </th>
                                         <th>Prix unitaire</th>
@@ -226,7 +226,7 @@
                                                             <x-text-input
                                                                 name="ref_fournisseur[{{ $cde_ligne->matiere_id }}]"
                                                                 value="{{ $cde_ligne->ref_fournisseur ?? '' }}"
-                                                                class="font-bold p-0 border-0 bg-white dark:bg-gray-700 max-w-24"
+                                                                class="font-bold p-0 border-0 bg-gray-100 dark:bg-gray-700 max-w-24 mb-1"
                                                                 onblur="saveChanges()" />
                                                         </div>
                                                     </div>
@@ -247,12 +247,20 @@
                                                 </td>
                                                 <td class="text-right py-2">
                                                     <div class="flex items-center justify-end">
+                                                            <div
+                                                        class="flex items-center focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-600 focus-within:focus:border-indigo-600 rounded-sm m-1">
+
                                                         <x-text-input type="number"
-                                                            name="quantite[{{ $cde_ligne->matiere_id }}]"
-                                                            class="w-24"
-                                                            value="{{ rtrim(rtrim($cde_ligne->quantite, '0'), '.') }}"
-                                                            min="0" oninput="saveChanges()" />
-                                                        <select name="unite[{{ $cde_ligne->matiere_id }}]"
+                                                            name="quantite[{{ $cde_ligne->matiere->id }}]"
+                                                            oninput="saveChanges()"
+                                                            class="w-20 border-r-0 rounded-r-none  dark:border-0 focus:ring-0 focus:border-0 dark:focus:ring-0"
+                                                            value="{{ formatNumber($cde_ligne->quantite) }}"
+                                                            min="0" />
+                                                        <div
+                                                            class="text-right bg-gray-100 dark:bg-gray-800 w-fit p-2.5 pl-0 border-1 border-l-0 rounded-r-sm border-gray-300 ">
+                                                            {{ $cde_ligne->matiere->unite->short }}</div>
+                                                            </div>
+                                                        {{-- <select name="unite[{{ $cde_ligne->matiere_id }}]"
                                                             class="w-16 mx-2 select" onchange="saveChanges()">
                                                             @foreach ($unites as $unite)
                                                                 <option value="{{ $unite->id }}"
@@ -261,7 +269,7 @@
                                                                     {{ $unite->short }}
                                                                 </option>
                                                             @endforeach
-                                                        </select>
+                                                        </select> --}}
                                                         <x-date-input name="date[{{ $cde_ligne->matiere_id }}]"
                                                             class="w-fit" value="{{ $cde_ligne->date_livraison }}"
                                                             oninput="saveChanges()" />
@@ -306,7 +314,7 @@
                     </form>
                     <div class="flex justify-between gap-4">
                         <div>
-                            <button class="bg-red-500 hover:bg-red-600 btn"
+                            <button class="bg-red-500 hover:bg-red-600 btn hover:cursor-pointer text-white dark:text-gray-100"
                                 onclick="event.preventDefault(); document.getElementById('confirm-delete-modal').classList.remove('hidden');">Supprimer</button>
                             <button class="btn" type="button" x-data
                                 x-on:click="$dispatch('open-modal', 'reset-commande-modal')">Réinitialiser</button>
@@ -341,7 +349,7 @@
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit"
-                                            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-sm">Supprimer</button>
+                                            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-sm hover:cursor-pointer">Supprimer</button>
                                     </form>
                                 </div>
                             </div>
@@ -526,24 +534,26 @@
                             tr.addEventListener('click', addMatiere);
                             if (matiere.lastPrice && matiere.lastPriceUnite) {
                                 tr.innerHTML = `
-                                    <td class="text-left px-4">${matiere.refInterne || '-'}</td>
-                                    <td class="text-left px-4">${matiere.designation || '-'}</td>
-                                    <td class="text-left px-4">${matiere.dn || '-'}</td>
-                                    <td class="text-left px-4">${matiere.epaisseur || '-'}</td>
-                                    <td class="text-left px-4">${matiere.quantite || '-'}</td>
-                                    <td class="text-right px-4 font-bold whitespace-nowrap"> ${matiere.lastPrice + ' €/' + matiere.lastPriceUnite} </td>
-                                    <td class="text-left px-4">${matiere.lastPriceDate || '-'}</td>
-                                    <td class="text-right px-4">${matiere.sousFamille || '-'}</td>
+                                    <td class="text-left px-2">${matiere.refInterne || '-'}</td>
+                                    <td class="text-right px-2">${matiere.sousFamille || '-'}</td>
+                                    <td class="text-left px-2">${matiere.material || '-'}</td>
+                                    <td class="text-left px-2">${matiere.designation || '-'}</td>
+                                    <td class="text-left px-2">${matiere.dn || '-'}</td>
+                                    <td class="text-left px-2">${matiere.epaisseur || '-'}</td>
+                                    <td class="text-left px-2">${matiere.quantite+' '+matiere.Unite || '-'}</td>
+                                    <td class="text-right px-2 font-bold whitespace-nowrap"> ${matiere.lastPrice + ' €/' + matiere.lastPriceUnite} </td>
+                                    <td class="text-left px-2">${matiere.lastPriceDate || '-'}</td>
                                         `;
                             } else {
                                 tr.innerHTML = `
-                                    <td class="text-left px-4">${matiere.refInterne || '-'}</td>
-                                    <td class="text-left px-4">${matiere.designation || '-'}</td>
-                                    <td class="text-left px-4">${matiere.dn || '-'}</td>
-                                    <td class="text-left px-4">${matiere.epaisseur || '-'}</td>
-                                    <td class="text-left px-4">${matiere.quantite || '0'}</td>
+                                    <td class="text-left px-2">${matiere.refInterne || '-'}</td>
+                                    <td class="text-right px-2">${matiere.sousFamille || '-'}</td>
+                                    <td class="text-left px-2">${matiere.material || '-'}</td>
+                                    <td class="text-left px-2">${matiere.designation || '-'}</td>
+                                    <td class="text-left px-2">${matiere.dn || '-'}</td>
+                                    <td class="text-left px-2">${matiere.epaisseur || '-'}</td>
+                                    <td class="text-left px-2">${matiere.quantite+' '+matiere.Unite || '-'}</td>
                                     <td class="text-center pr-6" colspan="2"> Aucun prix </td>
-                                    <td class="text-right px-4">${matiere.sousFamille || '-'}</td>
                                         `;
                             }
                             matiereTable.appendChild(tr);
@@ -631,31 +641,21 @@
         <div class="flex items-center justify-end">
             <!-- Boutons de quantité -->
 
-            <x-text-input
-                type="number"
-                name="quantite[${matiereId}]"
-                class="w-24"
-                value="1"
-                min="0"
-                oninput="saveChanges()"
-            />
-
-            <!-- Sélecteur d'unité -->
-            <select
-                name="unite[${matiereId}]"
-                class="w-16 mx-2 select"
-                onchange="saveChanges()"
-            >
-                ${unites.map(unite => `
-                                                            <option
-                                                                value="${unite.id}" title="${unite.full}"
-                                                                ${unite.short === matiereUnite ? 'selected' : ''}
-                                                            >
-                                                                ${unite.short}
-                                                            </option>
-                                                        `).join('')}
-            </select>
-
+            <div
+                class="flex items-center focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-600 focus-within:focus:border-indigo-600 rounded-sm m-1">
+                <x-text-input
+                    type="number"
+                    name="quantite[${matiereId}]"
+                    class="w-20 border-r-0 rounded-r-none dark:border-0 focus:ring-0 focus:border-0 dark:focus:ring-0"
+                    value="1"
+                    min="0"
+                    oninput="saveChanges()"
+                />
+                <div
+                    class="text-right bg-gray-100 dark:bg-gray-800 w-fit p-2.5 pl-0 border-1 border-l-0 rounded-r-sm border-gray-300">
+                    ${unites.find(unite => unite.short === matiereUnite)?.short || ''}
+                </div>
+            </div>
             <!-- Champ de date -->
             <x-date-input
                 name="date[${matiereId}]"
@@ -773,7 +773,7 @@
                 const refFournisseur = row.querySelector(`input[name="ref_fournisseur[${matiereId}]`).value;
                 const designation = row.querySelector(`input[name="designation[${matiereId}]`).value;
                 const prix = row.querySelector(`input[name="prix[${matiereId}]`).value;
-                const unite = row.querySelector(`select[name="unite[${matiereId}]`).value;
+                // const unite = row.querySelector(`select[name="unite[${matiereId}]`).value;
                 const date = row.querySelector(`input[name="date[${matiereId}]`).value;
                 row.classList.remove('border-r-green-500', 'dark:border-r-green-600');
                 if (quantity < 1) {
@@ -788,7 +788,7 @@
                     refFournisseur: refFournisseur,
                     designation: designation,
                     prix: prix,
-                    unite_id: unite,
+                    // unite_id: unite,
                     date: date
                 });
                 row.classList.add('border-r-green-500', 'dark:border-r-green-600');

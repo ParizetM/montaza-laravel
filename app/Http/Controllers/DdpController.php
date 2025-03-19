@@ -613,29 +613,37 @@ class DdpController extends Controller
                 // Récupération des valeurs
                 $ref_fournisseur = $data[$index0][$index_societe] ?? null;
                 $newPrix = $data[$index0][$index_societe + 1] ?? null;
-                $newUnite = Unite::where('short', $data[$index0][$index_societe + 2] ?? '')->first()->id ?? null;
+                // $newUnite = Unite::where('short', $data[$index0][$index_societe + 2] ?? '')->first()->id ?? null;
                 $dateString = $data[$index0][$index_societe + 3] ?? '';
 
                 // Traitement de la date
                 $date = (!empty($dateString) && $dateString != 'UNDEFINED') ? Carbon::createFromFormat('d/m/Y', $dateString)->format('Y-m-d') : null;
                                 // Vérification et mise à jour ou insertion
 
-                if ($newPrix && $newPrix != 'UNDEFINED' && $newUnite && $last_prix != $newPrix) {
+                if ($newPrix != 'UNDEFINED') {
                     $SocieteMatiere = SocieteMatiere::updateOrCreate(
                         [
                             'societe_id' => $societeid,
                             'matiere_id' => $matiereid,
-                            'ref_externe' => $ref_fournisseur,
-                        ]);
+                        ],
+                        [
+                            'ref_externe' => $ref_fournisseur ?? null,
+                        ]
+                    );
+                    if ($newPrix && $newPrix != 'UNDEFINED' && $last_prix != $newPrix) {
+
                     SocieteMatierePrix::updateOrCreate(
                         [
                             'societe_matiere_id' => $SocieteMatiere->id,
-                            'prix' => $newPrix,
+                            'ddp_ligne_fournisseur_id' => $ddpLigne->ddpLigneFournisseur->where('societe_id', $societeid)->first()->id ?? '2444',
+                        ],
+                        [
+                            'prix_unitaire' => $newPrix ?? 'null',
                             'date' => now(),
-                            'ddp_ligne_fournisseur_id' => $ddpLigne->ddpLigneFournisseur->where('societe_id', $societeid)->first()->id ?? null
                         ]
                     );
                 }
+            }
 
 
 
@@ -666,17 +674,17 @@ class DdpController extends Controller
                 }
 
                 // Ajouter à la ligne de données pour exporter
-                $row[] = $index0 . '-' . $index_societe . '-' . $ref_fournisseur;
-                $row[] = $index0 . '-' . $index_societe . '-' . $newPrix;
-                $row[] = $index0 . '-' . $index_societe . '-' . $newUnite;
-                $row[] = $index0 . '-' . $index_societe . '-' . $date;
+                $row[] = $index0 . '-' . $societeid . '-' . $ref_fournisseur;
+                $row[] = $index0 . '-' . $societeid . '-' . $newPrix;
+                $row[] = $index0 . '-' . $societeid . '-' . '';
+                $row[] = $index0 . '-' . $societeid . '-' . $date;
                 $index_societe += 4;
             }
             $data2[] = $row;
         }
 
-        $data3[] = $data2;
         $data3[] = $data;
+        $data3[] = $data2;
         return $data3;
         // Assuming you have some logic to save the data here
 
@@ -701,11 +709,11 @@ class DdpController extends Controller
                         $prix = '';
                         $unite = $ddpLigneFournisseur->ddpLigne->matiere->unite->short;
                         if ($ddpLigneFournisseur->ddpLigne->matiere) {
-                            $fournisseur = $ddpLigneFournisseur->ddpLigne->matiere->prixPourSociete($societe->id)
+                            $Societe_prix = $ddpLigneFournisseur->ddpLigne->matiere->prixPourSociete($societe->id)
                                 ->orderBy('date', 'desc')
                                 ->first();
-                            if ($fournisseur) {
-                                $prix = $fournisseur->pivot->prix;
+                            if ($Societe_prix) {
+                                $prix = $Societe_prix->prix_unitaire;
                             } else {
                                 $prix = '';
                             }
@@ -713,10 +721,7 @@ class DdpController extends Controller
                             $prix = '';
                         }
                         $date_livraison = $ddpLigneFournisseur->date_livraison ? Carbon::parse($ddpLigneFournisseur->date_livraison)->format('d/m/Y') : '';
-                        $reference_fournisseur = $ddpLigneFournisseur->ddpLigne->matiere->societeMatiere($societe->id)
-                            ->whereNotNull('ref_externe')
-                            ->where('ref_externe', '!=', '')
-                            ->first() ?? null;
+                        $reference_fournisseur = $ddpLigneFournisseur->ddpLigne->matiere->societeMatiere($societe->id);
                         $reference_fournisseur = $reference_fournisseur ? $reference_fournisseur->ref_externe : '';
                         // dd($ddpLigneFournisseur->ddpLigne->matiere->id,[$societe->id,$reference_fournisseur]);
                         $row[] = $reference_fournisseur ?? '';
@@ -741,14 +746,13 @@ class DdpController extends Controller
                     if ($ddpLigneFournisseur) {
                         $prix = '';
                         if ($ddpLigneFournisseur->ddpLigne->matiere) {
-                            $fournisseur = $ddpLigneFournisseur->ddpLigne->matiere->fournisseurs()
-                                ->where('societe_id', $societe->id)
+                            $societeMatiere = $ddpLigneFournisseur->ddpLigne->matiere->prixPourSociete($societe->id)
                                 ->where('ddp_ligne_fournisseur_id', $ddpLigneFournisseur->id)
-                                ->orderBy('date_dernier_prix', 'desc')
+                                ->orderBy('date', 'desc')
                                 ->first();
-                            if ($fournisseur) {
-                                $prix = $fournisseur->pivot->prix;
-                                $unite = Unite::find($fournisseur->pivot->unite_id)->short ?? '';
+                            if ($societeMatiere) {
+                                $prix = $societeMatiere->prix_unitaire;
+                                $unite = $ddpLigneFournisseur->ddpLigne->matiere->unite->short;
                             } else {
                                 $prix = '';
                                 $unite = '';
@@ -786,21 +790,6 @@ class DdpController extends Controller
         $ddp = Ddp::findOrFail($id);
         $ddp->ddp_cde_statut_id = 3;
         $ddp->save();
-        foreach ($ddp->ddpLigne as $ddpLigne) {
-            foreach ($ddpLigne->ddpLigneFournisseur as $ddpLigneFournisseur) {
-                $existingEntry = DB::table('societe_matiere')
-                    ->where('ddp_ligne_fournisseur_id', $ddpLigneFournisseur->id)
-                    ->orderBy('date_dernier_prix', 'desc')
-                    ->first();
-
-                if ($existingEntry) {
-                    DB::table('societe_matiere')
-                        ->where('id', '!=', $existingEntry->id)
-                        ->where('ddp_ligne_fournisseur_id', $ddpLigneFournisseur->id)
-                        ->delete();
-                }
-            }
-        }
         return redirect()->route('ddp.show', $ddp->id);
     }
     public function annuler_terminer($id)
@@ -821,13 +810,13 @@ class DdpController extends Controller
         $societe = $societe_contact->etablissement->societe;
         $cde = Cde::create([
             'code' => 'CDE-' . now()->format('y') . '-' . str_pad(Cde::whereYear('created_at', now()->year)->count() + 1, 4, '0', STR_PAD_LEFT),
-            'nom' => 'Commande de ' . $ddp->code . ' chez ' . $societe->raison_sociale,
+            'nom' => 'Commande de ' . $ddp->code . ' ' . $societe->raison_sociale,
             'ddp_cde_statut_id' => 1,
             'ddp_id' => $ddp->id,
             'entite_id' => $ddp->entite_id,
             'societe_contact_id' => $societe_contact_id,
             'user_id' => Auth::id(),
-            'tva' => 0,
+            'tva' => 20,
             'type_expedition_id' => 1,
             'condition_paiement_id' => 1,
         ]);
@@ -843,11 +832,11 @@ class DdpController extends Controller
                         'ref_interne' => $ddpLigne->matiere->ref_interne,
                         'designation' => $ddpLigne->matiere->designation,
                         'quantite' => $ddpLigne->quantite,
-                        'ref_fournisseur' => $ddpLigne->matiere->getLastPrice($societe->id) ? $ddpLigne->matiere->getLastPrice($societe->id)->pivot->ref_fournisseur : null,
-                        'prix_unitaire' => $ddpLigne->matiere->getLastPrice($societe->id) ? $ddpLigne->matiere->getLastPrice($societe->id)->pivot->prix : null,
-                        'unite_id' => $ddpLigne->matiere->getLastPrice($societe->id) ? $ddpLigne->matiere->getLastPrice($societe->id)->pivot->unite_id : null,
+                        'ref_fournisseur' => $ddpLigne->matiere->societeMatiere($societe->id)->ref_externe ?? null,
+                        'prix_unitaire' => $ddpLigne->matiere->getLastPrice($societe->id) ? $ddpLigne->matiere->getLastPrice($societe->id)->prix_unitaire : null,
                         'date_livraison' => $ddpLigneFournisseur->date_livraison,
                     ]);
+
                 }
             }
         }

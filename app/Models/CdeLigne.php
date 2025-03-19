@@ -18,7 +18,6 @@ class CdeLigne extends Model
         'matiere_id',
         'designation',
         'quantite',
-        'unite_id',
         'prix_unitaire',
         'prix',
         'date_livraison',

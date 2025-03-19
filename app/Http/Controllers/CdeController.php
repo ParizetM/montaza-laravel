@@ -14,6 +14,7 @@ use App\Models\Societe;
 use App\Models\TypeExpedition;
 use App\Models\Unite;
 use App\Models\User;
+use App\Services\StockService;
 use Auth;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
@@ -25,6 +26,12 @@ use Storage;
 
 class CdeController extends Controller
 {
+    protected $stockService;
+
+    public function __construct(StockService $stockService)
+    {
+        $this->stockService = $stockService;
+    }
     public function indexColCdeSmall()
     {
         return $this->indexColCde(true);
@@ -170,7 +177,7 @@ class CdeController extends Controller
             'matieres.*.refFournisseur' => 'nullable|string|max:255',
             'matieres.*.designation' => 'nullable|string|max:255',
             'matieres.*.prix' => 'required|numeric|min:0',
-            'matieres.*.unite_id' => 'required|integer|exists:unites,id',
+            // 'matieres.*.unite_id' => 'required|integer|exists:unites,id',
             'matieres.*.date' => 'nullable|date',
         ]);
 
@@ -210,7 +217,7 @@ class CdeController extends Controller
                 'designation' => $matiere['designation'] ?? null,
                 'prix_unitaire' => $matiere['prix'],
                 'prix' => $matiere['prix'] * $matiere['quantite'],
-                'unite_id' => $matiere['unite_id'],
+                // 'unite_id' => $matiere['unite_id'],
                 'date_livraison' => $matiere['date'] ?? null,
             ]);
         }
@@ -220,8 +227,14 @@ class CdeController extends Controller
     {
 
         $cde = Cde::findOrFail($id);
-        $cde->delete();
-        return redirect()->route('ddp_cde.index');
+        if ($cde->ddp_id != null) {
+            $dppid = $cde->ddp_id;
+            $cde->delete();
+            return redirect()->route('ddp.show', $dppid);
+        } else {
+            $cde->delete();
+            return redirect()->route('ddp_cde.index');
+        }
     }
     public function validation($id): View
     {
@@ -231,7 +244,30 @@ class CdeController extends Controller
         $showRefFournisseur = $cde->show_ref_fournisseur;
         $typesExpedition = TypeExpedition::all();
         $conditionsPaiement = ConditionPaiement::all();
-        return view('ddp_cde.cde.validation', compact('cde', ['users', 'entite', 'showRefFournisseur', 'typesExpedition', 'conditionsPaiement']));
+        $societe_id = $cde->societeContact->societe->id;
+        //verifier si
+        if ($showRefFournisseur == true) {
+            $listeChangement = [];
+            foreach ($cde->cdeLignes as $ligne) {
+                $ligne->prix = $ligne->prix_unitaire * $ligne->quantite;
+                $ligne->save();
+                $societe_matiere = $ligne->matiere->societeMatiere($societe_id);
+                $ref_externe = $societe_matiere->ref_externe ?? null;
+                if ($ligne->ref_fournisseur != null && $ligne->ref_fournisseur != '' && $ref_externe != null && $ligne->ref_fournisseur != $ref_externe) {
+                    $listeChangement[] = [
+                        'id' => $ligne->id,
+                        'ref_interne' => $ligne->matiere->ref_interne,
+                        'ref_fournisseur' => $ligne->ref_fournisseur,
+                        'ref_externe' => $ref_externe,
+                        'designation' => $ligne->designation,
+                        'societe_matiere_id' => $societe_matiere->id
+                    ];
+                }
+            }
+        } else {
+            $listeChangement = false;
+        }
+        return view('ddp_cde.cde.validation', compact('cde', ['users', 'entite', 'showRefFournisseur', 'typesExpedition', 'conditionsPaiement','listeChangement']));
     }
     public function reset($id): RedirectResponse
     {
@@ -261,8 +297,8 @@ class CdeController extends Controller
             'frais_de_port' => 'nullable|numeric|min:0',
             'frais_divers' => 'nullable|numeric|min:0',
             'frais_divers_texte' => 'nullable|string|max:255',
+            'enregistrer_changement' => 'nullable', // Ajout de la validation pour enregistrer changement de ref fournisseur
         ]);
-
         $type_expedition_id = $request->input('type_expedition_id');
         if ($type_expedition_id == 1) {
             $adresse['horaires'] = $request->input('horaires');
@@ -307,6 +343,19 @@ class CdeController extends Controller
             $ligne->ddp_cde_statut_id = 2;
             $ligne->type_expedition_id = $request->input('type_expedition_id');
             $ligne->save();
+        }
+        if ($request->input('enregistrer_changement') == 'on' && $request->input('show_ref_fournisseur') == true) {
+            $societe_id = $societe->id;
+            foreach ($cde->cdeLignes as $ligne) {
+                $ligne->prix = $ligne->prix_unitaire * $ligne->quantite;
+                $ligne->save();
+                $societe_matiere = $ligne->matiere->societeMatiere($societe_id);
+                $ref_externe = $societe_matiere->ref_externe ?? null;
+                if ($ligne->ref_fournisseur != null && $ligne->ref_fournisseur != '' && $ref_externe != null && $ligne->ref_fournisseur != $ref_externe) {
+                    $societe_matiere->ref_externe = $ligne->ref_fournisseur;
+                    $societe_matiere->save();
+                }
+            }
         }
         $pdf = $this->pdf($cde->id);
         $mailtemplate = Mailtemplate::where('nom', 'cde')->first();

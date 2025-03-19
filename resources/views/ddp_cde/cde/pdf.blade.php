@@ -144,7 +144,8 @@
         }
 
         .reference-container {
-            padding-left: 10px;
+            padding-left: 5px;
+            padding-right: 0;
             display: flex;
             flex-direction: column;
         }
@@ -156,8 +157,9 @@
         }
 
         .reference-label {
-            font-size: smaller;
+            font-size: 10px;
             text-align: left;
+            white-space: nowrap;
 
         }
 
@@ -175,12 +177,12 @@
         }
 
         .table_recap {
-            width: 100%;
             border-collapse: collapse;
             position: absolute;
             bottom: 200px;
-            left: 0;
-            right: 0;
+            left: 20px;
+            right: 20px;
+            width: calc(100% - 40px);
         }
 
         .table_recap th {
@@ -198,6 +200,10 @@
         .entreprise_nom {
             font-size: 20px;
             font-weight: bold;
+        }
+
+        .whitespace-nowrap {
+            white-space: nowrap;
         }
     </style>
 </head>
@@ -303,8 +309,7 @@
                                     </div>
                                     @if ($ligne->ref_fournisseur != null && $ligne->ref_fournisseur != '')
                                         <div class="reference-item">
-                                            <span class="reference-label">Réf. Fournisseur</span><br>
-                                            <span class="reference-value">{{ $ligne->ref_fournisseur ?? '' }}</span>
+                                            <span class="reference-label">Réf. Fournisseur</span><br><span class="reference-value">{{ $ligne->ref_fournisseur ?? '' }}</span>
                                         </div>
                                     @endif
                                 </div>
@@ -317,10 +322,11 @@
                                 </div>
                             </td>
                             <td style="text-align: left; padding-left: 10px;">{{ $ligne->matiere->designation }}</td>
-                            <td>{{ formatNumber($ligne->quantite) }} {{ $ligne->unite->short }}</td>
-                            <td>{{ formatNumberArgent($ligne->prix_unitaire) }} </td>
-                            <td>{{ formatNumberArgent($ligne->prix) }} </td>
-                            <td>{{ \Carbon\Carbon::parse($ligne->date_livraison)->format('d/m/Y') }}</td>
+                            <td class="whitespace-nowrap">{{ formatNumber($ligne->quantite) }}
+                                {{ $ligne->matiere->unite->short }}</td>
+                            <td class="whitespace-nowrap">{{ formatNumberArgent($ligne->prix_unitaire) }} </td>
+                            <td class="whitespace-nowrap">{{ formatNumberArgent($ligne->prix) }} </td>
+                            <td class="whitespace-nowrap">{{ \Carbon\Carbon::parse($ligne->date_livraison)->format('d/m/Y') }}</td>
                         </tr>
                     @endforeach
                 </tbody>

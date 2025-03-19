@@ -8,11 +8,14 @@ use App\MatiereMouvement;
 use App\Models\DossierStandard;
 use App\Models\Famille;
 use App\Models\Matiere;
+use App\Models\MouvementStock;
 use App\Models\Societe;
 use App\Models\SousFamille;
 use App\Models\Standard;
 use App\Models\StandardVersion;
+use App\Models\Stock;
 use App\Models\Unite;
+use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
@@ -254,21 +257,55 @@ class MatiereController extends Controller
             'prix' => $prix,
         ]);
     }
+    public function mouvement(Request $request, $matiereId)
+{
+    $request->validate([
+        'type' => 'required|in:entree,sortie',
+        'quantite' => 'required|integer|min:1',
+        'valeur_unitaire' => 'nullable|numeric|min:0',
+        'raison' => 'nullable|string|max:255',
+    ]);
 
-    // public function mouvement($matiere_id, float $quantite, bool $type) {
-    //     $matiere = Matiere::findOrFail($matiere_id);
-    //     if ($matiere->quantite() + $quantite * ($type ? 1 : -1) < 0) {
-    //         return false;
-    //     }
-    //     $mouvement = new MatiereMouvement([
-    //         'quantite' => $quantite,
-    //         'type_mouvement' => $type,
-    //     ]);
-    //     $matiere->mouvements()->save($mouvement);
-    //     $matiere->quantite() += $quantite * ($type ? 1 : -1);
-    //     $matiere->save();
-    //     return true;
-    // }
+    $matiere = Matiere::findOrFail($matiereId);
+    $valeurUnitaire = $request->valeur_unitaire ?? $matiere->ref_valeur_unitaire;
+
+    if (!$valeurUnitaire) {
+        return response()->json(['error' => 'Aucune valeur unitaire définie.'], 400);
+    }
+
+    $stock = Stock::firstOrCreate(
+        ['matiere_id' => $matiere->id, 'valeur_unitaire' => $valeurUnitaire]
+    );
+
+    if ($request->type == 'entree') {
+        $stock->quantite += $request->quantite;
+    } elseif ($request->type == 'sortie') {
+        if ($stock->quantite < $request->quantite) {
+            return response()->json(['error' => 'Stock insuffisant.'], 400);
+        }
+        $stock->quantite -= $request->quantite;
+    }
+
+    $stock->save();
+
+    MouvementStock::create([
+        'matiere_id' => $matiere->id,
+        'user_id' => Auth::id(),
+        'type' => $request->type,
+        'quantite' => $request->quantite,
+        'valeur_unitaire' => $valeurUnitaire,
+        'raison' => $request->raison,
+        'date' => now(),
+    ]);
+
+    return response()->json([
+        'message' => 'Mouvement enregistré avec succès.',
+        'stock' => $stock
+    ]);
+}
+
+
+
     public function retirerMouvement($matiere_id,Request $request) {
         $matiere = Matiere::findOrFail($matiere_id);
         $request->validate([

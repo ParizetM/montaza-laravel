@@ -122,7 +122,7 @@
 
                 cells.forEach((cell, index) => {
                     if (index % 3 === 0) { // Only look at every 3rd column
-                        const value = parseFloat(cell.textContent.trim().replace(/,/g, ''));
+                        const value = parseFloat(cell.textContent.trim().replace(/[, ]/g, ''));
                         if (!isNaN(value)) {
                             if (value < minValue) {
                                 minValue = value;

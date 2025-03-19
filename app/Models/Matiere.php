@@ -44,12 +44,7 @@ class Matiere extends Model
             ->withTimestamps();
     }
 
-    public function getLastPrice($societe_id = null)
-    {
-        if ($societe_id) {
-            return $this->societes()->where('societe_id', $societe_id)->first()->getLastPrice();
-        }
-    }
+
     public function unite()
     {
         return $this->belongsTo(Unite::class);
@@ -102,7 +97,7 @@ class Matiere extends Model
     }
     public function societeMatiere($societeId)
     {
-        return $this->hasOne(SocieteMatiere::class)->where('societe_id', $societeId);
+        return $this->hasOne(SocieteMatiere::class, 'matiere_id', 'id')->where('societe_id', $societeId)->first();
     }
     public function prix()
     {
@@ -125,5 +120,13 @@ class Matiere extends Model
         return $this->prix()->whereHas('societeMatiere', function ($query) use ($societeId) {
             $query->where('societe_id', $societeId);
         });
+    }
+    public function getLastPrice($societe_id = null)
+    {
+        if ($societe_id) {
+            return $this->prixPourSociete($societe_id)->latest()->first();
+        } else {
+            return $this->prix()->latest()->first();
+        }
     }
 }

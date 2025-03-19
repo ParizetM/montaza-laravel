@@ -3,9 +3,10 @@
 @endphp
 
 <x-app-layout>
-    @section('title', 'Validation - '. $cde->code)
+    @section('title', 'Validation - ' . $cde->code)
     <x-slot name="header">
-        <div>
+
+        <div class="flex justify-between">
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 <a href="{{ route('ddp_cde.index') }}"
                     class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">Demandes de prix et commandes</a>
@@ -14,7 +15,14 @@
                     class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">{!! __('Créer une commande') !!}</a>
                 >> Validation
             </h2>
-        </div>
+            @if ($listeChangement != false)
+                <div class="flex items-center">
+                    <button x-data x-on:click="$dispatch('open-modal', 'listeChangement-modal')" type="button"
+                        id="open-modal-listeChangement" class="btn btn-primary">
+                        <span class="ml-2">Liste des changements</span>
+                    </button>
+                </div>
+            @endif
     </x-slot>
     <style>
         input[type="number"]::-webkit-inner-spin-button,
@@ -151,7 +159,7 @@
                 <h2 class="text-xl font-bold mb-6 text-left border-b-2 border-gray-200 dark:border-gray-700 p-2">Corps
                     de la commande</h2>
                 <div class="flex">
-                    <div class="m-2">
+                    <div class="m-4">
                         <x-input-label value="TVA (%)" />
                         <x-text-input name="tva" type="number" :value="old('tva', $cde->tva)" onblur="recalculateTotal()" />
                         @error('tva')
@@ -164,8 +172,8 @@
                             <small>(Optionnel)</small>
                         </div>
                         <div class="price-input-container">
-                            <x-text-input name="frais_de_port" type="number" step="0.01" :value="old('frais_de_port', $cde->frais_de_port)" onblur="recalculateTotal()"
-                                class=" price-input" />
+                            <x-text-input name="frais_de_port" type="number" step="0.01" :value="old('frais_de_port', $cde->frais_de_port)"
+                                onblur="recalculateTotal()" class=" price-input" />
                         </div>
                         @error('frais_de_port')
                             <span class="text-red-500">{{ $message }}</span>
@@ -174,12 +182,12 @@
                     <div>
                         <div class="flex flex-col m-4">
                             <div class="flex gap-4">
-                                <x-input-label value="Frais divers"  />
+                                <x-input-label value="Frais divers" />
                                 <small>(Optionnel)</small>
                             </div>
                             <div class="price-input-container">
-                                <x-text-input name="frais_divers" type="number" step="0.01" :value="old('frais_divers', $cde->frais_divers)" onblur="fraisDiversChange();recalculateTotal()"
-                                    class="price-input" />
+                                <x-text-input name="frais_divers" type="number" step="0.01" :value="old('frais_divers', $cde->frais_divers)"
+                                    onblur="fraisDiversChange();recalculateTotal()" class="price-input" />
                             </div>
                             @error('frais_divers')
                                 <span class="text-red-500">{{ $message }}</span>
@@ -245,11 +253,12 @@
                                 </td>
                                 <td class="p-2 text-left border border-gray-200 dark:border-gray-700">
                                     {{ $ligne->designation }}</td>
-                                <td class="p-2 text-center border border-gray-200 dark:border-gray-700">
-                                    {{ formatNumber($ligne->quantite) }}</td>
+                                <td class="p-2 text-center border border-gray-200 dark:border-gray-700" title="{{ formatNumber($ligne->quantite).' '.$ligne->matiere->unite->full }}">
+                                    {{ formatNumber($ligne->quantite).' '.$ligne->matiere->unite->short }}</td>
                                 <td class="p-2 text-left border border-gray-200 dark:border-gray-700"
-                                    title="{{ formatNumberArgent($ligne->prix_unitaire) }} euro(s) par {{ $ligne->unite->full }}">
-                                    {{ formatNumberArgent($ligne->prix_unitaire) }}/{{ $ligne->unite->short }}</td>
+                                    title="{{ formatNumberArgent($ligne->prix_unitaire) }} euro(s) par {{ $ligne->matiere->unite->full }}">
+                                    {{ formatNumberArgent($ligne->prix_unitaire) }}/{{ $ligne->matiere->unite->short }}
+                                </td>
                                 <td class="p-2 text-left border border-gray-200 dark:border-gray-700">
                                     {{ formatNumberArgent($ligne->prix) }} </td>
                                 <td class="p-2 text-left border border-gray-200 dark:border-gray-700">
@@ -262,14 +271,15 @@
 
                                     <table class="min-w-0 float-right text-right">
                                         <tbody>
-                                                <tr class="{{ $cde->frais_de_port || $cde->frais_divers ? '' : 'hidden' }}">
-                                                    <td class="pr-4 text-gray-500">
-                                                        Total HT :
-                                                    </td>
-                                                    <td id="total_ht_gray" class="text-gray-500">
-                                                        {{ formatNumberArgent($cde->total_ht) }}
-                                                    </td>
-                                                </tr>
+                                            <tr
+                                                class="{{ $cde->frais_de_port || $cde->frais_divers ? '' : 'hidden' }}">
+                                                <td class="pr-4 text-gray-500">
+                                                    Total HT :
+                                                </td>
+                                                <td id="total_ht_gray" class="text-gray-500">
+                                                    {{ formatNumberArgent($cde->total_ht) }}
+                                                </td>
+                                            </tr>
                                             <tr class="{{ $cde->frais_de_port ? '' : 'hidden' }}">
                                                 <td class="pr-4 text-gray-500">
                                                     Frais de port :
@@ -291,7 +301,7 @@
                                                     Total HT :
                                                 </td>
                                                 <td id="total_ht">
-                                                    {{ formatNumberArgent($cde->total_ht+$cde->frais_de_port+$cde->frais_divers) }}
+                                                    {{ formatNumberArgent($cde->total_ht + $cde->frais_de_port + $cde->frais_divers) }}
                                                 </td>
                                             </tr>
                                             <tr>
@@ -353,7 +363,7 @@
                                 $adresse_livraison = json_decode($cde->adresse_livraison);
                             }
                         @endphp
-                        <div class="flex flex-col gap-4 m-4" id="adresse_livraison">
+                        <div class="flex flex-col gap-4 m-4 ml-0" id="adresse_livraison">
                             <div>
                                 <x-input-label value="horaires de livraison" />
                                 <textarea name="horaires"
@@ -445,10 +455,91 @@
                     <button type="submit" class="btn">{{ __('Valider') }}</button>
                 </div>
             </div>
+    {{--
+ ######  ##     ##    ###    ##    ##  ######   ######## ##     ## ######## ##    ## ########
+##    ## ##     ##   ## ##   ###   ## ##    ##  ##       ###   ### ##       ###   ##    ##
+##       ##     ##  ##   ##  ####  ## ##        ##       #### #### ##       ####  ##    ##
+##       ######### ##     ## ## ## ## ##   #### ######   ## ### ## ######   ## ## ##    ##
+##       ##     ## ######### ##  #### ##    ##  ##       ##     ## ##       ##  ####    ##
+##    ## ##     ## ##     ## ##   ### ##    ##  ##       ##     ## ##       ##   ###    ##
+ ######  ##     ## ##     ## ##    ##  ######   ######## ##     ## ######## ##    ##    ##
+
+
+
+########  ########      ########  ######## ########
+##     ## ##            ##     ## ##       ##
+##     ## ##            ##     ## ##       ##
+##     ## ######        ########  ######   ######
+##     ## ##            ##   ##   ##       ##
+##     ## ##            ##    ##  ##       ##
+########  ########      ##     ## ######## ##
+
+--}}
+
+            @if ($listeChangement != false)
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    document.getElementById('open-modal-listeChangement').click();
+                });
+            </script>
+            <x-modal name="listeChangement-modal" id="listeChangement-modal" title="Liste des changements" maxWidth="5xl">
+                <div class="p-2">
+                    <a x-on:click="$dispatch('close')">
+                        <x-icons.close class="float-right mb-1 icons" size="1.5" unfocus />
+                    </a>
+                    <div class="p-6 ">
+                        <div class="flex flex-col gap-4">
+                            <h2
+                                class="text-xl font-bold mb-6 text-left border-b-2 border-gray-200 dark:border-gray-700 p-2">
+                                Ces références ont changé, voulez-vous les enregistrer ou les garder seulement pour cette commande ?</h2>
+                            <table class="min-w-0 bg-gray-100 dark:bg-gray-900 ">
+                                <thead>
+                                    <tr>
+                                        <th class="text-left">Ref Interne</th>
+                                        <th class="text-left">Désignation</th>
+                                        <th class="text-left">Changement</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($listeChangement as $changement)
+                                        <tr>
+                                            <td class="p-2 text-left">{{ $changement['ref_interne'] }}</td>
+                                            <td class="p-2 text-left">{{ $changement['designation'] }}</td>
+                                            <td class="p-2 text-left flex items-center">
+                                                <span title="Ancienne référence">{{ $changement['ref_externe'] }}</span>
+                                                <x-icon size="1" type="arrow_forward" class="icons-no_hover" />
+                                                <span title="Nouvelle référence">{{ $changement['ref_fournisseur'] }}</span>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                            <div class="flex justify-end mt-4">
+                                <x-toggle :checked="old('enregistrer_changement', true)"
+                                    :label="'Enregistrer les changements ?'" id="enregistrer_changement"
+                                    name="enregistrer_changement" class="toggle-class" />
+                                @error('enregistrer_changement')
+                                    <span class="text-red-500">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="flex justify-end mt-4">
+                            <button type="button" x-on:click="$dispatch('close')"
+                                class="btn">{{ __('Fermer') }}</button>
+                        </div>
+                    </div>
+            </x-modal>
+        @endif
         </form>
     </div>
-    <script>
 
+
+
+
+
+
+    <script>
         function recalculateTotal() {
             const totalHtElement = document.getElementById('total_ht');
             const tvatext = document.getElementById('tva_container');

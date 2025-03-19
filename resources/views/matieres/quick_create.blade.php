@@ -94,7 +94,7 @@
                 <x-text-input type="number" name="stock_min" id="stock_min" class="mt-1 block w-full" value="0" required />
             </div>
             <div class="col-span-2 flex justify-between">
-                <button type="button" class="btn" x-on:click="$dispatch('close')" id="quick-create-matiere-cancel-{{ $modal_id }}">>Annuler</button>
+                <button type="button" class="btn" x-on:click="$dispatch('close')" id="quick-create-matiere-cancel-{{ $modal_id }}">Annuler</button>
                 <button type="submit" class="btn">Ajouter</button>
             </div>
 
@@ -130,7 +130,7 @@
                                 required />
                         </div>
                         <div class="col-span-2 flex justify-between">
-                            <button type="button" class="btn" id="addSousFamille-button_cancel-{{ $modal_id }}" x-on:click="$dispatch('close')">Annuler</button>
+                            <button type="button" class="btn" x-on:click="$dispatch('close')" id="addSousFamille-button_cancel-{{ $modal_id }}" > Annuler</button>
                             <button type="submit" class="btn">Ajouter</button>
                         </div>
                     </form>

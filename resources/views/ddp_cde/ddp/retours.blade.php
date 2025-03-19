@@ -18,9 +18,14 @@
     </x-slot>
     <div class="max-w-8xl py-4 mx-auto sm:px-4 lg:px-6">
         <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-6 rounded-md shadow-md">
-            <div class="flex justify-between items-center mb-6">
+            <div class="flex justify-between mb-6">
                 <div>
-                    <h1 class="text-3xl font-bold mb-6 text-left">{{ $ddp->nom }} - Récapitulatif</h1>
+                    <div class="flex items-center mb-6">
+                        <h1 class="text-3xl font-bold  text-left mr-2">{{ $ddp->nom }} - Retours</h1>
+                        <div class="text-center w-fit px-2 text-xs leading-5 flex rounded-full font-bold items-center justify-center"
+                            style="background-color: {{ $ddp->statut->couleur }}; color: {{ $ddp->statut->couleur_texte }}">
+                            {{ $ddp->statut->nom }}</div>
+                    </div>
                     <p class="text-sm font-semibold text-gray-500 dark:text-gray-400">Ordre des colonnes : REF
                         FOURNISSEUR <strong class="dark:text-white text-gray-900">|</strong> PU HT <strong
                             class="dark:text-white text-gray-900">|</strong> UNITE <strong
@@ -40,7 +45,6 @@
                     </button>
                 </div>
             </div>
-            <div class="">
                 <style>
                     /* Style pour centrer le texte de la première ligne */
                     .ht-center-first-row {
@@ -57,8 +61,6 @@
                 </style>
 
                 <div id="handsontable-container" class="ht-theme-main-dark-auto"></div>
-            </div>
-            </div>
             <div class="flex justify-between items-center mt-6">
                 <button x-data x-on:click="$dispatch('open-modal', 'confirm-retour')" class="btn float-right">
                     Retour

@@ -13,7 +13,7 @@ class DdpLigne extends Model
     /** @use HasFactory<\Database\Factories\DdpLigneFactory> */
     use HasFactory;
 
-    protected $fillable = ['ddp_id', 'matiere_id', 'quantite','unite_id'];
+    protected $fillable = ['ddp_id', 'matiere_id', 'quantite'];
 
     public function ddp(): BelongsTo
     {

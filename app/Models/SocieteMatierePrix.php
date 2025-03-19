@@ -15,6 +15,8 @@ class SocieteMatierePrix extends Model
         'taux_conversion_unite',
         'description',
         'date',
+        'ddp_ligne_fournisseur_id',
+        'cde_ligne_id'
     ];
     public function societeMatiere()
     {

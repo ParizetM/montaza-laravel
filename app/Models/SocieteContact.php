@@ -26,7 +26,14 @@ class SocieteContact extends Model
     }
     public function societe()
     {
-        return $this->hasOneThrough(Societe::class, Etablissement::class);
+        return $this->hasOneThrough(
+            Societe::class,        // Modèle final
+            Etablissement::class,  // Modèle intermédiaire
+            'societe_id',          // Clé étrangère sur le modèle intermédiaire
+            'id',                  // Clé étrangère sur le modèle final
+            'etablissement_id',    // Clé locale sur le modèle actuel
+            'id'                   // Clé locale sur le modèle intermédiaire
+        );
     }
     public function ddpLigneFournisseurs(): HasMany
     {

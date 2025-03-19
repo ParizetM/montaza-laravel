@@ -157,7 +157,7 @@
                                                             oninput="saveChanges()"
                                                             class="w-20 border-r-0 rounded-r-none  dark:border-0 focus:ring-0 focus:border-0 dark:focus:ring-0"
                                                             value="{{ formatNumber($ddp_ligne->quantite) }}"
-                                                            min="1" />
+                                                            min="0" />
                                                         {{-- <select name="unite[{{ $ddp_ligne->matiere_id }}]"
                                                             class="w-16 mx-2 select" onchange="saveChanges()">
                                                             @foreach ($unites as $unite)
