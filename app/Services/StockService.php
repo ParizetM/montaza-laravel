@@ -10,18 +10,26 @@ use Illuminate\Http\JsonResponse;
 
 class StockService
 {
-    public function enregistrerMouvement(int $matiereId, string $type, int $quantite, ?float $valeurUnitaire = null, ?string $raison = null): JsonResponse
+    public function stock(int $matiereId, string $type, int $quantite, ?float $valeurUnitaire = null, ?string $raison = null): JsonResponse
     {
         $matiere = Matiere::findOrFail($matiereId);
-        $valeurUnitaire = $valeurUnitaire ?? $matiere->ref_valeur_unitaire;
+        if ($matiere->typeAffichageStock() == 2) {
+            $valeurUnitaire = $valeurUnitaire ?? $matiere->ref_valeur_unitaire;
 
-        if (!$valeurUnitaire) {
-            return response()->json(['error' => 'Aucune valeur unitaire définie.'], 400);
+            if (!$valeurUnitaire) {
+                return response()->json(['error' => 'Aucune valeur unitaire définie.'], 400);
+            }
+            $stock = Stock::firstOrCreate(
+                ['matiere_id' => $matiere->id, 'valeur_unitaire' => $valeurUnitaire]
+            );
+        } else {
+            $stock = Stock::firstOrCreate(
+                ['matiere_id' => $matiere->id]
+            );
         }
 
-        $stock = Stock::firstOrCreate(
-            ['matiere_id' => $matiere->id, 'valeur_unitaire' => $valeurUnitaire]
-        );
+
+
 
         if ($type == 'entree') {
             $stock->quantite += $quantite;
@@ -39,7 +47,7 @@ class StockService
             'user_id' => Auth::id(),
             'type' => $type,
             'quantite' => $quantite,
-            'valeur_unitaire' => $valeurUnitaire,
+            'valeur_unitaire' => null,
             'raison' => $raison,
             'date' => now(),
         ]);

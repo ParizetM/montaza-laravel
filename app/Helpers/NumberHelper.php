@@ -11,12 +11,6 @@ if (!function_exists('formatNumber')) {
      * @param mixed $number The number to be formatted. It can be an integer, float, or a string representing a number.
      * @return string The formatted number as a string.
      */
-    /**
-     * Summary of formatNumber
-     * @param mixed $number
-     * @return string
-     */
-
      function formatNumber($number): string {
         // Vérifier si le nombre est numérique
         if (!is_numeric($number)) {

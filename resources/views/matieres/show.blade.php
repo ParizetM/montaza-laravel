@@ -30,7 +30,6 @@
                         <th class="px-4 py-2">Standard</th>
                         <th class="px-4 py-2">DN</th>
                         <th class="px-4 py-2">Ép</th>
-                        <th class="px-4 py-2">Unité</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -40,7 +39,7 @@
                         <td class="border px-4 py-2">{{ $matiere->material->nom ?? '-' }}</td>
                         <td class="border px-4 py-2">{{ $matiere->designation }}</td>
 
-                        <td class="border px-4 py-2">{{ $matiere->quantite() }}</td>
+                        <td class="border px-4 py-2"><x-stock-tooltip matiereId="{{ $matiere->id }}" /></td>
                         <td class="border px-4 py-2 ">
                             @if ($matiere->standardVersion == null)
                                 <span class="">Aucun standard</span>
@@ -57,8 +56,7 @@
 
                         </td>
                         <td class="border px-4 py-2">{{ $matiere->dn }}</td>
-                        <td class="border px-4 py-2">{{ $matiere->epaisseur }}</td>
-                        <td class="border px-4 py-2" title="{{ $matiere->unite->full }}">{{ $matiere->unite->short }}
+                        <td class="border px-4 py-2">{{ $matiere->epaisseur ?? '-' }}</td>
                         </td>
                     </tr>
                 </tbody>
@@ -68,24 +66,32 @@
                     <table class="mt-6 min-w-0 min-y-0">
                         <thead>
                             <tr>
+                                <th class="px-4 py-2">Référence</th>
                                 <th class="px-4 py-2">Fournisseur</th>
                                 <th class="px-4 py-2">Dernier prix </th>
                                 <th class="px-4 py-2">Date</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($fournisseurs_dernier_prix as $fournisseur)
+                            @foreach ($fournisseurs as $fournisseur)
                                 <tr onclick="window.location.href = '{{ route('matieres.show_prix', ['matiere' => $matiere->id, 'fournisseur' => $fournisseur->id]) }}';"
                                     class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer h-fit">
+                                    <td class="border px-4 py-2 whitespace-nowrap">{{ $fournisseur->ref_externe ?? 'Aucune référence' }}
+                                    </td>
                                     <td class="border px-4 py-2 whitespace-nowrap">{{ $fournisseur->raison_sociale }}
                                     </td>
-                                    <td class="border px-4 py-2 whitespace-nowrap">{{ $fournisseur->prix }} €
-                                    </td>
-                                    <td class="border px-4 py-2 whitespace-nowrap">
-                                        {{ $fournisseur->date }}</td>
+                                    @if ($fournisseur->prix->prix_unitaire != null)
+                                        <td class="border px-4 py-2 whitespace-nowrap">
+                                            {{ formatNumberArgent($fournisseur->prix->prix_unitaire) . '/' . $matiere->unite->short }}
+                                        </td>
+                                        <td class="border px-4 py-2 whitespace-nowrap">
+                                            {{ formatDate(date_string: $fournisseur->prix->date) }}</td>
+                                    @else
+                                        <td class="border px-4 py-2 whitespace-nowrap" colspan="2">Aucun prix</td>
+                                    @endif
                                 </tr>
                             @endforeach
-                            @if ($fournisseurs_dernier_prix->count() == 0)
+                            @if ($fournisseurs->count() == 0)
                                 <tr>
                                     <td class="border px-4 py-2 whitespace-nowrap" colspan="3">Aucun fournisseur pour
                                         le moment</td>

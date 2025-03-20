@@ -45,22 +45,22 @@
                     </button>
                 </div>
             </div>
-                <style>
-                    /* Style pour centrer le texte de la première ligne */
-                    .ht-center-first-row {
-                        text-align: center;
-                    }
+            <style>
+                /* Style pour centrer le texte de la première ligne */
+                .ht-center-first-row {
+                    text-align: center;
+                }
 
-                    thead {
-                        background: none;
-                    }
+                thead {
+                    background: none;
+                }
 
-                    .rowHeader {
-                        text-align: left !important;
-                    }
-                </style>
+                .rowHeader {
+                    text-align: left !important;
+                }
+            </style>
 
-                <div id="handsontable-container" class="ht-theme-main-dark-auto"></div>
+            <div id="handsontable-container" class="ht-theme-main-dark-auto"></div>
             <div class="flex justify-between items-center mt-6">
                 <button x-data x-on:click="$dispatch('open-modal', 'confirm-retour')" class="btn float-right">
                     Retour
@@ -98,7 +98,7 @@
             const rowHeaders = [
                 'Matières',
                 @foreach ($ddp->ddpLigne as $ddpLigne)
-                    "{{ $ddpLigne->matiere->ref_interne }} {{ $ddpLigne->matiere->designation }}",
+                    "<span title='{{ $ddpLigne->ref_interne }} {{ $ddpLigne->designation }}' class='text-xs'>{{ $ddpLigne->ref_interne }} {{ $ddpLigne->designation }}<span>",
                 @endforeach
                 'Total',
                 // Ajoutez autant de matières que nécessaire
@@ -206,8 +206,12 @@
                 local: frFR,
                 licenseKey: 'non-commercial-and-evaluation',
                 rowHeaders: rowHeaders,
-                rowHeaderWidth: rowHeaders.reduce((maxLength, header) => Math.max(maxLength, header.length),
-                    0) * 10,
+                rowHeaderWidth: Math.min(
+                    rowHeaders.reduce((maxLength, header) => Math.max(maxLength, header.length), 0) *
+                    10,
+                    Math.min(window.innerWidth *
+                    0.4) // Limite maximale de largeur ajustée selon la taille de l'écran
+                ),
                 colHeaders: colHeaders,
                 columns: columns,
                 mergeCells: mergeCells,

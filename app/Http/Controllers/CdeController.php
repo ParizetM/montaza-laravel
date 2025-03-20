@@ -11,6 +11,7 @@ use App\Models\Famille;
 use App\Models\Mailtemplate;
 use App\Models\ModelChange;
 use App\Models\Societe;
+use App\Models\SocieteMatierePrix;
 use App\Models\TypeExpedition;
 use App\Models\Unite;
 use App\Models\User;
@@ -156,7 +157,8 @@ class CdeController extends Controller
         } elseif ($cde->ddpCdeStatut->id == 3 || $cde->ddpCdeStatut->id == 4 || $cde->ddpCdeStatut->id == 5) {
             $cdeid =  $cde->id;
             $showRefFournisseur = $cde->show_ref_fournisseur;
-            return view('ddp_cde.cde.show', compact('cde', ['showRefFournisseur']));
+            $pdfcommande = $this->pdf($cdeid);
+            return view('ddp_cde.cde.show', compact('cde', ['showRefFournisseur','pdfcommande']));
         }
     }
 
@@ -267,7 +269,7 @@ class CdeController extends Controller
         } else {
             $listeChangement = false;
         }
-        return view('ddp_cde.cde.validation', compact('cde', ['users', 'entite', 'showRefFournisseur', 'typesExpedition', 'conditionsPaiement','listeChangement']));
+        return view('ddp_cde.cde.validation', compact('cde', ['users', 'entite', 'showRefFournisseur', 'typesExpedition', 'conditionsPaiement', 'listeChangement']));
     }
     public function reset($id): RedirectResponse
     {
@@ -344,14 +346,14 @@ class CdeController extends Controller
             $ligne->type_expedition_id = $request->input('type_expedition_id');
             $ligne->save();
         }
-        if ($request->input('enregistrer_changement') == 'on' && $request->input('show_ref_fournisseur') == true) {
+        if ($request->enregistrer_changement && $cde->show_ref_fournisseur == true) {
             $societe_id = $societe->id;
             foreach ($cde->cdeLignes as $ligne) {
                 $ligne->prix = $ligne->prix_unitaire * $ligne->quantite;
                 $ligne->save();
                 $societe_matiere = $ligne->matiere->societeMatiere($societe_id);
                 $ref_externe = $societe_matiere->ref_externe ?? null;
-                if ($ligne->ref_fournisseur != null && $ligne->ref_fournisseur != '' && $ref_externe != null && $ligne->ref_fournisseur != $ref_externe) {
+                if ($ligne->ref_fournisseur != null && $ligne->ref_fournisseur != '' && $ligne->ref_fournisseur != $ref_externe) {
                     $societe_matiere->ref_externe = $ligne->ref_fournisseur;
                     $societe_matiere->save();
                 }
@@ -540,21 +542,6 @@ class CdeController extends Controller
         $total_ht = 0;
         foreach ($cde->cdeLignes as $ligne) {
             if ($ligne->date_livraison_reelle && $ligne->ddp_cde_statut_id != 4) {
-                $matiere = $ligne->matiere;
-                $matiereController = new MatiereController();
-                $matiereController->mouvement($matiere->id, $ligne->quantite, true);
-                $matiere->unite_id = $ligne->unite_id;
-                $matiere->fournisseurs()->sync([
-                    $ligne->fournisseur_id => [
-                        'ref_fournisseur' => $ligne->ref_fournisseur ?? null,
-                        'prix' => $ligne->prix_unitaire * $ligne->quantite,
-                        'societe_id' => $cde->societe->id,
-                        'unite_id' => $ligne->unite_id,
-                        'date_dernier_prix' => now(),
-                        'cde_ligne_fournisseur_id' => $ligne->id,
-                    ]
-                ]);
-                $matiere->save();
                 $total_ht += $ligne->prix_unitaire * $ligne->quantite;
             }
         }
@@ -572,8 +559,36 @@ class CdeController extends Controller
     }
     public function terminerControler($id)
     {
+
         $cde = Cde::findOrFail($id);
         $cde->ddp_cde_statut_id = 5;
+        $societe = $cde->societeContact->etablissement->societe;
+        foreach ($cde->cdeLignes as $ligne) {
+            $matiere = $ligne->matiere;
+            if ($ligne->date_livraison_reelle && $ligne->ddp_cde_statut_id != 4) {
+                $this->stockService->stock(
+                    $matiere->id,
+                    'entree',
+                    $ligne->quantite,
+                    null,
+                    'Livraison commande - ' . $cde->code
+                );
+                $societe_matiere = $matiere->societeMatieres()->firstOrCreate(['societe_id' => $societe->id]);
+                $newPrix = $ligne->prix_unitaire;
+                if ( $matiere->getLastPrice($societe->id) == null || $matiere->getLastPrice($societe->id)->prix_unitaire != $ligne->prix_unitaire) {
+                    SocieteMatierePrix::updateOrCreate(
+                        [
+                            'societe_matiere_id' => $societe_matiere->id,
+                            'cde_ligne_id' => $ligne->id,
+                        ],
+                        [
+                            'prix_unitaire' => $newPrix ?? null,
+                            'date' => now(),
+                        ]
+                    );
+                }
+            }
+        }
         $cde->save();
         return redirect()->route('cde.show', $cde->id);
     }
@@ -601,3 +616,4 @@ class CdeController extends Controller
         return response()->json(['code' => $lastnumber, 'entite_code' => $entite_code]);
     }
 }
+

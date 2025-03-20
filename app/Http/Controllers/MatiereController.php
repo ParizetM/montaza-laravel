@@ -215,18 +215,23 @@ class MatiereController extends Controller
     public function show($matiere_id): View
     {
         $matiere = Matiere::with(['sousFamille', 'societe', 'standardVersion'])->findOrFail($matiere_id);
-        $fournisseurs_dernier_prix = $matiere->fournisseurs()
+        $fournisseurs= $matiere->fournisseurs()
             ->get()
             ->unique('societe_id');
-        $dates = $matiere->mouvements->isEmpty() ? null : $matiere->mouvements->pluck('created_at');
-        $quantites = $matiere->mouvements->pluck('pivot.quantite');
+        foreach ($fournisseurs as $fournisseur) {
+            $fournisseur->prix = $matiere->getLastPrice($fournisseur->id);
+            $fournisseur->ref_externe = $matiere->societeMatiere($fournisseur->id)->ref_externe;
+        }
+
+        $dates = $matiere->mouvementStocks ? null : $matiere->mouvementStocks->pluck('created_at');
+        $quantites = $matiere->mouvementStocks->pluck('quantite');
 
         $quantitemouvement = 0;
-        foreach ($matiere->mouvements as $mouvement) {
+        foreach ($matiere->mouvementStocks as $mouvement) {
             $quantitemouvement += $mouvement->quantite  * ($mouvement->type_mouvement ? 1 : -1);
         }
         $quantiteActuelle = $matiere->quantite() - $quantitemouvement;
-        $quantites = $matiere->mouvements->sortBy('created_at')->map(function ($mouvement) use (&$quantiteActuelle,$matiere) {
+        $quantites = $matiere->mouvementStocks->sortBy('created_at')->map(function ($mouvement) use (&$quantiteActuelle,$matiere) {
 
             $quantiteActuelle += $mouvement->quantite  * ($mouvement->type_mouvement ? 1 : -1);
             return $quantiteActuelle;
@@ -234,7 +239,7 @@ class MatiereController extends Controller
 
         return view('matieres.show', [
             'matiere' => $matiere,
-            'fournisseurs_dernier_prix' => $fournisseurs_dernier_prix,
+            'fournisseurs' => $fournisseurs,
             'dates' => $dates,
             'quantites' => $quantites,
         ]);

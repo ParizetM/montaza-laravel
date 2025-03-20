@@ -16,7 +16,7 @@
                 </h2>
 
             </div>
-            <a href="{{ route('cde.pdfs.download', $cde) }}" class="btn">Télécharger tous les PDF</a>
+            <a href="{{ route('cde.pdfs.download', $cde) }}" class="btn">Télécharger le PDF</a>
         </div>
     </x-slot>
 
@@ -80,8 +80,8 @@
                                             <span class="line-through">{{ $ligne->designation }}</span>
                                         </td>
                                         <td class="p-2 text-right line-through whitespace-nowrap"
-                                            title="{{ formatNumber($ligne->quantite) }} {{ $ligne->unite->full }}">
-                                            {{ formatNumber($ligne->quantite) }} {{ $ligne->unite->short }}</td>
+                                            title="{{ formatNumber($ligne->quantite) }} {{ $ligne->matiere->unite->full }}">
+                                            {{ formatNumber($ligne->quantite) }} {{ $ligne->matiere->unite->short }}</td>
                                         <td class="p-2 text-center line-through whitespace-nowrap">
                                             {{ formatNumberArgent($ligne->prix_unitaire) }}
                                         </td>
@@ -120,8 +120,8 @@
                                         </td>
                                         <td class="p-2 text-left">{{ $ligne->designation }}</td>
                                         <td class="p-2 text-right"
-                                            title="{{ formatNumber($ligne->quantite) }} {{ $ligne->unite->full }}">
-                                            {{ formatNumber($ligne->quantite) }} {{ $ligne->unite->short }}</td>
+                                            title="{{ formatNumber($ligne->quantite) }} {{ $ligne->matiere->unite->full }}">
+                                            {{ formatNumber($ligne->quantite) }} {{ $ligne->matiere->unite->short }}</td>
                                         <td class="p-2 text-center whitespace-nowrap">
                                             {{ formatNumberArgent($ligne->prix_unitaire) }}
                                         </td>
@@ -129,7 +129,7 @@
                                             {{ formatNumberArgent($ligne->prix) }}</td>
                                         <td class="p-2 text-center">{{ $ligne->typeExpedition->short }}</td>
                                         <td class="p-2 text-center">
-                                            {{ $ligne->date_livraison_reelle ? \Carbon\Carbon::parse($ligne->date_livraison_reelle)->format('d/m/Y') : '-' }}
+                                            {{ $ligne->date_livraison_reelle ? \Carbon\Carbon::parse($ligne->date_livraison_reelle)->format('d/m/Y') : 'Non livré' }}
                                         </td>
                                     </tr>
                                 @endif
@@ -210,7 +210,7 @@
                                                                 $cdeannee = explode('-', $cde->code)[1];
                                                             @endphp
                                                             <div class="flex flex-col gap-2 bg-gray-100 dark:bg-gray-700 p-4 rounded-md hover:scale-105 cursor-pointer transition-all relative"
-                                                                id="pdf" title="Ouvrir le PDF">
+                                                                id="pdf-{{ $pdf }}" title="Ouvrir le PDF">
                                                                 <h2
                                                                     class="text-xl font-semibold text-gray-700 dark:text-gray-200  border border-gray-300 dark:border-gray-700 pb-2 hover">
                                                                     {{ explode('_', $pdf)[count(explode('_', $pdf)) - 1] }}
@@ -231,7 +231,37 @@
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    <div class="flex flex-wrap gap-4">
+                                                        {{-- @dd($pdfs) --}}
+                                                        @php
+                                                            $cdeannee = explode('-', $cde->code)[1];
+                                                        @endphp
+                                                        <div class="flex flex-col gap-2 bg-gray-100 dark:bg-gray-700 p-4 rounded-md hover:scale-105 cursor-pointer transition-all relative"
+                                                            id="pdf-{{ $pdfcommande }}" title="Ouvrir le PDF">
+                                                            <h2
+                                                                class="text-xl font-semibold text-gray-700 dark:text-gray-200  border border-gray-300 dark:border-gray-700 pb-2 hover">
+                                                                {{ explode('_', $pdfcommande)[count(explode('_', $pdfcommande)) - 1] }}</h2>
+                                                            <div style="background-color: rgba(0,0,0,0); height: 409px; width: 285px; margin-bottom: 15px;"
+                                                                class="absolute bottom-4"></div>
+                                                            <object data="{{ route('cde.pdfshow', ['cde' => $cde, 'annee' => $cdeannee, 'nom' => $pdfcommande]) }}"
+                                                                type="application/pdf" height="424px" width="300px">
+                                                                <p>Il semble que vous n'ayez pas de plugin PDF pour ce navigateur. Pas de problème... vous
+                                                                    pouvez <a
+                                                                        href="{{ route('cde.pdfshow', ['cde' => $cde, 'annee' => $cdeannee, 'nom' => $pdfcommande]) }}">cliquer
+                                                                        ici pour télécharger le fichier PDF.</a></p>
+                                                            </object>
+                                                        </div>
+                                                    </div>
                                                 </div>
+                                                </div>
+                                                <script>
+                                                    document.querySelectorAll('[id^="pdf-"]').forEach(function(element) {
+                                                        element.addEventListener('click', function() {
+                                                            const pdfUrl = element.querySelector('object').data;
+                                                            window.open(pdfUrl, '_blank');
+                                                        });
+                                                    });
+                                                </script>
                                             @else
                                                 <div class="flex flex-col gap-4 float-right m-12">
                                                     <div class="flex flex-col gap-4">
@@ -241,9 +271,7 @@
                                                                 class="text-xl font-semibold text-gray-700 dark:text-gray-200">
                                                                 Pas d'accusé de
                                                                 réception</h2>
-                                                            <a href="{{ route('cde.annuler_terminer', $cde->id) }}"
-                                                                class="btn dark:hover:bg-gray-800 bg-gray-200 dark:bg-gray-900 hover:bg-gray-300">Ajouter
-                                                                un AR</a>
+
                                                         </div>
                                                     </div>
                                                 </div>
@@ -279,18 +307,17 @@
                     }
                 </script>
             </div>
-
-
             </td>
             </tr>
             </tbody>
             </table>
         </div>
 
+
     </div>
     <div class="flex justify-between items-center mt-6">
-        <a href="{{ route('cde.annuler_terminer', $cde->id) }}" class="btn float-right">Retour</a>
         @if ($cde->statut->id == 3)
+        <a href="{{ route('cde.annuler_terminer', $cde->id) }}" class="btn float-right">Retour</a>
             <a href="{{ route('cde.terminer_controler', $cde->id) }}" class="btn float-right">Terminer et
                 controlé</a>
         @endif

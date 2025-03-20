@@ -95,7 +95,7 @@ return new class extends Migration
             $table->foreignId('societe_matiere_id')->constrained('societe_matieres')->cascadeOnDelete();
             $table->decimal('prix_unitaire', 8, 3)->nullable();
             $table->string('description')->nullable();
-            $table->date('date')->nullable();
+            $table->dateTime('date')->nullable();
             $table->timestamps();
         });
         Schema::create('stocks', function (Blueprint $table) {

@@ -253,11 +253,11 @@
                                                         <x-text-input type="number"
                                                             name="quantite[{{ $cde_ligne->matiere->id }}]"
                                                             oninput="saveChanges()"
-                                                            class="w-20 border-r-0 rounded-r-none  dark:border-0 focus:ring-0 focus:border-0 dark:focus:ring-0"
+                                                            class="w-20 border-r-0 rounded-r-none  dark:border-r-0 focus:ring-0 focus:border-0 dark:focus:ring-0"
                                                             value="{{ formatNumber($cde_ligne->quantite) }}"
                                                             min="0" />
                                                         <div
-                                                            class="text-right bg-gray-100 dark:bg-gray-800 w-fit p-2.5 pl-0 border-1 border-l-0 rounded-r-sm border-gray-300 ">
+                                                            class="text-right bg-gray-100 dark:bg-gray-900 w-fit p-2.5 pl-0 border-1 border-l-0 rounded-r-sm border-gray-300 dark:border-gray-700 ">
                                                             {{ $cde_ligne->matiere->unite->short }}</div>
                                                             </div>
                                                         {{-- <select name="unite[{{ $cde_ligne->matiere_id }}]"
@@ -646,13 +646,13 @@
                 <x-text-input
                     type="number"
                     name="quantite[${matiereId}]"
-                    class="w-20 border-r-0 rounded-r-none dark:border-0 focus:ring-0 focus:border-0 dark:focus:ring-0"
+                    class="w-20 border-r-0 rounded-r-none dark:border-r-0 focus:ring-0 focus:border-0 dark:focus:ring-0"
                     value="1"
                     min="0"
                     oninput="saveChanges()"
                 />
                 <div
-                    class="text-right bg-gray-100 dark:bg-gray-800 w-fit p-2.5 pl-0 border-1 border-l-0 rounded-r-sm border-gray-300">
+                    class="text-right bg-gray-100 dark:bg-gray-900 w-fit p-2.5 pl-0 border-1 border-l-0 rounded-r-sm border-gray-300 dark:border-gray-700">
                     ${unites.find(unite => unite.short === matiereUnite)?.short || ''}
                 </div>
             </div>

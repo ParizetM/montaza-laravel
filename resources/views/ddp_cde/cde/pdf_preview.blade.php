@@ -17,14 +17,14 @@
     <div class="max-w-8xl py-4 mx-auto sm:px-4 lg:px-6">
 
         <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-6 rounded-md shadow-md">
-            <div class="flex justify-between items-center">
-                <div class="flex items-center mb-6">
+            <div class="flex justify-between items-center flex-wrap mb-6">
+                <div class="flex items-center  flex-wrap">
                     <h1 class="text-3xl font-bold  text-left mr-2">{{ $cde->code }} - {{ $cde->nom }}</h1>
-                    <div class="text-center w-fit px-2 text-xs leading-5 flex rounded-full font-bold items-center justify-center"
+                    <div class="text-center w-fit px-2 text-xs leading-5 flex rounded-full font-bold items-center justify-center whitespace-nowrap"
                         style="background-color: {{ $cde->statut->couleur }}; color: {{ $cde->statut->couleur_texte }}">
                         {{ $cde->statut->nom }}</div>
                 </div>
-                <a href="{{ route('cde.pdfs.download', $cde) }}" class="btn">Télécharger tous les PDF</a>
+                <a href="{{ route('cde.pdfs.download', $cde) }}" class="btn">Télécharger le PDF</a>
 
             </div>
             <div class="flex flex-wrap gap-4">

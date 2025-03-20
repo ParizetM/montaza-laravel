@@ -40,7 +40,7 @@ class Matiere extends Model
     public function fournisseurs()
     {
         return $this->belongsToMany(Societe::class, 'societe_matieres')
-            ->where('societe_type_id', ['3', '2'])
+            ->whereIn('societe_type_id', ['3', '2'])
             ->withTimestamps();
     }
 
@@ -65,17 +65,9 @@ class Matiere extends Model
     {
         return $this->hasOneThrough(Standard::class, StandardVersion::class, 'id', 'id', 'standard_version_id', 'standard_id');
     }
-    public function mouvements()
-    {
-        return $this->hasMany(MatiereMouvement::class);
-    }
     public function material()
     {
         return $this->belongsTo(Material::class);
-    }
-    public function stock()
-    {
-        return $this->hasOne(Stock::class);
     }
     public function typeAffichageStock(): int
     {
@@ -84,11 +76,15 @@ class Matiere extends Model
     public function quantite()
     {
         if ($this->typeAffichageStock() === 1) {
-            return $this->stock->quantite;
+            return $this->stock->sum('quantite');
         } elseif ($this->typeAffichageStock() === 2) {
-            return $this->stock->valeur_unitaire * $this->stock->quantite;
+            $quantite = 0;
+            foreach($this->stock as $stock) {
+                $quantite += $stock->quantite * $stock->valeur_unitaire;
+            };
+            return $quantite;
         } else {
-            return $this->stock->quantite;
+            return $this->stock->sum('quantite');
         }
     }
     public function societeMatieres()
@@ -128,5 +124,17 @@ class Matiere extends Model
         } else {
             return $this->prix()->latest()->first();
         }
+    }
+
+    public function stock() {
+        return $this->hasMany(Stock::class);
+    }
+    public function mouvementStocks()
+    {
+        return $this->hasMany(MouvementStock::class);
+    }
+    public function getLastMouvementStock()
+    {
+        return $this->mouvementStocks()->latest()->first();
     }
 }

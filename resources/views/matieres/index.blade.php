@@ -96,7 +96,6 @@
                                     <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Standard</th>
                                     <th class="text-left py-3 px-4 uppercase font-semibold text-sm">DN</th>
                                     <th class="text-left py-3 px-4 uppercase font-semibold text-sm">EP</th>
-                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Unité</th>
                                     <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Action</th>
                                 </tr>
                             </thead>
@@ -208,13 +207,12 @@
             <td class="text-left py-3 px-4">${matiere.sousFamille || '-'}</td>
             <td class="text-left py-3 px-4">${matiere.material || '-'}</td>
             <td class="text-left py-3 px-4">${matiere.designation || '-'}</td>
-            <td class="text-left py-3 px-4">${matiere.quantite || '-'}</td>
+            <td class="text-left py-3 px-4">${matiere.tooltip}</td>
             <td class="text-left py-3 px-4 flex items-center whitespace-nowrap">
                 ${matiere.standard ? `<x-icons.pdf class="w-6 h-6" /><a href="/matieres/${matiere.standardPath}" class="lien" target="_blank">${matiere.standard} ${matiere.standardVersion || '-'}</a>` : 'Aucun standard'}
             </td>
             <td class="text-left py-3 px-4">${matiere.dn || '-'}</td>
             <td class="text-left py-3 px-4">${matiere.epaisseur || '-'}</td>
-            <td class="text-left py-3 px-4" title="${matiere.Unite_full || ''}">${matiere.Unite || '-'}</td>
             <td class="text-left py-3 px-4"><a href="/matieres/${matiere.id}" class="btn">Voir</a></td>
         `;
                 tbody.appendChild(row);

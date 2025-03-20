@@ -17,11 +17,13 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete(); // Qui a fait l'action
             $table->string('type'); // "entree" ou "sortie"
             $table->integer('quantite');
-            $table->decimal('valeur_unitaire', 8, 3);
+            $table->decimal('valeur_unitaire', 8, 3)->nullable();
             $table->string('raison')->nullable(); // Explication du mouvement
             $table->timestamp('date')->useCurrent();
+            $table->foreignId('cde_ligne_id')->nullable()->constrained('cde_lignes')->onDelete('cascade');
             $table->timestamps();
         });
+    }
 
 
     /**

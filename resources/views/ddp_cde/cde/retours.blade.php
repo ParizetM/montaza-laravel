@@ -13,13 +13,13 @@
                 </h2>
 
             </div>
-            <a href="{{ route('cde.pdfs.download', $cde) }}" class="btn">Télécharger tous les PDF</a>
+            <a href="{{ route('cde.pdfs.download', $cde) }}" class="btn">Télécharger le PDF</a>
         </div>
     </x-slot>
     <div class="max-w-8xl py-4 mx-auto sm:px-4 lg:px-6">
         <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-6 rounded-md shadow-md" id="retour-container">
-            <div class="flex justify-between items-center mb-6">
-                <div class="flex items-center mb-12">
+            <div class="flex justify-between items-center mb-6 flex-wrap ">
+                <div class="flex items-center mb-12 flex-wrap ">
                     <h1 class="text-3xl font-bold  text-left mr-2">{{ $cde->nom }} - Récapitulatif</h1>
                     <div class="text-center w-fit px-2 text-xs leading-5 flex rounded-full font-bold items-center justify-center"
                         style="background-color: {{ $cde->statut->couleur }}; color: {{ $cde->statut->couleur_texte }}">
@@ -178,7 +178,7 @@
             const container = document.getElementById('handsontable-container');
             const rowHeaders = [
                 @foreach ($cde->cdeLignes as $cdeLigne)
-                    "{{ $cdeLigne->ref_interne }} {{ $cdeLigne->designation }}",
+                    "<span title='{{ $cdeLigne->ref_interne }} {{ $cdeLigne->designation }}' class='text-xs'>{{ $cdeLigne->ref_interne }} {{ $cdeLigne->designation }}<span>",
                 @endforeach
                 'Total',
             ];
@@ -236,8 +236,10 @@
                 licenseKey: 'non-commercial-and-evaluation',
                 rowHeaders: rowHeaders,
                 colHeaders: colHeaders,
-                rowHeaderWidth: rowHeaders.reduce((maxLength, header) => Math.max(maxLength, header.length),
-                    0) * 10,
+                rowHeaderWidth: Math.min(
+                    rowHeaders.reduce((maxLength, header) => Math.max(maxLength, header.length), 0) * 10,
+                    Math.min(window.innerWidth * 0.4) // Limite maximale de largeur ajustée selon la taille de l'écran
+                ),
                 columns: columns,
                 manualColumnResize: true,
                 manualRowResize: true,
