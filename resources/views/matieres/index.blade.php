@@ -23,8 +23,21 @@
                         class="px-4 py-2 mr-2 border select mb-2 sm:mb-0 w-fit">
                         <option value="" selected>{!! __('Toutes les sous-familles &nbsp;&nbsp;') !!}</option>
                     </select>
-                    <input type="text" name="search" placeholder="Rechercher..." value="{!! request('search') !!}"
-                        class="w-full sm:w-auto px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
+                    <x-tooltip position="bottom">
+                        <x-slot name="slot_item">
+                            <input type="text" name="search" placeholder="Rechercher..."
+                                value="{!! request('search') !!}"
+                                class="w-full sm:w-auto px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
+                        </x-slot>
+                        <x-slot name="slot_tooltip">
+                            <ul class="whitespace-nowrap">
+                                <li>Tapez vos mots-clés,</li>
+                                <li>Si vous recherchez un DN, tapez "dn25"</li>
+                                <li>Si vous recherchez une épaisseur, tapez "ep10"</li>
+                                <li>Si vous recherchez une référence tapez seulement celle-ci</li>
+                            </ul>
+                        </x-slot>
+                    </x-tooltip>
                     <div class="flex items-center ml-4 my-1 ">
                         <label for="nombre"
                             class="mr-2 text-gray-900 dark:text-gray-100">{!! __('Quantité') !!}</label>
@@ -42,48 +55,48 @@
 
     </x-slot>
     <div class="w-full">
-        <div class=" flex transition-all duration-500 max-h-0 overflow-hidden border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800" id="slide-down">
+        <div class=" flex transition-all duration-500 max-h-0 overflow-hidden border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
+            id="slide-down">
             <div class="flex p-4">
-                <a href="{!! route('standards.index') !!}"
-                class="btn">
-                {!! __('Standards') !!}
+                <a href="{!! route('standards.index') !!}" class="btn">
+                    {!! __('Standards') !!}
                 </a>
             </div>
 
         </div>
         <button class="w-full bg-white dark:bg-gray-800 justify-center flex hover:bg-gray-100 dark:hover:bg-gray-700"
-            onclick="toggleSlide()"
-        >
-            <x-icon :size="2" type="arrow_back" class="-rotate-90 icons-no_hover -mt-2 mb-1 transition-all duration-500" id="arrow-slide-down" />
+            onclick="toggleSlide()">
+            <x-icon :size="2" type="arrow_back"
+                class="-rotate-90 icons-no_hover -mt-2 mb-1 transition-all duration-500" id="arrow-slide-down" />
         </button>
 
         <script>
             function toggleSlide() {
-            const slideDown = document.getElementById('slide-down');
-            const arrow = document.getElementById('arrow-slide-down');
-            if (slideDown.classList.contains('max-h-0')) {
-                slideDown.classList.remove('max-h-0');
-                slideDown.classList.add('max-h-40'); // Adjust max height as needed
-                arrow.classList.remove('-rotate-90');
-                arrow.classList.add('rotate-90');
-                arrow.classList.remove('-mt-2');
-                arrow.classList.add('-mb-2');
-            } else {
-                slideDown.classList.remove('max-h-40');
-                slideDown.classList.add('max-h-0');
-                arrow.classList.remove('rotate-90');
-                arrow.classList.add('-rotate-90');
-                arrow.classList.remove('-mb-2');
-                arrow.classList.add('-mt-2');
-            }
+                const slideDown = document.getElementById('slide-down');
+                const arrow = document.getElementById('arrow-slide-down');
+                if (slideDown.classList.contains('max-h-0')) {
+                    slideDown.classList.remove('max-h-0');
+                    slideDown.classList.add('max-h-40'); // Adjust max height as needed
+                    arrow.classList.remove('-rotate-90');
+                    arrow.classList.add('rotate-90');
+                    arrow.classList.remove('-mt-2');
+                    arrow.classList.add('-mb-2');
+                } else {
+                    slideDown.classList.remove('max-h-40');
+                    slideDown.classList.add('max-h-0');
+                    arrow.classList.remove('rotate-90');
+                    arrow.classList.add('-rotate-90');
+                    arrow.classList.remove('-mb-2');
+                    arrow.classList.add('-mt-2');
+                }
             }
         </script>
     </div>
     <div class="py-8 ">
         <div class="max-w-8xl mx-auto sm:px-6 lg:px-8 ">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden sm:rounded-lg shadow-md">
+            <div class="bg-white dark:bg-gray-800 sm:rounded-lg shadow-md">
                 <div class="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-                    <div class="overflow-x-auto">
+                    <div class="">
                         <table class="min-w-full bg-white dark:bg-gray-800">
                             <thead
                                 class="bg-linear-to-r from-gray-200 to-gray-50 dark:from-gray-700 dark:to-gray-800 text-gray-700 dark:text-gray-100">
@@ -128,7 +141,10 @@
                         data.forEach(sousFamille => {
                             var option = document.createElement('option');
                             option.value = sousFamille.id;
-                            option.textContent = sousFamille.nom;
+                            option.textContent = sousFamille.nom + ' ';
+                            option.style.display = 'flex';
+                            option.style.justifyContent = 'space-between';
+                            option.textContent = `${sousFamille.nom} (${sousFamille.matiere_count})`;
                             sousFamilleSelect.appendChild(option);
                             var sousFamilleId = new URLSearchParams(window.location.search).get('sous_famille');
 
@@ -173,16 +189,20 @@
             containerSearch.innerHTML =
                 '<tr><td colspan="100"><div id="loading-spinner" class=" mt-8 inset-0 bg-none bg-opacity-75 flex items-center justify-center z-50 h-32 w-full"><div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32"></div></div><style>.loader {border-top-color: #3498db;animation: spinner 1.5s linear infinite;}@keyframes spinner {0% {transform: rotate(0deg);}100% {transform: rotate(360deg);}}</style></tr></td>';
 
-            console.log(`/matieres/search?search=${encodeURIComponent(searchQuery)}&famille=${familleId}&sous_famille=${sousFamilleId}&nombre=${nombre}&page=${page}`);
+            console.log(
+                `/matieres/search?search=${encodeURIComponent(searchQuery)}&famille=${familleId}&sous_famille=${sousFamilleId}&nombre=${nombre}&page=${page}`
+                );
             fetch(
-                    `/matieres/search?search=${encodeURIComponent(searchQuery)}&famille=${familleId}&sous_famille=${sousFamilleId}&nombre=${nombre}&page=${page}`)
+                    `/matieres/search?search=${encodeURIComponent(searchQuery)}&famille=${familleId}&sous_famille=${sousFamilleId}&nombre=${nombre}&page=${page}`
+                    )
                 .then(response => {
                     if (!response.ok) throw new Error('Erreur lors de la récupération des données');
                     return response.json();
                 })
                 .then(data => {
                     if (page > data.lastPage || page < 1) {
-                        window.location.href = `/matieres?search=${encodeURIComponent(searchQuery)}&famille=${familleId}&sous_famille=${sousFamilleId}&nombre=${nombre}&page=${data.lastPage}`;
+                        window.location.href =
+                            `/matieres?search=${encodeURIComponent(searchQuery)}&famille=${familleId}&sous_famille=${sousFamilleId}&nombre=${nombre}&page=${data.lastPage}`;
                     }
                     updateTable(data.matieres); // Met à jour le tableau
                     updatePagination(data.links); // Met à jour la pagination

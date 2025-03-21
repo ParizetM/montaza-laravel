@@ -14,7 +14,6 @@ use Illuminate\Database\Seeder;
 class MatiereProductionSeeder extends Seeder
 {
     public function run() {
-        Matiere::truncate();
         $path = storage_path('app/public/ressources/test2.csv');
         $csv = array_map(function($line) {
             return str_getcsv($line, ';');
@@ -22,8 +21,6 @@ class MatiereProductionSeeder extends Seeder
         $tour = 0;
         $erreur_standard = 0;
         foreach ($csv as $row) {
-
-
             $unite = Unite::where('short', 'ILIKE', $row[8])->first()->id ?? null;
             $row[1] = preg_replace('/^\x{FEFF}/u', '', $row[1]);
             if ($row[1] === '') {
@@ -33,9 +30,7 @@ class MatiereProductionSeeder extends Seeder
             $sous_famille_model = SousFamille::where('nom','ILIKE',trim($row[1]))->first();
             $sous_famille = $sous_famille_model ? $sous_famille_model->id : null;
             $standardModel = Standard::where('nom', 'ILIKE', $row[5])->first();
-
             $standard = $standardModel ? $standardModel->getLatestVersion()->id : null;
-
             if ($unite === null) {
                 echo 'TOUR :'.$tour . "\n";
                 echo "ERREUR Unite :  \n - " . $row[4] . "\n - " . $row[8] . "\n";
@@ -62,16 +57,9 @@ class MatiereProductionSeeder extends Seeder
                 'epaisseur' => $row[7],
                 'stock_min' => 0,
             ]);
-            // if ($sous_famille == null) {
-            //     $recap[] = $row[0];
-            // }
-
             $tour++;
         }
         echo $erreur_standard . " erreurs sur " . $tour . " lignes.\n";
-        // echo "RECAP : \n";
-        // foreach ($recap as $item) {
-        //     echo $item . "\n";
-        // }
+
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Resources;
 
 use App\Models\Unite;
@@ -16,7 +17,7 @@ class MatiereResource extends JsonResource
         } else {
             $unite_full = $this->unite->full_plural ?? null;
         }
-        return [
+        $data = [
             'id' => $this->id,
             'refInterne' => $this->ref_interne,
             'sousFamille' => $this->sousFamille->nom ?? null,
@@ -32,11 +33,21 @@ class MatiereResource extends JsonResource
             'Unite' => $this->unite->short ?? null,
             'Unite_id' => $this->unite->id ?? null,
             'Unite_full' => $unite_full,
-            'lastPriceDate' => $this->getLastPrice($societe_id) ? Carbon::parse($this->getLastPrice($societe_id)->date)->format('d/m/Y') : null,
-            'lastPrice' => $this->getLastPrice($societe_id) ? $this->getLastPrice($societe_id)->prix_unitaire : null,
-            'refexterne' => $this->societeMatiere($societe_id)->ref_externe ?? null,
             'tooltip' => view('components.stock-tooltip', ['matiere' => $this])->render(),
         ];
-    }
 
+        if ($societe_id) {
+            $data = array_merge(
+                $data,
+                [
+                    'lastPriceDate' => $this->getLastPrice($societe_id) ? Carbon::parse($this->getLastPrice($societe_id)->date)->format('d/m/Y') : null,
+                    'lastPrice_formated' => $this->getLastPrice($societe_id) ? formatNumberArgent($this->getLastPrice($societe_id)->prix_unitaire) : null,
+                    'lastPrice' => $this->getLastPrice($societe_id) ? $this->getLastPrice($societe_id)->prix_unitaire : null,
+
+                    'refexterne' => $this->societeMatiere($societe_id)->ref_externe ?? null,
+                ]
+            );
+        }
+        return $data;
+    }
 }

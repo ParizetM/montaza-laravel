@@ -10,6 +10,6 @@ class Famille extends Model
     public $timestamps = false;
     public function sousFamilles()
     {
-        return $this->hasMany(SousFamille::class);
+        return $this->hasMany(SousFamille::class)->orderBy('nom');
     }
 }

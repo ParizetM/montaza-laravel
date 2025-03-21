@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\MatiereResource;
-use App\Http\Resources\MatiereResourceWithPrice;
-use App\MatiereMouvement;
 use App\Models\DossierStandard;
 use App\Models\Famille;
 use App\Models\Matiere;
@@ -17,160 +15,128 @@ use App\Models\Stock;
 use App\Models\Unite;
 use Auth;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
-use Ramsey\Uuid\Type\Decimal;
+
 
 class MatiereController extends Controller
 {
+    // Dans votre contrôleur
+
+    /**
+     * Méthode privée qui construit la requête de recherche principale.
+     */
+    private function buildMatiereQuery(Request $request)
+    {
+        $query = Matiere::with(['sousFamille', 'societe', 'standardVersion']);
+
+        // Filtrer par famille
+        if ($request->filled('famille')) {
+            $query->whereHas('sousFamille', function ($subQuery) use ($request) {
+                $subQuery->where('famille_id', $request->input('famille'));
+            });
+        }
+        // Filtrer par sous-famille
+        if ($request->filled('sous_famille')) {
+            $query->where('sous_famille_id', $request->input('sous_famille'));
+        }
+        // Filtrer par societe (optionnel, utilisé uniquement dans quickSearch)
+        // Filtrer par le champ "search"
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $terms = explode(' ', $search);
+            $query->where(function ($q) use ($terms) {
+                // Pour chaque terme, appliquer des filtres spécifiques
+                foreach ($terms as $term) {
+                    $q->where(function ($subQuery) use ($term, $terms) {
+                        if (stripos($term, 'dn') === 0) {
+                            $value = substr($term, 2);
+                            $subQuery->where('dn', 'ILIKE', "%{$value}%");
+                        } elseif (stripos($term, 'ep') === 0) {
+                            $value = str_replace([',', '.'], ['.', ','], substr($term, 2));
+                            $subQuery->where('epaisseur', 'ILIKE', "%{$value}%");
+                        } else {
+                            $subQuery->whereRaw("unaccent(designation) ILIKE unaccent(?)", ["%{$term}%"])
+                                ->orWhereHas('sousFamille', function ($subSubQuery) use ($term) {
+                                    $subSubQuery->where('nom', 'ILIKE', "%{$term}%");
+                                })
+                                ->orWhere('ref_interne', 'ILIKE', "%{$term}%");
+                            if (count($terms) == 1) {
+                                $subQuery->orWhereHas('societeMatieres', function ($subSubQuery) use ($term) {
+                                    $subSubQuery->orWhere('ref_externe', 'ILIKE', "%{$term}%");
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        }
+        // dd($query->toSql(), $query->getBindings());
+        return $query;
+    }
+
+    /**
+     * Méthode searchResult avec pagination.
+     */
     public function searchResult(Request $request, $wantJson = true)
     {
         // Validation des données d'entrée
         $request->validate([
-            'search' => 'nullable|string|max:255',
-            'nombre' => 'nullable|integer|min:1|max:10000',
-            'famille' => 'nullable|integer|exists:familles,id',
+            'search'       => 'nullable|string|max:255',
+            'nombre'       => 'nullable|integer|min:1|max:10000',
+            'famille'      => 'nullable|integer|exists:familles,id',
             'sous_famille' => 'nullable|integer|exists:sous_familles,id',
-            'page' => 'nullable|integer|min:1',
+            'page'         => 'nullable|integer|min:1',
         ]);
 
-        $search = $request->input('search', '');
         $nombre = intval($request->input('nombre', 50));
-        $famille = $request->input('famille', '');
-        $sousFamille = $request->input('sous_famille', '');
-        // Génération d'une clé de cache unique
-        $cacheKey = sprintf(
-            'matieres_search_%s_%s_%s_%s_%s',
-            md5($search),
-            $famille ?: 'all',
-            $sousFamille ?: 'all',
-            $nombre,
-            $request->input('page', 1)
-        );
 
-        // Récupération ou mise en cache des résultats
-        $matieres = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($search, $nombre, $sousFamille, $famille) {
-            $query = Matiere::with(['sousFamille', 'societe', 'standardVersion']);
+        // Construction de la requête avec la logique principale
+        $query = $this->buildMatiereQuery($request);
+        $query->orderBy('sous_famille_id');
 
-            if (!empty($famille)) {
-                $query->whereHas('sousFamille', function ($subQuery) use ($famille) {
-                    $subQuery->where('famille_id', $famille);
-                });
-            }
-            if (!empty($sousFamille)) {
-                $query->where('sous_famille_id', $sousFamille);
-            }
+        // Récupérer les résultats paginés
+        $matieres = $query->paginate($nombre);
 
-            if (!empty($search)) {
-                $terms = explode(' ', $search);
-                $query->where(function ($q) use ($terms) {
-                if (count($terms) === 1) {
-                    $q->where('designation', 'ILIKE', "%{$terms[0]}%")
-                    ->orWhereHas('sousFamille', function ($subQuery) use ($terms) {
-                        $subQuery->where('nom', 'ILIKE', "%{$terms[0]}%");
-                    })
-                    ->orWhere('ref_interne', 'ILIKE', "%{$terms[0]}%");
-                }
-                foreach ($terms as $term) {
-                    $q->where(function ($subQuery) use ($term) {
-                    if (stripos($term, 'dn') === 0) {
-                        $value = substr($term, 2);
-                        $subQuery->where('dn', 'ILIKE', "{$value}");
-                    } elseif (stripos($term, 'ep') === 0) {
-                        $value = str_replace([',', '.'], ['.', ','], substr($term, 2));
-                        $subQuery->where('epaisseur', 'ILIKE', "{$value}");
-                    } else {
-                        $subQuery->where('designation', 'ILIKE', "%{$term}%")
-                        ->orWhereHas('sousFamille', function ($subSubQuery) use ($term) {
-                            $subSubQuery->where('nom', 'ILIKE', "%{$term}%");
-                        })
-                        ->orWhere('ref_interne', 'ILIKE', "%{$term}%");
-                    }
-                    });
-                }
-                });
-            }
-
-            return $query->orderBy('sous_famille_id')->paginate($nombre);
-        });
-
-
-        // Retourner les résultats
         if ($wantJson) {
-            $links = $matieres->appends(request()->query())->links()->toHtml();
-            $lastpage = $matieres->lastPage();
-            $links = str_replace('/search', '', $links);
-            return response()->json(data: [
+            $links    = $matieres->appends($request->query())->links()->toHtml();
+            $links    = str_replace('/search', '', $links);
+            $lastPage = $matieres->lastPage();
+
+            return response()->json([
                 'matieres' => MatiereResource::collection($matieres),
-                'links' => $links,
-                'lastPage' => $lastpage,
+                'links'    => $links,
+                'lastPage' => $lastPage,
             ]);
         }
 
         return $matieres;
     }
+
+    /**
+     * Méthode quickSearch avec limite de 50 résultats.
+     */
     public function quickSearch(Request $request)
     {
         // Validation des données d'entrée
         $request->validate([
-            'search' => 'nullable|string|max:255',
-            'famille' => 'nullable|integer|exists:familles,id',
-            'sous_famille' => 'nullable|integer|exists:sous_familles,id',
+            'search'         => 'nullable|string|max:255',
+            'famille'        => 'nullable|integer|exists:familles,id',
+            'sous_famille'   => 'nullable|integer|exists:sous_familles,id',
             'with_last_price' => 'nullable|boolean',
-            'societe' => 'nullable|integer|exists:societes,id',
+            'societe'        => 'nullable|integer|exists:societes,id',
         ]);
 
-        $search = $request->input('search', '');
-        $famille = $request->input('famille', '');
-        $sousFamille = $request->input('sous_famille', '');
-        // Génération d'une clé de cache unique
-        // Récupération ou mise en cache des résultats
-        $query = Matiere::with(['sousFamille', 'societe', 'standardVersion']);
-        if (!empty($famille)) {
-            $query->whereHas('sousFamille', function ($subQuery) use ($famille) {
-                $subQuery->where('famille_id', $famille);
-            });
-        }
-        if (!empty($sousFamille)) {
-            $query->where('sous_famille_id', $sousFamille);
-        }
-
-        if (!empty($search)) {
-            $terms = explode(' ', $search);
-            $query->where(function ($q) use ($terms) {
-            if (count($terms) === 1) {
-                $q->where('designation', 'ILIKE', "%{$terms[0]}%")
-                ->orWhereHas('sousFamille', function ($subQuery) use ($terms) {
-                    $subQuery->where('nom', 'ILIKE', "%{$terms[0]}%");
-                })
-                ->orWhere('ref_interne', 'ILIKE', "%{$terms[0]}%");
-            }
-            foreach ($terms as $term) {
-                $q->where(function ($subQuery) use ($term) {
-                if (stripos($term, 'dn') === 0) {
-                    $value = substr($term, 2);
-                    $subQuery->where('dn', 'ILIKE', "{$value}");
-                } elseif (stripos($term, 'ep') === 0) {
-                    $value = str_replace([',', '.'], ['.', ','], substr($term, 2));
-                    $subQuery->where('epaisseur', 'ILIKE', "{$value}");
-                } else {
-                    $subQuery->where('designation', 'ILIKE', "%{$term}%")
-                    ->orWhereHas('sousFamille', function ($subSubQuery) use ($term) {
-                        $subSubQuery->where('nom', 'ILIKE', "%{$term}%");
-                    })
-                    ->orWhere('ref_interne', 'ILIKE', "%{$term}%");
-                }
-                });
-            }
-            });
-        }
-
+        // Construction de la requête avec la logique principale
+        $query = $this->buildMatiereQuery($request);
         $query->orderBy('sous_famille_id')->limit(50);
+
         $matieres = $query->get();
+
         return response()->json([
             'matieres' => MatiereResource::collection($matieres),
         ]);
     }
+
     /**
      * Display a listing of the resource.
      */
@@ -186,7 +152,12 @@ class MatiereController extends Controller
 
     public function sousFamillesJson(Famille $famille)
     {
-        return response()->json($famille->sousFamilles);
+        $sousFamilles = $famille->sousFamilles->map(function ($sousFamille) {
+            $sousFamille->matiere_count = $sousFamille->matieres()->count();
+            return $sousFamille;
+        });
+
+        return response()->json($sousFamilles);
     }
 
     public function store(Request $request)
@@ -215,9 +186,8 @@ class MatiereController extends Controller
     public function show($matiere_id): View
     {
         $matiere = Matiere::with(['sousFamille', 'societe', 'standardVersion'])->findOrFail($matiere_id);
-        $fournisseurs= $matiere->fournisseurs()
-            ->get()
-            ->unique('societe_id');
+        $fournisseurs = $matiere->fournisseurs()
+            ->get();
         foreach ($fournisseurs as $fournisseur) {
             $fournisseur->prix = $matiere->getLastPrice($fournisseur->id);
             $fournisseur->ref_externe = $matiere->societeMatiere($fournisseur->id)->ref_externe;
@@ -231,7 +201,7 @@ class MatiereController extends Controller
             $quantitemouvement += $mouvement->quantite  * ($mouvement->type_mouvement ? 1 : -1);
         }
         $quantiteActuelle = $matiere->quantite() - $quantitemouvement;
-        $quantites = $matiere->mouvementStocks->sortBy('created_at')->map(function ($mouvement) use (&$quantiteActuelle,$matiere) {
+        $quantites = $matiere->mouvementStocks->sortBy('created_at')->map(function ($mouvement) use (&$quantiteActuelle, $matiere) {
 
             $quantiteActuelle += $mouvement->quantite  * ($mouvement->type_mouvement ? 1 : -1);
             return $quantiteActuelle;
@@ -246,14 +216,13 @@ class MatiereController extends Controller
     }
     public function showPrix($matiere_id, $societe_id): View
     {
-        $fournisseur = Societe::where('societe_type_id', ['3', '2'])->findOrFail($societe_id);
+        $fournisseur = Societe::whereIn('societe_type_id', ['3', '2'])->findOrFail($societe_id);
         $matiere = Matiere::with(['sousFamille', 'societe', 'standardVersion'])->findOrFail($matiere_id);
-        $fournisseurs_prix = $matiere->fournisseurs()
-            ->where('societe_id', $societe_id)
-            ->orderBy('date_dernier_prix', 'desc')
+        $fournisseurs_prix = $matiere->prixPourSociete($societe_id)
+            ->orderBy('date', 'desc')
             ->get();
-        $dates = $fournisseurs_prix->pluck('pivot.date_dernier_prix');
-        $prix = $fournisseurs_prix->pluck('pivot.prix');
+        $dates = $fournisseurs_prix->pluck('date');
+        $prix = $fournisseurs_prix->pluck('prix_unitaire');
         return view('matieres.show_prix', [
             'matiere' => $matiere,
             'fournisseur' => $fournisseur,
@@ -263,55 +232,56 @@ class MatiereController extends Controller
         ]);
     }
     public function mouvement(Request $request, $matiereId)
-{
-    $request->validate([
-        'type' => 'required|in:entree,sortie',
-        'quantite' => 'required|integer|min:1',
-        'valeur_unitaire' => 'nullable|numeric|min:0',
-        'raison' => 'nullable|string|max:255',
-    ]);
+    {
+        $request->validate([
+            'type' => 'required|in:entree,sortie',
+            'quantite' => 'required|integer|min:1',
+            'valeur_unitaire' => 'nullable|numeric|min:0',
+            'raison' => 'nullable|string|max:255',
+        ]);
 
-    $matiere = Matiere::findOrFail($matiereId);
-    $valeurUnitaire = $request->valeur_unitaire ?? $matiere->ref_valeur_unitaire;
+        $matiere = Matiere::findOrFail($matiereId);
+        $valeurUnitaire = $request->valeur_unitaire ?? $matiere->ref_valeur_unitaire;
 
-    if (!$valeurUnitaire) {
-        return response()->json(['error' => 'Aucune valeur unitaire définie.'], 400);
-    }
-
-    $stock = Stock::firstOrCreate(
-        ['matiere_id' => $matiere->id, 'valeur_unitaire' => $valeurUnitaire]
-    );
-
-    if ($request->type == 'entree') {
-        $stock->quantite += $request->quantite;
-    } elseif ($request->type == 'sortie') {
-        if ($stock->quantite < $request->quantite) {
-            return response()->json(['error' => 'Stock insuffisant.'], 400);
+        if (!$valeurUnitaire) {
+            return response()->json(['error' => 'Aucune valeur unitaire définie.'], 400);
         }
-        $stock->quantite -= $request->quantite;
+
+        $stock = Stock::firstOrCreate(
+            ['matiere_id' => $matiere->id, 'valeur_unitaire' => $valeurUnitaire]
+        );
+
+        if ($request->type == 'entree') {
+            $stock->quantite += $request->quantite;
+        } elseif ($request->type == 'sortie') {
+            if ($stock->quantite < $request->quantite) {
+                return response()->json(['error' => 'Stock insuffisant.'], 400);
+            }
+            $stock->quantite -= $request->quantite;
+        }
+
+        $stock->save();
+
+        MouvementStock::create([
+            'matiere_id' => $matiere->id,
+            'user_id' => Auth::id(),
+            'type' => $request->type,
+            'quantite' => $request->quantite,
+            'valeur_unitaire' => $valeurUnitaire,
+            'raison' => $request->raison,
+            'date' => now(),
+        ]);
+
+        return response()->json([
+            'message' => 'Mouvement enregistré avec succès.',
+            'stock' => $stock
+        ]);
     }
 
-    $stock->save();
-
-    MouvementStock::create([
-        'matiere_id' => $matiere->id,
-        'user_id' => Auth::id(),
-        'type' => $request->type,
-        'quantite' => $request->quantite,
-        'valeur_unitaire' => $valeurUnitaire,
-        'raison' => $request->raison,
-        'date' => now(),
-    ]);
-
-    return response()->json([
-        'message' => 'Mouvement enregistré avec succès.',
-        'stock' => $stock
-    ]);
-}
 
 
-
-    public function retirerMouvement($matiere_id,Request $request) {
+    public function retirerMouvement($matiere_id, Request $request)
+    {
         $matiere = Matiere::findOrFail($matiere_id);
         $request->validate([
             'quantite' => 'required|numeric',
@@ -335,7 +305,6 @@ class MatiereController extends Controller
             'modal_id' => $modal_id,
             'dossier_standards' => $dossier_standards,
         ]);
-
     }
     public function quickStore(Request $request)
     {
@@ -367,8 +336,9 @@ class MatiereController extends Controller
                 return response()->json(['error' => 'La version du standard n\'existe pas'], 422);
             }
         }
-        $matiere = Matiere::create([
-            'ref_interne' => 'AA-' . str_pad($lastref, 5, '0', STR_PAD_LEFT),
+        $matiere = Matiere::create(
+            [
+                'ref_interne' => 'AA-' . str_pad($lastref, 5, '0', STR_PAD_LEFT),
                 'designation' => $request->input('designation'),
                 'unite_id' => $request->input('unite_id'),
                 'sous_famille_id' => $request->input('sous_famille_id'),
@@ -379,7 +349,7 @@ class MatiereController extends Controller
                 'date_dernier_achat' => null,
                 'quantite' => $request->input('quantite'),
                 'stock_min' => $request->input('stock_min'),
-        ]
+            ]
         );
 
         return response()->json([
@@ -390,9 +360,9 @@ class MatiereController extends Controller
     public function storeSousFamille(Request $request)
     {
         $request->validate([
-                'nom' => 'required|string|max:255|unique:sous_familles,nom',
-                'famille_id' => 'required|exists:familles,id',
-            ]);
+            'nom' => 'required|string|max:255|unique:sous_familles,nom',
+            'famille_id' => 'required|exists:familles,id',
+        ]);
 
         $sousFamille = SousFamille::create($request->all());
 
@@ -401,7 +371,4 @@ class MatiereController extends Controller
             'sousFamille' => $sousFamille,
         ], 201);
     }
-
-
-
 }

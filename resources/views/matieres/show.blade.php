@@ -1,14 +1,14 @@
 <x-app-layout>
     <x-slot name="header">
         <div>
-            {{-- <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                <a href="{{ route('ddp_cde.index') }}"
-                    class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">Demandes de prix et commandes</a>
+            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+                <a href="{{ route('matieres.index') }}"
+                    class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">Matières</a>
                 >>
-                <a href="{{ route('ddp.show', $ddp->id) }}"
+                <a href="{{ route('matieres.show', $matiere->id) }}"
                     class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">{!! __('Créer une demande de prix') !!}</a>
                 >> Validation
-            </h2> --}}
+            </h2>
         </div>
     </x-slot>
 
@@ -74,13 +74,19 @@
                         </thead>
                         <tbody>
                             @foreach ($fournisseurs as $fournisseur)
-                                <tr onclick="window.location.href = '{{ route('matieres.show_prix', ['matiere' => $matiere->id, 'fournisseur' => $fournisseur->id]) }}';"
-                                    class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer h-fit">
+                                <tr
+                                @if ($fournisseur->prix != null && $fournisseur->prix->prix_unitaire != null)
+                                 onclick="window.location.href = '{{ route('matieres.show_prix', ['matiere' => $matiere->id, 'fournisseur' => $fournisseur->id]) }}';"
+                                 class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer
+                                 @else
+                                    class="
+                                 @endif
+                                     h-fit">
                                     <td class="border px-4 py-2 whitespace-nowrap">{{ $fournisseur->ref_externe ?? 'Aucune référence' }}
                                     </td>
                                     <td class="border px-4 py-2 whitespace-nowrap">{{ $fournisseur->raison_sociale }}
                                     </td>
-                                    @if ($fournisseur->prix->prix_unitaire != null)
+                                    @if ($fournisseur->prix != null && $fournisseur->prix->prix_unitaire != null)
                                         <td class="border px-4 py-2 whitespace-nowrap">
                                             {{ formatNumberArgent($fournisseur->prix->prix_unitaire) . '/' . $matiere->unite->short }}
                                         </td>
@@ -93,7 +99,7 @@
                             @endforeach
                             @if ($fournisseurs->count() == 0)
                                 <tr>
-                                    <td class="border px-4 py-2 whitespace-nowrap" colspan="3">Aucun fournisseur pour
+                                    <td class="border px-4 py-2 whitespace-nowrap" colspan="4">Aucun fournisseur pour
                                         le moment</td>
                                 </tr>
                             @endif

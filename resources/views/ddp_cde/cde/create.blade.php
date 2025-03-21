@@ -48,7 +48,19 @@
                         </select>
                         <!-- Search bar for materials -->
                         <div class="flex w-full">
-                            <x-text-input placeholder="Recherchez une matière" id="searchbar" class="w-full" />
+                            <x-tooltip position="top" class="w-full">
+                                <x-slot name="slot_item">
+                                    <x-text-input placeholder="Recherchez une matière" id="searchbar" class="w-full" />
+                                </x-slot>
+                                <x-slot name="slot_tooltip">
+                                    <ul class="whitespace-nowrap">
+                                        <li>Tapez vos mots-clés,</li>
+                                        <li>Si vous recherchez un DN, tapez "dn25"</li>
+                                        <li>Si vous recherchez une épaisseur, tapez "ep10"</li>
+                                        <li>Si vous recherchez une référence tapez seulement celle-ci</li>
+                                    </ul>
+                                </x-slot>
+                            </x-tooltip>
                             <button class="btn-select-right -ml-1 border-gray-300 dark:border-gray-700" type="button"
                                 onclick="liveSearch()">Rechercher</button>
                         </div>
@@ -381,7 +393,10 @@
                         data.forEach(sousFamille => {
                             var option = document.createElement('option');
                             option.value = sousFamille.id;
-                            option.textContent = sousFamille.nom;
+                            option.textContent = sousFamille.nom + ' ';
+                            option.style.display = 'flex';
+                            option.style.justifyContent = 'space-between';
+                            option.textContent = `${sousFamille.nom} (${sousFamille.matiere_count})`;
                             sousFamilleSelect.appendChild(option);
                             var sousFamilleId = new URLSearchParams(window.location.search).get('sous_famille');
 
@@ -532,7 +547,7 @@
                             tr.setAttribute('data-matiere-unite', matiere.lastPriceUnite || matiere.Unite ||
                                 '');
                             tr.addEventListener('click', addMatiere);
-                            if (matiere.lastPrice && matiere.lastPriceUnite) {
+                            if (matiere.lastPrice) {
                                 tr.innerHTML = `
                                     <td class="text-left px-2">${matiere.refInterne || '-'}</td>
                                     <td class="text-right px-2">${matiere.sousFamille || '-'}</td>
@@ -541,7 +556,7 @@
                                     <td class="text-left px-2">${matiere.dn || '-'}</td>
                                     <td class="text-left px-2">${matiere.epaisseur || '-'}</td>
                                     <td class="text-left px-2">${matiere.quantite+' '+matiere.Unite || '-'}</td>
-                                    <td class="text-right px-2 font-bold whitespace-nowrap"> ${matiere.lastPrice + ' €/' + matiere.lastPriceUnite} </td>
+                                    <td class="text-right px-2 font-bold whitespace-nowrap"> ${matiere.lastPrice_formated + '/' + matiere.Unite} </td>
                                     <td class="text-left px-2">${matiere.lastPriceDate || '-'}</td>
                                         `;
                             } else {

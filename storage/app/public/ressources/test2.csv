@@ -337,8 +337,8 @@ SA046967;Robinetterie;;Chantier de l'Atlantique;Robinet à Soupape en Fonte GS -
 2985284;Robinetterie;;Chantier de l'Atlantique;Robinet Soupape en Fonte - Clapet Libre à Brides;B5312A902;100;;U
 SA046973;Robinetterie;;Chantier de l'Atlantique;Robinet à Soupape en Fonte GS - à Clapet Attelé à Brides Parallèles - PN16 et 25 - Dn15 à 300;B5312A113;100;;U
 SA025732;Robinetterie;;Chantier de l'Atlantique;Robinet de Réglage - Équilibrage à Brides // - PN16 - En Bronze;B5311U902;80;;U
-SA001996;Robinetterie PVC;;ATLANTIC ROBINETTERIE;Robinet RBS PVC;B5314R501;32;;U
-SA001997;Robinetterie PVC;;ATLANTIC ROBINETTERIE;Robinet RBS PVC;B5314R501;40;;U
+SA001996;Robinetterie;;ATLANTIC ROBINETTERIE;Robinet RBS PVC;B5314R501;32;;U
+SA001997;Robinetterie;;ATLANTIC ROBINETTERIE;Robinet RBS PVC;B5314R501;40;;U
 SA001998;Robinetterie;;ATLANTIC ROBINETTERIE;Robinet RBS PVC;B5314R501;50;;U
 2012320;Robinetterie;;Chantier de l'Atlantique;Robinet à Tournant Sphérique en Laiton Nickelé, à Manchons Taraudés;B5314U202;32;;U
 2236494;Robinetterie;;AQUIRO;Robinet RBS;B5314A104;25;;U
@@ -451,120 +451,120 @@ SA023220;Robinetterie;;Chantier de l'Atlantique;Robinet 3 Voies à Tournant Sph�
 SA023219;Robinetterie;;Chantier de l'Atlantique;Robinet 3 Voies à Tournant Sphérique Acier - à Brides PN17;B5314A112;50;;U
 5000014062;Robinetterie;;Chantier de l'Atlantique;Renfort sur Borde en Acier S275JR selon NF EN 10025-2- Norme : NFE03-001 / ISO 68-1-PN 16- Modèle plus épais;FLREA118F6BE061PDGQ;32;;U
 SA030031;Robinetterie;;Chantier de l'Atlantique;Régulateur Débit;;32;;U
-3459543;Réduction Concentrique;;Arcus;Réductions Concentriques, à Souder en Acier Inoxydable (WP 316L), pour Tubes Schedule 10S;B5123A501;100x65;3,05;U
-3459551;Réduction Concentrique;;Arcus;Réductions Concentriques, à Souder en Acier Inoxydable (WP 316L), pour Tubes Schedule 10S;B5123A501;100x50;3,05;U
-3565688;Réduction Concentrique;;Arcus;Réductions Concentriques, à Souder en Acier Inoxydable (WP 316L), pour Tubes Schedule 10S;B5123A501;250x150;4,19x3,4;U
-3459616;Réduction Concentrique;;Arcus;Réductions Concentriques, à Souder en Acier Inoxydable (WP 316L), pour Tubes Schedule 10S;B5123A501;150x125;3,4x3,4;U
-3459578;Réduction Concentrique;;Arcus;Réductions Concentriques, à Souder en Acier Inoxydable (WP 316L), pour Tubes Schedule 10S;B5123A501;125x100;3,4x3,05;U
-3459535;Réduction Concentrique;;Arcus;Réductions Concentriques, à Souder en Acier Inoxydable (WP 316L), pour Tubes Schedule 10S;B5123A501;100x80;3,05x3,05;U
-3459411;Réduction Concentrique;;Arcus;Réductions Concentriques, à Souder en Acier Inoxydable (WP 316L), pour Tubes Schedule 10S;B5123A501;50x40;2,77x2,77;U
-36213904;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;125x80;4;U
-SA039621;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;150x100;4,5;U
-SA039620;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;150x125;4,5;U
-36306002;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;50x25;2,9;U
-SA039611;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;50x25;4,5;U
-36127306;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;250x200;6,3;U
-36211403;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;100x65;3,6;U
-36216804;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;150x100;4,5;U
-36221906;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;200x125;6,3;U
-36107604;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;65x50;5;U
-SA037601;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;100x80;5,6;U
-SA037606;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;125x80;5;U
-36316804;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;150x80;4,5;U
-36116804;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;150x125;4,5;U
-36204805;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;40x25;5;U
-SA039635;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;80x40;5,6;U
-36313905;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;125x65;5;U
-36106005;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;50x40;5;U
-SA037401;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;100x65;3,6x2,9;U
-36108804;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;80x65;4;U
-36121906;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;200x150;6,3;U
-36108803;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;80x65;3,2;U
-3457869;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;250x200;10;U
-SA039613;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;80x50;5,6;U
-SA039633;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;40x25;3,6;U
-36206002;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;50x32;2,9;U
-SA037600;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;80x65;5,6;U
-SA035750;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique PVC-U Non Plastifié (Série Pression);B5123R505;32x25;;U
-SA035751;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique PVC-U Non Plastifié (Série Pression);B5123R505;40x32;;U
-SA035752;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique PVC-U Non Plastifié (Série Pression);B5123R505;50X40;;U
-SA035753;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique PVC-U Non Plastifié (Série Pression);B5123R505;65x50;;U
-SA035754;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique PVC-U Non Plastifié (Série Pression);B5123R505;80x65;;U
-SA035755;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique PVC-U Non Plastifié (Série Pression);B5123R505;100x80;;U
-SA035756;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique PVC-U Non Plastifié (Série Pression);B5123R505;125X100;;U
-SA035757;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique PVC-U Non Plastifié (Série Pression);B5123R505;150X125;;U
-SA036066;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique PVC-U Non Plastifié (Série Pression);B5123R505;32x20;;U
-SA036067;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique PVC-U Non Plastifié (Série Pression);B5123R505;40x25;;U
-SA036068;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique PVC-U Non Plastifié (Série Pression);B5123R505;50x32;;U
-SA036069;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique PVC-U Non Plastifié (Série Pression);B5123R505;65x40;;U
-SA036070;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique PVC-U Non Plastifié (Série Pression);B5123R505;80x50;;U
-SA036071;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique PVC-U Non Plastifié (Série Pression);B5123R505;100x65;;U
-SA036072;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique PVC-U Non Plastifié (Série Pression);B5123R505;32x15;;U
-SA036073;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique PVC-U Non Plastifié (Série Pression);B5123R505;40x20;;U
-SA036074;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique PVC-U Non Plastifié (Série Pression);B5123R505;50x25;;U
-SA036075;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique PVC-U Non Plastifié (Série Pression);B5123R505;65x32;;U
-SA036076;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique PVC-U Non Plastifié (Série Pression);B5123R505;80X40;;U
-SA036077;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique PVC-U Non Plastifié (Série Pression);B5123R505;100x50;;U
-SA036078;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique PVC-U Non Plastifié (Série Pression);B5123R505;125x80;;U
-SA036079;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique PVC-U Non Plastifié (Série Pression);B5123R505;150X100;;U
-SA042025;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique PVC-U Non Plastifié (Série Pression);B5123R505;40x15;;U
-SA042026;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique PVC-U Non Plastifié (Série Pression);B5123R505;100x40;;U
-SA042027;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique PVC-U Non Plastifié (Série Pression);B5123R505;150X80;;U
-SA042160;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique PVC-U Non Plastifié (Série Pression);B5123R505;250x200;;U
-SA042162;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique PVC-U Non Plastifié (Série Pression);B5123R505;200X150;;U
-2412705;Réduction SW;;Saic;Réduction Mâle - Femelle à Souder en Acier Forgé;B5253A201;32x15;;U
-35630474;Réduction SW;;Saic;Réduction Mâle - Femelle à Souder en Acier Forgé;B5253A201;40x20;;U
-35630465;Réduction SW;;Saic;Réduction Mâle - Femelle à Souder en Acier Forgé;B5253A201;32X25;;U
-35632515;Réduction SW;;Saic;Réduction Mâle - Femelle à Souder en Acier Forgé;B5253A201;25x15;;U
-35632520;Réduction SW;;Saic;Réduction Mâle - Femelle à Souder en Acier Forgé;B5253A201;25x20;;U
-35630464;Réduction SW;;Saic;Réduction Mâle - Femelle à Souder en Acier Forgé;B5253A201;32x20;;U
-2412713;Réduction SW;;Saic;Réduction Mâle - Femelle à Souder en Acier Forgé;B5253A201;40x15;;U
-35632015;Réduction SW;;Saic;Réduction Mâle - Femelle à Souder en Acier Forgé;B5253A201;20x15;;U
-35632010;Réduction SW;;Saic;Réduction Mâle - Femelle à Souder en Acier Forgé;B5253A201;20x8;;U
-3462862;Réduction Excentrique;;Saic;Réduction Excentrique en AcierP265GH selon NF EN 10253-2 - Chanfreiné -;B5123A123;250x200;6,3;U
-36934050;Réduction Excentrique;;Saic;Réduction Excentrique à Souder en Acier;B5123A112;50x25;8,71;U
-2315998;Réduction Excentrique;;Saic;Réduction Excentrique à Souder en Acier;B5123A112;40x25;5,08;U
-SA042706;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique Électrofusion PE100 SDR11 F/F Polyéthylène 16 Bar;B5123R305;50X40;;U
-SA042708;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique Électrofusion PE100 SDR11 F/F Polyéthylène 16 Bar;B5123R305;100X80;;U
-SA042710;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique Électrofusion PE100 SDR11 F/F Polyéthylène 16 Bar;B5123R305;200x150;;U
-SA042968;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique Électrofusion PE100 SDR11 F/F Polyéthylène 16 Bar;B5123R305;25x15;;U
-SA042703;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique Électrofusion PE100 SDR11 F/F Polyéthylène 16 Bar;B5123R305;40x32;;U
-SA042709;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique Électrofusion PE100 SDR11 F/F Polyéthylène 16 Bar;B5123R305;150x100;;U
-SA042705;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique Électrofusion PE100 SDR11 F/F Polyéthylène 16 Bar;B5123R305;50x32;;U
-SA045119;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique Rainure - Galva;B5123A902;65x40;;U
-SA042877;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique Électrosoudable PE100 SDR11 M/M Polyéthylène 16 Bar;B5123R306;200x125;;U
-SA042871;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique Électrosoudable PE100 SDR11 M/M Polyéthylène 16 Bar;B5123R306;125x65;;U
-SA042876;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique Électrosoudable PE100 SDR11 M/M Polyéthylène 16 Bar;B5123R306;150x125;;U
-SA042868;Réduction Concentrique;;Chantier de l'Atlantique;Réduction Concentrique Électrosoudable PE100 SDR11 M/M Polyéthylène 16 Bar;B5123R306;100x50;;U
-SA037419;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;100x50;3,6;U
-36207604;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;65x40;4;U
-36240608;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;400x300;8,8;U
-36132307;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;300x250;7,1;U
-SA032299;Réduction Concentrique;;Saic;Réduction Concentrique 2 et 3DN à Souder en Acier pour Tube API 5L - Suivant Norme ANSI B16-9;B5123A115;600x400;;U
-SA032301;Réduction Concentrique;;Saic;Réduction Concentrique à Souder (BW) en Acier (ASTM A 234 Grade WPB) Ep. Standard;B5123A117;500x600;9,5;U
-SA032304;Réduction Concentrique;;Saic;Réduction Concentrique à Souder (BW) en Acier (ASTM A 234 Grade WPB) Ep. Standard;B5123A117;600x700;9,5;U
-SA040379;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique en Polybutène (M/F) Raccord Électrosoudable à Emboiture (PB);B5123R301;40x32;;U
-SA040382;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique en Polybutène (M/F) Raccord Électrosoudable à Emboiture (PB);B5123R301;50X25;;U
-SA040384;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique en Polybutène (M/F) Raccord Électrosoudable à Emboiture (PB);B5123R301;50X40;;U
-SA040386;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique en Polybutène (M/F) Raccord Électrosoudable à Emboiture (PB);B5123R301;80x50;;U
-SA036159;Réduction Excentrique;;Saic;Réduction Excentrique en AcierP265GH selon NF EN 10253-2 - Chanfreiné -;B5123A123;100x65;3,6;U
-SA036160;Réduction Excentrique;;Saic;Réduction Excentrique en AcierP265GH selon NF EN 10253-2 - Chanfreiné -;B5123A123;100x80;3,6;U
-SA036161;Réduction Excentrique;;Saic;Réduction Excentrique en AcierP265GH selon NF EN 10253-2 - Chanfreiné -;B5123A123;125x80;4;U
-SA042039;Réduction Excentrique;;Saic;Réduction Excentrique en AcierP265GH selon NF EN 10253-2 - Chanfreiné -;B5123A123;65x40;2,9;U
-SA042216;Réduction Excentrique;;Saic;Réduction Excentrique en AcierP265GH selon NF EN 10253-2 - Chanfreiné -;B5123A123;125x100;4;U
-SA014578;Réduction;;Sanimat / Prolians;Réduction - Mâle - Femelle Raccord par Sertissage en Cuivre;B5251U105;40x32;;U
-36104802;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;40x32;2,6;U
-36106002;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;50x40;2,9;U
-36107602;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;65x50;2,9;U
-36111403;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;100x80;3,6;U
-36113904;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;125x100;4;U
-36204802;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;40x25;2,6;U
-36207602;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;65x40;2,9;U
-36208803;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;80x50;3,2;U
-36307602;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;65x32;2,9;U
-36311403;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;100x50;3,6;U
-SA037605;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;100x65;5,6;U
-SA039634;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;65x40;5;U
+3459543;Réduction;;Arcus;Réduction;B5123A501;100x65;3,05;U
+3459551;Réduction;;Arcus;Réduction;B5123A501;100x50;3,05;U
+3565688;Réduction;;Arcus;Réduction;B5123A501;250x150;4,19x3,4;U
+3459616;Réduction;;Arcus;Réduction;B5123A501;150x125;3,4x3,4;U
+3459578;Réduction;;Arcus;Réduction;B5123A501;125x100;3,4x3,05;U
+3459535;Réduction;;Arcus;Réduction;B5123A501;100x80;3,05x3,05;U
+3459411;Réduction;;Arcus;Réduction;B5123A501;50x40;2,77x2,77;U
+36213904;Réduction;;Saic;Réduction;B5123A120;125x80;4;U
+SA039621;Réduction;;Saic;Réduction;B5123A120;150x100;4,5;U
+SA039620;Réduction;;Saic;Réduction;B5123A120;150x125;4,5;U
+36306002;Réduction;;Saic;Réduction;B5123A120;50x25;2,9;U
+SA039611;Réduction;;Saic;Réduction;B5123A120;50x25;4,5;U
+36127306;Réduction;;Saic;Réduction;B5123A120;250x200;6,3;U
+36211403;Réduction;;Saic;Réduction;B5123A120;100x65;3,6;U
+36216804;Réduction;;Saic;Réduction;B5123A120;150x100;4,5;U
+36221906;Réduction;;Saic;Réduction;B5123A120;200x125;6,3;U
+36107604;Réduction;;Saic;Réduction;B5123A120;65x50;5;U
+SA037601;Réduction;;Saic;Réduction;B5123A120;100x80;5,6;U
+SA037606;Réduction;;Saic;Réduction;B5123A120;125x80;5;U
+36316804;Réduction;;Saic;Réduction;B5123A120;150x80;4,5;U
+36116804;Réduction;;Saic;Réduction;B5123A120;150x125;4,5;U
+36204805;Réduction;;Saic;Réduction;B5123A120;40x25;5;U
+SA039635;Réduction;;Saic;Réduction;B5123A120;80x40;5,6;U
+36313905;Réduction;;Saic;Réduction;B5123A120;125x65;5;U
+36106005;Réduction;;Saic;Réduction;B5123A120;50x40;5;U
+SA037401;Réduction;;Saic;Réduction;B5123A120;100x65;3,6x2,9;U
+36108804;Réduction;;Saic;Réduction;B5123A120;80x65;4;U
+36121906;Réduction;;Saic;Réduction;B5123A120;200x150;6,3;U
+36108803;Réduction;;Saic;Réduction;B5123A120;80x65;3,2;U
+3457869;Réduction;;Saic;Réduction;B5123A120;250x200;10;U
+SA039613;Réduction;;Saic;Réduction;B5123A120;80x50;5,6;U
+SA039633;Réduction;;Saic;Réduction;B5123A120;40x25;3,6;U
+36206002;Réduction;;Saic;Réduction;B5123A120;50x32;2,9;U
+SA037600;Réduction;;Saic;Réduction;B5123A120;80x65;5,6;U
+SA035750;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R505;32x25;;U
+SA035751;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R505;40x32;;U
+SA035752;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R505;50X40;;U
+SA035753;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R505;65x50;;U
+SA035754;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R505;80x65;;U
+SA035755;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R505;100x80;;U
+SA035756;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R505;125X100;;U
+SA035757;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R505;150X125;;U
+SA036066;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R505;32x20;;U
+SA036067;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R505;40x25;;U
+SA036068;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R505;50x32;;U
+SA036069;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R505;65x40;;U
+SA036070;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R505;80x50;;U
+SA036071;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R505;100x65;;U
+SA036072;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R505;32x15;;U
+SA036073;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R505;40x20;;U
+SA036074;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R505;50x25;;U
+SA036075;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R505;65x32;;U
+SA036076;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R505;80X40;;U
+SA036077;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R505;100x50;;U
+SA036078;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R505;125x80;;U
+SA036079;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R505;150X100;;U
+SA042025;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R505;40x15;;U
+SA042026;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R505;100x40;;U
+SA042027;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R505;150X80;;U
+SA042160;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R505;250x200;;U
+SA042162;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R505;200X150;;U
+2412705;Réduction;;Saic;Réduction;B5253A201;32x15;;U
+35630474;Réduction;;Saic;Réduction;B5253A201;40x20;;U
+35630465;Réduction;;Saic;Réduction;B5253A201;32X25;;U
+35632515;Réduction;;Saic;Réduction;B5253A201;25x15;;U
+35632520;Réduction;;Saic;Réduction;B5253A201;25x20;;U
+35630464;Réduction;;Saic;Réduction;B5253A201;32x20;;U
+2412713;Réduction;;Saic;Réduction;B5253A201;40x15;;U
+35632015;Réduction;;Saic;Réduction;B5253A201;20x15;;U
+35632010;Réduction;;Saic;Réduction;B5253A201;20x8;;U
+3462862;Réduction;;Saic;Réduction;B5123A123;250x200;6,3;U
+36934050;Réduction;;Saic;Réduction;B5123A112;50x25;8,71;U
+2315998;Réduction;;Saic;Réduction;B5123A112;40x25;5,08;U
+SA042706;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R305;50X40;;U
+SA042708;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R305;100X80;;U
+SA042710;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R305;200x150;;U
+SA042968;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R305;25x15;;U
+SA042703;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R305;40x32;;U
+SA042709;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R305;150x100;;U
+SA042705;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R305;50x32;;U
+SA045119;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123A902;65x40;;U
+SA042877;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R306;200x125;;U
+SA042871;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R306;125x65;;U
+SA042876;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R306;150x125;;U
+SA042868;Réduction;;Chantier de l'Atlantique;Réduction;B5123R306;100x50;;U
+SA037419;Réduction;;Saic;Réduction;B5123A120;100x50;3,6;U
+36207604;Réduction;;Saic;Réduction;B5123A120;65x40;4;U
+36240608;Réduction;;Saic;Réduction;B5123A120;400x300;8,8;U
+36132307;Réduction;;Saic;Réduction;B5123A120;300x250;7,1;U
+SA032299;Réduction;;Saic;Réduction;B5123A115;600x400;;U
+SA032301;Réduction;;Saic;Réduction;B5123A117;500x600;9,5;U
+SA032304;Réduction;;Saic;Réduction;B5123A117;600x700;9,5;U
+SA040379;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R301;40x32;;U
+SA040382;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R301;50X25;;U
+SA040384;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R301;50X40;;U
+SA040386;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R301;80x50;;U
+SA036159;Réduction;;Saic;Réduction;B5123A123;100x65;3,6;U
+SA036160;Réduction;;Saic;Réduction;B5123A123;100x80;3,6;U
+SA036161;Réduction;;Saic;Réduction;B5123A123;125x80;4;U
+SA042039;Réduction;;Saic;Réduction;B5123A123;65x40;2,9;U
+SA042216;Réduction;;Saic;Réduction;B5123A123;125x100;4;U
+SA014578;Réduction;;Sanimat / Prolians;Réduction;B5251U105;40x32;;U
+36104802;Réduction;;Saic;Réduction;B5123A120;40x32;2,6;U
+36106002;Réduction;;Saic;Réduction;B5123A120;50x40;2,9;U
+36107602;Réduction;;Saic;Réduction;B5123A120;65x50;2,9;U
+36111403;Réduction;;Saic;Réduction;B5123A120;100x80;3,6;U
+36113904;Réduction;;Saic;Réduction;B5123A120;125x100;4;U
+36204802;Réduction;;Saic;Réduction;B5123A120;40x25;2,6;U
+36207602;Réduction;;Saic;Réduction;B5123A120;65x40;2,9;U
+36208803;Réduction;;Saic;Réduction;B5123A120;80x50;3,2;U
+36307602;Réduction;;Saic;Réduction;B5123A120;65x32;2,9;U
+36311403;Réduction;;Saic;Réduction;B5123A120;100x50;3,6;U
+SA037605;Réduction;;Saic;Réduction;B5123A120;100x65;5,6;U
+SA039634;Réduction;;Saic;Réduction;B5123A120;65x40;5;U
 3451437;Réchauffeur à Ailette;;Chantier de l'Atlantique;Réchauffeur à Ailettes - Type à Une Nappe;B5126A105;50;;U
 3451445;Réchauffeur à Ailette;;Chantier de l'Atlantique;Réchauffeur à Ailettes - Type à Deux Nappe;B5126A106;50;;U
 SA000388;Robinetterie;;Chantier de l'Atlantique;Robinet à Tournant Sphérique en Acier Passage Intégral - à Embouts Prolongés à Souder - Ép. Normale;B5314A105;32;;U
@@ -631,11 +631,11 @@ SA042983;Manchon;;ATLANTIC ROBINETTERIE;Manchon d'Adaptation Fileté Mâle Élec
 SA042977;Manchon;;ATLANTIC ROBINETTERIE;Manchon d'Adaptation Fileté Femelle Électro-Soudable PE100 SDR11 Polyéthylène 16 Bar;B5233R302;50;5,8;U
 SA053766;Manchon;;ATLANTIC ROBINETTERIE;Manchon de Transition PE/Laiton avec Filetage Mâle Électro-Soudable PE100 SDR11 Polyéthylène 16 Bar;B5233R304;32;;U
 SA053770;Manchon;;ATLANTIC ROBINETTERIE;Manchon de Transition PE/Laiton avec Filetage Mâle Électro-Soudable PE100 SDR11 Polyéthylène 16 Bar;B5233R304;40;;U
-5000013513;Collier PB;;SN HYDRO;Oméga Acier avec Garniture Insonorisante et Berceau Plastique;FICO06DT66ZZA7;150;;U
+5000013513;Collier;;SN HYDRO;Oméga Acier avec Garniture Insonorisante et Berceau Plastique;FICO06DT66ZZA7;150;;U
 SA022550;Robinetterie;;Chantier de l'Atlantique;Mitigeur Thermostatique;B5322T400;50;;U
 SA001014;MP1;Acier;Atlantis Montaza;Marchepied;C7114A101;;;U
 SA024409;Manchon;;ATLANTIC ROBINETTERIE;Manchons Réduit à Emmanchement à Souder (Acier Inox. Forgé) ANSI B16,11 Série 3000;B5221A502;15x25;;U
-SA033882;Manchon;;ATLANTIC ROBINETTERIE;Manchon Union Mâle et Femelle Filetés à Joint Conique en Fonte;B5235A901;40;;U
+SA033882;Manchon;;ATLANTIC ROBINETTERIE;Manchon Union Mâle et Femelle Filetés à Joint;B5235A901;40;;U
 3424434;Manchon;;Chouteau;Manchon Réduit Acier Passage de Cloison PN10-40 Capacité Propulsion;B5251A106;50x25;;U
 3424359;Manchon;;Chouteau;Manchon Réduit Acier Passage de Cloison PN10-40 Capacité Propulsion;B5251A106;25x15;;U
 3566218;Manchon;;ATLANTIC ROBINETTERIE;Manchon Réduit Acier Passage de Cloison PN10-40 Capacité Propulsion;B5251A106;50x40;;U
@@ -717,7 +717,7 @@ SA023990;Manchette;;Atlantis Montaza;Manchette d'Éloignement de Pont Thermique 
 2314495;Manchette;;TMCI;Demi Raccord Symétrique avec Bride (Guillemin);B5261U361;80;;U
 2314509;Manchette;;TMCI;Demi Raccord Symétrique avec Bride (Guillemin);B5261U361;100x100;;U
 SA034407;Manchette;;TMCI;Demi Raccord Symétrique avec Bride (Guillemin);B5261U361;100;;U
-SA035907;Raccord;;ATLANTIC ROBINETTERIE;Mamelon de Réduction PVC-U Non Plastifié (Série Pression);B5233R504;40;;U
+SA035907;Raccord;;ATLANTIC ROBINETTERIE;Mamelon de Réduction;B5233R504;40;;U
 SA003427;Raccord;;N/A;Mamelon Double Fileté en Cupro-Aluminium;B5233U401;20;;U
 35040040;Raccord;;N/A;MAMELON DOUBLE FILETE EN LAITON;B5233U205;40;;U
 1798057;MF2;Acier;Atlantis Montaza;Main de Fer MF2;C7114A101;;;U
@@ -730,56 +730,56 @@ SA042256;Traversée;;Roxtec;Traversée de Pont pour Arrière de Bloc Toilette (D
 SA039989;Traversée;;Roxtec;Traversée de Pont avec Sol Flottant Arrière Bloc Sanitaire/Tube PVC Ø50;B5165R502;40;;U
 SA042257;Traversée;;Roxtec;Traversée de Pont avec Sol Flottant Arrière Bloc Sanitaire/Tube PVC Ø63;B5165R502;50;;U
 SA039990;Traversée;;Roxtec;Traversée de Pont avec Sol Flottant Arrière Bloc Sanitaire/Tube PVC Ø75;B5165R502;65;;U
-5000002805;Joint PEPB;;ATLANTIC ROBINETTERIE;Joint Plat avec Âme Acier et EPDM pour Collet Plastique PN16;GKPLE110000PDEF;15;;U
-5000002806;Joint PEPB;;ATLANTIC ROBINETTERIE;Joint Plat avec Âme Acier et EPDM pour Collet Plastique PN16;GKPLE110000PDEF;20;;U
-5000002807;Joint PEPB;;ATLANTIC ROBINETTERIE;Joint Plat avec Âme Acier et EPDM pour Collet Plastique PN16;GKPLE110000PDEF;25;;U
-5000002808;Joint PEPB;;ATLANTIC ROBINETTERIE;Joint Plat avec Âme Acier et EPDM pour Collet Plastique PN16;GKPLE110000PDEF;32;;U
-5000002809;Joint PEPB;;ATLANTIC ROBINETTERIE;Joint Plat avec Âme Acier et EPDM pour Collet Plastique PN16;GKPLE110000PDEF;40;;U
-5000002830;Joint PEPB;;ATLANTIC ROBINETTERIE;Joint Plat avec Âme Acier et EPDM pour Collet Plastique PN16;GKPLE110000PDEF;50;;U
-5000002831;Joint PEPB;;ATLANTIC ROBINETTERIE;Joint Plat avec Âme Acier et EPDM pour Collet Plastique PN16;GKPLE110000PDEF;65;;U
-5000002832;Joint PEPB;;ATLANTIC ROBINETTERIE;Joint Plat avec Âme Acier et EPDM pour Collet Plastique PN16;GKPLE110000PDEF;80;;U
-5000002833;Joint PEPB;;ATLANTIC ROBINETTERIE;Joint Plat avec Âme Acier et EPDM pour Collet Plastique PN16;GKPLE110000PDEF;100;;U
-5000002834;Joint PEPB;;ATLANTIC ROBINETTERIE;Joint Plat avec Âme Acier et EPDM pour Collet Plastique PN16;GKPLE110000PDEF;125;;U
-5000002835;Joint PEPB;;ATLANTIC ROBINETTERIE;Joint Plat avec Âme Acier et EPDM pour Collet Plastique PN16;GKPLE110000PDEF;150;;U
-5000002836;Joint PEPB;;ATLANTIC ROBINETTERIE;Joint Plat avec Âme Acier et EPDM pour Collet Plastique PN16;GKPLE110000PDEF;200;;U
-5000002837;Joint PEPB;;ATLANTIC ROBINETTERIE;Joint Plat avec Âme Acier et EPDM pour Collet Plastique PN16;GKPLE110000PDEF;250;;U
-5000002838;Joint PEPB;;ATLANTIC ROBINETTERIE;Joint Plat avec Âme Acier et EPDM pour Collet Plastique PN16;GKPLE110000PDEF;300;;U
-5000002839;Joint PEPB;;ATLANTIC ROBINETTERIE;Joint Plat avec Âme Acier et EPDM pour Collet Plastique PN16;GKPLE110000PDEF;350;;U
-5000002840;Joint PEPB;;ATLANTIC ROBINETTERIE;Joint Plat avec Âme Acier et EPDM pour Collet Plastique PN16;GKPLE110000PDEF;400;;U
-5000002216;Jointage;;Joint Nantais;Joint Plat en Fibres Synthétiques et Minérales PN40 - Latty Graph;GKPLR310057PF00;32;2;U
-5000002217;Jointage;;Joint Nantais;Joint Plat en Fibres Synthétiques et Minérales PN40 - Latty Graph;GKPLR310057PF00;40;2;U
-5000002218;Jointage;;Joint Nantais;Joint Plat en Fibres Synthétiques et Minérales PN40 - Latty Graph;GKPLR310057PF00;50;2;U
-SA043033;Joint;;Joint Nantais;Joint Plat Inscrit en Graphite PN 10 à 40;B2811E418;100;;U
-SA024535;Joint;;Joint Nantais;Joint Plat en Néoprène pour Tuyauterie en Acier Revêtue de PVC Plastifié;B2810E203;600;3;U
-70000015;Joint  ;;Joint Nantais;Joint Plat Inscrit en Fibres Synthétiques + Nitrile PN 10 à 40;B2811E212;15;;U
-70000020;Joint  ;;Joint Nantais;Joint Plat Inscrit en Fibres Synthétiques + Nitrile PN 10 à 40;B2811E212;20;;U
-70000025;Joint  ;;Joint Nantais;Joint Plat Inscrit en Fibres Synthétiques + Nitrile PN 10 à 40;B2811E212;25;;U
-70000032;Joint  ;;Joint Nantais;Joint Plat Inscrit en Fibres Synthétiques + Nitrile PN 10 à 40;B2811E212;32;;U
-70000040;Joint  ;;Joint Nantais;Joint Plat Inscrit en Fibres Synthétiques + Nitrile PN 10 à 40;B2811E212;40;;U
-70000050;Joint  ;;Joint Nantais;Joint Plat Inscrit en Fibres Synthétiques + Nitrile PN 10 à 40;B2811E212;50;;U
-70000065;Joint  ;;Joint Nantais;Joint Plat Inscrit en Fibres Synthétiques + Nitrile PN 10 à 40;B2811E212;65;;U
-70000080;Joint  ;;Joint Nantais;Joint Plat Inscrit en Fibres Synthétiques + Nitrile PN 10 à 40;B2811E212;80;;U
-70000100;Joint  ;;Joint Nantais;Joint Plat Inscrit en Fibres Synthétiques + Nitrile PN 10 à 40;B2811E212;100;;U
-SA043058;Joint  ;;Joint Nantais;Joint Plat Inscrit en Graphite PN 10 à 40;B2811E418;15;;U
-SA043059;Joint  ;;Joint Nantais;Joint Plat Inscrit en Graphite PN 10 à 40;B2811E418;20;;U
-SA043060;Joint  ;;Joint Nantais;Joint Plat Inscrit en Graphite PN 10 à 40;B2811E418;25;;U
-SA043061;Joint  ;;Joint Nantais;Joint Plat Inscrit en Graphite PN 10 à 40;B2811E418;32;;U
-SA043062;Joint  ;;Joint Nantais;Joint Plat Inscrit en Graphite PN 10 à 40;B2811E418;40;;U
-SA043063;Joint  ;;Joint Nantais;Joint Plat Inscrit en Graphite PN 10 à 40;B2811E418;50;;U
-SA043064;Joint  ;;Joint Nantais;Joint Plat Inscrit en Graphite PN 10 à 40;B2811E418;65;;U
-SA043065;Joint  ;;Joint Nantais;Joint Plat Inscrit en Graphite PN 10 à 40;B2811E418;80;;U
-SA045263;Joint  ;;ATLANTIC ROBINETTERIE;Joint Plat en EPDM pour Bride PVC-U PN16;B2811E281;15;;U
-SA045264;Joint  ;;ATLANTIC ROBINETTERIE;Joint Plat en EPDM pour Bride PVC-U PN16;B2811E281;20;;U
-SA045265;Joint  ;;ATLANTIC ROBINETTERIE;Joint Plat en EPDM pour Bride PVC-U PN16;B2811E281;25;;U
-SA045266;Joint  ;;ATLANTIC ROBINETTERIE;Joint Plat en EPDM pour Bride PVC-U PN16;B2811E281;32;;U
-SA045267;Joint  ;;ATLANTIC ROBINETTERIE;Joint Plat en EPDM pour Bride PVC-U PN16;B2811E281;40;;U
-SA045268;Joint  ;;ATLANTIC ROBINETTERIE;Joint Plat en EPDM pour Bride PVC-U PN16;B2811E281;50;;U
-SA045269;Joint  ;;ATLANTIC ROBINETTERIE;Joint Plat en EPDM pour Bride PVC-U PN16;B2811E281;65;;U
-SA045270;Joint  ;;ATLANTIC ROBINETTERIE;Joint Plat en EPDM pour Bride PVC-U PN16;B2811E281;80;;U
-SA045271;Joint  ;;ATLANTIC ROBINETTERIE;Joint Plat en EPDM pour Bride PVC-U PN16;B2811E281;100;;U
-SA045272;Joint  ;;ATLANTIC ROBINETTERIE;Joint Plat en EPDM pour Bride PVC-U PN16;B2811E281;125;;U
-SA045273;Joint  ;;ATLANTIC ROBINETTERIE;Joint Plat en EPDM pour Bride PVC-U PN16;B2811E281;150;;U
-SA045274;Joint  ;;ATLANTIC ROBINETTERIE;Joint Plat en EPDM pour Bride PVC-U PN16;B2811E281;200;;U
+5000002805;Joint;;ATLANTIC ROBINETTERIE;Joint;GKPLE110000PDEF;15;;U
+5000002806;Joint;;ATLANTIC ROBINETTERIE;Joint;GKPLE110000PDEF;20;;U
+5000002807;Joint;;ATLANTIC ROBINETTERIE;Joint;GKPLE110000PDEF;25;;U
+5000002808;Joint;;ATLANTIC ROBINETTERIE;Joint;GKPLE110000PDEF;32;;U
+5000002809;Joint;;ATLANTIC ROBINETTERIE;Joint;GKPLE110000PDEF;40;;U
+5000002830;Joint;;ATLANTIC ROBINETTERIE;Joint;GKPLE110000PDEF;50;;U
+5000002831;Joint;;ATLANTIC ROBINETTERIE;Joint;GKPLE110000PDEF;65;;U
+5000002832;Joint;;ATLANTIC ROBINETTERIE;Joint;GKPLE110000PDEF;80;;U
+5000002833;Joint;;ATLANTIC ROBINETTERIE;Joint;GKPLE110000PDEF;100;;U
+5000002834;Joint;;ATLANTIC ROBINETTERIE;Joint;GKPLE110000PDEF;125;;U
+5000002835;Joint;;ATLANTIC ROBINETTERIE;Joint;GKPLE110000PDEF;150;;U
+5000002836;Joint;;ATLANTIC ROBINETTERIE;Joint;GKPLE110000PDEF;200;;U
+5000002837;Joint;;ATLANTIC ROBINETTERIE;Joint;GKPLE110000PDEF;250;;U
+5000002838;Joint;;ATLANTIC ROBINETTERIE;Joint;GKPLE110000PDEF;300;;U
+5000002839;Joint;;ATLANTIC ROBINETTERIE;Joint;GKPLE110000PDEF;350;;U
+5000002840;Joint;;ATLANTIC ROBINETTERIE;Joint;GKPLE110000PDEF;400;;U
+5000002216;Joint;;Joint;Joint;GKPLR310057PF00;32;2;U
+5000002217;Joint;;Joint;Joint;GKPLR310057PF00;40;2;U
+5000002218;Joint;;Joint;Joint;GKPLR310057PF00;50;2;U
+SA043033;Joint;;Joint;Joint;B2811E418;100;;U
+SA024535;Joint;;Joint;Joint;B2810E203;600;3;U
+70000015;Joint;;Joint;Joint;B2811E212;15;;U
+70000020;Joint;;Joint;Joint;B2811E212;20;;U
+70000025;Joint;;Joint;Joint;B2811E212;25;;U
+70000032;Joint;;Joint;Joint;B2811E212;32;;U
+70000040;Joint;;Joint;Joint;B2811E212;40;;U
+70000050;Joint;;Joint;Joint;B2811E212;50;;U
+70000065;Joint;;Joint;Joint;B2811E212;65;;U
+70000080;Joint;;Joint;Joint;B2811E212;80;;U
+70000100;Joint;;Joint;Joint;B2811E212;100;;U
+SA043058;Joint;;Joint;Joint;B2811E418;15;;U
+SA043059;Joint;;Joint;Joint;B2811E418;20;;U
+SA043060;Joint;;Joint;Joint;B2811E418;25;;U
+SA043061;Joint;;Joint;Joint;B2811E418;32;;U
+SA043062;Joint;;Joint;Joint;B2811E418;40;;U
+SA043063;Joint;;Joint;Joint;B2811E418;50;;U
+SA043064;Joint;;Joint;Joint;B2811E418;65;;U
+SA043065;Joint;;Joint;Joint;B2811E418;80;;U
+SA045263;Joint;;ATLANTIC ROBINETTERIE;Joint;B2811E281;15;;U
+SA045264;Joint;;ATLANTIC ROBINETTERIE;Joint;B2811E281;20;;U
+SA045265;Joint;;ATLANTIC ROBINETTERIE;Joint;B2811E281;25;;U
+SA045266;Joint;;ATLANTIC ROBINETTERIE;Joint;B2811E281;32;;U
+SA045267;Joint;;ATLANTIC ROBINETTERIE;Joint;B2811E281;40;;U
+SA045268;Joint;;ATLANTIC ROBINETTERIE;Joint;B2811E281;50;;U
+SA045269;Joint;;ATLANTIC ROBINETTERIE;Joint;B2811E281;65;;U
+SA045270;Joint;;ATLANTIC ROBINETTERIE;Joint;B2811E281;80;;U
+SA045271;Joint;;ATLANTIC ROBINETTERIE;Joint;B2811E281;100;;U
+SA045272;Joint;;ATLANTIC ROBINETTERIE;Joint;B2811E281;125;;U
+SA045273;Joint;;ATLANTIC ROBINETTERIE;Joint;B2811E281;150;;U
+SA045274;Joint;;ATLANTIC ROBINETTERIE;Joint;B2811E281;200;;U
 3449696;GC12;Acier;Atlantis Montaza;Tôles Pleines Percées pour Vaigrages - GC12;B9422A102;;;U
 3449610;G12;Acier;Atlantis Montaza;Grille de Protection sur Découpures en Surfaces Horizontales - G12;B9422A101;;;U
 3449709;Serrurerie;Acier;Atlantis Montaza;Grille de Protection sur Découpures en Surfaces Horizontales - G12;B9422A101;GC13;;U
@@ -1004,96 +1004,96 @@ SA046950;Coude;;ATLANTIC ROBINETTERIE;Coude 90° Long Embout Mâle/Mâle en Poly
 2150015;Cornière;Acier;Prolians;Cornières à Ailes Égales et à Coins Arrondis Laminées à Chaud;A2111A102;150x150;15;ML
 2900009;Cornière;Acier;Prolians;Cornières à Ailes Égales et à Coins Arrondis Laminées à Chaud;A2111A102;90x90;9;ML
 2800008;Cornière;Acier;Prolians;Cornières à Ailes Égales et à Coins Arrondis Laminées à Chaud;A2111A102;80x80;8;ML
-3459349;Réduction Concentrique;;Arcus;Réductions Concentriques, à Souder en Acier Inoxydable (WP 316L), pour Tubes Schedule 10S;B5123A501;32 x 25;2,77;U
-3459373;Réduction Concentrique;;Arcus;Réductions Concentriques, à Souder en Acier Inoxydable (WP 316L), pour Tubes Schedule 10S;B5123A501;40 X 32;2,77;U
-3459399;Réduction Concentrique;;Arcus;Réductions Concentriques, à Souder en Acier Inoxydable (WP 316L), pour Tubes Schedule 10S;B5123A501;40 x 20;2,77;U
-3459429;Réduction Concentrique;;Arcus;Réductions Concentriques, à Souder en Acier Inoxydable (WP 316L), pour Tubes Schedule 10S;B5123A501;50 x 32;2,77;U
+3459349;Réduction;;Arcus;Réduction;B5123A501;32 x 25;2,77;U
+3459373;Réduction;;Arcus;Réduction;B5123A501;40 X 32;2,77;U
+3459399;Réduction;;Arcus;Réduction;B5123A501;40 x 20;2,77;U
+3459429;Réduction;;Arcus;Réduction;B5123A501;50 x 32;2,77;U
 SA042609;Collier;;SN HYDRO;Colliers Acier à Demi-Coquille avec Garniture Insonorisante;B2211A119;40;;U
 SA042608;Collier;;SN HYDRO;Colliers Acier à Demi-Coquille avec Garniture Insonorisante;B2211A119;32;;U
 SA032615;Collier;;SN HYDRO;Colliers Acier à Demi-Coquille avec Garniture Insonorisante;B2211A119;100;;U
 SA042610;Collier;;SN HYDRO;Colliers Acier à Demi-Coquille avec Garniture Insonorisante;B2211A119;50;;U
 SA032614;Collier;;SN HYDRO;Colliers Acier à Demi-Coquille avec Garniture Insonorisante;B2211A119;65;;U
-5000003493;Collier Omega;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;150;;U
-6000001060;Collier Omega;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;200;;U
-5000014685;Collier Omega;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;150;;U
-70820075;Collier Omega;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;65;;U
-500005424;Collier INOX;;Stimy;Collier Type Étrier Inox;;200;;U
-SA043365;Collier;;ATLANTIC ROBINETTERIE;Collier Rigide Peint en Rouge pour Jonction Tube Rainure avec Joint EPDM;B5231A912;50;;U
-SA043371;Collier;;ATLANTIC ROBINETTERIE;Collier Rigide Peint en Rouge pour Jonction Tube Rainure avec Joint EPDM;B5231A912;200;;U
-SA045104;Collier;;ATLANTIC ROBINETTERIE;Collier Galvanisé Rigide de Jonction pour Tube Rainure Joint Nitrile;B5231A913;50;;U
-SA043364;Collier;;ATLANTIC ROBINETTERIE;Collier Rigide Peint en Rouge pour Jonction Tube Rainure avec Joint EPDM;B5231A912;40;8,8;U
-SA043366;Collier;;ATLANTIC ROBINETTERIE;Collier Rigide Peint en Rouge pour Jonction Tube Rainure avec Joint EPDM;B5231A912;65;;U
-SA043367;Collier;;ATLANTIC ROBINETTERIE;Collier Rigide Peint en Rouge pour Jonction Tube Rainure avec Joint EPDM;B5231A912;80;;U
-SA045111;Collier;;ATLANTIC ROBINETTERIE;Collier Galvanisé Rigide de Jonction pour Tube Rainure Joint Nitrile;B5231A913;250;;U
-500003544;Collier PVC;;Chouteau;Collier Omega Ø90;;80;;U
-500003542;Collier PVC;;Chouteau;Collier Omega Ø75;;65;;U
-500003541;Collier PVC;;Chouteau;Collier Omega Ø63;;50;;U
-500003540;Collier PVC;;Chouteau;Collier Omega Ø50;;40;;U
-500003550;Collier PVC;;Chouteau;Collier Omega Ø315;;300;;U
-6000000504;Collier Omega;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;250;;U
-500003549;Collier PVC;;Chouteau;Collier Omega Ø225;;200;;U
-6000000459;Collier Omega;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;200;;U
-70820162;Collier Omega;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;150;;U
-500003547;Collier PVC;;Chouteau;Collier Omega Ø160;;150;;U
-500003546;Collier PVC;;Chouteau;Collier Omega Ø140;;125;;U
-70820111;Collier Omega;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;100;;U
-500003545;Collier PVC;;Chouteau;Collier Omega Ø110;;100;;U
-70820034;Collier Omega;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;25;;U
-70820041;Collier Omega;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;32;;U
-6000000505;Collier Omega;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;300;;U
-6000000506;Collier Omega;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;400;;U
-70820024;Collier Omega;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;15;;U
-70820030;Collier Omega;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;20;;U
-70820036;Collier Omega;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;25;;U
-70820046;Collier Omega;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;32;;U
-70820051;Collier Omega;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;40;;U
-70820063;Collier Omega;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;50;;U
-70820079;Collier Omega;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;65;;U
-70820092;Collier Omega;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;80;;U
-70820118;Collier Omega;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;100;;U
-70820143;Collier Omega;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;125;;U
-70820172;Collier Omega;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;150;;U
-70820223;Collier Omega;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;200;;U
-70820278;Collier Omega;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;250;;U
-70820329;Collier Omega;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;300;;U
-70820362;Collier Omega;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;350;;U
-70820413;Collier Omega;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;400;;U
-EF000049;Collier ;;SN HYDRO;Collier Moule Simple en Polypropylène - Type Serrage;B2211R301;60;;U
-SA044968;Collier VFE;;Mupro;Support Isolant et Collier Demi-Coquille Type VIII Renforcé pour Gros Diamètres;FISU26IH37ZZ63;50;;U
-SA044969;Collier VFE;;Mupro;Support Isolant et Collier Demi-Coquille Type VIII Renforcé pour Gros Diamètres;FISU26IH37ZZ63;65;;U
-SA044970;Collier VFE;;Mupro;Collier Isolant Renforcé;B2211A132;80;;U
-SA044972;Collier VFE;;Mupro;Collier Isolant Renforcé;B2211A132;100;;U
-SA044973;Collier VFE;;Mupro;Collier Isolant Renforcé;B2211A132;125;;U
-SA044974;Collier VFE;;Mupro;Support Isolant et Collier Demi-Coquille Type VIII Renforcé pour Gros Diamètres;FISU26IH37ZZ63;150;;U
-5000000050;Collier ;;Mupro;Collier Isolant Insonorisant Renforcé ;B2211A137;50;;U
-5000000051;Collier PB;;Mupro;Collier Isolant Insonorisant Renforcé ;B2211A137;65;;U
-5000000052;Collier PB;;Mupro;Collier Isolant Insonorisant Renforcé ;B2211A137;80;;U
-5000000054;Collier PB;;Mupro;Collier Isolant Insonorisant Renforcé ;B2211A137;100;;U
-5000000055;Collier PB;;Mupro;Collier Isolant Insonorisant Renforcé ;B2211A137;125;;U
-5000000056;Collier PB;;Mupro;Collier Isolant Insonorisant Renforcé ;B2211A137;150;;U
-5000002282;Collier PB;;Mupro;Collier Isolant Insonorisant;;15;;U
-5000002284;Collier PB;;Mupro;Collier Isolant Insonorisant;;20;;U
-5000002285;Collier PB;;Mupro;Collier Isolant Insonorisant;;25;;U
-5000002286;Collier PB;;Mupro;Collier Isolant Insonorisant;;32;;U
-5000002287;Collier PB;;Mupro;Collier Isolant Insonorisant;;40;;U
-SA025824;Collier VFE;;SN HYDRO/ AUTRES;Support Isolant Type VIII et Collier Demi-Coquille ;B2211A117;15;D22;U
-SA025825;Collier VFE;;SN HYDRO/ AUTRES;Support Isolant Type VIII et Collier Demi-Coquille ;B2211A117;20;;U
-SA025829;Collier VFE;;SN HYDRO/ AUTRES;Support Isolant Type VIII et Collier Demi-Coquille ;B2211A117;25;;U
-SA025831;Collier VFE;;SN HYDRO/ AUTRES;Support Isolant Type VIII et Collier Demi-Coquille ;B2211A117;32;;U
-SA025832;Collier VFE;;SN HYDRO/ AUTRES;Support Isolant Type VIII et Collier Demi-Coquille ;B2211A117;40;;U
-SA045080;Collier;;ATLANTIC ROBINETTERIE;Collier Flexible Peint en Rouge pour Jonction Tube Rainure Joint EPDM;B5231A914;32;;U
-SA045082;Collier;;ATLANTIC ROBINETTERIE;Collier Flexible Peint en Rouge pour Jonction Tube Rainure Joint EPDM;B5231A914;50;;U
-SA045083;Collier;;ATLANTIC ROBINETTERIE;Collier Flexible Peint en Rouge pour Jonction Tube Rainure Joint EPDM;B5231A914;65;;U
-SA045084;Collier;;ATLANTIC ROBINETTERIE;Collier Flexible Peint en Rouge pour Jonction Tube Rainure Joint EPDM;B5231A914;80;;U
-SA045085;Collier;;ATLANTIC ROBINETTERIE;Collier Flexible Peint en Rouge pour Jonction Tube Rainure Joint EPDM;B5231A914;100;;U
-SA045086;Collier;;ATLANTIC ROBINETTERIE;Collier Flexible Peint en Rouge pour Jonction Tube Rainure Joint EPDM;B5231A914;125;;U
-SA045087;Collier;;ATLANTIC ROBINETTERIE;Collier Flexible Peint en Rouge pour Jonction Tube Rainure Joint EPDM;B5231A914;150;;U
-SA045088;Collier;;ATLANTIC ROBINETTERIE;Collier Flexible Peint en Rouge pour Jonction Tube Rainure Joint EPDM;B5231A914;200;;U
-SA045093;Collier;;ATLANTIC ROBINETTERIE;Collier Flexible Peint en Rouge pour Jonction Tube Rainure Joint EPDM;B5231A914;50;;U
-SA045096;Collier;;ATLANTIC ROBINETTERIE;Collier Flexible Peint en Rouge pour Jonction Tube Rainure Joint EPDM;B5231A914;100;;U
-SA045100;Collier;;ATLANTIC ROBINETTERIE;Collier Flexible Peint en Rouge pour Jonction Tube Rainure Joint EPDM;B5231A914;250;;U
-SA045081;Collier;;ATLANTIC ROBINETTERIE;Collier Flexible Peint en Rouge pour Jonction Tube Rainure Joint EPDM;B5231A914;40;;U
-6000001643;Collier Omega;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;100;;U
+5000003493;Collier;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;150;;U
+6000001060;Collier;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;200;;U
+5000014685;Collier;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;150;;U
+70820075;Collier;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;65;;U
+500005424;Collier;;Stimy;Collier Type Étrier Inox;;200;;U
+SA043365;Collier;;ATLANTIC ROBINETTERIE;Collier Rigide Peint en Rouge pour Jonction Tube Rainure avec Joint;B5231A912;50;;U
+SA043371;Collier;;ATLANTIC ROBINETTERIE;Collier Rigide Peint en Rouge pour Jonction Tube Rainure avec Joint;B5231A912;200;;U
+SA045104;Collier;;ATLANTIC ROBINETTERIE;Collier Galvanisé Rigide de Jonction pour Tube Rainure Joint;B5231A913;50;;U
+SA043364;Collier;;ATLANTIC ROBINETTERIE;Collier Rigide Peint en Rouge pour Jonction Tube Rainure avec Joint;B5231A912;40;8,8;U
+SA043366;Collier;;ATLANTIC ROBINETTERIE;Collier Rigide Peint en Rouge pour Jonction Tube Rainure avec Joint;B5231A912;65;;U
+SA043367;Collier;;ATLANTIC ROBINETTERIE;Collier Rigide Peint en Rouge pour Jonction Tube Rainure avec Joint;B5231A912;80;;U
+SA045111;Collier;;ATLANTIC ROBINETTERIE;Collier Galvanisé Rigide de Jonction pour Tube Rainure Joint;B5231A913;250;;U
+500003544;Collier;;Chouteau;Collier Omega Ø90;;80;;U
+500003542;Collier;;Chouteau;Collier Omega Ø75;;65;;U
+500003541;Collier;;Chouteau;Collier Omega Ø63;;50;;U
+500003540;Collier;;Chouteau;Collier Omega Ø50;;40;;U
+500003550;Collier;;Chouteau;Collier Omega Ø315;;300;;U
+6000000504;Collier;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;250;;U
+500003549;Collier;;Chouteau;Collier Omega Ø225;;200;;U
+6000000459;Collier;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;200;;U
+70820162;Collier;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;150;;U
+500003547;Collier;;Chouteau;Collier Omega Ø160;;150;;U
+500003546;Collier;;Chouteau;Collier Omega Ø140;;125;;U
+70820111;Collier;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;100;;U
+500003545;Collier;;Chouteau;Collier Omega Ø110;;100;;U
+70820034;Collier;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;25;;U
+70820041;Collier;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;32;;U
+6000000505;Collier;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;300;;U
+6000000506;Collier;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;400;;U
+70820024;Collier;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;15;;U
+70820030;Collier;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;20;;U
+70820036;Collier;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;25;;U
+70820046;Collier;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;32;;U
+70820051;Collier;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;40;;U
+70820063;Collier;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;50;;U
+70820079;Collier;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;65;;U
+70820092;Collier;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;80;;U
+70820118;Collier;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;100;;U
+70820143;Collier;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;125;;U
+70820172;Collier;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;150;;U
+70820223;Collier;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;200;;U
+70820278;Collier;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;250;;U
+70820329;Collier;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;300;;U
+70820362;Collier;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;350;;U
+70820413;Collier;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;400;;U
+EF000049;Collier;;SN HYDRO;Collier Moule Simple en Polypropylène - Type Serrage;B2211R301;60;;U
+SA044968;Collier;;Mupro;Support Isolant et Collier Demi-Coquille Type VIII Renforcé pour Gros Diamètres;FISU26IH37ZZ63;50;;U
+SA044969;Collier;;Mupro;Support Isolant et Collier Demi-Coquille Type VIII Renforcé pour Gros Diamètres;FISU26IH37ZZ63;65;;U
+SA044970;Collier;;Mupro;Collier Isolant Renforcé;B2211A132;80;;U
+SA044972;Collier;;Mupro;Collier Isolant Renforcé;B2211A132;100;;U
+SA044973;Collier;;Mupro;Collier Isolant Renforcé;B2211A132;125;;U
+SA044974;Collier;;Mupro;Support Isolant et Collier Demi-Coquille Type VIII Renforcé pour Gros Diamètres;FISU26IH37ZZ63;150;;U
+5000000050;Collier;;Mupro;Collier Isolant Insonorisant Renforcé ;B2211A137;50;;U
+5000000051;Collier;;Mupro;Collier Isolant Insonorisant Renforcé ;B2211A137;65;;U
+5000000052;Collier;;Mupro;Collier Isolant Insonorisant Renforcé ;B2211A137;80;;U
+5000000054;Collier;;Mupro;Collier Isolant Insonorisant Renforcé ;B2211A137;100;;U
+5000000055;Collier;;Mupro;Collier Isolant Insonorisant Renforcé ;B2211A137;125;;U
+5000000056;Collier;;Mupro;Collier Isolant Insonorisant Renforcé ;B2211A137;150;;U
+5000002282;Collier;;Mupro;Collier Isolant Insonorisant;;15;;U
+5000002284;Collier;;Mupro;Collier Isolant Insonorisant;;20;;U
+5000002285;Collier;;Mupro;Collier Isolant Insonorisant;;25;;U
+5000002286;Collier;;Mupro;Collier Isolant Insonorisant;;32;;U
+5000002287;Collier;;Mupro;Collier Isolant Insonorisant;;40;;U
+SA025824;Collier;;SN HYDRO/ AUTRES;Support Isolant Type VIII et Collier Demi-Coquille ;B2211A117;15;D22;U
+SA025825;Collier;;SN HYDRO/ AUTRES;Support Isolant Type VIII et Collier Demi-Coquille ;B2211A117;20;;U
+SA025829;Collier;;SN HYDRO/ AUTRES;Support Isolant Type VIII et Collier Demi-Coquille ;B2211A117;25;;U
+SA025831;Collier;;SN HYDRO/ AUTRES;Support Isolant Type VIII et Collier Demi-Coquille ;B2211A117;32;;U
+SA025832;Collier;;SN HYDRO/ AUTRES;Support Isolant Type VIII et Collier Demi-Coquille ;B2211A117;40;;U
+SA045080;Collier;;ATLANTIC ROBINETTERIE;Collier Flexible Peint en Rouge pour Jonction Tube Rainure Joint;B5231A914;32;;U
+SA045082;Collier;;ATLANTIC ROBINETTERIE;Collier Flexible Peint en Rouge pour Jonction Tube Rainure Joint;B5231A914;50;;U
+SA045083;Collier;;ATLANTIC ROBINETTERIE;Collier Flexible Peint en Rouge pour Jonction Tube Rainure Joint;B5231A914;65;;U
+SA045084;Collier;;ATLANTIC ROBINETTERIE;Collier Flexible Peint en Rouge pour Jonction Tube Rainure Joint;B5231A914;80;;U
+SA045085;Collier;;ATLANTIC ROBINETTERIE;Collier Flexible Peint en Rouge pour Jonction Tube Rainure Joint;B5231A914;100;;U
+SA045086;Collier;;ATLANTIC ROBINETTERIE;Collier Flexible Peint en Rouge pour Jonction Tube Rainure Joint;B5231A914;125;;U
+SA045087;Collier;;ATLANTIC ROBINETTERIE;Collier Flexible Peint en Rouge pour Jonction Tube Rainure Joint;B5231A914;150;;U
+SA045088;Collier;;ATLANTIC ROBINETTERIE;Collier Flexible Peint en Rouge pour Jonction Tube Rainure Joint;B5231A914;200;;U
+SA045093;Collier;;ATLANTIC ROBINETTERIE;Collier Flexible Peint en Rouge pour Jonction Tube Rainure Joint;B5231A914;50;;U
+SA045096;Collier;;ATLANTIC ROBINETTERIE;Collier Flexible Peint en Rouge pour Jonction Tube Rainure Joint;B5231A914;100;;U
+SA045100;Collier;;ATLANTIC ROBINETTERIE;Collier Flexible Peint en Rouge pour Jonction Tube Rainure Joint;B5231A914;250;;U
+SA045081;Collier;;ATLANTIC ROBINETTERIE;Collier Flexible Peint en Rouge pour Jonction Tube Rainure Joint;B5231A914;40;;U
+6000001643;Collier;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;100;;U
 SA030728;Collier;;Sonafi;Collier à une Fixation avec Bande en Caoutchouc;B2211A122;20;Ø22;U
 SA030729;Collier;;Sonafi;Collier à une Fixation avec Bande en Caoutchouc;B2211A122; Dn20-Ø25;;U
 3424898;Collier;;Chouteau;Collier Acier à Deux Trous pour Tuyaux Calorifuges;B2211A110;400;;U
@@ -1109,50 +1109,50 @@ SA022897;Collier;;Chouteau;Collier Acier à Deux Trous pour Tuyaux Calorifuges;B
 6000000561;Collier;;Chouteau;Collier Acier à Deux Trous pour Tuyaux Calorifuges;B2211A110;700;;U
 SA040786;Supportage;;Chouteau;Collier Acier à Deux Trous pour Tuyaux Calorifuges avec Garniture Insonorisante;B2211A128;400;;U
 SA040789;Supportage;;Chouteau;Collier Acier à Deux Trous pour Tuyaux Calorifuges avec Garniture Insonorisante;B2211A128;600;;U
-5000001493;Collier   ;;SN Hydro;Collier Acier à Demi-Coquilles avec Garniture Insonorisante pour Tuyau Plastique;FICO02SD42ZZ00;25;;U
-5000001494;Collier   ;;SN Hydro;Collier Acier à Demi-Coquilles avec Garniture Insonorisante pour Tuyau Plastique;FICO02SD42ZZ00;32;;U
-5000001495;Collier   ;;SN Hydro;Collier Acier à Demi-Coquilles avec Garniture Insonorisante pour Tuyau Plastique;FICO02SD42ZZ00;40;;U
-5000001496;Collier   ;;SN Hydro;Collier Acier à Demi-Coquilles avec Garniture Insonorisante pour Tuyau Plastique;FICO02SD42ZZ00;50;;U
-5000001497;Collier   ;;SN Hydro;Collier Acier à Demi-Coquilles avec Garniture Insonorisante pour Tuyau Plastique;FICO02SD42ZZ00;65;;U
-5000001498;Collier   ;;SN Hydro;Collier Acier à Demi-Coquilles avec Garniture Insonorisante pour Tuyau Plastique;FICO02SD42ZZ00;80;;U
-5000001499;Collier   ;;SN Hydro;Collier Acier à Demi-Coquilles avec Garniture Insonorisante pour Tuyau Plastique;FICO02SD42ZZ00;100;;U
-6000000520;Collier   ;;SN Hydro;Colliers Acier à Demi-Coquilles à Deux Vis avec Garniture Insonorisante;FICO02SD42ZZ83;50;;U
-6000000521;Collier   ;;SN Hydro;Colliers Acier à Demi-Coquilles à Deux Vis avec Garniture Insonorisante;FICO02SD42ZZ83;65;;U
-6000000522;Collier   ;;SN Hydro;Colliers Acier à Demi-Coquilles à Deux Vis avec Garniture Insonorisante;FICO02SD42ZZ83;80;;U
-6000000523;Collier   ;;SN Hydro;Colliers Acier à Demi-Coquilles à Deux Vis avec Garniture Insonorisante;FICO02SD42ZZ83;100;;U
-6000000524;Collier   ;;SN Hydro;Colliers Acier à Demi-Coquilles à Deux Vis avec Garniture Insonorisante;FICO02SD42ZZ83;125;;U
-6000000528;Collier   ;;SN Hydro;Colliers Acier à Une Vis avec Garniture Insonorisante;FICO02SS42ZZ83;25;;U
-6000000529;Collier   ;;SN Hydro;Colliers Acier à Une Vis avec Garniture Insonorisante;FICO02SS42ZZ83;32;;U
+5000001493;Collier;;SN Hydro;Collier Acier à Demi-Coquilles avec Garniture Insonorisante pour Tuyau Plastique;FICO02SD42ZZ00;25;;U
+5000001494;Collier;;SN Hydro;Collier Acier à Demi-Coquilles avec Garniture Insonorisante pour Tuyau Plastique;FICO02SD42ZZ00;32;;U
+5000001495;Collier;;SN Hydro;Collier Acier à Demi-Coquilles avec Garniture Insonorisante pour Tuyau Plastique;FICO02SD42ZZ00;40;;U
+5000001496;Collier;;SN Hydro;Collier Acier à Demi-Coquilles avec Garniture Insonorisante pour Tuyau Plastique;FICO02SD42ZZ00;50;;U
+5000001497;Collier;;SN Hydro;Collier Acier à Demi-Coquilles avec Garniture Insonorisante pour Tuyau Plastique;FICO02SD42ZZ00;65;;U
+5000001498;Collier;;SN Hydro;Collier Acier à Demi-Coquilles avec Garniture Insonorisante pour Tuyau Plastique;FICO02SD42ZZ00;80;;U
+5000001499;Collier;;SN Hydro;Collier Acier à Demi-Coquilles avec Garniture Insonorisante pour Tuyau Plastique;FICO02SD42ZZ00;100;;U
+6000000520;Collier;;SN Hydro;Colliers Acier à Demi-Coquilles à Deux Vis avec Garniture Insonorisante;FICO02SD42ZZ83;50;;U
+6000000521;Collier;;SN Hydro;Colliers Acier à Demi-Coquilles à Deux Vis avec Garniture Insonorisante;FICO02SD42ZZ83;65;;U
+6000000522;Collier;;SN Hydro;Colliers Acier à Demi-Coquilles à Deux Vis avec Garniture Insonorisante;FICO02SD42ZZ83;80;;U
+6000000523;Collier;;SN Hydro;Colliers Acier à Demi-Coquilles à Deux Vis avec Garniture Insonorisante;FICO02SD42ZZ83;100;;U
+6000000524;Collier;;SN Hydro;Colliers Acier à Demi-Coquilles à Deux Vis avec Garniture Insonorisante;FICO02SD42ZZ83;125;;U
+6000000528;Collier;;SN Hydro;Colliers Acier à Une Vis avec Garniture Insonorisante;FICO02SS42ZZ83;25;;U
+6000000529;Collier;;SN Hydro;Colliers Acier à Une Vis avec Garniture Insonorisante;FICO02SS42ZZ83;32;;U
 6000000530;Collier;;SN Hydro;Colliers Acier à Une Vis avec Garniture Insonorisante;FICO02SS42ZZ83;40;;U
 5000007657;Collier;;Sonafi;Collier à une Fixation avec Bande en Caoutchouc;B2211A122;50;Ø54;U
 SA030981;Collier;;Sonafi;Collier à une Fixation avec Bande en Caoutchouc;B2211A122;32;Ø35;U
 SA030731;Collier;;Sonafi;Collier à une Fixation avec Bande en Caoutchouc;B2211A122;40;Ø42;U
 SA030980;Collier;;Sonafi;Collier à une Fixation avec Bande en Caoutchouc;B2211A122;25;Ø28;U
-3459012;Collet Inox;;Arcus;Collets Embouts en Acier Inox 316L - PN10;B5141A501;50;4;U
-3459047;Collet Inox;;Arcus;Collets Embouts en Acier Inox 316L - PN11;B5141A501;100;5;U
-3459004;Collet Inox;;Arcus;Collets Embouts en Acier Inox 316L - PN12;B5141A501;40;4;U
-SA000539;Collet Inox;;Arcus;Collets Embouts en Acier Inox 316L - PN13;B5141A501;32;4;U
-SA042212;Collet PVC;;ATLANTIC ROBINETTERIE;Collet Strié PVC-U Non Plastifié ( Série Pression);B5141R504;250(280);;U
-SA035690;Collet PVC;;ATLANTIC ROBINETTERIE;Collet Strié PVC-U Non Plastifié ( Série Pression);B5141R504;25;;U
-SA035692;Collet PVC;;ATLANTIC ROBINETTERIE;Collet Strié PVC-U Non Plastifié ( Série Pression);B5141R504;32;;U
-SA035693;Collet PVC;;ATLANTIC ROBINETTERIE;Collet Strié PVC-U Non Plastifié ( Série Pression);B5141R504;40;;U
-SA035695;Collet PVC;;ATLANTIC ROBINETTERIE;Collet Strié PVC-U Non Plastifié ( Série Pression);B5141R504;50;;U
-SA035696;Collet PVC;;ATLANTIC ROBINETTERIE;Collet Strié PVC-U Non Plastifié ( Série Pression);B5141R504;65;;U
-SA035697;Collet PVC;;ATLANTIC ROBINETTERIE;Collet Strié PVC-U Non Plastifié ( Série Pression);B5141R504;80;;U
-SA035699;Collet PVC;;ATLANTIC ROBINETTERIE;Collet Strié PVC-U Non Plastifié ( Série Pression);B5141R504;100;;U
-SA035700;Collet PVC;;ATLANTIC ROBINETTERIE;Collet Strié PVC-U Non Plastifié ( Série Pression);B5141R504;125;;U
-SA035701;Collet PVC;;ATLANTIC ROBINETTERIE;Collet Strié PVC-U Non Plastifié ( Série Pression);B5141R504;150;;U
-SA042210;Collet PVC;;ATLANTIC ROBINETTERIE;Collet Strié PVC-U Non Plastifié ( Série Pression);B5141R504;200;;U
-SA046681;Collet PE;;ATLANTIC ROBINETTERIE;Collet Électro-Soudable PE100 SDR17.6 Polyéthylène 10 Bar;B5141R304;80;5,4;U
-SA046685;Collet PE;;ATLANTIC ROBINETTERIE;Collet Électro-Soudable PE100 SDR17.6 Polyéthylène 10 Bar;B5141R304;200;13,4;U
-SA046682;Collet PE;;ATLANTIC ROBINETTERIE;Collet Électro-Soudable PE100 SDR17.6 Polyéthylène 10 Bar;B5141R304;100;6,6;U
-SA042958;Collet PE;;ATLANTIC ROBINETTERIE;Collet Électro-Soudable PE100 SDR11 Polyéthylène 16 Bar;B5141R303;150;14,6;U
-SA042959;Collet PE;;ATLANTIC ROBINETTERIE;Collet Électro-Soudable PE100 SDR11 Polyéthylène 16 Bar;B5141R303;200;20,5;U
-SA042957;Collet PE;;ATLANTIC ROBINETTERIE;Collet Électro-Soudable PE100 SDR11 Polyéthylène 16 Bar;B5141R303;125;12,7;U
-SA042956;Collet PE;;ATLANTIC ROBINETTERIE;Collet Électro-Soudable PE100 SDR11 Polyéthylène 16 Bar;B5141R303;100;10;U
-SA042955;Collet PE;;ATLANTIC ROBINETTERIE;Collet Électro-Soudable PE100 SDR11 Polyéthylène 16 Bar;B5141R303;80;8,2;U
-SA042954;Collet PE;;ATLANTIC ROBINETTERIE;Collet Électro-Soudable PE100 SDR11 Polyéthylène 16 Bar;B5141R303;65;6,8;U
-SA046957;Collet PB;;ATLANTIC ROBINETTERIE;Collet à Emboiter Souder par Électrofusion en Polybutène (PB);B5141R301;150;;U
+3459012;Collet;;Arcus;Collets Embouts en Acier Inox 316L - PN10;B5141A501;50;4;U
+3459047;Collet;;Arcus;Collets Embouts en Acier Inox 316L - PN11;B5141A501;100;5;U
+3459004;Collet;;Arcus;Collets Embouts en Acier Inox 316L - PN12;B5141A501;40;4;U
+SA000539;Collet;;Arcus;Collets Embouts en Acier Inox 316L - PN13;B5141A501;32;4;U
+SA042212;Collet;;ATLANTIC ROBINETTERIE;Collet Strié PVC-U Non Plastifié ( Série Pression);B5141R504;250(280);;U
+SA035690;Collet;;ATLANTIC ROBINETTERIE;Collet Strié PVC-U Non Plastifié ( Série Pression);B5141R504;25;;U
+SA035692;Collet;;ATLANTIC ROBINETTERIE;Collet Strié PVC-U Non Plastifié ( Série Pression);B5141R504;32;;U
+SA035693;Collet;;ATLANTIC ROBINETTERIE;Collet Strié PVC-U Non Plastifié ( Série Pression);B5141R504;40;;U
+SA035695;Collet;;ATLANTIC ROBINETTERIE;Collet Strié PVC-U Non Plastifié ( Série Pression);B5141R504;50;;U
+SA035696;Collet;;ATLANTIC ROBINETTERIE;Collet Strié PVC-U Non Plastifié ( Série Pression);B5141R504;65;;U
+SA035697;Collet;;ATLANTIC ROBINETTERIE;Collet Strié PVC-U Non Plastifié ( Série Pression);B5141R504;80;;U
+SA035699;Collet;;ATLANTIC ROBINETTERIE;Collet Strié PVC-U Non Plastifié ( Série Pression);B5141R504;100;;U
+SA035700;Collet;;ATLANTIC ROBINETTERIE;Collet Strié PVC-U Non Plastifié ( Série Pression);B5141R504;125;;U
+SA035701;Collet;;ATLANTIC ROBINETTERIE;Collet Strié PVC-U Non Plastifié ( Série Pression);B5141R504;150;;U
+SA042210;Collet;;ATLANTIC ROBINETTERIE;Collet Strié PVC-U Non Plastifié ( Série Pression);B5141R504;200;;U
+SA046681;Collet;;ATLANTIC ROBINETTERIE;Collet Électro-Soudable PE100 SDR17.6 Polyéthylène 10 Bar;B5141R304;80;5,4;U
+SA046685;Collet;;ATLANTIC ROBINETTERIE;Collet Électro-Soudable PE100 SDR17.6 Polyéthylène 10 Bar;B5141R304;200;13,4;U
+SA046682;Collet;;ATLANTIC ROBINETTERIE;Collet Électro-Soudable PE100 SDR17.6 Polyéthylène 10 Bar;B5141R304;100;6,6;U
+SA042958;Collet;;ATLANTIC ROBINETTERIE;Collet Électro-Soudable PE100 SDR11 Polyéthylène 16 Bar;B5141R303;150;14,6;U
+SA042959;Collet;;ATLANTIC ROBINETTERIE;Collet Électro-Soudable PE100 SDR11 Polyéthylène 16 Bar;B5141R303;200;20,5;U
+SA042957;Collet;;ATLANTIC ROBINETTERIE;Collet Électro-Soudable PE100 SDR11 Polyéthylène 16 Bar;B5141R303;125;12,7;U
+SA042956;Collet;;ATLANTIC ROBINETTERIE;Collet Électro-Soudable PE100 SDR11 Polyéthylène 16 Bar;B5141R303;100;10;U
+SA042955;Collet;;ATLANTIC ROBINETTERIE;Collet Électro-Soudable PE100 SDR11 Polyéthylène 16 Bar;B5141R303;80;8,2;U
+SA042954;Collet;;ATLANTIC ROBINETTERIE;Collet Électro-Soudable PE100 SDR11 Polyéthylène 16 Bar;B5141R303;65;6,8;U
+SA046957;Collet;;ATLANTIC ROBINETTERIE;Collet à Emboiter Souder par Électrofusion en Polybutène (PB);B5141R301;150;;U
 SA024061;Bride;;Arcus;Bride à Colerette à Souder en Acier Inoxydable PN40 - pour Tubes Schedule 10S;B5213A514;32;2,77;U
 SA024062;Bride;;Arcus;Bride à Colerette à Souder en Acier Inoxydable PN40 - pour Tubes Schedule 10S;B5213A514;40;2,77;U
 SA036668;Bride;;Arcus;Brides à Colerette à Souder - Acier Inoxydable - PN16 - Schedule 10S;B5213A513;50;2,77;U
@@ -1440,8 +1440,8 @@ SA038361;Raccord;;ATLANTIC ROBINETTERIE;Adaptateur Fileté PVC-U Non Plastifié 
 SA014641;Raccord;;Sanimat / Prolians;Raccord Union Mâle en Bronze Femelle par Sertissage/Mâle Fileté;B5252U304;Ø54Xdn50;;U
 SA014640;Raccord;;Sanimat / Prolians;Raccord Union Mâle en Bronze Femelle par Sertissage/Mâle Fileté;B5252U304;Ø42Xdn40;;U
 SA014639;Raccord;;Sanimat / Prolians;Raccord Union Mâle en Bronze Femelle par Sertissage/Mâle Fileté;B5252U304;Ø35Xdn32;;U
-5000015678;Raccord;;ATLANTIC ROBINETTERIE;3 Pièces Femelle en Polyéthylène PE100-Embout pour Fusion-Femelle Gaz Cylindrique - Collet Long avec Gorge et Joints;COUFR304A2PA320HB;32;;U
-36227306;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;250x150;6,3;U
+5000015678;Raccord;;ATLANTIC ROBINETTERIE;3 Pièces Femelle en Polyéthylène PE100-Embout pour Fusion-Femelle Gaz Cylindrique - Collet Long avec Gorge et Joint;COUFR304A2PA320HB;32;;U
+36227306;Réduction;;Saic;Réduction;B5123A120;250x150;6,3;U
 SA039480;;;Chantier de l'Atlantique;Détendeur;B7215U202;25;;U
 SA039502;Robinetterie;;Chantier de l'Atlantique;Détendeur Type PR516 avec Pot de Condensation;B7215A102;15;;U
 SA026068;Bride;;Saic;Brides Plates à Souder Acier - PN16;B5211A102;80;20;U
@@ -1454,7 +1454,7 @@ SA005461;Bossage;;ATLANTIC ROBINETTERIE;Bossage Taraudé Gaz Cylindrique en Acie
 3459896;Coude;;Arcus;Courbes 90° Long Rayon à Souder en Acier Inoxydable (TP 316L), Schedule 10S;B5121A502;25;2,77;U
 5000017090;Tube;Inox;Arcus;Tube sans Soudure en Acier Inox TP 316L selon ASTM A312/A312M- Chanfreiné - 10S;A1120A510;125;3,4;M
 SA027664;Bride;;Arcus;Brides à Colerette à Souder - Acier Inoxydable - PN16 - Schedule 10S;B5213A513;125;3,4;U
-3459381;Réduction Concentrique;;Arcus;Réductions Concentriques, à Souder en Acier Inoxydable (WP 316L), pour Tubes Schedule 10S;B5123A501;40 x 25;2,77;U
+3459381;Réduction;;Arcus;Réduction;B5123A501;40 x 25;2,77;U
 5000017089;Tube;Inox;Arcus;Tube sans Soudure en Acier Inox TP 316L selon ASTM A312/A312M- Chanfreiné - 10S;A1120A510;100;3,05;M
 5000017617;Collier;Acier;Stimy;Collier en Acier S235 J - Deux Trous - Contrainte au Choc Sous-Marins;FICO01DT00ZZSH;125;;U
 EF000071;Collier;Acier;Stauff;Collier Moule Simple en Polypropylène avec Insert Caoutchouc;B2211R312;32;;U
@@ -1464,11 +1464,11 @@ EF000072;Collier;Acier;Stauff;Collier Moule Simple en Polypropylène avec Insert
 5000017616;Collier;Acier;Stimy;Collier en Acier S235 J - Deux Trous - Contrainte au Choc Sous-Marins;FICO01DT00ZZSH;100;;U
 5000015692;Tube;Inox;Arcus;Tube sans Soudure en Acier Inox TP 316L selon ASTM A312/A312M- Chanfreiné - 10S;A1120A510;50;2,77;M
 5000017086;Tube;Inox;Arcus;Tube sans Soudure en Acier Inox TP 316L selon ASTM A312/A312M- Chanfreiné - 10S;A1120A510;80;3,05;M
-3459586;Réduction Concentrique;;Arcus;Réductions Concentriques, à Souder en Acier Inoxydable (WP 316L), pour Tubes Schedule 10S;B5123A501;125 x 80;3,4;U
+3459586;Réduction;;Arcus;Réduction;B5123A501;125 x 80;3,4;U
 3459942;Coude;;Arcus;Courbes 90° Long Rayon à Souder en Acier Inoxydable (TP 316L), Schedule 10S;B5121A502;80;3,05;U
 3459756;Coude;;Arcus;Coude 45° Long Rayon BW Inox 316L Schedule 10S;EL4LA505BEID10200;80;;U
-3459497;Réduction Concentrique;;Arcus;Réductions Concentriques, à Souder en Acier Inoxydable (WP 316L), pour Tubes Schedule 10S;B5123A501;80 x 65;3,05;U
-3459454;Réduction Concentrique;;Arcus;Réductions Concentriques, à Souder en Acier Inoxydable (WP 316L), pour Tubes Schedule 10S;B5123A501;65 x 50;3,05;U
+3459497;Réduction;;Arcus;Réduction;B5123A501;80 x 65;3,05;U
+3459454;Réduction;;Arcus;Réduction;B5123A501;65 x 50;3,05;U
 5000015693;Tube;Inox;Arcus;Tube sans Soudure en Acier Inox TP 316L selon ASTM A312/A312M- Chanfreiné - 10S;A1120A510;65;3,05;M
 5000017613;Collier;Acier;Stimy;Collier en Acier S235 J - Deux Trous - Contrainte au Choc Sous-Marins;FICO01DT00ZZSH;50;;U
 5000017615;Collier;Acier;Stimy;Collier en Acier S235 J - Deux Trous - Contrainte au Choc Sous-Marins;FICO01DT00ZZSH;80;;U
@@ -1476,7 +1476,7 @@ EF000072;Collier;Acier;Stauff;Collier Moule Simple en Polypropylène avec Insert
 1012060;Tôle;Acier;;Tôles Acier pour Usages Généraux 2000x1000;A4113A105;0;6;M
 SA005462;Bossage;;ATLANTIC ROBINETTERIE;Bossage Taraudé Gaz Cylindrique en Acier Inoxydable 316L;B5171A513;10;;U
 5000005088;Raccord;;Saic/ServHydrau;3 Pièces Mâle en Acier ASTM A 105 Emmanché Soudé-Mâle Filetage Gaz Cylindrique;B5232A101;25;;U
-48801020;Collier ;;SN HYDRO;Collier Moule Simple en Polypropylène - Type Serrage;B2211R301;15;;U
+48801020;Collier;;SN HYDRO;Collier Moule Simple en Polypropylène - Type Serrage;B2211R301;15;;U
 5000001615;Collier;;;Collier en Aluminium Série Lourde - Type Serrage;FICO23SE00CA85;32;;U
 70900050;Platine;;Mecasoud / Picaud;Platine de Renforcement;B2224A101;50x50;6;U
 SA048131;Cadre Parquet;Acier;;Cadres pour Parquets Machine en Tôle Charges Moyenne et Lourde;B9420A112;1005x1005;;U
@@ -1485,40 +1485,40 @@ SA048131;Cadre Parquet;Acier;;Cadres pour Parquets Machine en Tôle Charges Moye
 5000017048;Tube;Inox;Prolians;Tube sans Soudure Inox 316L - Viega Sanpress;PISLA510BEID009GX;25;1,2;M
 5000017085;Tube;Inox;Prolians;Tube sans Soudure Inox 316L - Viega Sanpress;PISLA510BEID009GX;80;2;M
 5000017082;Tube;Inox;Prolians;Tube sans Soudure Inox 316L - Viega Sanpress;PISLA510BEID009GX;50;1,5;M
-5000017186;Coude;;Prolians;Coude 45° à Sertir Viega Sanpress Inox 316L Joint EPDM;EL4SA528P8ID00009;80;;U
+5000017186;Coude;;Prolians;Coude 45° à Sertir Viega Sanpress Inox 316L Joint;EL4SA528P8ID00009;80;;U
 5000017208;Té;;Prolians;Té Réduit en Acier Inox 316 à Sertir;BRRTA528P8ID00009;50x25;;U
-5000017168;Coude;;Prolians;Coude à Sertir Viega Sanpress Inox 316L Joint EPDM;EL9SA528P8ID00009;50;;U
+5000017168;Coude;;Prolians;Coude à Sertir Viega Sanpress Inox 316L Joint;EL9SA528P8ID00009;50;;U
 5000017081;Tube;Inox;Prolians;Tube sans Soudure Inox 316L - Viega Sanpress;PISLA510BEID009GX;40;1,5;M
-5000017144;Réduction Concentrique;;Prolians;Réduction Mâle Femelle en Acier Inox 316 à Sertir - Viega;RECOA528A4P800009;50x40;;U
-5000017183;Coude;;Prolians;Coude 45° à Sertir Viega Sanpress Inox 316L Joint EPDM;EL4SA528P8ID00009;50;;U
+5000017144;Réduction;;Prolians;Réduction;RECOA528A4P800009;50x40;;U
+5000017183;Coude;;Prolians;Coude 45° à Sertir Viega Sanpress Inox 316L Joint;EL4SA528P8ID00009;50;;U
 5000017167;Raccord;;Prolians;Raccord Tube-Tube en Acier Inox 316 à Sertir;COCOA528P8ID00009;50;;U
 5000017205;Té;;Prolians;Té Réduit en Acier Inox 316 à Sertir;BRRTA528P8ID00009;40x25;;U
 5000017080;Tube;Inox;Prolians;Tube sans Soudure Inox 316L - Viega Sanpress;PISLA510BEID009GX;32;1,5;M
-5000017141;Réduction Concentrique;;Prolians;Réduction Mâle Femelle en Acier Inox 316 à Sertir - Viega;RECOA528A4P800009;40x32;;U
+5000017141;Réduction;;Prolians;Réduction;RECOA528A4P800009;40x32;;U
 5000017161;Raccord;;Prolians;Raccord Tube-Tube en Acier Inox 316 à Sertir;COCOA528P8ID00009;40;;U
 5000017202;Té;;Prolians;Té Réduit en Acier Inox 316 à Sertir;BRRTA528P8ID00009;32x25;;U
-5000017181;Coude;;Prolians;Coude 45° à Sertir Viega Sanpress Inox 316L Joint EPDM;EL4SA528P8ID00009;32;;U
-5000017165;Coude;;Prolians;Coude à Sertir Viega Sanpress Inox 316L Joint EPDM;EL9SA528P8ID00009;32;;U
+5000017181;Coude;;Prolians;Coude 45° à Sertir Viega Sanpress Inox 316L Joint;EL4SA528P8ID00009;32;;U
+5000017165;Coude;;Prolians;Coude à Sertir Viega Sanpress Inox 316L Joint;EL9SA528P8ID00009;32;;U
 5000017223;Té;;Prolians;Té Réduit en Acier Inox 316 à Sertir;BRRTA528P8ID00009;80x25;;U
-5000017150;Réduction Concentrique;;Prolians;Réduction Mâle Femelle en Acier Inox 316 à Sertir - Viega;RECOA528A4P800009;80x65;;U
+5000017150;Réduction;;Prolians;Réduction;RECOA528A4P800009;80x65;;U
 5000017174;Raccord;;Prolians;Raccord Tube-Tube en Acier Inox 316 à Sertir;COCOA528P8ID00009;80;;U
-5000017164;Coude;;Prolians;Coude à Sertir Viega Sanpress Inox 316L Joint EPDM;EL9SA528P8ID00009;25;;U
-5000017173;Coude;;Prolians;Coude à Sertir Viega Sanpress Inox 316L Joint EPDM;EL9SA528P8ID00009;80;;U
+5000017164;Coude;;Prolians;Coude à Sertir Viega Sanpress Inox 316L Joint;EL9SA528P8ID00009;25;;U
+5000017173;Coude;;Prolians;Coude à Sertir Viega Sanpress Inox 316L Joint;EL9SA528P8ID00009;80;;U
 5000017226;Té;;Prolians;Té Réduit en Acier Inox 316 à Sertir;BRRTA528P8ID00009;80x50;;U
-5000017182;Coude;;Prolians;Coude 45° à Sertir Viega Sanpress Inox 316L Joint EPDM;EL4SA528P8ID00009;40;;U
+5000017182;Coude;;Prolians;Coude 45° à Sertir Viega Sanpress Inox 316L Joint;EL4SA528P8ID00009;40;;U
 5000017160;Raccord;;Prolians;Raccord Tube-Tube en Acier Inox 316 à Sertir;COCOA528P8ID00009;32;;U
-5000017148;Réduction Concentrique;;Prolians;Réduction Mâle Femelle en Acier Inox 316 à Sertir - Viega;RECOA528A4P800009;80x50;;U
-5000017143;Réduction Concentrique;;Prolians;Réduction Mâle Femelle en Acier Inox 316 à Sertir - Viega;RECOA528A4P800009;50x32;;U
-5000017106;Té;;Prolians;Té Égal en Acier Inox 316 - Jonction à Bague - Joint EPDM;BRETA528P8ID00009;32x32;;U
+5000017148;Réduction;;Prolians;Réduction;RECOA528A4P800009;80x50;;U
+5000017143;Réduction;;Prolians;Réduction;RECOA528A4P800009;50x32;;U
+5000017106;Té;;Prolians;Té Égal en Acier Inox 316 - Jonction à Bague - Joint;BRETA528P8ID00009;32x32;;U
 13133;Cornière;Acier;Prolians;Cornières à Ailes Égales et à Coins Arrondis Laminées à Chaud;A2111A102;30x30;4;ML
-SA036889;Collier Omega;;Stimy;Collier en Acier S235J - Deux Trous - Traitement Huilé;B2211A114;20;;U
-SA036893;Collier Omega;;Stimy;Collier en Acier S235J - Deux Trous - Traitement Huilé;B2211A114;32;;U
-SA036895;Collier Omega;;Stimy;Collier en Acier S235J - Deux Trous - Traitement Huilé;B2211A114;40;;U
-SA036897;Collier Omega;;Stimy;Collier en Acier S235J - Deux Trous - Traitement Huilé;B2211A114;50;;U
-SA036899;Collier Omega;;Stimy;Collier en Acier S235J - Deux Trous - Traitement Huilé;B2211A114;65;;U
-SA036904;Collier Omega;;Stimy;Collier en Acier S235J - Deux Trous - Traitement Huilé;B2211A114;125;;U
-SA036906;Collier Omega;;Stimy;Collier en Acier S235J - Deux Trous - Traitement Huilé;B2211A114;150;;U
-SA036911;Collier Omega;;Stimy;Collier en Acier S235J - Deux Trous - Traitement Huilé;B2211A114;250;;U
+SA036889;Collier;;Stimy;Collier en Acier S235J - Deux Trous - Traitement Huilé;B2211A114;20;;U
+SA036893;Collier;;Stimy;Collier en Acier S235J - Deux Trous - Traitement Huilé;B2211A114;32;;U
+SA036895;Collier;;Stimy;Collier en Acier S235J - Deux Trous - Traitement Huilé;B2211A114;40;;U
+SA036897;Collier;;Stimy;Collier en Acier S235J - Deux Trous - Traitement Huilé;B2211A114;50;;U
+SA036899;Collier;;Stimy;Collier en Acier S235J - Deux Trous - Traitement Huilé;B2211A114;65;;U
+SA036904;Collier;;Stimy;Collier en Acier S235J - Deux Trous - Traitement Huilé;B2211A114;125;;U
+SA036906;Collier;;Stimy;Collier en Acier S235J - Deux Trous - Traitement Huilé;B2211A114;150;;U
+SA036911;Collier;;Stimy;Collier en Acier S235J - Deux Trous - Traitement Huilé;B2211A114;250;;U
 5000008907;Tube;Acier;Prolians/Autres;Tube Carré Mince Acier - Soudé Électriquement;A3211A102;80x80;4;ML
 35630020;Raccord;;Saic;Manchon à Emmanchement à Souder en Acier Forgé - ANSI B16.11 Série 3000;B5251A201;20;;U
 5000017954;Raccord;;Prolians;Adaptateur Femelle en Acier Inox 316 1.4401 NF EN 10088 - Jonction à Bague - Femelle Filetage Gaz Cylindrique;COAFA528P8PA30909;25x20;;U
@@ -1535,26 +1535,26 @@ SA007349;Rond ;Inox;Prolians;Rond en Acier Inoxydable;A2311A501;10;;M
 6000002734;Vis;;;Vis à Métaux en Laiton - Tête Héxagonale - Fileté;BOVM05TH00ZZFI;8;;U
 6000002721;Écrou;;;Écrous en Laiton - A Oreilles;BOEC05OR00ZZ00;10;;U
 EF 000059;Tôle;Acier;;Tôles Acier pour Usages Généraux 4000x2500;A4113A105;0;10;M
-3459438;Réduction Concentrique;;Arcus;Réductions Concentriques, à Souder en Acier Inoxydable (WP 316L), pour Tubes Schedule 10S;B5123A501;50 x 25 ;2,77;U
-3459569;Réduction Concentrique;;Arcus;Réductions Concentriques, à Souder en Acier Inoxydable (WP 316L), pour Tubes Schedule 10S;B5123A501;100 x 40;3,05;U
-5000017138;Réduction Concentrique;;Prolians;Réduction Mâle Femelle en Acier Inox 316 à Sertir - Viega;RECOA528A4P800009;32x25;;U
+3459438;Réduction;;Arcus;Réduction;B5123A501;50 x 25 ;2,77;U
+3459569;Réduction;;Arcus;Réduction;B5123A501;100 x 40;3,05;U
+5000017138;Réduction;;Prolians;Réduction;RECOA528A4P800009;32x25;;U
 5000017158;Raccord;;Prolians;Raccord Tube-Tube en Acier Inox 316 à Sertir;COCOA528P8ID00009;25;;U
-5000017105;Té;;Prolians;Té Égal en Acier Inox 316 - Jonction à Bague - Joint EPDM - A sertir;BRETA528P8ID00009;25x25;;U
-5000017180;Coude;;Prolians;Coude 45° à Sertir Viega Sanpress Inox 316L Joint EPDM;EL4SA528P8ID00009;25;;U
-3459489;Réduction Concentrique;;Arcus;Réductions Concentriques, à Souder en Acier Inoxydable (WP 316L), pour Tubes Schedule 10S;B5123A501;65 x 25;3,05;U
+5000017105;Té;;Prolians;Té Égal en Acier Inox 316 - Jonction à Bague - Joint;BRETA528P8ID00009;25x25;;U
+5000017180;Coude;;Prolians;Coude 45° à Sertir Viega Sanpress Inox 316L Joint;EL4SA528P8ID00009;25;;U
+3459489;Réduction;;Arcus;Réduction;B5123A501;65 x 25;3,05;U
 70900100;Platine;;Mecasoud / Picaud;Platine de Renforcement;B2224A101;100 x 100;6;U
-3459470;Réduction Concentrique;;Arcus;Réductions Concentriques, à Souder en Acier Inoxydable (WP 316L), pour Tubes Schedule 10S;B5123A501;65 x 32;3,05;U
+3459470;Réduction;;Arcus;Réduction;B5123A501;65 x 32;3,05;U
 3459772;Coude;;Arcus;Coude 45° Long Rayon BW Inox 316L Schedule 10S;EL4LA505BEID10200;125;;U
 SA000122;Raccord;;Arcus;Raccord Mâle en Acier Inoxydable Mâle Fileté Gaz Cylindrique / Femelle à Souder;B5250A501;25;;U
 SA000124;Raccord;;Arcus;Raccord Mâle en Acier Inoxydable Mâle Fileté Gaz Cylindrique / Femelle à Souder;B5250A501;40;;U
-5000017166;Coude;;Prolians;Coude à Sertir Viega Sanpress Inox 316L Joint EPDM;EL9SA528P8ID00009;40;;U
+5000017166;Coude;;Prolians;Coude à Sertir Viega Sanpress Inox 316L Joint;EL9SA528P8ID00009;40;;U
 5000017084;Tube;Inox;Prolians;Tube sans Soudure Inox 316L - Viega Sanpress;PISLA510BEID009GX;65;2;M
 5000017217;Té;;Prolians;Té Réduit en Acier Inox 316 à Sertir;BRRTA528P8ID00009;65x25;;U
-5000017185;Coude;;Prolians;Coude 45° à Sertir Viega Sanpress Inox 316L Joint EPDM;EL4SA528P8ID00009;65;;U
-5000017171;Coude;;Prolians;Coude à Sertir Viega Sanpress Inox 316L Joint EPDM;EL9SA528P8ID00009;65;;U
+5000017185;Coude;;Prolians;Coude 45° à Sertir Viega Sanpress Inox 316L Joint;EL4SA528P8ID00009;65;;U
+5000017171;Coude;;Prolians;Coude à Sertir Viega Sanpress Inox 316L Joint;EL9SA528P8ID00009;65;;U
 5000017219;Té;;Prolians;Té Réduit en Acier Inox 316 à Sertir;BRRTA528P8ID00009;65x40;;U
 5000017172;Raccord;;Prolians;Raccord Tube-Tube en Acier Inox 316 à Sertir;COCOA528P8ID00009;65;;U
-5000017146;Réduction Concentrique;;Prolians;Réduction Mâle Femelle en Acier Inox 316 à Sertir - Viega;RECOA528A4P800009;65x50;;U
+5000017146;Réduction;;Prolians;Réduction;RECOA528A4P800009;65x50;;U
 1016204;Tôle;Acier;;Tôles Acier pour Usages Généraux 6000x2000;A4113A105;0;4;M
 35630025;Raccord;;Saic;Manchon à Emmanchement à Souder en Acier Forgé - ANSI B16.11 Série 3000;B5251A201;25;;U
 2604005;Cornière;Acier;Prolians/Autres;Cornières à Ailes Inégales et à Coins Arrondis Laminées à Chaud;A2112A102;60x40;5;ML
@@ -1566,13 +1566,13 @@ SA000124;Raccord;;Arcus;Raccord Mâle en Acier Inoxydable Mâle Fileté Gaz Cyli
 SA035394;Galette percée;;ATLANTIC ROBINETTERIE;Galette Percée en Acier Inox PN10 - DN40 à 900;B5165A102;200;4;U
 SA037271;Bride;;Saic;Bride à Collerette en Acier P245GH selon NF EN 1092-1- Norme : NF EN 1092-1-PN 16;B5213A812;25;4,5;U
 1667122;Accessoire;;Chouteau;Accessoires sur Extrémité Tuyaux Entonnoir à Souder (Récupération Purges);B5145A130;65;3;U
-36306004;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;50x25;4;U
+36306004;Réduction;;Saic;Réduction;B5123A120;50x25;4;U
 4404204;Tube;Acier;Saic;Tubes sans Soudure en Acier;A1112A110;32;3,6;M
 5000017619;Collier;Acier;Stimy;Collier en Acier S235 J - Deux Trous - Contrainte au Choc Sous-Marins;FICO01DT00ZZSH;200;;U
 SA048199;Robinetterie;;Chantier de l'Atlantique;Clapet de Non Retour à Battant Corps en Fonte PN10 et PN16 à Brides // à Siège Droit;B5318A906;125;;U
-36332307;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;300x150;7,1x4,5;U
-SA039622;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;150x80;4,5x5,6;U
-3459527;Réduction Concentrique;;Arcus;Réductions Concentriques, à Souder en Acier Inoxydable (WP 316L), pour Tubes Schedule 10S;B5123A501;80x32;3,05x2,77;U
+36332307;Réduction;;Saic;Réduction;B5123A120;300x150;7,1x4,5;U
+SA039622;Réduction;;Saic;Réduction;B5123A120;150x80;4,5x5,6;U
+3459527;Réduction;;Arcus;Réduction;B5123A501;80x32;3,05x2,77;U
 5000015106;Tube;Acier;Prolians;Tube sans Soudure en Acier ASTM A106 grade B-Chanfreine-- Norme :ASTM ASME A106;PISLA104BEID10900;250;15,09;ML
 5000015294;Coude;;Saic;Coude 90° Long Rayon en Acier grade B-Chanfreine-- Norme : EN 10253-2Manchette au Bordé;EL9LA100BEID008HA;250;15,09;U
 5000015175;Bride;;Saic;Bride à Collerette en Acier P245GH selon NF EN 1092-1- Norme : NF EN 1092-1-PN 16;B5213A812;250;15,09;U
@@ -1583,16 +1583,16 @@ SA039622;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en 
 2147346;Poutrelle;Acier;Prolians/Autres;Poutrelles à Ailes Parallèles IPE Laminées à Chaud;A2131A102;140;4,7;ML
 1002492;Piton;Acier;Picaud/Mecasoud;Pitons Permanents pour Axes Calibres sans Platine Calibre 16 à 42 18F;B2412A102;18F;;U
 5000018076;Raccord;;Prolians;Adaptateur Mâle en Acier Inoxydable 316L - Chanfreiné - Mâle Filetage Gaz Conique - Norme NFEN 10 241 - Longueur 100mm;COAMA510BEAB03045;40;3,68;U
-5000017140;Réduction Concentrique;;Prolians;Réduction Mâle Femelle en Acier Inox 316 à Sertir - Viega;RECOA528A4P800009;40x25;;U
+5000017140;Réduction;;Prolians;Réduction;RECOA528A4P800009;40x25;;U
 5000017957;Raccord;;Prolians;Adaptateur Femelle en Acier Inox 316 1.4401 NF EN 10088 - Jonction à Bague - Femelle Filetage Gaz Cylindrique;COAFA528P8PA30909;40x40;;U
 5000018077;Raccord;;Prolians;Adaptateur Mâle en Acier Inoxydable 316L - Chanfreiné - Mâle Filetage Gaz Conique - Norme NFEN 10 241 - Longueur 100mm;COAMA510BEAB03045;50;3,91;U
-3459462;Réduction Concentrique;;Arcus;Réductions Concentriques, à Souder en Acier Inoxydable (WP 316L), pour Tubes Schedule 10S;B5123A501;65x40;3,05x2,77;U
+3459462;Réduction;;Arcus;Réduction;B5123A501;65x40;3,05x2,77;U
 5000019824;Raccord;;Prolians;Adaptateur Femelle en Acier Inox 316 1.4401 NF EN 10088 - Jonction à Bague - Femelle Filetage Gaz Cylindrique;COAFA528P8PA00509;40;;U
 SA000123;Raccord;;Arcus;Raccord Mâle en Acier Inoxydable Mâle Fileté Gaz Cylindrique / Femelle à Souder;B5250A501;32;;U
 5000017958;Raccord;;Prolians;Adaptateur Femelle en Acier Inox 316 1.4401 NF EN 10088 - Jonction à Bague - Femelle Filetage Gaz Cylindrique;COAFA528P8PA30909;50x50;;U
-3459500;Réduction Concentrique;;Arcus;Réductions Concentriques, à Souder en Acier Inoxydable (WP 316L), pour Tubes Schedule 10S;B5123A501;80x50;3,05x2,77;U
+3459500;Réduction;;Arcus;Réduction;B5123A501;80x50;3,05x2,77;U
 5000019825;Raccord;;Prolians;Adaptateur Femelle en Acier Inox 316 1.4401 NF EN 10088 - Jonction à Bague - Femelle Filetage Gaz Cylindrique;COAFA528P8PA00509;50;;U
-5000019868;Raccord;;Prolians;Adaptateur Mâle en Acier Inox 316 1,4401 NF EN 10088 - Mâle Gaz Conique - Femelle Joint Mécanique - Joint EPDM;COAMA528ABP800509;32x32;;U
+5000019868;Raccord;;Prolians;Adaptateur Mâle en Acier Inox 316 1,4401 NF EN 10088 - Mâle Gaz Conique - Femelle Joint;COAMA528ABP800509;32x32;;U
 5000017955;Raccord;;Prolians;Adaptateur Femelle en Acier Inox 316 1.4401 NF EN 10088 - Jonction à Bague - Femelle Filetage Gaz Cylindrique;COAFA528P8PA30909;25x25;;U
 5000003779;Raccord;;Prolians;Adaptateur Mâle en Brass CuZn36Pb3 - Mâle Gaz Cylindrique - Femelle Filetage Gaz Cylindrique;COAMU210AAPA00500;25x15;;U
 35131025;Raccord;;ATLANTIC ROBINETTERIE;Raccord Union Simple Mâle Acier à SW et Bague à Sertir;B5252A103;25;;U
@@ -1618,18 +1618,18 @@ SA031512;Tube;Acier;Prolians/Autres;Tubes Carrés Formés à Froid;A3211A103;120
 5100608;Plat;Acier;Prolians/Autres;Plat Acier Laminé à Chaud pour Usages Généraux;A4211A102;100;8;ML
 33410050;Robinetterie;;Chantier de l'Atlantique;Filtre Fonte en Y à Brides // - PN16 - DN15 à 400 - Filtration Standard;B5472A901;50;;U
 3461564;Coude;;Saic;Courbes à Souder en Acier 90° - Modèle 3D (R=1.5D) BW;B5121A150;125;12,7;U
-SA037599;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;65x50;5;U
+SA037599;Réduction;;Saic;Réduction;B5123A120;65x50;5;U
 4404205;Tube;Acier;Saic;Tubes sans Soudure en Acier;A1112A110;32;5;M
 5000020006;Raccord;;Pas dans contrat cadre;Adaptateur Mâle en Acier NF EN 10241 - Chanfreiné- Mâle Filetage Gaz Conique - Longueur 300mm;COAMA122BEAB03050;20;3,2;U
 SA032219;Fond Bombés;;Pas dans contrat cadre;Fond Bombé à Souder en Acier ;OBCAA109BE10200;50;3,91;U
-SA039609;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;50x40;4,5;U
-SA037386;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;65x50;4;U
+SA039609;Réduction;;Saic;Réduction;B5123A120;50x40;4,5;U
+SA037386;Réduction;;Saic;Réduction;B5123A120;65x50;4;U
 SA017580;Traversée;;Blucher;Traversée de Pont et Cloison à Emboitement en Acier Inoxydable T10;B5161A504;80;;U
 9000012839;Tube;Inox;Blucher;Tube à Emboitement en Acier Inoxydable;A1120A503;80;;U
 SA017492;Coude;;Blucher;Coude à 30° à Emboitement, en Acier Inoxydable;B5121A505;80;;U
 SA024639;Dalot;;Blucher;Dalot en Acier Inox. À Emboitement;B5512A504;80;;U
 SA017579;Traversée;;Blucher;Traversée de Pont et Cloison à Emboitement en Acier Inoxydable T10;B5161A504;50;;U
-36307604;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;65x32;4;U
+36307604;Réduction;;Saic;Réduction;B5123A120;65x32;4;U
 1012550;Tôle;Acier;;Tôles Acier pour Usages Généraux 2500x1250;A4113A105;0;5;M²
 5000000214;Traversée;;Chouteau;"Traversées Tout Soudée ""T""";B5152A117;50;;U
 3458865;Bride;;Arcus;Brides Pleines Acier Inoxydable 316L PN16;B5216A503;50;18;U
@@ -1640,7 +1640,7 @@ SA029007;Robinetterie;;Chantier de l'Atlantique;Soupape de Sureté Taraudé en A
 1301507;Tôle Larmée;;Picaud/Mecasoud;Tôles à Larme en Acier pour Usages Généraux;A4163A102;;4 à 6;M²
 SA029447;Crinoline;;Atlantis Montaza;Crinoline Peinte CR1;C7164A100;;;U
 5000017094;Tube;Inox;Arcus;Tube sans Soudure en Acier Inox TP 316L selon ASTM A312/A312M- Chanfreiné - 10S;A1120A510;200;3,76;U
-3459608;Réduction Concentrique;;Arcus;Réductions Concentriques, à Souder en Acier Inoxydable (WP 316L), pour Tubes Schedule 10S;B5123A501;125x50;3,40x2,77;U
+3459608;Réduction;;Arcus;Réduction;B5123A501;125x50;3,40x2,77;U
 SA017851;Robinetterie;;Chantier de l'Atlantique;Clapet de Non Retour à Battant Coprs en Fonte PN10 à Brides Parallèles à Siège Droit;B5318A904;80;;U
 SA026122;Robinetterie;;Chantier de l'Atlantique;Boîte de Débordement;C5390A101;150;;U
 SA041486;Robinetterie;;Chantier de l'Atlantique;Filtre à Panier, Type Droit, en Fonte;B5472A902;40;;U
@@ -1654,7 +1654,7 @@ SA017850;Robinetterie;;Chantier de l'Atlantique;Clapet de Non Retour à Battant 
 3456455;Bride;;Saic;Bride à Collerette en Acier P245GH selon NF EN 1092-1- Norme : NF EN 1092-1-PN 16;B5213A812;50;6,3;U
 9000013102;Traversée;;Roxtec;Traversée TU Roxtec RS S12 Tampon RS + Fourreau Acier;B5153E104;Ø24 à 54;;U
 5000000215;Traversée;;Chouteau;"Traversées Tout Soudée ""T""";B5152A117;65;;U
-SA037423;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;150x80;10,97x7,11;U
+SA037423;Réduction;;Saic;Réduction;B5123A120;150x80;10,97x7,11;U
 3456498;Bride;;Saic;Bride à Collerette en Acier P245GH selon NF EN 1092-1- Norme : NF EN 1092-1-PN 16;B5213A812;80;7,1;U
 4404206;Tube;Acier;Saic;Tubes sans Soudure en Acier;A1112A110;32;6,3;M
 4904206;Coude;;Saic;Courbes à Souder en Acier 90° - Modèle 3D (R=1.5D) BW;B5121A150;32;6,3;U
@@ -1671,7 +1671,7 @@ SA017841;Robinetterie;;Chantier de l'Atlantique;Clapet de Non Retour à Battant 
 SA038673;Té;;Saic;Té Réduit en Acier Forgé Butt Welding;B5256A205;50x40;;U
 SA028712;Robinetterie;;Chantier de l'Atlantique;Filtre à Panier, Type Droit, en Fonte 360μm;B5472A902;50;;U
 SA037249;Bride;;Saic;Brides avec Collerette à Souder en Acier Forgé PN40;B5213A106;25;2,6;U
-SA037395;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;40x25;7,1x4,5;U
+SA037395;Réduction;;Saic;Réduction;B5123A120;40x25;7,1x4,5;U
 3461556;Coude;;Saic;Courbes à Souder en Acier 90° - Modèle 3D (R=1.5D) BW;B5121A150;125;9,53;U
 SA037291;Bride;;Saic;Bride à Collerette en Acier P245GH selon NF EN 1092-1- Norme : NF EN 1092-1-PN 16;B5213A812;125;7,92;U
 SA037287;Bride;;Saic;Bride à Collerette en Acier P245GH selon NF EN 1092-1- Norme : NF EN 1092-1-PN 16;B5213A812;65;7,11;U
@@ -1687,23 +1687,23 @@ SA031515;Tube;Acier;Prolians/Autres;Tubes Carrés Formés à Froid;A3211A103;140
 SA039617;Bride;;Saic;Bride à Collerette en Acier P245GH selon NF EN 1092-1- Norme : NF EN 1092-1-PN 16;B5213A812;40;3,6;U
 3460789;Bouchon;;ATLANTIC ROBINETTERIE;Bouchon Mâle en Acier Inox 316L (Filetage Gaz Cylindrique);B5248A501;25;;U
 SA022907;Robinetterie;;AQUIRO;Clapet de Non Retour en Inox Equipe de Raccords Union Mâle - PN16;B5318A501;25;;U
-SA037388;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;100x80;3,6x4;U
+SA037388;Réduction;;Saic;Réduction;B5123A120;100x80;3,6x4;U
 52730408;Bride;;Saic;Bride à Collerette en Acier P245GH selon NF EN 1092-1- Norme : NF EN 1092-1-PN 16;B5213A812;80;4;U
 52730405;Bride;;Saic;Bride à Collerette en Acier P245GH selon NF EN 1092-1- Norme : NF EN 1092-1-PN 16;B5213A812;50;4;U
 SA014744;Dalot;;Manc TMCI;Dalots à Barrettes en Acier;B5512A901;80;5;U
 5000015195;Piton;Acier;Picaud/Mecasoud;Piton en Acier - Soudure Bout à Bout Calibre 19;FIEP22BW00ZZ00;19F;;U
 9000013109;Traversée;;Roxtec;Traversée TU Roxtec RS S12 Tampon RS + Fourreau Acier;B5153E104;Ø93 à 119;;U
 SA028734;Robinetterie;;Chantier de l'Atlantique;Filtre à Panier, Type Droit, en Fonte 710μm;B5472A902;125;;U
-36308803;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;80x40;3,2x2,6;U
+36308803;Réduction;;Saic;Réduction;B5123A120;80x40;3,2x2,6;U
 SA039618;Bride;;Saic;Bride à Collerette en Acier P245GH selon NF EN 1092-1- Norme : NF EN 1092-1-PN 16;B5213A812;50;4,5;U
 2036866;;;Chouteau;Boîte de Protection sur Event;B5143A152;65;2,9;U
 SA028710;Robinetterie;;Chantier de l'Atlantique;Filtre à Panier, Type Droit, en Fonte 710μm;B5472A902;50;;U
-36106004;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;50x40;3,91x3,68;U
+36106004;Réduction;;Saic;Réduction;B5123A120;50x40;3,91x3,68;U
 1002589;Piton;Acier;Mecasoud / Picaud;Pitons Permanents pour Axes Calibres sans Platine Calibre 16 à 42 42F;B2412A102;42F;;U
-5000017142;Réduction Concentrique;;Prolians;Réduction Mâle Femelle en Acier Inox 316 à Sertir - Viega;RECOA528A4P800009;50x25;;U
+5000017142;Réduction;;Prolians;Réduction;RECOA528A4P800009;50x25;;U
 5000017210;Té;;Prolians;Té Réduit en Acier Inox 316 à Sertir;BRRTA528P8ID00009;50x40;;U
 5000015174;Bride;;Saic;Bride à Collerette en Acier P245GH selon NF EN 1092-1- Norme : NF EN 1092-1-PN 16;B5213A812;200;15,09;U
-36232307;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;300x200;7,1x6,3;U
+36232307;Réduction;;Saic;Réduction;B5123A120;300x200;7,1x6,3;U
 1301508;Tôle Larmée;;Picaud/Mecasoud;Tôles à Larme en Acier pour Usages Généraux;A4163A102;;5 à 7;M²
 1012544;Tôle;Acier;;Tôles Acier pour Usages Généraux 2500x1250;A4113A105;0;4;M²
 1012540;Tôle;Acier;;Tôles Acier pour Usages Généraux 2500x1250;A4113A105;0;4;M²
@@ -1722,14 +1722,14 @@ EF 000058;Tôle;Acier;;Tôles Acier pour Usages Généraux 2500x1250;A4113A105;0
 2907127;Obturateur;;ATLANTIC ROBINETTERIE;Obturateur Éclipsable en Acier PN 10-16 DN 15 à 65;B5217A101;32;6;U
 SA026375;Dalot;;Blucher;Dalot en Acier Inox. À Emboitement;B5512A504;40;;U
 1002643;Piton;Acier;Picaud/Mecasoud;Pitons Permanents à Flasques pour Axes Calibrés - Calibre 52 à 80;B2412A103;64G;;U
-36340608;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;400x250;8,8x6,3;U
+36340608;Réduction;;Saic;Réduction;B5123A120;400x250;8,8x6,3;U
 35630015;Raccord;;Saic;Manchon à Emmanchement à Souder en Acier Forgé - ANSI B16.11 Série 3000;B5251A201;15;;U
 35131015;Raccord;;ATLANTIC ROBINETTERIE;Raccord Union Simple Mâle Acier à SW et Bague à Sertir;B5252A103;15;;U
 SA000444;Purgeur;;N/A;Purgeur d'Air Automatique;B5463U401;10;;U
 32501217;Robinetterie;;ATLANTIC ROBINETTERIE/AQUIRO;Robinet à Tournant Sphérique en Laiton Nickelé, à Manchons Taraudés;B5314U202;10;;U
 SA039171;Raccord;;ATLANTIC ROBINETTERIE;Demi-Mamelon Fileté en Acier Série Forte L=50mm;B5233A108;15;;U
 32501521;Robinetterie;;ATLANTIC ROBINETTERIE/AQUIRO;Robinet à Tournant Sphérique en Laiton Nickelé, à Manchons Taraudés;B5314U202;15;;U
-SA033878;Manchon;;ATLANTIC ROBINETTERIE;Manchon Union Mâle et Femelle Filetés à Joint Conique en Fonte;B5235A901;15;;U
+SA033878;Manchon;;ATLANTIC ROBINETTERIE;Manchon Union Mâle et Femelle Filetés à Joint;B5235A901;15;;U
 SA018023;Robinetterie;;Autres;Filtre à Tamis, à Manchons Taraudés en Bronze;B5470U300;15;;U
 SA039172;Raccord;;ATLANTIC ROBINETTERIE;Demi-Mamelon Fileté en Acier Série Forte L=50mm;B5233A108;20;;U
 35349127;Bouchon;;Prolians;Bouchon Mâle en Laiton;B5248U220;20;;U
@@ -1742,17 +1742,17 @@ SA042592;Tube;PE;George Fischer;Tube SDR11 - Polyéthylène 16 Bar (PE - 100);A1
 5000008538;Raccord;;George Fischer;Adaptateur Mâle en Polyéthylène PE100 - Embout pour Fusion - Emboité - Norme : BM / PE SDR11;COAMR304A2PF000DI;50x40;4,6;U
 SA024053;Bossage;;;Bossage en Cupro-Nickel Prise de Mesure sur Collecteurs DN ≤ 32;B5177U501;20;;U
 SA014585;Coude;;Sanimat / Prolians;Coude à 90° - Double Femelle Raccord par Sertissage en Cuivre;B5255U102;20;;U
-SA014569;Réduction;;Sanimat / Prolians;Réduction - Mâle - Femelle Raccord par Sertissage en Cuivre;B5251U105;20x15;;U
+SA014569;Réduction;;Sanimat / Prolians;Réduction;B5251U105;20x15;;U
 SA014593;Manchon;;Sanimat / Prolians;Manchon - Double Femelle Raccord par Sertissage en Cuivre;B5251U104;20;;U
 SA014634;Raccord;;Sanimat / Prolians;Raccord Union Mâle en Bronze Femelle par Sertissage/Mâle Fileté;B5252U304;Ø18Xdn15;;U
 SA014636;Raccord;;Sanimat / Prolians;Raccord Union Mâle en Bronze Femelle par Sertissage/Mâle Fileté;B5252U304;Ø22Xdn20;;U
 3456641;Robinetterie;;N/A;Robinet Vanne d'Équilibrage Taraudé Gaz Cylindrique en Bronze;B5311U901;20;;U
 25000012;Tube;Cuivre;Prolians;Tube Cuivre Écroui;A1111U101;10;1;M
 SA014616;Té;;Sanimat / Prolians;Té Réduit - Triple Femelle Raccord par Sertissage en Cuivre;B5256U104;20x15x20;;U
-SA014565;Réduction;;Sanimat / Prolians;Réduction - Mâle - Femelle Raccord par Sertissage en Cuivre;B5251U105;15x10;;U
+SA014565;Réduction;;Sanimat / Prolians;Réduction;B5251U105;15x10;;U
 SA034015;Manchon;;Prolians;Manchon Laiton Mâle Fileté Femelle à Braser par Capillarité;B5251U201;10;;U
 SA038875;Robinetterie;;AQUIRO;Robinet à Boisseau Sphérique en Laiton à Manette Papillon Femelle Femelle;B5314U210;10;;U
-SA014572;Réduction;;Sanimat / Prolians;Réduction - Mâle - Femelle Raccord par Sertissage en Cuivre;B5251U105;25x20;;U
+SA014572;Réduction;;Sanimat / Prolians;Réduction;B5251U105;25x20;;U
 SA014586;Coude;;Sanimat / Prolians;Coude à 90° - Double Femelle Raccord par Sertissage en Cuivre;B5255U102;25;;U
 SA014862;Coude;;Sanimat / Prolians;Coude à 45° - Double Femelle Raccord par Sertissage en Cuivre;B5255U103;20;;U
 SA015046;Raccord;;Sanimat / Prolians;Raccord Union Femelle en Bronze Femelle par Sertissage / Femelle Fileté;B5252U305;25x25;;U
@@ -1761,7 +1761,7 @@ SA038876;Robinetterie;;AQUIRO;Robinet à Boisseau Sphérique en Laiton à Manett
 SA014607;Té;;Sanimat / Prolians;Té Égal à 90° - Triple Femelle Raccord par Sertissage en Cuivre;B5256U103;15;;U
 SA014584;Coude;;Sanimat / Prolians;Coude à 90° - Double Femelle Raccord par Sertissage en Cuivre;B5255U102;15;;U
 SA014620;Té;;Sanimat / Prolians;Té Réduit - Triple Femelle Raccord par Sertissage en Cuivre;B5256U104;32x20x32;;U
-SA014574;Réduction;;Sanimat / Prolians;Réduction - Mâle - Femelle Raccord par Sertissage en Cuivre;B5251U105;32x25;;U
+SA014574;Réduction;;Sanimat / Prolians;Réduction;B5251U105;32x25;;U
 SA014638;Raccord;;Sanimat / Prolians;Raccord Union Mâle en Bronze Femelle par Sertissage/Mâle Fileté;B5252U304;Ø28Xdn25;;U
 3456889;Robinetterie;;Chantier de l'Atlantique;Clapet de Non Retour à Soupape - Manchons Taraudés;B5318U201;32;;U
 SA018070;Té;;Sanimat / Prolians;Té à 90° - Mixte Femelle Bronze ou Cuivre Femelle par Sertissage / Femelle Filetée;B5256U306;32x15x32;;U
@@ -1769,10 +1769,10 @@ SA018026;Robinetterie;;Chantier de l'Atlantique;Filtre à Tamis, à Manchons Tar
 SA040181;Tube;PB;ATLANTIC ROBINETTERIE;Tubes en Polybutène (PB);A1120R300;80;8,2;M
 SA040356;Coude;;ATLANTIC ROBINETTERIE;Coude 45° en Polybutène (PB) Raccord Électrosoudable Emboitement;B5122R306;80;;U
 SA040180;Tube;PB;ATLANTIC ROBINETTERIE;Tubes en Polybutène (PB);A1120R300;65;6,8;M
-SA040387;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique en Polybutène (M/F) Raccord Électrosoudable à Emboiture (PB);B5123R301;80x65;;U
+SA040387;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R301;80x65;;U
 SA040179;Tube;PB;ATLANTIC ROBINETTERIE;Tubes en Polybutène (PB);A1120R300;50;5,8;M
 SA040453;Té;;ATLANTIC ROBINETTERIE;Té Égal en Polybutène (PB) Raccord Électrosoudable à Emboiture;B5183R302;65x65;;U
-SA040385;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique en Polybutène (M/F) Raccord Électrosoudable à Emboiture (PB);B5123R301;65x50;;U
+SA040385;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R301;65x50;;U
 SA040469;Té;;ATLANTIC ROBINETTERIE;Té Réduit en Polybutène (PB) - Raccord Électrosoudable à Emboiture ;B5183R303;40x25x40;;U
 SA040468;Té;;ATLANTIC ROBINETTERIE;Té Réduit en Polybutène (PB) - Raccord Électrosoudable à Emboiture ;B5183R303;40x20x40;;U
 SA040408;Raccord;;ATLANTIC ROBINETTERIE;Raccord Union en Polybutene (PB) Mâle Électrosoudable Emboîtement / Mâle Fileté;B5252R304;40;;U
@@ -1784,30 +1784,30 @@ SA040452;Té;;ATLANTIC ROBINETTERIE;Té Égal en Polybutène (PB) Raccord Élect
 5000000342;Manchon;;ATLANTIC ROBINETTERIE;Manchon d'Adaptation Fileté Mâle Électro-Soudable Polybutène 10 Bar;COAMR300A2AA30600;25;;U
 5000010522;Bossage;;ATLANTIC ROBINETTERIE;Bossage en Polybutène-Embout pour Fusion-Femelle Polyfusion Norme : DIN 16968;BRBOR300A2P230600;80x15;;U
 SA040332;Coude;;ATLANTIC ROBINETTERIE;Coude 90° en Polybutène (PB) Femelle/Femelle Raccord Électrosoudable à Emboiture;B5122R304;80;;U
-SA040478;Collet PB;;ATLANTIC ROBINETTERIE;Collet à Emboiter Souder par Électrofusion en Polybutène (PB);B5141R301;65;;U
+SA040478;Collet;;ATLANTIC ROBINETTERIE;Collet à Emboiter Souder par Électrofusion en Polybutène (PB);B5141R301;65;;U
 SA039980;Bride;;ATLANTIC ROBINETTERIE;Brides Tournantes PVC-U Non Plastifiée avec Armature Acier;B5214R504;65;;U
 5000002822;Raccord;;George Fischer;Raccord Union en Polybutène (PB) 1 pièce Mâle Électrosoudable Emboîtement / Femelle Fileté;COUMR300A2PA30654;15;;U
 SA039979;Bride;;ATLANTIC ROBINETTERIE;Brides Tournantes PVC-U Non Plastifiée avec Armature Acier;B5214R504;50;;U
-SA040477;Collet PB;;ATLANTIC ROBINETTERIE;Collet à Emboiter Souder par Électrofusion en Polybutène (PB);B5141R301;50;;U
+SA040477;Collet;;ATLANTIC ROBINETTERIE;Collet à Emboiter Souder par Électrofusion en Polybutène (PB);B5141R301;50;;U
 SA038880;Robinetterie;;AQUIRO;Robinet à Boisson Sphérique en Laiton à Manette Papillon Mâle Femelle;B5314U211;10;0;U
 SA039981;Bride;;ATLANTIC ROBINETTERIE;Brides Tournantes PVC-U Non Plastifiée avec Armature Acier;B5214R504;80;;U
-SA040479;Collet PB;;ATLANTIC ROBINETTERIE;Collet à Emboiter Souder par Électrofusion en Polybutène (PB);B5141R301;80;;U
+SA040479;Collet;;ATLANTIC ROBINETTERIE;Collet à Emboiter Souder par Électrofusion en Polybutène (PB);B5141R301;80;;U
 5000010523;Bossage;;ATLANTIC ROBINETTERIE;Bossage en Polybutène-Embout pour Fusion-Femelle Polyfusion Norme : DIN 16968;BRBOR300A2P230600;80x20;;U
 SA040405;Raccord;;ATLANTIC ROBINETTERIE;Raccord Union en Polybutene (PB) Mâle Électrosoudable Emboîtement / Mâle Fileté;B5252R304;20;;U
 SA038877;Robinetterie;;AQUIRO;Robinet à Boisseau Sphérique en Laiton à Manette Papillon Femelle Femelle;B5314U210;20;;U
 SA040454;Té;;ATLANTIC ROBINETTERIE;Té Égal en Polybutène (PB) Raccord Électrosoudable à Emboiture;B5183R302;80x80;;U
 SA040177;Tube;PB;ATLANTIC ROBINETTERIE;Tubes en Polybutène (PB);A1120R300;32;3,7;M
-SA040383;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique en Polybutène (M/F) Raccord Électrosoudable à Emboiture (PB);B5123R301;50x32;;U
+SA040383;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R301;50x32;;U
 SA040182;Tube;PB;ATLANTIC ROBINETTERIE;Tubes en Polybutène (PB);A1120R300;100;;M
 SA040455;Té;;ATLANTIC ROBINETTERIE;Té Égal en Polybutène (PB) Raccord Électrosoudable à Emboiture;B5183R302;100x100;;U
 SA040357;Coude;;ATLANTIC ROBINETTERIE;Coude 45° en Polybutène (PB) Raccord Électrosoudable Emboitement;B5122R306;100;;U
-SA040480;Collet PB;;ATLANTIC ROBINETTERIE;Collet à Emboiter Souder par Électrofusion en Polybutène (PB);B5141R301;100;;U
+SA040480;Collet;;ATLANTIC ROBINETTERIE;Collet à Emboiter Souder par Électrofusion en Polybutène (PB);B5141R301;100;;U
 SA039982;Bride;;ATLANTIC ROBINETTERIE;Brides Tournantes PVC-U Non Plastifiée avec Armature Acier;B5214R504;100;;U
-SA040389;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique en Polybutène (M/F) Raccord Électrosoudable à Emboiture (PB);B5123R301;100x65;;U
+SA040389;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R301;100x65;;U
 SA040176;Tube;PB;ATLANTIC ROBINETTERIE;Tubes en Polybutène (PB);A1120R300;25;;M
 SA040327;Coude;;ATLANTIC ROBINETTERIE;Coude 90° en Polybutène (PB) Femelle/Femelle Raccord Électrosoudable à Emboiture;B5122R304;25;;U
 SA040422;Raccord;;ATLANTIC ROBINETTERIE;Raccord Union en Polybutene (PB) Femelle Électrosoudable Emboîtement / Mâle Fileté;B5252R306;25;;U
-SA040390;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique en Polybutène (M/F) Raccord Électrosoudable à Emboiture (PB);B5123R301;100x80;;U
+SA040390;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R301;100x80;;U
 SA040339;Coude;;ATLANTIC ROBINETTERIE;Coude 90° en Polybutène (PB) Mâle/Femelle Raccord Électrosoudable à Emboiture;B5122R305;40;;U
 5000000340;Manchon;;ATLANTIC ROBINETTERIE;Manchon d'Adaptation Fileté Mâle Électro-Soudable Polybutène 10 Bar;COAMR300A2AA30600;20;;U
 SA040470;Té;;ATLANTIC ROBINETTERIE;Té Réduit en Polybutène (PB) - Raccord Électrosoudable à Emboiture ;B5183R303;50x20x50;;U
@@ -1816,7 +1816,7 @@ SA040407;Raccord;;ATLANTIC ROBINETTERIE;Raccord Union en Polybutene (PB) Mâle �
 SA040502;Adaptateur;;George Fischer;Adaptateur Clip Jonction d'Accessoires IFIT;B5233R300;20;;U
 SA040466;Té;;ATLANTIC ROBINETTERIE;Té Réduit en Polybutène (PB) - Raccord Électrosoudable à Emboiture ;B5183R303;32x20x32;;U
 SA040520;Adaptateur;;George Fischer;Adaptateur Clip Jonction Polybutène - IFIT (h=101mm);B5234R300;20;;U
-SA040375;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique en Polybutène (M/F) Raccord Électrosoudable à Emboiture (PB);B5123R301;32x25;;U
+SA040375;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R301;32x25;;U
 SA040351;Coude;;ATLANTIC ROBINETTERIE;Coude 45° en Polybutène (PB) Raccord Électrosoudable Emboitement;B5122R306;25;;U
 SA040485;Tube;PE;ATLANTIC ROBINETTERIE;Tubes Multicouches;A1111R300;20;2,5;M
 SA040542;Raccord;;George Fischer;Raccord Mâle Fileté, Jonction IFIT;B5252R308;20;;U
@@ -1831,12 +1831,12 @@ SA040465;Té;;ATLANTIC ROBINETTERIE;Té Réduit en Polybutène (PB) - Raccord É
 SA040519;Adaptateur;;George Fischer;Adaptateur Clip Jonction Polybutène - IFIT;B5234R300;15;;U
 SA040539;Raccord;;George Fischer;Raccord Mâle Fileté, Jonction IFIT;B5252R308;15;;U
 SA040501;Adaptateur;;George Fischer;Adaptateur Clip Jonction d'Accessoires IFIT;B5233R300;15;;U
-SA033879;Manchon;;ATLANTIC ROBINETTERIE;Manchon Union Mâle et Femelle Filetés à Joint Conique en Fonte;B5235A901;20;;U
+SA033879;Manchon;;ATLANTIC ROBINETTERIE;Manchon Union Mâle et Femelle Filetés à Joint;B5235A901;20;;U
 SA018024;Robinetterie;;Autres;Filtre à Tamis, à Manchons Taraudés en Bronze;B5470U300;20;;U
 5000017660;Robinetterie;;Chantier de l'Atlantique;Filtre en Y en Fonte FT25 - Norme : NF EN 1092-1-PN 16 - Avec 2 bossages pour prise de pression;OTYFA952F5ID019PDHM;65;;U
 SA034022;Manchon;;Prolians;Manchon Laiton Mâle Fileté Femelle à Braser par Capillarité;B5251U201;20;;U
 SA014609;Té;;Sanimat / Prolians;Té Égal à 90° - Triple Femelle Raccord par Sertissage en Cuivre;B5256U103;25;;U
-SA014571;Réduction;;Sanimat / Prolians;Réduction - Mâle - Femelle Raccord par Sertissage en Cuivre;B5251U105;25x15;;U
+SA014571;Réduction;;Sanimat / Prolians;Réduction;B5251U105;25x15;;U
 35040015;Raccord;;N/A;MAMELON DOUBLE FILETE EN LAITON;B5233U205;15;;U
 35040025;Raccord;;N/A;MAMELON DOUBLE FILETE EN LAITON;B5233U205;25;;U
 3456633;Robinetterie;;N/A;Robinet Vanne d'Équilibrage Taraudé Gaz Cylindrique en Bronze;B5311U901;15;;U
@@ -1844,7 +1844,7 @@ SA015044;Raccord;;Sanimat / Prolians;Raccord Union Femelle en Bronze Femelle par
 SA018065;Té;;Sanimat / Prolians;Té à 90° - Mixte Femelle Bronze ou Cuivre Femelle par Sertissage / Femelle Filetée;B5256U306;15x15x15;;U
 SA014618;Té;;Sanimat / Prolians;Té Réduit - Triple Femelle Raccord par Sertissage en Cuivre;B5256U104;25x15x25;;U
 SA039921;Robinetterie;;Chantier de l'Atlantique;Vanne Pilote 3 Voies à Boisseau Sphérique DN15 à DN40 Raccordement par Filetage BSP;B5330U206;40;;U
-SA040378;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique en Polybutène (M/F) Raccord Électrosoudable à Emboiture (PB);B5123R301;40x25;;U
+SA040378;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R301;40x25;;U
 50000003336;Adaptateur;;George Fischer;Adaptateur Clip Jonction Polybutène - IFIT (h=94mm);B5234R300;20;;U
 35040020;Raccord;;N/A;MAMELON DOUBLE FILETE EN LAITON;B5233U205;20;;U
 SA040462;Té;;ATLANTIC ROBINETTERIE;Té Réduit en Polybutène (PB) - Raccord Électrosoudable à Emboiture ;B5183R303;25x15x25;;U
@@ -1854,15 +1854,15 @@ SA040546;Raccord;;George Fischer;Raccord Femelle Fileté, Jonction IFIT;B5252R30
 5000011315;Purgeur;;N/A;Purgeur d'Air Automatique en Laiton - Norme : NF E 29 305 - Sans Clapet Anti-retour;OTFAU203AAF0070NOEY;15;;U
 SA014863;Coude;;Sanimat / Prolians;Coude à 45° - Double Femelle Raccord par Sertissage en Cuivre;B5255U103;25;;U
 SA014594;Manchon;;Sanimat / Prolians;Manchon - Double Femelle Raccord par Sertissage en Cuivre;B5251U104;25;;U
-5000000359;Raccord;;Sanimat / Prolians;Adaptateur Mâle en Bronze Cu Sp 4P - Jonction à Bague - Mâle Filetage Gaz Cylindrique  - Norme : NF A 51124 - Joint EPDM;COAMU300P8AA02409;25x20;;U
+5000000359;Raccord;;Sanimat / Prolians;Adaptateur Mâle en Bronze Cu Sp 4P - Jonction à Bague - Mâle Filetage Gaz Cylindrique  - Norme : NF A 51124 - Joint;COAMU300P8AA02409;25x20;;U
 SA018066;Té;;Sanimat / Prolians;Té à 90° - Mixte Femelle Bronze ou Cuivre Femelle par Sertissage / Femelle Filetée;B5256U306;20x15x20;;U
 SA024054;Bossage;;;Bossage en Cupro-Nickel Prise de Mesure sur Collecteurs DN ≤ 32;B5177U501;25;;U
 SA014861;Coude;;Sanimat / Prolians;Coude à 45° - Double Femelle Raccord par Sertissage en Cuivre;B5255U103;15;;U
-5000000354;Raccord;;Sanimat / Prolians;Adaptateur Mâle en Bronze Cu Sp 4P - Jonction à Bague - Mâle Filetage Gaz Cylindrique  - Norme : NF A 51124 - Joint EPDM;COAMU300P8AA02409;15x15;;U
+5000000354;Raccord;;Sanimat / Prolians;Adaptateur Mâle en Bronze Cu Sp 4P - Jonction à Bague - Mâle Filetage Gaz Cylindrique  - Norme : NF A 51124 - Joint;COAMU300P8AA02409;15x15;;U
 SA014608;Té;;Sanimat / Prolians;Té Égal à 90° - Triple Femelle Raccord par Sertissage en Cuivre;B5256U103;20;;U
-SA014568;Réduction;;Sanimat / Prolians;Réduction - Mâle - Femelle Raccord par Sertissage en Cuivre;B5251U105;20x12;;U
-SA014566;Réduction;;Sanimat / Prolians;Réduction - Mâle - Femelle Raccord par Sertissage en Cuivre;B5251U105;15x12;;U
-5000000357;Raccord;;Sanimat / Prolians;Adaptateur Mâle en Bronze Cu Sp 4P - Jonction à Bague - Mâle Filetage Gaz Cylindrique  - Norme : NF A 51124 - Joint EPDM;COAMU300P8AA02409;20x20;;U
+SA014568;Réduction;;Sanimat / Prolians;Réduction;B5251U105;20x12;;U
+SA014566;Réduction;;Sanimat / Prolians;Réduction;B5251U105;15x12;;U
+5000000357;Raccord;;Sanimat / Prolians;Adaptateur Mâle en Bronze Cu Sp 4P - Jonction à Bague - Mâle Filetage Gaz Cylindrique  - Norme : NF A 51124 - Joint;COAMU300P8AA02409;20x20;;U
 5000010525;Bossage;;ATLANTIC ROBINETTERIE;Bossage en Polybutène-Embout pour Fusion-Femelle Polyfusion Norme : DIN 16968;BRBOR300A2P230600;100x15;;U
 SA040338;Coude;;ATLANTIC ROBINETTERIE;Coude 90° en Polybutène (PB) Mâle/Femelle Raccord Électrosoudable à Emboiture;B5122R305;32;;U
 SA039173;Raccord;;ATLANTIC ROBINETTERIE;Demi-Mamelon Fileté en Acier Série Forte L=50mm;B5233A108;25;;U
@@ -1876,16 +1876,16 @@ SA042975;Manchon;;ATLANTIC ROBINETTERIE;Manchon d'Adaptation Fileté Femelle Él
 SA014621;Té;;Sanimat / Prolians;Té Réduit - Triple Femelle Raccord par Sertissage en Cuivre;B5256U104;32x25x32;;U
 SA008771;Bouchon;;;Bouchons de Purge en Laiton;B5248U226;15;;U
 SA018068;Té;;Sanimat / Prolians;Té à 90° - Mixte Femelle Bronze ou Cuivre Femelle par Sertissage / Femelle Filetée;B5256U306;25x15x25;;U
-35041215;Réduction;;;Réduction Mâle - Femelle et Femelle - Mâle en Laiton;B5236U202;15x10;;U
+35041215;Réduction;;;Réduction;B5236U202;15x10;;U
 SA040404;Raccord;;ATLANTIC ROBINETTERIE;Raccord Union en Polybutene (PB) Mâle Électrosoudable Emboîtement / Mâle Fileté;B5252R304;15;;U
 SA036979;Collier;;Sonafi;Collier à une Fixation avec Bande en Caoutchouc;B2211A122;15;Ø18;U
-SA025819;Collier VFE;;SN HYDRO/ AUTRES;Support Isolant Type VIII et Collier Demi-Coquille ;B2211A117;8;;U
+SA025819;Collier;;SN HYDRO/ AUTRES;Support Isolant Type VIII et Collier Demi-Coquille ;B2211A117;8;;U
 5000015607;Tube;Inox;Arcus;Tube sans Soudure en Acier Inox TP 316L selon ASTM A312/A312M- Chanfreiné - 10S;A1120A510;15;2,11;M
 2402504;Cornière;Acier;Prolians/Autres;Cornières à Ailes Inégales et à Coins Arrondis Laminées à Chaud;A2112A102;40x25;4;ML
 2503005;Cornière;Acier;Prolians/Autres;Cornières à Ailes Inégales et à Coins Arrondis Laminées à Chaud;A2112A102;50x30;5;ML
 2201058;Poutrelle;Acier;Prolians/Autres;Poutrelles à Ailes Parallèles IPE Laminées à Chaud;A2131A102;200;5,6;ML
-3473465;Collier Omega;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;550;;U
-3473523;Collier Omega;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;900;;U
+3473465;Collier;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;550;;U
+3473523;Collier;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;900;;U
 SA038687;Té;;Saic;Té Réduit en Acier Forgé Butt Welding;B5256A205;250x250x200;6,35;U
 SA045836;Té;;Saic;Té Réduit en Acier Forgé Butt Welding;B5256A205;300x300x200;7,1;U
 SA023685;Dalot;;Manc TMCI;Dalot avec Bouchon;B5144U301;40;;U
@@ -1893,11 +1893,11 @@ SA042342;Bride;;Chantier de l'Atlantique;Renfort sur Bordé PN16;B5211A121;15;;U
 1017144;Bride;;Saic;Brides Pleines PN16 en Acier - Brut;B5216A102;15;;U
 1014315;Tôle;Acier;;Tôles Acier pour Usages Généraux 2500x1250;A4113A105;0;15;M²
 SA020174;Robinetterie;;Chantier de l'Atlantique;Disposition de Prélèvement Échantillon Combustible;B7200A500;200;;U
-5000016617;Robinetterie;;Chantier de l'Atlantique;Robinet à Papillon en Fonte à Graphite Sphéroidal - Joint Compris;VABUA966F8ID017PD02AY;200;;U
+5000016617;Robinetterie;;Chantier de l'Atlantique;Robinet à Papillon en Fonte à Graphite Sphéroidal - Joint;VABUA966F8ID017PD02AY;200;;U
 1017241;Bride;;Saic;Brides Pleines PN16 en Acier - Brut;B5216A102;150;;U
-5000019867;Raccord;;Prolians;Adaptateur Mâle en Acier Inox 316 1,4401 NF EN 10088 - Mâle Gaz Conique - Femelle Joint Mécanique - Joint EPDM;COAMA528ABP800509;25x25;;U
-3459659;Réduction Concentrique;;Arcus;Réductions Concentriques, à Souder en Acier Inoxydable (WP 316L), pour Tubes Schedule 10S;B5123A501;200x150;3,76x3,4;U
-3459594;Réduction Concentrique;;Arcus;Réductions Concentriques, à Souder en Acier Inoxydable (WP 316L), pour Tubes Schedule 10S;B5123A501;125x65;3,4x3,05;U
+5000019867;Raccord;;Prolians;Adaptateur Mâle en Acier Inox 316 1,4401 NF EN 10088 - Mâle Gaz Conique - Femelle Joint;COAMA528ABP800509;25x25;;U
+3459659;Réduction;;Arcus;Réduction;B5123A501;200x150;3,76x3,4;U
+3459594;Réduction;;Arcus;Réduction;B5123A501;125x65;3,4x3,05;U
 5000011635;Support Robinetterie;;Chouteau;Support de Robinetteries et Accessoires Tubes Type C;B2210A106;200;10;U
 SA011553;Bride;;Saic;Bride Taraudée en Acier - PN 16;B5216A108;40;;U
 5000015470;BTH;;Chantier de l'Atlantique;Bouchon de Trou d'Homme 800*600 avec Surbau;MHBS11A9;;;U
@@ -1929,7 +1929,7 @@ SA038688;Té;;Saic;TE REDUIT EN ACIER FORGE BUTT WELDING;B5256A205;250X250X150;6
 5000011363;Tube;Inox SuperDuplex;Arcus;Tube Soudé en Acier Inox Super-Duplex (1.4410)-Chanfreine-- Norme :ASME/ANSI B36.19M;PILWA524BEID10300;32;2,77;M
 5000011320;Bride;Inox SuperDuplex;Arcus;Bride Plate en Acier Inox Super-Duplex (1.4410)- Norme : NF EN 1092--1-;FLPLA524F6SW017PD00;32;18;U
 5000019768;Raccord;Inox SuperDuplex;Arcus;Adaptateur Male en Acier Inox Super-Duplex (1.4410)-Chanfreine-MaleFiletage Gaz Conique- Norme : NF EN 10 241- Longueur 50mm;COAMA524BEAB03042;32;3,38;U
-5000014840;Réduction Concentrique;Inox SuperDuplex;Arcus;Réduction Concentrique en Acier Inox Super-Duplex (1.4410Chanfreine-- Norme : ASME/ANSI B16.9;RECOA524BEID10200;50x32;2,77;U
+5000014840;Réduction;Inox SuperDuplex;Arcus;Réduction;RECOA524BEID10200;50x32;2,77;U
 5000011322;Bride;Inox SuperDuplex;Arcus;Bride Plate en Acier Inox Super-Duplex (1.4410)- Norme : NF EN 1092--1-;FLPLA524F6SW017PD00;50;20;U
 5000011369;Tube;Inox SuperDuplex;Arcus;Tube Soudé en Acier Inox Super-Duplex (1.4410)-Chanfreine-- Norme :ASME/ANSI B36.19M;PILWA524BEID10300;50;2,77;M
 4406008;Tube;Acier;Saic;TUBES SANS SOUDURE EN ACIER;PISLA103BEID00200;50;8,8;M
@@ -1938,18 +1938,18 @@ SA038688;Té;;Saic;TE REDUIT EN ACIER FORGE BUTT WELDING;B5256A205;250X250X150;6
 5000011637;Support Robinetterie;;Mecasoud / Picaud;Support de Robinetteries et Accessoires Tubes Type C;B2210A106;300;10;U
 5000011638;Support Robinetterie;;Mecasoud / Picaud;Support de Robinetteries et Accessoires Tubes Type C;B2210A106;350;10;U
 SA048397;Tube;Acier;Prolians;Tube carré;B9420A107;40x40;3;M
-5000017108;Té;;Prolians;Té Égal en Acier Inox 316 - Jonction à Bague - Joint EPDM;BRETA528P8ID00009;50x50;;U
-35630475;Réduction SW;;Saic;Réduction Mâle - Femelle à Souder en Acier Forgé;B5253A201;40x25;;U
-SA037390;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;125x100;12,5;U
+5000017108;Té;;Prolians;Té Égal en Acier Inox 316 - Jonction à Bague - Joint;BRETA528P8ID00009;50x50;;U
+35630475;Réduction;;Saic;Réduction;B5253A201;40x25;;U
+SA037390;Réduction;;Saic;Réduction;B5123A120;125x100;12,5;U
 SA033881;Raccord;;ATLANTIC ROBINETTERIE;MANCHON UNION MALE ET FEMELLE FILETES;B5235A901;32;0;U
 SA038879;Robinetterie;;AQUIRO;Robinet à Boisson Sphérique en Laiton à Manette Papillon Mâle Femelle;B5314U211;8;0;U
 SA040333;Coude;;ATLANTIC ROBINETTERIE;Coude 90° en Polybutène (PB) Femelle/Femelle Raccord Électrosoudable à Emboiture;B5122R304;100;;U
-SA040388;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique en Polybutène (M/F) Raccord Électrosoudable à Emboiture (PB);B5123R301;100X50;;U
+SA040388;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R301;100X50;;U
 5000003781;Raccord;;Prolians;Adaptateur Mâle en Brass CuZn36Pb3 - Mâle Gaz Cylindrique - Femelle Filetage Gaz Cylindrique;COAMU210AAPA00500;32x20;;U
 5000010915;Vanne;;Chantier de l'Atlantique;Vanne 3 voies pilotée en Fonte GG25-Femelle gaz cylindrique- Norme :NF EN 1092-1 Type 11 12 13-PN 16-Actionneur Electrique;VA3GA950PAID019PDQ00;32;;U
 5000003776;Raccord;;Prolians;Adaptateur Mâle en Brass CuZn36Pb3 - Mâle Gaz Cylindrique - Femelle Filetage Gaz Cylindrique;COAMU210AAPA00500;20x10;;U
 5000003552;Raccord;;Prolians;Adaptateur Mâle en Brass CuZn36Pb3 - Mâle Gaz Cylindrique - Femelle Filetage Gaz Cylindrique;COAMU210AAPA00500;15x10;;U
-SA040374;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique en Polybutène (M/F) Raccord Électrosoudable à Emboiture (PB);B5123R301;32x20;;U
+SA040374;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R301;32x20;;U
 SA040564;Coude;;ATLANTIC ROBINETTERIE;COUDE 90° CLIP AVEC EMBOUT MALE FILETE,JONCTION IFIT;B5122R309;"16x1/2""";;U
 SA040451;Té;;ATLANTIC ROBINETTERIE;Té Égal en Polybutène (PB) Raccord Électrosoudable à Emboiture;B5183R302;40x40;;U
 SA040423;Raccord;;ATLANTIC ROBINETTERIE;Raccord Union en Polybutene (PB) Femelle Électrosoudable Emboîtement / Mâle Fileté;B5252R306;32;;U
@@ -1957,18 +1957,18 @@ SA039923;Vanne;;Chantier de l'Atlantique;VANNE PILOTE TROIS VOIES A SIEGE DN50 A
 SA040464;Té;;ATLANTIC ROBINETTERIE;Té Réduit en Polybutène (PB) - Raccord Électrosoudable à Emboiture ;B5183R303;25x20x25;;U
 5000003775;Raccord;;Prolians;Adaptateur Mâle en Brass CuZn36Pb3 - Mâle Gaz Cylindrique - Femelle Filetage Gaz Cylindrique;COAMU210AAPA00500;20x8;;U
 SA014622;Té;;Sanimat / Prolians;Té Réduit - Triple Femelle Raccord par Sertissage en Cuivre;B5256U104;40x25x40;;U
-5000000360;Raccord;;Sanimat / Prolians;Adaptateur Mâle en Bronze Cu Sp 4P - Jonction à Bague - Mâle Filetage Gaz Cylindrique  - Norme : NF A 51124 - Joint EPDM;COAMU300P8AA02409;25X25;;U
+5000000360;Raccord;;Sanimat / Prolians;Adaptateur Mâle en Bronze Cu Sp 4P - Jonction à Bague - Mâle Filetage Gaz Cylindrique  - Norme : NF A 51124 - Joint;COAMU300P8AA02409;25X25;;U
 5000010059;Vanne;;Chantier de l'Atlantique;Electro Vanne en Fonte GG25-Femelle gaz cylindrique- Norme : NF EN 1092-1 Type 11 12 13-PN 16-Actionneur électrique;VAELA950PAID019PD1800;15;;U
 5000010130;Vanne;;Chantier de l'Atlantique;Electro Vanne en Fonte GG25-Femelle gaz cylindrique- Norme : NF EN 1092-1 Type 11 12 13-PN 16-Actionneur électrique;VAELA950PAID019PD1800;15;;U
 5000010058;Vanne;;Chantier de l'Atlantique;Electro Vanne en Fonte GG25-Femelle gaz cylindrique- Norme : NF EN 1092-1 Type 11 12 13-PN 16-Actionneur électrique;VAELA950PAID019PD1800;16;;U
-SA014573;Réduction;;Sanimat / Prolians;Réduction - Mâle - Femelle Raccord par Sertissage en Cuivre;B5251U105;32x20;;U
-5000000363;Raccord;;Sanimat / Prolians;Adaptateur Mâle en Bronze Cu Sp 4P - Jonction à Bague - Mâle Filetage Gaz Cylindrique  - Norme : NF A 51124 - Joint EPDM;COAMU300P8AA02409;32x32;;U
+SA014573;Réduction;;Sanimat / Prolians;Réduction;B5251U105;32x20;;U
+5000000363;Raccord;;Sanimat / Prolians;Adaptateur Mâle en Bronze Cu Sp 4P - Jonction à Bague - Mâle Filetage Gaz Cylindrique  - Norme : NF A 51124 - Joint;COAMU300P8AA02409;32x32;;U
 SA018071;Té;;Sanimat / Prolians;Té à 90° - Mixte Femelle Bronze ou Cuivre Femelle par Sertissage / Femelle Filetée;B5256U306;40x15x40;;U
 5000001866;Raccord;;Sanimat / Prolians;UNION 3 PIECES MALE MALE DROITE SPHERO-CONIQUE;COUNU210ABID00500;15;;U
 5000001867;Raccord;;Sanimat / Prolians;UNION 3 PIECES MALE MALE DROITE SPHERO-CONIQUE;COUNU210ABID00500;20;;U
 SA040550;Raccord;;George Fischer;Raccord Femelle Fileté, Jonction IFIT;B5252R309;20;;U
 SA033880;Raccord;;Divers;MANCHON UNION MALE ET FEMELLE FILETES;B5235A901;25;;U
-SA033899;Raccord;;Divers;MANCHON UNION MALES FILETES A JOINT CONIQUE EN FONTE;B5235A902;15;;U
+SA033899;Raccord;;Divers;MANCHON UNION MALES FILETES A Joint;B5235A902;15;;U
 SA026844;Robinetterie;;Chantier de l'Atlantique;Filtre à Tamis, à Manchons Taraudés en Bronze;B5470U300;40;;U
 SA010196;Traversée;;Atlantis Montaza;SURBAU DE RENFORCEMENT TOLERIE;B5251A120;20;;U
 5000017661;Robinetterie;;Chantier de l'Atlantique;Filtre en Y en Fonte FT25 - Norme : NF EN 1092-1-PN 16 - Avec 2 bossages pour prise de pression;OTYFA952F5ID019PDHM;80;;U
@@ -1979,37 +1979,37 @@ SA030732;Collier;;Sonafi;Collier à une Fixation avec Bande en Caoutchouc;B2211A
 5120010;Plat;Acier;Prolians/Autres;Plat Acier Laminé à Chaud pour Usages Généraux;A4211A102;120;10;ML
 18100003;Piton;Acier;Chantier de l'Atlantique;Piton Permanent d'Élingage pour Crochet de Levage de 3,2T;B2413A103;3,2T;;U
 1002662;Piton;Acier;Chantier de l'Atlantique;PITONS TEMPORAIRES D’ELINGAGE A FLASQUES POUR AXES CALIBRES-CALIBRE 33 et 42;B2410A101;8T;;U
-5000017747;Collier VFE;;SN HYDRO/ AUTRES;Support Isolant Type VIII et Collier Demi-Coquille ;B2211A117;15;D20;U
-SA040370;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique en Polybutène (M/F) Raccord Électrosoudable à Emboiture (PB);B5123R301;25x15;;U
+5000017747;Collier;;SN HYDRO/ AUTRES;Support Isolant Type VIII et Collier Demi-Coquille ;B2211A117;15;D20;U
+SA040370;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R301;25x15;;U
 SA040568;Coude;;ATLANTIC ROBINETTERIE;COUDE 90° CLIP AVEC EMBOUT MALE FILETE,JONCTION IFIT;B5122R309;25x3/4'';;U
 SA014619;Té;;Sanimat / Prolians;Té Réduit - Triple Femelle Raccord par Sertissage en Cuivre;B5256U104;25x20x25;;U
 9000012796;Té;;ATLANTIC ROBINETTERIE;Té Réduit PB SA040468 et Adaptateur PB-IFIT SA040520;BRRTR300P4A815600;32X20;;U
 SA040362;Coude;;ATLANTIC ROBINETTERIE;COUDE 45° EN POLYBUTENE (PB) MALE/FEMELLE RACCORD ELECTROSOUDABLE EMBOITEMENT;B5122R307;32;;U
-SA040377;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique en Polybutène (M/F) Raccord Électrosoudable à Emboiture (PB);B5123R301;40x20;;U
+SA040377;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R301;40x20;;U
 SA040326;Coude;;ATLANTIC ROBINETTERIE;Coude 90° en Polybutène (PB) Femelle/Femelle Raccord Électrosoudable à Emboiture;B5122R304;20;;U
 5000010916;Vanne;;Chantier de l'Atlantique;Vanne 3 voies pilotée en Fonte GG25-Femelle gaz cylindrique- Norme :NF EN 1092-1 Type 11 12 13-PN 16-Actionneur Electrique;VA3GA950PAID019PDQ00;40;;U
 5000010052;Vanne;;Chantier de l'Atlantique;Electro Vanne en Fonte GG25-Femelle gaz cylindrique- Norme : NF EN 1092-1 Type 11 12 13-PN 16-Actionneur électrique;VAELA950PAID019PD1800;15;;U
 SA039922;Vanne;;Chantier de l'Atlantique;VANNE PILOTE TROIS VOIES A SIEGE DN50 A DN150 RACCORDEMENT PAR BRIDES PN16;B5330A900;50X50;;U
-2412691;Réduction SW;;Saic;Réduction Mâle - Femelle à Souder en Acier Forgé;B5253A201;25x8;;U
+2412691;Réduction;;Saic;Réduction;B5253A201;25x8;;U
 SA033681;Raccord;;Sanimat / Prolians;RACCORD UNION MALE EN BRONZE MALE A SERTIR / MALE FILETE;B5252U307;18X1/2;;U
 SA033671;Raccord;;Sanimat / Prolians;RACCORD UNION MALE EN BRONZE MALE A SERTIR / MALE FILETE;B5252U307;22X3/4;;U
 SA031641;Té;;Sanimat / Prolians;Té Réduit - Triple Femelle Raccord par Sertissage en Cuivre;B5256U104;20X10X20;;U
 5000010057;Vanne;;Chantier de l'Atlantique;Electro Vanne en Fonte GG25-Femelle gaz cylindrique- Norme : NF EN 1092-1 Type 11 12 13-PN 16-Actionneur électrique;VAELA950PAID019PD1800;15;;U
-35631510;Réduction SW;;Saic;Réduction Mâle - Femelle à Souder en Acier Forgé;B5253A201;15x8;;U
+35631510;Réduction;;Saic;Réduction;B5253A201;15x8;;U
 9000012798;Té;;ATLANTIC ROBINETTERIE;Té Réduit PB SA040468 et Adaptateur PB-IFIT SA040520;BRRTR300P4A815600;40x15;;U
 SA040449;Té;;ATLANTIC ROBINETTERIE;Té Égal en Polybutène (PB) Raccord Électrosoudable à Emboiture;B5183R302;25x25;;U
 SA043352;Robinetterie;;Chantier de l'Atlantique;Robinet Soupape à Clapet Attelé en Acier Inox Grade F316L - Enmanché Soudé - Volant;B5312A508;40;;U
 EF 000061;Tôle;Acier;;Tôles Acier pour Usages Généraux 2500x1250;A4113A105;0;15;M²
-3473449;Collier Omega;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;450;;U
+3473449;Collier;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;450;;U
 2603066;Poutrelle;;Prolians/Autres;Poutrelle en Acier S235 J - en U pour carlingage - petit profilé;A2123A102;60;6;U
 2713015;Poutrelle;;Prolians/Autres;UPN PERFORES EN ACIER LAMINE;A2120A104;30;4;U
 52730730;Bride;Acier;Saic;Bride à Collerette en Acier P245GH selon NF EN 1092-1- Norme : NF EN 1092-1-PN 10;B5213A810;300;7,1;U
 5000001480;Coude;Acier;Saic;Courbes à Souder en Acier - 90° Modèle 2D R=1.D BW;B5121A154;100;5,6;U
-36313904;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;125X65;4x3,2;U
+36313904;Réduction;;Saic;Réduction;B5123A120;125X65;4x3,2;U
 5000003774;Adaptateur;;Prolians/Autres;Adaptateur Male en Brass CuZn36Pb3-Male Gaz Cylindrique-Femelle filtage Gaz Cylindrique- Norme : NF E 03 005 - ISO 228-1;COAMU210AAPA00500;15x8;;U
 5000005086;Raccord;;Saic/ServHydrau;3 Pièces Mâle en Acier ASTM A 105 Emmanché Soudé-Mâle Filetage Gaz Cylindrique;B5232A101;15;;U
 3458571;Manchon;;Arcus;MANCHON A EMMANCHEMENT A SOUDER En acier inoxydable forgé – ANSI B 16.11 série 3000;B5221A501;20;;U
-5000004371;Collier Omega;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;125(128);40x4;U
+5000004371;Collier;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;125(128);40x4;U
 SA029858;Bande Insonorisante;;;GARNITURE INSONORISANTE TYPE DAMMGULAST;B6820E101;50x6;6;U
 SA032700;Bande Insonorisante;;;GARNITURE INSONORISANTE TYPE DAMMGULAST;B6820E101;30x6;6;U
 6000001472;Bande Insonorisante;;;GARNITURE INSONORISANTE TYPE DAMMGULAST;B6820E101;100x10;8;U
@@ -2018,41 +2018,41 @@ SA046763;Tube;PE;ATLANTIC ROBINETTERIE;Tube SDR17.6– Polyéthylène 10 bar (PE
 SA003963;Support Robinetterie;;Mecasoud / Picaud;Support de Robinetteries et Accessoires Tubes Type C;B2210A106;200;PN10;U
 EF 000005;Tôle;Acier;;Tôles Acier pour Usages Généraux 2500x1250;A4113A105;0;5;M²
 EF 000007;Tôle;Acier;;Tôles Acier pour Usages Généraux 2500x1250;A4113A105;0;8;M²
-6000001061;Collier Omega;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;250(294);50x10;U
+6000001061;Collier;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;250(294);50x10;U
 5000000261;Collier;;;SUPPORT ISOLANT ET COLLIER DEMI-COQUILLE TYPE II RENFORCE POUR GROS DIAMETRES;B2211A139;50;;U
-5000011296;Collier ;;SN HYDRO;COLLIERS ACIER A DEUX TROUS POUR TUYAUTERIE GRP;FICO01DT51ZZNE;200;;U
-5000011300;Collier ;;SN HYDRO;COLLIERS ACIER A DEUX TROUS POUR TUYAUTERIE GRP;FICO01DT51ZZNE;400;;U
-SA033241;Collier ;;SN HYDRO;COLLIERS ACIER INOX A DEMI-COQUILLES AVEC GARNITURE INSONORISANTE;B2211A125;25;;U
-SA033238;Collier ;;SN HYDRO;COLLIERS ACIER INOX A DEMI-COQUILLES AVEC GARNITURE INSONORISANTE;B2211A125;10(18);;U
-SA033239;Collier ;;SN HYDRO;COLLIERS ACIER INOX A DEMI-COQUILLES AVEC GARNITURE INSONORISANTE;B2211A125;15;;U
-SA033240;Collier ;;SN HYDRO;COLLIERS ACIER INOX A DEMI-COQUILLES AVEC GARNITURE INSONORISANTE;B2211A125;20;;U
-SA033242;Collier ;;SN HYDRO;COLLIERS ACIER INOX A DEMI-COQUILLES AVEC GARNITURE INSONORISANTE;B2211A125;32(42);;U
-SA033243;Collier ;;SN HYDRO;COLLIERS ACIER INOX A DEMI-COQUILLES AVEC GARNITURE INSONORISANTE;B2211A125;40;;U
-SA033244;Collier ;;SN HYDRO;COLLIERS ACIER INOX A DEMI-COQUILLES AVEC GARNITURE INSONORISANTE;B2211A125;50;;U
-SA033245;Collier ;;SN HYDRO;COLLIERS ACIER INOX A DEMI-COQUILLES AVEC GARNITURE INSONORISANTE;B2211A125;65;;U
-SA033246;Collier ;;SN HYDRO;COLLIERS ACIER INOX A DEMI-COQUILLES AVEC GARNITURE INSONORISANTE;B2211A125;80;;U
-SA040604;Collier ;;SN HYDRO;COLLIERS ACIER INOX A DEMI-COQUILLES AVEC GARNITURE INSONORISANTE;B2211A125;80(90);;U
-SA033247;Collier ;;SN HYDRO;COLLIERS ACIER INOX A DEMI-COQUILLES AVEC GARNITURE INSONORISANTE;B2211A125;100;;U
-SA033248;Collier ;;SN HYDRO;COLLIERS ACIER INOX A DEMI-COQUILLES AVEC GARNITURE INSONORISANTE;B2211A125;125;;U
-SA033249;Collier ;;SN HYDRO;COLLIERS ACIER INOX A DEMI-COQUILLES AVEC GARNITURE INSONORISANTE;B2211A125;150(160);;U
-SA040619;Collier ;;SN HYDRO;COLLIERS ACIER INOX A DEMI-COQUILLES AVEC GARNITURE INSONORISANTE;B2211A125;150;;U
-SA040606;Collier ;;SN HYDRO;COLLIERS ACIER INOX A DEMI-COQUILLES AVEC GARNITURE INSONORISANTE;B2211A125;200;;U
-SA038330;Collier ;;SN HYDRO;COLLIERS ACIER INOX A DEMI-COQUILLES AVEC GARNITURE INSONORISANTE;B2211A125;300;;U
+5000011296;Collier;;SN HYDRO;COLLIERS ACIER A DEUX TROUS POUR TUYAUTERIE GRP;FICO01DT51ZZNE;200;;U
+5000011300;Collier;;SN HYDRO;COLLIERS ACIER A DEUX TROUS POUR TUYAUTERIE GRP;FICO01DT51ZZNE;400;;U
+SA033241;Collier;;SN HYDRO;COLLIERS ACIER INOX A DEMI-COQUILLES AVEC GARNITURE INSONORISANTE;B2211A125;25;;U
+SA033238;Collier;;SN HYDRO;COLLIERS ACIER INOX A DEMI-COQUILLES AVEC GARNITURE INSONORISANTE;B2211A125;10(18);;U
+SA033239;Collier;;SN HYDRO;COLLIERS ACIER INOX A DEMI-COQUILLES AVEC GARNITURE INSONORISANTE;B2211A125;15;;U
+SA033240;Collier;;SN HYDRO;COLLIERS ACIER INOX A DEMI-COQUILLES AVEC GARNITURE INSONORISANTE;B2211A125;20;;U
+SA033242;Collier;;SN HYDRO;COLLIERS ACIER INOX A DEMI-COQUILLES AVEC GARNITURE INSONORISANTE;B2211A125;32(42);;U
+SA033243;Collier;;SN HYDRO;COLLIERS ACIER INOX A DEMI-COQUILLES AVEC GARNITURE INSONORISANTE;B2211A125;40;;U
+SA033244;Collier;;SN HYDRO;COLLIERS ACIER INOX A DEMI-COQUILLES AVEC GARNITURE INSONORISANTE;B2211A125;50;;U
+SA033245;Collier;;SN HYDRO;COLLIERS ACIER INOX A DEMI-COQUILLES AVEC GARNITURE INSONORISANTE;B2211A125;65;;U
+SA033246;Collier;;SN HYDRO;COLLIERS ACIER INOX A DEMI-COQUILLES AVEC GARNITURE INSONORISANTE;B2211A125;80;;U
+SA040604;Collier;;SN HYDRO;COLLIERS ACIER INOX A DEMI-COQUILLES AVEC GARNITURE INSONORISANTE;B2211A125;80(90);;U
+SA033247;Collier;;SN HYDRO;COLLIERS ACIER INOX A DEMI-COQUILLES AVEC GARNITURE INSONORISANTE;B2211A125;100;;U
+SA033248;Collier;;SN HYDRO;COLLIERS ACIER INOX A DEMI-COQUILLES AVEC GARNITURE INSONORISANTE;B2211A125;125;;U
+SA033249;Collier;;SN HYDRO;COLLIERS ACIER INOX A DEMI-COQUILLES AVEC GARNITURE INSONORISANTE;B2211A125;150(160);;U
+SA040619;Collier;;SN HYDRO;COLLIERS ACIER INOX A DEMI-COQUILLES AVEC GARNITURE INSONORISANTE;B2211A125;150;;U
+SA040606;Collier;;SN HYDRO;COLLIERS ACIER INOX A DEMI-COQUILLES AVEC GARNITURE INSONORISANTE;B2211A125;200;;U
+SA038330;Collier;;SN HYDRO;COLLIERS ACIER INOX A DEMI-COQUILLES AVEC GARNITURE INSONORISANTE;B2211A125;300;;U
 5000005154;Collier;;SN HYDRO;COLLIERS ACIER A DEUX TROUS POUR TUYAUTERIE GRP;FICO01DT20ZZNE;350;;U
-3473473;Collier Omega;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;600;;U
+3473473;Collier;;Stimy;Collier en Acier S235 J - Deux Trous - Traitement Galvanisé;B2211A114;600;;U
 3461548;Coude;;Saic;Courbes à Souder en Acier 90° - Modèle 3D (R=1.5D) BW;B5121A150;125;6,55;U
 3456463;Bride;;Saic;Bride à Collerette en Acier P245GH selon NF EN 1092-1- Norme : NF EN 1092-1-PN 16;B5213A812;65;5;U
-5000013514;Collier PB;;ATLANTIC ROBINETTERIE;Oméga Acier avec Garniture Insonorisante et Berceau Plastique;FICO06DT66ZZA7;200;;U
-5000013511;Collier PB;;SN HYDRO;Oméga Acier avec Garniture Insonorisante et Berceau Plastique;FICO06DT66ZZA7;100;;U
+5000013514;Collier;;ATLANTIC ROBINETTERIE;Oméga Acier avec Garniture Insonorisante et Berceau Plastique;FICO06DT66ZZA7;200;;U
+5000013511;Collier;;SN HYDRO;Oméga Acier avec Garniture Insonorisante et Berceau Plastique;FICO06DT66ZZA7;100;;U
 SA024055;Bossage;;ATLANTIC ROBINETTERIE;Bossage en Cupro-Nickel Prise de Mesure sur Collecteurs DN ≤ 32;B5177U501;32;;U
-SA040372;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique en Polybutène (M/F) Raccord Électrosoudable à Emboiture (PB);B5123R301;32x15;;U
-SA040369;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique en Polybutène (M/F) Raccord Électrosoudable à Emboiture (PB);B5123R301;25x10;;U
+SA040372;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R301;32x15;;U
+SA040369;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R301;25x10;;U
 SA040510;Manchon;;ATLANTIC ROBINETTERIE;MANCHON CLIP, JONCTION IFIT;B5235R303;25;;U
-5000000327;Raccord;;Sanimat / Prolians;Adaptateur Mâle en Bronze Cu Sp 4P - Jonction à Bague - Mâle Filetage Gaz Cylindrique  - Norme : NF A 51124 - Joint EPDM;COAMU300P8AA02409;10x10;;U
-SA040381;Réduction Concentrique;;ATLANTIC ROBINETTERIE;Réduction Concentrique en Polybutène (M/F) Raccord Électrosoudable à Emboiture (PB);B5123R301;50x20;;U
+5000000327;Raccord;;Sanimat / Prolians;Adaptateur Mâle en Bronze Cu Sp 4P - Jonction à Bague - Mâle Filetage Gaz Cylindrique  - Norme : NF A 51124 - Joint;COAMU300P8AA02409;10x10;;U
+SA040381;Réduction;;ATLANTIC ROBINETTERIE;Réduction;B5123R301;50x20;;U
 SA040467;Té;;ATLANTIC ROBINETTERIE;Té Réduit en Polybutène (PB) - Raccord Électrosoudable à Emboiture ;B5183R303;32x25x32;;U
 9000012793;Té;;ATLANTIC ROBINETTERIE;Té Réduit PB SA040464 et Adaptateur PB-IFIT SA040520;BRRTR300P4A815600;25x20;;U
-SA040514;Réduction IFIT;;ATLANTIC ROBINETTERIE;REDUCTION CLIP, JONCTION IFIT;B5123R302;20x15;;U
+SA040514;Réduction;;ATLANTIC ROBINETTERIE;REDUCTION CLIP, JONCTION IFIT;B5123R302;20x15;;U
 SA040574;Coude;;George Fischer;Coude 90° Clip avec Embout Femelle Fileté, Jonction IFIT;B5122R310;20;;U
 2100610;Serrurerie;;Mecasoud;Poutrelle à Ailes Parallèles HE Laminés à Chaud;A2140A102;;;M
 1002562;Serrurerie;;Mecasoud;Pitons Permanents pour Axes Calibrés sans Platine Calibre 16 à 42;B2412A102;;;U
@@ -2078,14 +2078,14 @@ SA016578;Coude;;;Courbes Long Rayon BW, 90°, en Acier Inox 316L Schedule 40S AN
 3458758;Bride;;;Brides Plates à Souder Acier Inoxydable 316L - PN10;B5211A502;300;;U
 3459284;Tube;Inox;Arcus;Tube Soudé en Acier inoxydable (TP 316L), Schedule 10S;A1120A502;300;4,57;ML
 3460002;Coude;;;Courbes 90° Long Rayon à Souder en Acier Inoxydable (TP 316L), Schedule 10S;B5121A502;300;4,57;U
-3459519;Réduction Concentrique;;Arcus;Réductions Concentriques, à Souder en Acier Inoxydable (WP 316L), pour Tubes Schedule 10S;B5123A501;80x40;3,05;U
+3459519;Réduction;;Arcus;Réduction;B5123A501;80x40;3,05;U
 3462366;Té;;Arcus;Tés à 90° Emmanchement à Souder, SW en Acier Inox. Forgé F 316L - ANSI B 16,11 Série 3000;B5256A502;32x32;;U
 3462382;Bossage;;Arcus;Bossage à Souder, SW (Acier Inox F 316L) Série 3000;B5171A506;65x20;;U
 5000015300;Coude;;;Coude 90° Court Rayon a Souder Forte Epaisseur;EL9SA100BEID008HA;200;15,09;U
 SA026070;Bride;;;Brides Plates à Souder acier - PN16;B5211A102;100;22;U
-5000002219;Jointage;;Joint Nantais;Joint Plat en Fibres Synthétiques et Minérales PN40 - Latty Graph;GKPLR310057PF00;65;2;U
-5000002215;Jointage;;Joint Nantais;Joint Plat en Fibres Synthétiques et Minérales PN40 - Latty Graph;GKPLR310057PF00;25;2;U
-5000002213;Jointage;;Joint Nantais;Joint Plat en Fibres Synthétiques et Minérales PN40 - Latty Graph;GKPLR310057PF00;15;2;U
+5000002219;Joint;;Joint;Joint;GKPLR310057PF00;65;2;U
+5000002215;Joint;;Joint;Joint;GKPLR310057PF00;25;2;U
+5000002213;Joint;;Joint;Joint;GKPLR310057PF00;15;2;U
 4435512;Tube;;Saic;Tubes sans Soudure en Acier;A1112A110;350;12,5;M
 4835512;Coude;;Saic;Courbe Acier Non Allié - à 90° - à Souder - R=1,5D pour Tubes API 5L - Suivant ANSI B16-11;B5121A111;350;12,7;U
 2858274;Bride;Acier;Saic;Bride à Collerette en Acier P245GH selon NF EN 1092-1- Norme : NF EN 1092-1-PN 10;B5213A810;350;12,5;U
@@ -2100,55 +2100,55 @@ SA037274;Bride;;Saic;Bride à Collerette en Acier P245GH selon NF EN 1092-1- Nor
 3458830;Bride;;Arcus;Brides Pleines Acier Inoxydable 316L PN16;B5216A503;25;18;U
 SA029888;Traversée;;Atlantis Montaza;Fourreau Acier Inox pour Tuyauterie Cryogénique;B5251A116;300;6;U
 5000018705;Bride;;;Bride avec Collet Encastré Passage Intégral en Acier - Piètement pour Contrôleur de Niveau avec Disque Métallique;FLHYA199WEPA005NOIH;100x65;;U
-SA009097;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN10;B2811E417;300;;U
-SA017231;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN10;B2811E417;350;;U
-SA017232;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN10;B2811E417;400;;U
-SA017233;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN10;B2811E417;450;;U
-SA017234;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN10;B2811E417;500;;U
-SA017235;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN10;B2811E417;600;;U
-SA017236;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN10;B2811E417;700;;U
-5000012611;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN10;B2811E417;800;;U
-5000012612;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN10;B2811E417;900;;U
-5000012613;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN10;B2811E417;1000;;U
-5000012614;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN10;B2811E417;1200;;U
-5000012615;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN10;B2811E417;1400;;U
-5000012616;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN10;B2811E417;1500;;U
-5000012617;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN10;B2811E417;1600;;U
-SA009098;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN16;B2811E417;100;;U
-SA009099;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN16;B2811E417;125;;U
-SA009100;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN16;B2811E417;150;;U
-SA009101;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN16;B2811E417;200;;U
-SA009102;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN16;B2811E417;250;;U
-SA009103;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN16;B2811E417;300;;U
-SA017237;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN16;B2811E417;350;;U
-SA017238;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN16;B2811E417;400;;U
-SA017239;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN16;B2811E417;450;;U
-SA017240;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN16;B2811E417;500;;U
-SA017241;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN16;B2811E417;600;;U
-5000014699;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN16;B2811E417;700;;U
-5000014720;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN16;B2811E417;800;;U
-SA009104;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN25;B2811E417;200;;U
-SA009105;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN25;B2811E417;250;;U
-SA009106;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN25;B2811E417;300;;U
-SA017242;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN25;B2811E417;350;;U
-SA017243;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN25;B2811E417;400;;U
-SA009107;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN40;B2811E417;8;;U
-SA009108;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN40;B2811E417;15;;U
-SA009109;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN40;B2811E417;20;;U
-SA009110;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN40;B2811E417;25;;U
-SA009111;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN40;B2811E417;32;;U
-SA009112;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN40;B2811E417;40;;U
-SA009113;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN40;B2811E417;50;;U
-SA009114;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN40;B2811E417;65;;U
-SA009115;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN40;B2811E417;80;;U
-SA009116;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN40;B2811E417;100;;U
-SA009117;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN40;B2811E417;125;;U
-SA009118;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN40;B2811E417;150;;U
-SA009119;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN40;B2811E417;200;;U
-SA009120;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN40;B2811E417;250;;U
-SA009121;Joint Plat;;Joint Nantais;Joint Plat Inscrit en Graphite sur Support Métallique - PN40;B2811E417;300;;U
+SA009097;Joint;;Joint;Joint;B2811E417;300;;U
+SA017231;Joint;;Joint;Joint;B2811E417;350;;U
+SA017232;Joint;;Joint;Joint;B2811E417;400;;U
+SA017233;Joint;;Joint;Joint;B2811E417;450;;U
+SA017234;Joint;;Joint;Joint;B2811E417;500;;U
+SA017235;Joint;;Joint;Joint;B2811E417;600;;U
+SA017236;Joint;;Joint;Joint;B2811E417;700;;U
+5000012611;Joint;;Joint;Joint;B2811E417;800;;U
+5000012612;Joint;;Joint;Joint;B2811E417;900;;U
+5000012613;Joint;;Joint;Joint;B2811E417;1000;;U
+5000012614;Joint;;Joint;Joint;B2811E417;1200;;U
+5000012615;Joint;;Joint;Joint;B2811E417;1400;;U
+5000012616;Joint;;Joint;Joint;B2811E417;1500;;U
+5000012617;Joint;;Joint;Joint;B2811E417;1600;;U
+SA009098;Joint;;Joint;Joint;B2811E417;100;;U
+SA009099;Joint;;Joint;Joint;B2811E417;125;;U
+SA009100;Joint;;Joint;Joint;B2811E417;150;;U
+SA009101;Joint;;Joint;Joint;B2811E417;200;;U
+SA009102;Joint;;Joint;Joint;B2811E417;250;;U
+SA009103;Joint;;Joint;Joint;B2811E417;300;;U
+SA017237;Joint;;Joint;Joint;B2811E417;350;;U
+SA017238;Joint;;Joint;Joint;B2811E417;400;;U
+SA017239;Joint;;Joint;Joint;B2811E417;450;;U
+SA017240;Joint;;Joint;Joint;B2811E417;500;;U
+SA017241;Joint;;Joint;Joint;B2811E417;600;;U
+5000014699;Joint;;Joint;Joint;B2811E417;700;;U
+5000014720;Joint;;Joint;Joint;B2811E417;800;;U
+SA009104;Joint;;Joint;Joint;B2811E417;200;;U
+SA009105;Joint;;Joint;Joint;B2811E417;250;;U
+SA009106;Joint;;Joint;Joint;B2811E417;300;;U
+SA017242;Joint;;Joint;Joint;B2811E417;350;;U
+SA017243;Joint;;Joint;Joint;B2811E417;400;;U
+SA009107;Joint;;Joint;Joint;B2811E417;8;;U
+SA009108;Joint;;Joint;Joint;B2811E417;15;;U
+SA009109;Joint;;Joint;Joint;B2811E417;20;;U
+SA009110;Joint;;Joint;Joint;B2811E417;25;;U
+SA009111;Joint;;Joint;Joint;B2811E417;32;;U
+SA009112;Joint;;Joint;Joint;B2811E417;40;;U
+SA009113;Joint;;Joint;Joint;B2811E417;50;;U
+SA009114;Joint;;Joint;Joint;B2811E417;65;;U
+SA009115;Joint;;Joint;Joint;B2811E417;80;;U
+SA009116;Joint;;Joint;Joint;B2811E417;100;;U
+SA009117;Joint;;Joint;Joint;B2811E417;125;;U
+SA009118;Joint;;Joint;Joint;B2811E417;150;;U
+SA009119;Joint;;Joint;Joint;B2811E417;200;;U
+SA009120;Joint;;Joint;Joint;B2811E417;250;;U
+SA009121;Joint;;Joint;Joint;B2811E417;300;;U
 3462218;Robinetterie;;Chantier de l'Atlantique;Robinet de Réglage Vanne d'Équilibrage à Brides // - PN16;B5311A902;200;;U
-SA024717;Réduction Concentrique;;Arcus;Réductions Concentriques, à Souder en Acier Inoxydable (WP 316L), pour Tubes Schedule 10S;B5123A501;300x200;4,57;U
+SA024717;Réduction;;Arcus;Réduction;B5123A501;300x200;4,57;U
 SA000120;Raccord;;Arcus;Raccord Mâle en Acier Inoxydable Mâle Fileté Gaz Cylindrique / Femelle à Souder;B5250A501;15;;U
 5000009961;Robinetterie;;Chantier de l'Atlantique;CLAPET DE NON RETOUR EN INOX 316 A DOUBLE BATTANT A INSERER ENTRE BRIDES;CVN2A597F8ID000PD00;50;;U
 SA017183;Robinetterie;;Chantier de l'Atlantique;Robinet à Tournant Sphérique 3 Pièces avec Platine ISO Passage Intégral;B5314A513;50;;U
@@ -2158,7 +2158,7 @@ SA030582;ECHELLE 4;Acier;Atlantis Montaza;Échelles Verticales E1A30;C7112A110;4
 SA030597;ECHELLE 9;Acier;Atlantis Montaza;Échelles Verticales E6A30;C7112A110;9M;;U
 SA026376;Dalot;;Blucher;Dalot en Acier Inox. À Emboitement;B5512A504;65;;U
 1017349;Bride;;Saic;Brides Pleines PN10 en Acier;B5216A101;300;;U
-SA033852;Réduction Excentrique;;Saic;Réduction Excentrique en AcierP265GH selon NF EN 10253-2 - Chanfreiné -;B5123A123;450x300;10;U
+SA033852;Réduction;;Saic;Réduction;B5123A123;450x300;10;U
 1017322;Bride;;Saic;Brides Pleines PN10 en Acier;B5216A101;200;;U
 1667084;Accessoire;;Chouteau;Accessoires sur Extrémité Tuyaux Entonnoir à Souder (Récupération Purges);B5145A130;25;2;U
 3566226;Coude;;;Coude 90° Long Rayon en Acier Inox WP316L selon ASTM A403-Chanfreine Norme : ASME/ANSI B16.9;EL9LA505BEID10200;350;;U
@@ -2170,8 +2170,8 @@ SA024408;Manchon;;ATLANTIC ROBINETTERIE;Manchons Réduit à Emmanchement à Soud
 SA020060;Bride;;Saic;BRIDES AVEC COLLERETTE à SOUDER en acier forgé – PN 25;B5213A105;200;80;U
 SA016552;Tube;Inox;;Tube Soudé en Acier Inoxydable 316L Schedule 40S;A1120A507;32;3,56;ML
 SA038672;Té;;Saic;TE REDUIT EN ACIER FORGE BUTT WELDING;B5256A205;50X32;2,9;U
-3457974;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;65x50;9,53;U
-5000002091;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;50x25;8,8;U
+3457974;Réduction;;Saic;Réduction;B5123A120;65x50;9,53;U
+5000002091;Réduction;;Saic;Réduction;B5123A120;50x25;8,8;U
 SA057641;Tube;Acier;Saic;Tubes en Acier Galvanisé avec Soudure Longitudinale;A1112A107;50;4,5;M
 SA043448;Coude;;;Coude Rainuré à 11,25deg Petit Rayon - Galva;B5121A908;50;;U
 SA039656;Robinetterie;;NA;ROB TOURN SPHÉ LAITON 4;B5314U214;4;;U
@@ -2332,7 +2332,7 @@ SA026838;Robinetterie;;AQUIRO;Rob Clapet Attelé Acier 15;B5312A102;;;U
 5000008763;Robinetterie;;NA;Rob Tour spher 316 F F trou décompr 15;;;;U
 5000008937;;;NA;clapet de non retour pour ultra fog DN15;;;;U
 5000009706;;;NA;PURGEUR CONDENSATS CONA S 25-630 DN 15;;;;U
-5000010146;;;NA;Valv Fem.Mech Joint end Fem.gaz cyl DN15;;;;U
+5000010146;;;NA;Valv Fem.Mech Joint;;;;U
 5000010777;;;NA;Vanne de régulation en fonte RGS 15;;;;U
 5000011164;;;NA;RTS ultrafog TP316L Mic Switch DN15;;;;U
 5000012645;;;NA;Filtre-Y bride PN16 INOX DN15;;;;U
@@ -2633,7 +2633,7 @@ SA036713;Tube;Cuivre;Prolians;Tube Cuivre Écroui;A1111U101;10;1,5;ML
 SA036714;Tube;Cuivre;Prolians;Tube Cuivre Écroui;A1111U101;12;1,5;ML
 35241008;TE;;Chantier de l'Atlantique;TE DE REMPLISSAGE A VISSER – EN LAITON;B5580U210;8;;U
 35241010;TE;;Chantier de l'Atlantique;TE DE REMPLISSAGE A VISSER – EN LAITON;B5580U211;10;;U
-70000018;JOINT;;NA;JOINTS EN FIBRE ROUGE;B2823B301;18;;U
+70000018;Joint;;NA;Joint;B2823B301;18;;U
 35105311;Raccord;;NA;RACCORD UNION SIMPLE FEMELLE – LAITON;B5232U208;10/01/2002;;U
 35105307;Raccord;;NA;RACCORD UNION SIMPLE FEMELLE – LAITON;B5232U208;08/01/2004;;U
 35105308;Raccord;;NA;RACCORD UNION SIMPLE FEMELLE – LAITON;B5232U208;08/01/2002;;U
@@ -2642,10 +2642,10 @@ SA036714;Tube;Cuivre;Prolians;Tube Cuivre Écroui;A1111U101;12;1,5;ML
 SA058504;Raccord;;NA;MAMELON REDUIT LAITON FILETE A TETON;B5233U201;1/2-1/4;;U
 35041512;Raccord;;NA;MAMELON REDUIT LAITON FILETE A TETON;B5233U201;1/2-3/8;;U
 35042008;Raccord;;NA;MAMELON REDUIT LAITON FILETE A TETON;B5233U201;3/4-3/8;;U
-35349617;JOINT;;NA;JOINT ANNULAIRE EN CUIVRE;B2813U101;01-avr;;U
-35349613;JOINT;;NA;JOINT ANNULAIRE EN CUIVRE;B2813U101;01-août;;U
-35349621;JOINT;;NA;JOINT ANNULAIRE EN CUIVRE;B2813U101;03-août;;U
-35349626;JOINT;;NA;JOINT ANNULAIRE EN CUIVRE;B2813U101;01-févr;;U
+35349617;Joint;;NA;Joint;B2813U101;01-avr;;U
+35349613;Joint;;NA;Joint;B2813U101;01-août;;U
+35349621;Joint;;NA;Joint;B2813U101;03-août;;U
+35349626;Joint;;NA;Joint;B2813U101;01-févr;;U
 55100010;MANOMETRE;;Chantier de l'Atlantique;MANOMETRES METALLIQUES INDICATEURS TAILLE NOMINALE DN 100 0 à +10;B7213A501;DN15;;U
 SA033847;MANOMETRE;;Chantier de l'Atlantique;MANOMETRES METALLIQUES INDICATEURS TAILLE NOMINALE DN 100 -1 à +3;B7213A501;DN15;;U
 SA036850;TRANSMETTEUR;;Chantier de l'Atlantique;TRANSMETTEUR DE PRESSION RELATIVE  0/+6;B7212A500;15;;U
@@ -2654,8 +2654,8 @@ SA039452;Robinetterie;;Chantier de l'Atlantique;ROB-ZV VANNE ACT EL-HYD-PN;;;;U
 SA003411;Raccord;;NA;RACCORD UNION SIMPLE MALE GAZ CYLINDRIQUE CUPRO ALU;B5232U407;10/03/2008;;U
 5000012480;Raccord;;NA;RACCORD UNION SIMPLE MALE GAZ CYLINDRIQUE CUPRO ALU;B5232U407;10/01/2002;;U
 1017365;Bride;;Saic;Brides Pleines PN10 en Acier;B5216A101;400;;U
-3461351;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;65x32;9,5x6,3;U
-3459365;Réduction Concentrique;;Arcus;Réductions Concentriques, à Souder en Acier Inoxydable (WP 316L), pour Tubes Schedule 10S;B5123A501;32x15;2,77;U
+3461351;Réduction;;Saic;Réduction;B5123A120;65x32;9,5x6,3;U
+3459365;Réduction;;Arcus;Réduction;B5123A501;32x15;2,77;U
 SA024058;Bride;;Arcus;Bride à Colerette à Souder en Acier Inoxydable PN40 - pour Tubes Schedule 10S;B5213A514;15;2,11;U
 35242010;Té;;Sanimat / Prolians;Té égal en Cuivre DPH selon NF EN 1057+A1-femelle brasee-- Norme :NF EN 1254-1;B5256U101;8;0,6;U
 SA015031;Bride;;Saic;Bride Taraudée en Acier - PN 16;B5216A108;50;;U
@@ -2733,10 +2733,10 @@ SA003292;SONDE;;Chantier de l'Atlantique;INST-TT SONDE TEMPERATURE;;20;;U
 55100016;MANOMETRE;;Chantier de l'Atlantique;MANOMETRES METALLIQUES INDICATEURS TAILLE NOMINALE DN 100 0à +16;B7213A501;DN15;;U
 EF 000006;Tôle;Acier;;Tôles Acier pour Usages Généraux 2500x1250;A4113A105;0;6;M²
 SA017181;Robinetterie;;Chantier de l'Atlantique;Robinet à Tournant Sphérique 3 Pièces avec Platine ISO Passage Intégral;B5314A513;32;;U
-3459357;Réduction Concentrique;;Arcus;Réductions Concentriques, à Souder en Acier Inoxydable (WP 316L), pour Tubes Schedule 10S;B5123A501;32x20;2,77;U
+3459357;Réduction;;Arcus;Réduction;B5123A501;32x20;2,77;U
 SA024059;Bride;;Arcus;Bride à Colerette à Souder en Acier Inoxydable PN40 - pour Tubes Schedule 10S;B5213A514;20;2,11;U
 5000012173;Bride;;Arcus;Bride à Colerette en Acier Inox Grade F316L selon ASTM A182 / A182M Norme : NF EN 1759-1 Type 11 12 13-Class 150;FLWNA506F5BE022CA00;80;3,05;U
-SA012412;Joint Plat;;;Joint Plat Inscrit en Fibres Synthétiques + Nitrile (Pour Brides Class 150);B2811E431;80;2;U
+SA012412;Joint;;;Joint;B2811E431;80;2;U
 5000012217;Bride;;Arcus;Bride Pleine en Acier Inox forgé grade 316L selon ASTM A182 Norme : NF EN 1759-1 Type 5-Class 150;FLBLA509F5051CA00;80;4,1;U
 SA020069;Bride;;Saic;Brides avec Collerette à Souder en Acier Forgé PN40;B5213A106;65;2,9;U
 SA042075;Tube;Acier;Saic;Tubes Acier avec Soudure Longitudinal;A1112A109;350;10;M
@@ -2755,11 +2755,11 @@ SA019557;Coude;;Arcus;Coude 90° Court Rayon en Acier Inox WP316L selon ASTM A40
 3458928;Bride;;;Brides Pleines Acier Inoxydable 316L PN10;B5216A502;200;;U
 3460770;Bouchon;;ATLANTIC ROBINETTERIE;Bouchon Mâle en Acier Inox 316L (Filetage Gaz Cylindrique);B5248A501;20;;U
 5000014890;Robinetterie;;AQUIRO;Robinet Soupape à Clapet Attelé en Acier Inox Grade F316L - Enmanché Soudé - Volant;B5312A508;20;;U
-SA037422;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;150x80;;U
-36308804;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;80x40;;U
+SA037422;Réduction;;Saic;Réduction;B5123A120;150x80;;U
+36308804;Réduction;;Saic;Réduction;B5123A120;80x40;;U
 SA008062;Manchette;;;Manchette Marpol Décharge Combustible et Huile et Boues d'Hydrocarbures;B5132A101;40;;U
 SA003277;Coude;Acier;Saic;Courbes à Souder en Acier - 90° Modèle 2D R=1.D BW;B5121A154;80;3,2;U
-SA042215;Réduction Excentrique;;Saic;Réduction Excentrique en AcierP265GH selon NF EN 10253-2 - Chanfreiné -;B5123A123;80x65;3,2;U
+SA042215;Réduction;;Saic;Réduction;B5123A123;80x65;3,2;U
 2108224;Manchette;;;"Manchette Droite Simple à Bride - Vidange Capacité Téléjaugeage - dégagement d'Air Caisson Prise d'Eau - ""T1""";B5161A103_VTD-N;100;;U
 2108208;Manchette;;;"Manchette Droite Simple à Bride - Habillage Ballast (Event) - ""T1""";B5161A103_HB-N;65;;U
 3452182;Manchette;;;"Manchette Droite Simple à Bride - Habillage Ballast (Event) - ""T1""";B5161A103_HB-N;80;;U
@@ -2767,7 +2767,7 @@ SA028830;Robinetterie;;;Filtre à Panier Type Droit en Fonte 360µ ;B5472A903;40
 SA057506;;;;"Passage Libre ""L""";B5150A104;40;;U
 3461653;Coude;;Saic;Courbe à Souder en Acier - 90° - Modèle 3D (R=1.5D) BW;B5121A150;350;9,53;U
 SA038669;Té;;Saic;Té Égal en Acier Forgé Butt Welding;B5256A204;200;6,35;U
-SA030553;Réduction Concentrique;;Arcus;Réductions Concentriques, à Souder en Acier Inoxydable (WP 316L), pour Tubes Schedule 10S;B5123A501;400x200;4,78x3,76;U
+SA030553;Réduction;;Arcus;Réduction;B5123A501;400x200;4,78x3,76;U
 SA048182;Bride;;Arcus;Brides Plates à Souder Acier Inoxydable 316L PN16;B5211A501;200;26;U
 5300010;Plat;Acier;Prolians/Autres;Plat Acier Laminé à Chaud pour Usages Généraux;A4211A102;30;10;ML
 SA030017;Bride;;Arcus;Bride à Colerette à Souder en Acier Inoxydable PN40 - pour Tubes Schedule 10S;B5213A514;65;3,05;U
@@ -2809,24 +2809,24 @@ CUGCUMF18x1/2;Raccord;;Sanimat / Prolians;Manchon Femelle GCU;;"15x1/2""";;U
 "CURUMF35x1""1/4";Raccord;;Sanimat / Prolians;Raccord Union MF  a visser;;"32X1""1/4";;U
 "CURUMF42x1""1/2";Raccord;;Sanimat / Prolians;Raccord Union MF  a visser;;"42x1""1/2";;U
 "CUMDFF42x1""1/2";Raccord;;Sanimat / Prolians;Manchon droit FF a braser;;"42x1""1/2";;U
-35244010;Réduction Cuivre;;Sanimat / Prolians;Réduction Concentrique en Cuivre DPH selon NF EN 1057+A1-femelle brasee-- Norme : NF EN 1254-1;B5251U103;8x6;;U
-35244011;Réduction Cuivre;;Sanimat / Prolians;Réduction Concentrique en Cuivre DPH selon NF EN 1057+A1-femelle brasee-- Norme : NF EN 1254-1;B5251U103;10x6;;U
-35244012;Réduction Cuivre;;Sanimat / Prolians;Réduction Concentrique en Cuivre DPH selon NF EN 1057+A1-femelle brasee-- Norme : NF EN 1254-1;B5251U103;10x8;;U
-SA032754;Réduction Cuivre;;Sanimat / Prolians;Réduction Concentrique en Cuivre DPH selon NF EN 1057+A1-femelle brasee-- Norme : NF EN 1254-1;B5251U103;12x8;;U
-SA032755;Réduction Cuivre;;Sanimat / Prolians;Réduction Concentrique en Cuivre DPH selon NF EN 1057+A1-femelle brasee-- Norme : NF EN 1254-1;B5251U103;12x10;;U
-35244017;Réduction Cuivre;;Sanimat / Prolians;Réduction Concentrique en Cuivre DPH selon NF EN 1057+A1-femelle brasee-- Norme : NF EN 1254-1;B5251U103;15x10;;U
-SA032756;Réduction Cuivre;;Sanimat / Prolians;Réduction Concentrique en Cuivre DPH selon NF EN 1057+A1-femelle brasee-- Norme : NF EN 1254-1;B5251U103;15x12;;U
-35244020;Réduction Cuivre;;Sanimat / Prolians;Réduction Concentrique en Cuivre DPH selon NF EN 1057+A1-femelle brasee-- Norme : NF EN 1254-1;B5251U103;20x10;;U
-SA032757;Réduction Cuivre;;Sanimat / Prolians;Réduction Concentrique en Cuivre DPH selon NF EN 1057+A1-femelle brasee-- Norme : NF EN 1254-1;B5251U103;20x12;;U
-35244022;Réduction Cuivre;;Sanimat / Prolians;Réduction Concentrique en Cuivre DPH selon NF EN 1057+A1-femelle brasee-- Norme : NF EN 1254-1;B5251U103;20x15;;U
-35244028;Réduction Cuivre;;Sanimat / Prolians;Réduction Concentrique en Cuivre DPH selon NF EN 1057+A1-femelle brasee-- Norme : NF EN 1254-1;B5251U103;25x20;;U
-SA033080;Réduction Cuivre;;Sanimat / Prolians;Réduction Concentrique en Cuivre DPH selon NF EN 1057+A1-femelle brasee-- Norme : NF EN 1254-1;B5251U103;32x20;;U
-SA032792;Réduction Cuivre;;Sanimat / Prolians;Réduction Concentrique en Cuivre DPH selon NF EN 1057+A1-femelle brasee-- Norme : NF EN 1254-1;B5251U103;32x25;;U
-SA033087;Réduction Cuivre;;Sanimat / Prolians;Réduction Concentrique en Cuivre DPH selon NF EN 1057+A1-femelle brasee-- Norme : NF EN 1254-1;B5251U103;40x20;;U
-SA033088;Réduction Cuivre;;Sanimat / Prolians;Réduction Concentrique en Cuivre DPH selon NF EN 1057+A1-femelle brasee-- Norme : NF EN 1254-1;B5251U103;40x25;;U
-SA033081;Réduction Cuivre;;Sanimat / Prolians;Réduction Concentrique en Cuivre DPH selon NF EN 1057+A1-femelle brasee-- Norme : NF EN 1254-1;B5251U103;40x32;;U
-SA033090;Réduction Cuivre;;Sanimat / Prolians;Réduction Concentrique en Cuivre DPH selon NF EN 1057+A1-femelle brasee-- Norme : NF EN 1254-1;B5251U103;50x20;;U
-SA033082;Réduction Cuivre;;Sanimat / Prolians;Réduction Concentrique en Cuivre DPH selon NF EN 1057+A1-femelle brasee-- Norme : NF EN 1254-1;B5251U103;50x32;;U
+35244010;Réduction;;Sanimat / Prolians;Réduction;B5251U103;8x6;;U
+35244011;Réduction;;Sanimat / Prolians;Réduction;B5251U103;10x6;;U
+35244012;Réduction;;Sanimat / Prolians;Réduction;B5251U103;10x8;;U
+SA032754;Réduction;;Sanimat / Prolians;Réduction;B5251U103;12x8;;U
+SA032755;Réduction;;Sanimat / Prolians;Réduction;B5251U103;12x10;;U
+35244017;Réduction;;Sanimat / Prolians;Réduction;B5251U103;15x10;;U
+SA032756;Réduction;;Sanimat / Prolians;Réduction;B5251U103;15x12;;U
+35244020;Réduction;;Sanimat / Prolians;Réduction;B5251U103;20x10;;U
+SA032757;Réduction;;Sanimat / Prolians;Réduction;B5251U103;20x12;;U
+35244022;Réduction;;Sanimat / Prolians;Réduction;B5251U103;20x15;;U
+35244028;Réduction;;Sanimat / Prolians;Réduction;B5251U103;25x20;;U
+SA033080;Réduction;;Sanimat / Prolians;Réduction;B5251U103;32x20;;U
+SA032792;Réduction;;Sanimat / Prolians;Réduction;B5251U103;32x25;;U
+SA033087;Réduction;;Sanimat / Prolians;Réduction;B5251U103;40x20;;U
+SA033088;Réduction;;Sanimat / Prolians;Réduction;B5251U103;40x25;;U
+SA033081;Réduction;;Sanimat / Prolians;Réduction;B5251U103;40x32;;U
+SA033090;Réduction;;Sanimat / Prolians;Réduction;B5251U103;50x20;;U
+SA033082;Réduction;;Sanimat / Prolians;Réduction;B5251U103;50x32;;U
 SA032845;Té;;Sanimat / Prolians;Té réduit en Cuivre DPH selon NF EN 1057+A1-femelle brasee-- Norme : NF EN 1254-1;B5256U106;10x6x10;;U
 SA032846;Té;;Sanimat / Prolians;Té réduit en Cuivre DPH selon NF EN 1057+A1-femelle brasee-- Norme : NF EN 1254-1;B5256U106;10x8x10;;U
 SA032847;Té;;Sanimat / Prolians;Té réduit en Cuivre DPH selon NF EN 1057+A1-femelle brasee-- Norme : NF EN 1254-1;B5256U106;12x10x12;;U
@@ -2876,7 +2876,7 @@ SA031950;Té;;Sanimat / Prolians;Té égal en Cuivre DPH selon NF EN 1057+A1-fem
 2780950;Té;;Sanimat / Prolians;Té égal en Cuivre DPH selon NF EN 1057+A1-femelle brasee-- Norme :NF EN 1254-1;B5256U101;40;1,6;U
 SA031949;Té;;Sanimat / Prolians;Té égal en Cuivre DPH selon NF EN 1057+A1-femelle brasee-- Norme :NF EN 1254-1;B5256U101;50;1,2;U
 ACRU3pcsFF40;Raccord;;;Raccord Union 3 pcs FF a visser;;40;;U
-SA033091;Réduction Cuivre;;Sanimat / Prolians;Réduction Concentrique en Cuivre DPH selon NF EN 1057+A1-femelle;B5251U103;50x40;;U
+SA033091;Réduction;;Sanimat / Prolians;Réduction;B5251U103;50x40;;U
 "CUMDMF42x1""1/2";Raccord;;Sanimat / Prolians;Manchon droit MF a braser;;40;;U
 "CUMDMF18x1/2""";Raccord;;Sanimat / Prolians;Manchon droit MF a braser;;15;;U
 "CURUMF18x1/2""";Raccord;;;Raccord Union MF  a visser;;15;;U
@@ -2900,14 +2900,14 @@ SA032758;TRANSMETTEUR;;Chantier de l'Atlantique;TRANSMETTEUR DE PRESSION RELATIV
 9000012795;Té;;ATLANTIC ROBINETTERIE;Té Réduit PB SA040464 et Adaptateur PB-IFIT SA040520;BRRTR300P4A815600;32x15;;U
 SA040555;Té;;;Te Egal Clip Filete Jonction Ifit;B5183R307;15x15;;U
 5000005069;Té;;;Te Laiton triple Filetage Femelle;BRETU204PAID00500;15x15;;U
-SA033876;Manchon;;ATLANTIC ROBINETTERIE;Manchon Union Mâle et Femelle Filetés à Joint Conique en Fonte;B5235A901;8;;U
+SA033876;Manchon;;ATLANTIC ROBINETTERIE;Manchon Union Mâle et Femelle Filetés à Joint;B5235A901;8;;U
 2806007;Cornière;Acier;Prolians/Autres;Cornières à Ailes Inégales et à Coins Arrondis Laminées à Chaud;A2112A102;80x60;7;ML
 5000001308;Tube;;;Tube Soudé en Acier Inox TP 316L selon ASTM A312/A312M Chanfreine-- Norme : ASME/ANSI B36.19M-Cryogenie;PILWA503BEID10316;50;5,54;ML
 5000001331;Tube;;;Tube Soudé en Acier Inox TP 316L selon ASTM A312/A312M Chanfreine-- Norme : ASME/ANSI B36.19M-Cryogenie;PILWA503BEID10316;32;4,85;ML
-SA037412;Réduction Concentrique;;Saic;Réductions Concentriques à Souder - en Acier Réduction de 1DN - 2DN - 3DN;B5123A120;50x25;4;U
+SA037412;Réduction;;Saic;Réduction;B5123A120;50x25;4;U
 SA003410;Raccord;;NA;RACCORD UNION SIMPLE MALE GAZ CYLINDRIQUE EN CUPRO ALU;B5232U407;DN8x1/4;;U
-5000000356;Raccord;;Sanimat / Prolians;Adaptateur Mâle en Bronze Cu Sp 4P - Jonction à Bague - Mâle Filetage Gaz Cylindrique  - Norme : NF A 51124 - Joint EPDM;COAMU300P8AA02409;25x15;;U
-5000000362;Raccord;;Sanimat / Prolians;Adaptateur Mâle en Bronze Cu Sp 4P - Jonction à Bague - Mâle Filetage Gaz Cylindrique  - Norme : NF A 51124 - Joint EPDM;COAMU300P8AA02409;32x25;;U
+5000000356;Raccord;;Sanimat / Prolians;Adaptateur Mâle en Bronze Cu Sp 4P - Jonction à Bague - Mâle Filetage Gaz Cylindrique  - Norme : NF A 51124 - Joint;COAMU300P8AA02409;25x15;;U
+5000000362;Raccord;;Sanimat / Prolians;Adaptateur Mâle en Bronze Cu Sp 4P - Jonction à Bague - Mâle Filetage Gaz Cylindrique  - Norme : NF A 51124 - Joint;COAMU300P8AA02409;32x25;;U
 5000010911;Vanne;;Chantier de l'Atlantique;Vanne 3 voies pilotée en Fonte GG25-Femelle gaz cylindrique- Norme :NF EN 1092-1 Type 11 12 13-PN 16-Actionneur Electrique;VA3GA950PAID019PDQ00;15;;U
 9000012792;Té;;ATLANTIC ROBINETTERIE;Té Réduit PB SA040462 et Adaptateur PB-IFIT SA040519;BRRTR300P4A815600;25x15;;U
 SA031642;Té;;Sanimat / Prolians;Té Réduit - Triple Femelle Raccord par Sertissage en Cuivre;B5256U104;32x12x32;;U
@@ -2916,7 +2916,7 @@ SA014583;Coude;;Sanimat / Prolians;Coude à 90° - Double Femelle Raccord par Se
 SA014860;Coude;;Sanimat / Prolians;Coude à 45° - Double Femelle Raccord par Sertissage en Cuivre;B5255U103;12;;U
 SA040840;Traversée;;Roxtec;Tampon Roxtec RS PPS/S avec Fourreau Acier, Inox ou Aluminium pour Tuayuterie Plastique S20;B5153E114;Ø26 a 48;;U
 SA053762;Raccord;;ATLANTIC ROBINETTERIE;MANCHON DE TRANSITION PE/ LAITON AVEC FILETAGE MALE ELECTRO-SOUDABLE PE100 SDR11 POLYETHYLENE 16 bar;B5233R304;20x3/4'';;U
-GCU 341-22;Raccord;;Autres;Raccord union L341GCU droit, à joint sphéro-cônique, mâle à visser - femelle à souder;;22x3/4'';;U
+GCU 341-22;Raccord;;Autres;Raccord union L341GCU droit, à Joint;;22x3/4'';;U
 GCU 243-22;Raccord;;Autres;Mamelon L243GCU femelle à souder - mâle à visser;;22x3/4'';;U
 5000002783;Raccord;;Autres;MANCHON ELECTROFUSION PE 100 SDR11 POLYETHYLENE 16bar;;20;;U
 GCU 243-18;Raccord;;Autres;Mamelon L243GCU femelle à souder - mâle à visser;;18x1/2'';;U
@@ -2935,48 +2935,48 @@ PUR1 3/8;PURGEUR;;Autres;purgeur d’air petit débit a flootteur FLEXVENT en la
 GCU 270-18;Raccord;;Autres;Manchon Laiton à Souder Femelle;;DN15;;U
 HYDR.BOX 883;ARMOIRE;;ELECTRIQUE;ARMOIRE RITAL 800x800x300;;;;U
 SA053761;Raccord;;ATLANTIC ROBINETTERIE;MANCHON DE TRANSITION PE/ LAITON AVEC FILETAGE MALE ELECTRO-SOUDABLE PE100 SDR11 POLYETHYLENE 16 bar;B5233R304;25x1'';;U
-GCU 341-28;Raccord;;Autres;Raccord union L341GCU droit, à joint sphéro-cônique, mâle à visser - femelle à souder;;28x1'';;U
+GCU 341-28;Raccord;;Autres;Raccord union L341GCU droit, à Joint;;28x1'';;U
 SA042661;Raccord;;Autres;MANCHON ELECTROFUSION PE 100 SDR11 POLYETHYLENE 16bar;;25;;U
 860M.25;Vanne;;Autres;VANNES AUTOEQUILIBRANTES FLOWCON ;;25;;U
 SA042590;Tube;;ATLANTIC ROBINETTERIE;TUBE SDR11– POLYETHYLENE 16 bar (PE - 100);A1120R303;25;;ML
 SA042589;Tube;;ATLANTIC ROBINETTERIE;TUBE SDR11– POLYETHYLENE 16 bar (PE - 100);;20;;ML
 SA053769;Raccord;;ATLANTIC ROBINETTERIE;MANCHON DE TRANSITION PE/ LAITON AVEC FILETAGE MALE ELECTRO-SOUDABLE PE100 SDR11 POLYETHYLENE 16 bar;B5233R304;40x11/4'';;U
-GCU 341-35;Raccord;;Autres;Raccord union L341GCU droit, à joint sphéro-cônique, mâle à visser - femelle à souder;;35x11/4'';;U
+GCU 341-35;Raccord;;Autres;Raccord union L341GCU droit, à Joint;;35x11/4'';;U
 GCU 243-35;Raccord;;Autres;Mamelon L243GCU femelle à souder - mâle à visser;;35x11/4'';;U
 860M.32;Vanne;;Autres;VANNES AUTOEQUILIBRANTES FLOWCON ;;32;;U
 HYDR.BOX 1083;ARMOIRE;;ELECTRIQUE;ARMOIRE RITAL 1000x800x300;;;;U
-GCU 341-42;Raccord;;Autres;Raccord union L341GCU droit, à joint sphéro-cônique, mâle à visser - femelle à souder;;42x11/2';;U
+GCU 341-42;Raccord;;Autres;Raccord union L341GCU droit, à Joint;;42x11/2';;U
 GCU 243-42;Raccord;;Autres;Mamelon L243GCU femelle à souder - mâle à visser;;42x11/2';;U
 860M.40;Vanne;;Autres;VANNES AUTOEQUILIBRANTES FLOWCON;;40;;U
 HYDR.BOX 1063;ARMOIRE;;ELECTRIQUE;ARMOIRE RITAL 1000x600x300;;;;U
-SA042953;COLLET;;ATLANTIC ROBINETTERIE;COLLET ELECTRO-SOUDABLE PE100 SDR11 POLYETHYLENE 16 bar;B5141R303;50;5,8;U
+SA042953;Collet;;ATLANTIC ROBINETTERIE;COLLET ELECTRO-SOUDABLE PE100 SDR11 POLYETHYLENE 16 bar;B5141R303;50;5,8;U
 SA058724;Bride;;ATLANTIC ROBINETTERIE;BRIDES TOURNANTES PP-V;B5214R304;50;24;U
 SA031972;Bride;;Autres;COLLET AVEC BRIDE PN 10 EN BRONZE RACCORD EN CUIVRE A BRASER ;B5141U101;50;;U
-5000000066;Collier VFE;;SN HYDRO/ AUTRES;Support Isolant Type VIII et Collier Demi-Coquille ;B2211A117;50;19;U
+5000000066;Collier;;SN HYDRO/ AUTRES;Support Isolant Type VIII et Collier Demi-Coquille ;B2211A117;50;19;U
 860M.50;Vanne;;Autres;VANNES AUTOEQUILIBRANTES FLOWCON A BRIDES;;50;;U
 HYDR.BOX 12123;ARMOIRE;;ELECTRIQUE;ARMOIRE RITAL 1200x1200x300;;;;U
 HYDR.BOX 1263;ARMOIRE;;ELECTRIQUE;ARMOIRE RITAL 1200x600x300;;;;U
 SA041757;Tube;;Autres;TUBE – POLYPROPYLENE RETICULE (PP-R);A1120R302;125;17,1;ML
 SA041755;Tube;;Autres;TUBE – POLYPROPYLENE RETICULE (PP-R);A1120R302;80;12,3;ML
-SA041904;COLLET;;Autres;COLLET(FEMELLE) – POLYPROPYLENE RETICULE (PP-R);B5141R302;80;17;U
+SA041904;Collet;;Autres;COLLET(FEMELLE) – POLYPROPYLENE RETICULE (PP-R);B5141R302;80;17;U
 SA041807;Manchon;;Autres;MANCHON – POLYPROPYLENE RETICULE (PP-R);B5235R304;80;;U
-SA041903;COLLET;;Autres;COLLET(FEMELLE) – POLYPROPYLENE RETICULE (PP-R);B5141R302;65;16;U
+SA041903;Collet;;Autres;COLLET(FEMELLE) – POLYPROPYLENE RETICULE (PP-R);B5141R302;65;16;U
 SA041870;REDUCTION;;Autres;REDUCTION MALE / FEMELLE POLYPROPYLENE;B5123R303;65X80;;U
 SA041754;Tube;;Autres;TUBE – POLYPROPYLENE RETICULE (PP-R);A1120R302;65;10,3;ML
 SA041806;Manchon;;Autres;MANCHON – POLYPROPYLENE RETICULE (PP-R);B5235R304;65;;U
 SA041853;REDUCTION;;Autres;REDUCTION MALE / FEMELLE POLYPROPYLENE;B5123R303;50x65;;U
-SA041902;COLLET;;Autres;COLLET(FEMELLE) – POLYPROPYLENE RETICULE (PP-R);B5141R302;50;15,5;U
+SA041902;Collet;;Autres;COLLET(FEMELLE) – POLYPROPYLENE RETICULE (PP-R);B5141R302;50;15,5;U
 SA041753;Tube;;Autres;TUBE – POLYPROPYLENE RETICULE (PP-R);A1120R302;50;8,6;ML
 SA041805;Manchon;;Autres;MANCHON – POLYPROPYLENE RETICULE (PP-R);B5235R304;50;;U
 SA041844;REDUCTION;;Autres;REDUCTION MALE / FEMELLE POLYPROPYLENE;B5123R303;40x50;;U
 SA039977;Bride;;Autres;BRIDES TOURNANTES PVC-U NON PLASTIFIEE avec ARMATURE ACIER;B5214R504;40;;U
-SA041901;COLLET;;Autres;COLLET(FEMELLE) – POLYPROPYLENE RETICULE (PP-R);B5141R302;40;12;U
+SA041901;Collet;;Autres;COLLET(FEMELLE) – POLYPROPYLENE RETICULE (PP-R);B5141R302;40;12;U
 SA041756;Tube;;Autres;TUBE – POLYPROPYLENE RETICULE (PP-R);A1120R302;100;15,1;ML
-SA041905;COLLET;;Autres;COLLET(FEMELLE) – POLYPROPYLENE RETICULE (PP-R);B5141R302;100;18,5;U
+SA041905;Collet;;Autres;COLLET(FEMELLE) – POLYPROPYLENE RETICULE (PP-R);B5141R302;100;18,5;U
 SA041808;Manchon;;Autres;MANCHON – POLYPROPYLENE RETICULE (PP-R);B5235R304;100;;U
 33410100;FILTRE;;Autres;FILTRE FONTE EN Y A BRIDES // - PN16 - DN15 A 400;B5472A901;100;;U
 SA041873;REDUCTION;;Autres;REDUCTION MALE / FEMELLE POLYPROPYLENE;B5123R303;80x100;;U
-SA041900;COLLET;;Autres;COLLET(FEMELLE) – POLYPROPYLENE RETICULE (PP-R);B5141R302;32;12;U
+SA041900;Collet;;Autres;COLLET(FEMELLE) – POLYPROPYLENE RETICULE (PP-R);B5141R302;32;12;U
 SA041752;Tube;;Autres;TUBE – POLYPROPYLENE RETICULE (PP-R);A1120R302;40;6,9;ML
 SA041956;Raccord;;Autres;PIECE DE TRANSITION AVEC FILETAGE MALE POLYPROPYLENE RETICULE (PP-R);B5233R301;32;;U
 SA041751;Tube;;Autres;TUBE – POLYPROPYLENE RETICULE (PP-R);A1120R302;32;5,5;ML
@@ -2999,13 +2999,13 @@ SA041802;Manchon;;Autres;MANCHON – POLYPROPYLENE RETICULE (PP-R);B5235R304;25;
 SA041803;Manchon;;Autres;MANCHON – POLYPROPYLENE RETICULE (PP-R);B5235R304;32;;U
 SA041978;Bossage;;Autres;Bossage à visser femelle – POLYPROPYLENE RETICULE (PP-R);B5173R301;32/20 x 1/2’’ f;;U
 SA042094;Raccord;;Autres;RACCORD VISSER à SOUDER POLYPROPYLENE RETICULE (PP-R);B5250R300;25;;U
-3373035;COLLIER;;Autres;COLLIER PPR pour réseau eau chaude VFC;;25;;U
+3373035;Collier;;Autres;COLLIER PPR pour réseau eau chaude VFC;;25;;U
 SA041748;Tube;;Autres;TUBE – POLYPROPYLENE RETICULE (PP-R);A1120R302;15;2,8;ML
 SA041952;Raccord;;Autres;PIECE DE TRANSITION AVEC FILETAGE MALE POLYPROPYLENE RETICULE (PP-R);B5233R301;15;;U
 SA042104;Raccord;;Autres;RACCORD VISSER MALE et SOUDER;B5250R302;15;;U
 SA042176;TE REDUIT;;Autres;TE intermédiaire femelle – POLYPROPYLENE RETICULE (PP-R);B5183R311;15x ½’’ x15;;U
 SA041818;REDUCTION;;Autres;REDUCTION MALE / FEMELLE POLYPROPYLENE;B5123R303;15x32;;U
-3373023;COLLIER;;Autres;COLLIER PPR pour réseau eau chaude VFC;;15;;U
+3373023;Collier;;Autres;COLLIER PPR pour réseau eau chaude VFC;;15;;U
 SA041749;Tube;;Autres;TUBE – POLYPROPYLENE RETICULE (PP-R);A1120R302;20;3,5;ML
 SA041954;Raccord;;Autres;PIECE DE TRANSITION AVEC FILETAGE MALE POLYPROPYLENE RETICULE (PP-R);B5233R301;20;;U
 SA042105;Raccord;;Autres;RACCORD VISSER MALE et SOUDER;B5250R302;20;;U
@@ -3013,15 +3013,15 @@ SA041812;REDUCTION;;Autres;REDUCTION MALE / FEMELLE POLYPROPYLENE;B5123R303;15x2
 SA041774;TE ;;Autres;TE EGAL– POLYPROPYLENE RETICULE (PP-R);B5183R308;20;;U
 SA041801;Manchon;;Autres;MANCHON – POLYPROPYLENE RETICULE (PP-R);B5235R304;20;;U
 SA041822;REDUCTION;;Autres;REDUCTION MALE / FEMELLE POLYPROPYLENE;B5123R303;20x32;;U
-3373028;COLLIER;;Autres;COLLIER PPR pour réseau eau chaude VFC;;20;;U
+3373028;Collier;;Autres;COLLIER PPR pour réseau eau chaude VFC;;20;;U
 SA041776;TE ;;Autres;TE EGAL– POLYPROPYLENE RETICULE (PP-R);B5183R308;32;;U
-3373043;COLLIER;;Autres;COLLIER PPR pour réseau eau chaude VFC;;32;;U
+3373043;Collier;;Autres;COLLIER PPR pour réseau eau chaude VFC;;32;;U
 SA041962;Raccord;;Autres;PIECE DE TRANSITION AVEC FILETAGE MALE POLYPROPYLENE RETICULE (PP-R);B5233R301;50;;U
 SA038873;Robinetterie;;Chantier de l'Atlantique;Robinet à Boisseau Sphérique en Laiton avec Prolongateur;B5314U209;50;;U
 SA042535;Robinetterie;;Chantier de l'Atlantique;Filtre à Tamis, à Manchons Taraudés en Bronze;B5470U300;50;;U
 SA042109;Raccord;;Autres;RACCORD VISSER MALE et SOUDER;B5250R302;50;;U
 SA041980;Bossage;;Autres;Bossage à visser femelle – POLYPROPYLENE RETICULE (PP-R);B5173R301;50/20 x 1/2’’ f;;U
-3373063;COLLIER;;Autres;COLLIER PPR pour réseau eau chaude VFC;;50;;U
+3373063;Collier;;Autres;COLLIER PPR pour réseau eau chaude VFC;;50;;U
 SA041773;TE ;;Autres;TE EGAL– POLYPROPYLENE RETICULE (PP-R);B5183R308;15;;U
 SA042095;Raccord;;Autres;RACCORD VISSER à SOUDER POLYPROPYLENE RETICULE (PP-R);B5250R300;32;;U
 RED246G4050;Raccord;;Autres;REDUCTION MALE FEMELLE EN LAITON;;"2""x1 1/2""";;U
@@ -3031,11 +3031,11 @@ SA041979;Bossage;;Autres;Bossage à visser femelle – POLYPROPYLENE RETICULE (P
 SA041910;Bossage;;Autres;Bossage– POLYPROPYLENE RETICULE (PP-R);B5171R301;20x40;;U
 SA041804;Manchon;;Autres;MANCHON – POLYPROPYLENE RETICULE (PP-R);B5235R304;40;;U
 SA041829;REDUCTION;;Autres;REDUCTION MALE / FEMELLE POLYPROPYLENE;B5123R303;20x40;;U
-3373051;COLLIER;;Autres;COLLIER PPR pour réseau eau chaude VFC;;40;;U
+3373051;Collier;;Autres;COLLIER PPR pour réseau eau chaude VFC;;40;;U
 SA041762;Coude;;Autres;COUDE A 90° – POLYPROPYLENE RETICULE (PP-R);B5122R311;15;;U
 SA041789;Coude;;Autres;COUDE A 45° – POLYPROPYLENE;B5122R314;15;;U
 SA041799;Manchon;;Autres;MANCHON – POLYPROPYLENE RETICULE (PP-R);B5235R304;15;;U
-3373018;COLLIER;;Autres;COLLIER PPR pour réseau eau chaude VFC;;15;;U
+3373018;Collier;;Autres;COLLIER PPR pour réseau eau chaude VFC;;15;;U
 RED246G2515;Raccord;;Autres;REDUCTION MALE FEMELLE EN LAITON;;"1""/ 1/2""";;U
 RED246G2015;Raccord;;Autres;REDUCTION MALE FEMELLE EN LAITON;;"3/4"" / 1/2""";;U
 SA041800;Manchon;;Autres;MANCHON – POLYPROPYLENE RETICULE (PP-R);B5235R304;15;;U
@@ -3056,8 +3056,8 @@ HYDR.BOX 863;ARMOIRE;;ELECTRIQUE;ARMOIRE RITAL 800x600x300;;;;U
 SA039295;THERMOMETRE;;Autres;Thermomètre Industriel avec plongeur en équerre L=63mm;B7243L108;1/2'';;U
 SA039298;MANOMETRE;;Autres;MANOMETRE METALLIQUE – DIAMETRE 63;B7213A503;1/4'';;U
 RACCORDANFPPLAT15;Raccord;;SOFINTHER;RACCORD EN FONTE NOIRE Portée plate/ femelle;;15;;U
-SA025822;Collier VFE;;SN HYDRO/ AUTRES;Support Isolant Type VIII et Collier Demi-Coquille ;B2211A117;15;D18;U
-GCU 341-18;Raccord;;Autres;Raccord union L341GCU droit, à joint sphéro-cônique, mâle à visser - femelle à souder;;18x1/2'';;U
+SA025822;Collier;;SN HYDRO/ AUTRES;Support Isolant Type VIII et Collier Demi-Coquille ;B2211A117;15;D18;U
+GCU 341-18;Raccord;;Autres;Raccord union L341GCU droit, à Joint;;18x1/2'';;U
 RACCORDANFPPLAT25;Raccord;;SOFINTHER;RACCORD  EN FONTE NOIRE Portée plate/ femelle;;25;;U
 SA034026;Manchon;;Prolians;Manchon Laiton Mâle Fileté Femelle à Braser par Capillarité;B5251U201;40;;U
 SA034034;Manchon;;Autres;MANCHON LAITON FEMELLE TARAUDE;B5251U203;"15X1/2""";;U

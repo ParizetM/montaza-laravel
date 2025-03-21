@@ -16,6 +16,8 @@ class ResetDatabaseForProd extends Command
     {
         // Désactiver les contraintes de clé étrangère
         DB::statement('SET session_replication_role = replica;');
+        // Activer l'extension unaccent si elle n'est pas déjà activée
+        DB::statement('CREATE EXTENSION IF NOT EXISTS unaccent;');
         $tables = DB::select("SELECT tablename FROM pg_tables WHERE schemaname = 'public'");
         $depart = microtime(true);
         // Supprimer toutes les tables

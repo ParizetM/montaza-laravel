@@ -16,7 +16,7 @@
                     <x-input-label for="startDate" class="block">Date de début :</x-input-label>
                     <select id="startDate" class="select w-auto">
                         @foreach ($dates->reverse() as $date)
-                            <option value="{{ $date }}">{{ $date }}</option>
+                            <option value="{{ $date }}">{{ formatDate($date) }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -24,7 +24,7 @@
                     <x-input-label for="endDate" class="block">Date de fin :</x-input-label>
                     <select id="endDate" class="select w-auto">
                         @foreach ($dates as $date)
-                            <option value="{{ $date }}">{{ $date }}</option>
+                            <option value="{{ $date }}">{{ formatDate($date) }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -61,11 +61,11 @@
                     </thead>
                     <tbody>
                         @foreach ($fournisseurs_prix as $fournisseur_prix)
-                            <tr class="">
-                                <td class="border px-4 py-2 whitespace-nowrap">{{ $fournisseur_prix->pivot->prix }} €
+                            <tr>
+                                <td class="border px-4 py-2 whitespace-nowrap">{{ formatNumberArgent($fournisseur_prix->prix_unitaire) }}
                                 </td>
                                 <td class="border px-4 py-2 whitespace-nowrap">
-                                    {{ $fournisseur_prix->pivot->date_dernier_prix }}</td>
+                                    {{ formatDate($fournisseur_prix->date) }}</td>
                             </tr>
                         @endforeach
                     </tbody>

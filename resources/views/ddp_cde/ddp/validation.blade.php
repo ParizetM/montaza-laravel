@@ -161,7 +161,8 @@
                         </div>
                     </div>
                 @endforeach
-                <div class="flex justify-end">
+                <div class="flex justify-between">
+                    <a href="{{ route('ddp.show', $ddp->id) }}" class="btn btn-secondary">{{ __('Annuler') }}</a>
                     <button type="submit" class="btn">{{ __('Valider') }}</button>
                 </div>
             </div>

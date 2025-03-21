@@ -48,7 +48,19 @@
                         </select>
                         <!-- Search bar for materials -->
                         <div class="flex w-full">
-                            <x-text-input placeholder="Recherchez une matière" id="searchbar" class="w-full" />
+                            <x-tooltip position="top" class="w-full">
+                                <x-slot name="slot_item">
+                                    <x-text-input placeholder="Recherchez une matière" id="searchbar" class="w-full" />
+                                </x-slot>
+                                <x-slot name="slot_tooltip">
+                                    <ul class="whitespace-nowrap">
+                                        <li>Tapez vos mots-clés,</li>
+                                        <li>Si vous recherchez un DN, tapez "dn25"</li>
+                                        <li>Si vous recherchez une épaisseur, tapez "ep10"</li>
+                                        <li>Si vous recherchez une référence tapez seulement celle-ci</li>
+                                    </ul>
+                                </x-slot>
+                            </x-tooltip>
                             <button class="btn-select-right -ml-1 border-gray-300 dark:border-gray-700" type="button"
                                 onclick="liveSearch()">Rechercher</button>
                         </div>
@@ -59,8 +71,8 @@
                                 <th class="text-sm">Référence</th>
                                 <th class="text-sm">Désignation</th>
                                 <th class="text-sm">DN</th>
-                                <th class="text-sm">Epaisseur</th>
-                                <th class="text-sm">Unité</th>
+                                <th class="text-sm">EP</th>
+                                <th class="text-sm">Stock</th>
                                 <th class="text-sm">Sous-famille</th>
                             </thead>
                             <tbody id="matiere-table">
@@ -155,7 +167,7 @@
                                                         <x-text-input type="number"
                                                             name="quantite[{{ $ddp_ligne->matiere->id }}]"
                                                             oninput="saveChanges()"
-                                                            class="w-20 border-r-0 rounded-r-none  dark:border-0 focus:ring-0 focus:border-0 dark:focus:ring-0"
+                                                            class="w-20 border-r-0 rounded-r-none focus:ring-0 focus:border-0 dark:focus:ring-0 border-gray-300 dark:border-gray-700"
                                                             value="{{ formatNumber($ddp_ligne->quantite) }}"
                                                             min="0" />
                                                         {{-- <select name="unite[{{ $ddp_ligne->matiere_id }}]"
@@ -169,7 +181,7 @@
                                                             @endforeach
                                                         </select> --}}
                                                         <div
-                                                            class="text-right bg-gray-100 dark:bg-gray-800 w-fit p-2 pl-0 border-1 border-l-0 rounded-r-sm border-gray-300">
+                                                            class="text-right bg-gray-100 dark:bg-gray-900 w-fit p-2 pl-0 border-1 border-l-0 rounded-r-sm border-gray-300 dark:border-gray-700">
                                                             {{ $ddp_ligne->matiere->unite->short }}</div>
                                                     </div>
                                                 </td>
@@ -329,7 +341,10 @@
                         data.forEach(sousFamille => {
                             var option = document.createElement('option');
                             option.value = sousFamille.id;
-                            option.textContent = sousFamille.nom;
+                            option.textContent = sousFamille.nom + ' ';
+                            option.style.display = 'flex';
+                            option.style.justifyContent = 'space-between';
+                            option.textContent = `${sousFamille.nom} (${sousFamille.matiere_count})`;
                             sousFamilleSelect.appendChild(option);
                             var sousFamilleId = new URLSearchParams(window.location.search).get('sous_famille');
 
@@ -415,16 +430,16 @@
             <td class="text-left px-4">${matiereDesignation || '-'}</td>
             <td class="text-right px-4">
                 <div class="flex items-center m-1 focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-600 focus-within:focus:border-indigo-600 rounded-sm">
-                <x-text-input type="number" name="quantite[${matiereId}]" value="1" min="1" oninput="saveChanges()" class="w-20 border-r-0 rounded-r-none  dark:border-0 focus:ring-0 focus:border-0 dark:focus:ring-0"
+                <x-text-input type="number" name="quantite[${matiereId}]" value="1" min="1" oninput="saveChanges()" class="w-20 border-r-0 rounded-r-none focus:ring-0 focus:border-0 dark:focus:ring-0 border-gray-300 dark:border-gray-700"
 
 
                 />
                     ${unites.map(unite => `
 
-                        ${unite.short === matiereUnite ? '<div class="text-right bg-gray-100 dark:bg-gray-800 w-fit p-2 pl-0 border-1 border-l-0 rounded-r-sm border-gray-300" title="'+unite.full+'">' : ''}
+                                    ${unite.short === matiereUnite ? '<div class="text-right bg-gray-100 dark:bg-gray-900 w-fit p-2 pl-0 border-1 border-l-0 rounded-r-sm border-gray-300 dark:border-gray-700" title="'+unite.full+'">' : ''}
 
-                        ${unite.short === matiereUnite ? unite.short+'</div>' : ''}
-                `).join('')}
+                                    ${unite.short === matiereUnite ? unite.short+'</div>' : ''}
+                            `).join('')}
                 </div>
             </td>
             <td class="text-right px-4" >
@@ -789,20 +804,28 @@
                 `;
                 fournisseursTable.appendChild(tr);
             } else {
+                const matiereChoisiTable = document.getElementById('matiere-choisi-table');
+                matiereId = document.getElementById('fournisseurs-table').querySelector('tr:first-child').getAttribute('data-matiere-id');
+                const existingRow = matiereChoisiTable.querySelector(`tr[data-matiere-id="${matiereId}"]`);
+                const fournisseursIds = existingRow.getAttribute('data-fournisseurs-ids');
                 data.forEach(fournisseur => {
-                    const tr = document.createElement('tr');
-                    tr.classList.add('border-b', 'border-gray-200', 'dark:border-gray-700',
-                        'rounded-r-md', 'overflow-hidden', 'cursor-pointer',
-                        'hover:bg-gray-200', 'dark:hover:bg-gray-700');
-                    const fournisseurId = fournisseur.id || '';
-                    tr.setAttribute('data-fournisseur-id', fournisseurId);
-                    tr.setAttribute('data-fournisseur-nom', fournisseur.raison_sociale || '');
-                    tr.setAttribute('data-is-from-quicksearch', 'true');
-                    tr.addEventListener('click', addFournisseur);
-                    tr.innerHTML = `
+                    if (!matiereId || !fournisseursIds || !fournisseursIds.split(';').includes(fournisseur.id.toString())) {
+
+
+                        const tr = document.createElement('tr');
+                        tr.classList.add('border-b', 'border-gray-200', 'dark:border-gray-700',
+                            'rounded-r-md', 'overflow-hidden', 'cursor-pointer',
+                            'hover:bg-gray-200', 'dark:hover:bg-gray-700');
+                        const fournisseurId = fournisseur.id || '';
+                        tr.setAttribute('data-fournisseur-id', fournisseurId);
+                        tr.setAttribute('data-fournisseur-nom', fournisseur.raison_sociale || '');
+                        tr.setAttribute('data-is-from-quicksearch', 'true');
+                        tr.addEventListener('click', addFournisseur);
+                        tr.innerHTML = `
                         <td class="text-left px-4" colspan="2">${fournisseur.raison_sociale || '-'}</td>
                     `;
-                    fournisseursTable.appendChild(tr);
+                        fournisseursTable.appendChild(tr);
+                    }
                 });
             }
         }
