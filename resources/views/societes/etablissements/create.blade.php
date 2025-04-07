@@ -147,24 +147,64 @@
     </div>
     <script>
         function Autosiren() {
-            document.getElementById('societe_id').addEventListener('change', function() {
-                var societeId = this.value;
+                var societeId = document.getElementById('societe_id').value;
                 if (societeId) {
                     fetch(`/societe/${societeId}/json`)
                         .then(response => response.json())
                         .then(data => {
-                            if (data.siren) {
-                                document.getElementById('siret').value = data.siren+' ';
-                                document.getElementById('siret').focus();
-                            }
+                                if (data.societe_type_id == 2) {
+                                    const siretField = document.getElementById('siret');
+                                    const siretLabel = document.querySelector('label[for="siret"]');
+
+                                    siretField.required = false;
+                                    siretLabel.querySelector('small')?.remove(); // Remove the "(Optionnel)" label if it exists
+                                    const optionalSiretLabel = document.createElement('small');
+                                    optionalSiretLabel.textContent = '(Optionnel)';
+                                    siretLabel.appendChild(optionalSiretLabel);
+                                } else {
+                                    const siretField = document.getElementById('siret');
+                                    const siretLabel = document.querySelector('label[for="siret"]');
+
+                                    siretField.required = true;
+                                    const optionalSiretLabel = siretLabel.querySelector('small');
+                                    if (optionalSiretLabel) {
+                                        optionalSiretLabel.remove(); // Remove the "(Optionnel)" label if it exists
+                                    }
+                                }
+                                if (data.siren) {
+                                    document.getElementById('siret').value = data.siren+' ';
+                                } else {
+                                    document.getElementById('siret').value = '';
+                                }
                         })
                         .catch(error => console.error('Error fetching SIREN:', error));
                 }
-            });
         }
 
         document.addEventListener('DOMContentLoaded', function() {
             Autosiren();
+            document.getElementById('societe_id').addEventListener('change', function() {
+                Autosiren();
+            });
+            document.getElementById('code_postal').addEventListener('input', function() {
+                const codePostal = this.value;
+                if (codePostal.length === 5) {
+                    fetch(`https://geo.api.gouv.fr/communes?codePostal=${codePostal}&boost=population`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const villeField = document.getElementById('ville');
+                            if (data.length > 0) {
+                                villeField.value = data[0].nom; // Set the first city name
+                                if (data.length > 1) {
+                                    console.warn('Multiple cities found for this postal code. Using the first one.');
+                                }
+                            } else {
+                                console.warn('No cities found for this postal code.');
+                            }
+                        })
+                        .catch(error => console.error('Error fetching city data:', error));
+                }
+            });
         });
     </script>
 </x-app-layout>

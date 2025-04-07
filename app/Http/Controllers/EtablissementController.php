@@ -49,6 +49,7 @@ class EtablissementController extends Controller
     }
     public function store(Request $request, Societe $societe)
     {
+        $societe = Societe::find($request->societe_id);
         $request->validate(
             [
                 'nom' => 'required|string',
@@ -58,7 +59,7 @@ class EtablissementController extends Controller
                 'region' => 'nullable|string',
                 'pays_id' => 'required|exists:pays,id',
                 'societe_id' => 'required|exists:societes,id',
-                'siret' => 'required|string',
+                'siret' => 'nullable|string',
                 'commentaire' => 'nullable|string',
             ],
             [
@@ -76,11 +77,16 @@ class EtablissementController extends Controller
                 'societe_id.exists' => 'La société n\'existe pas',
             ]
         );
+        if ($request->siret == null) {
+            if ($societe->societe_type_id != 2) {
+                return redirect()->back()->withErrors(['siret' => 'Le siret est obligatoire pour les societe de type clients']);
+            }
+        }
         $siret = str_replace([' ', "\u{A0}", '&nbsp;'], '', $request->siret);
-        if (strlen($siret) != 14) {
+        if (strlen($siret) != 14 && $siret != '') {
             return redirect()->back()->withErrors(['siret' => 'Le siret doit contenir 14 chiffres']);
         }
-        if (!is_numeric($siret)) {
+        if (!is_numeric($siret) && $siret != '') {
             return redirect()->back()->withErrors(['siret' => 'Le siret doit contenir uniquement des chiffres']);
         }
         $etablissement = new Etablissement();
@@ -115,9 +121,9 @@ class EtablissementController extends Controller
 
 
         Cache::flush();
-        return redirect()->route('societes.show', ['societe' => $request->societe_id,'add_contact' => 1])->with('success', 'Etablissement créé');
+        return redirect()->route('societes.show', ['societe' => $request->societe_id, 'add_contact' => 1])->with('success', 'Etablissement créé');
     }
-    public function edit(Societe $societe,Etablissement $etablissement)
+    public function edit(Societe $societe, Etablissement $etablissement)
     {
         if ($etablissement->societe_id != $societe->id) {
             return redirect()->route('societes.show', $societe->id)->with('error', 'Etablissement non trouvé');
@@ -134,6 +140,7 @@ class EtablissementController extends Controller
     }
     public function update(Request $request, Etablissement $etablissement)
     {
+        $societe = $etablissement->societe;
         $request->validate(
             [
                 'nom' => 'required|string',
@@ -143,7 +150,7 @@ class EtablissementController extends Controller
                 'region' => 'nullable|string',
                 'pays_id' => 'required|exists:pays,id',
                 'societe_id' => 'required|exists:societes,id',
-                'siret' => 'required|string',
+                'siret' => 'nullable|string',
                 'commentaire' => 'nullable|string',
             ],
             [
@@ -162,11 +169,16 @@ class EtablissementController extends Controller
             ]
         );
 
+        if ($request->siret == null) {
+            if ($societe->societe_type_id != 2) {
+                return redirect()->back()->withErrors(['siret' => 'Le siret est obligatoire pour les societe de type clients']);
+            }
+        }
         $siret = str_replace([' ', "\u{A0}", '&nbsp;'], '', $request->siret);
-        if (strlen($siret) != 14) {
+        if (strlen($siret) != 14 && $siret != '') {
             return redirect()->back()->withErrors(['siret' => 'Le siret doit contenir 14 chiffres']);
         }
-        if (!is_numeric($siret)) {
+        if (!is_numeric($siret) && $siret != '') {
             return redirect()->back()->withErrors(['siret' => 'Le siret doit contenir uniquement des chiffres']);
         }
 

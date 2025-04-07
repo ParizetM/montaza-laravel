@@ -1,4 +1,4 @@
-{{-- ATTENTION A BIEN METTRE LA CLASS 'SCRIPT' AUX SCRIPTS --}}
+{{-- ATTENTION A BIEN METTRE LA CLASS 'SCRIPT' AUX SCRIPTS POUR QU'IL SOIT RECONNUS--}}
 
 <div class="grid grid-cols-3 gap-6 ">
     @foreach ($_shortcuts as $shortcut)

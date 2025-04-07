@@ -13,6 +13,7 @@ use App\Models\FormeJuridique;
 use App\Models\CodeApe;
 use App\Models\Etablissement;
 use Illuminate\Http\RedirectResponse;
+use App\Models\Notification;
 
 class SocieteController extends Controller
 {
@@ -107,8 +108,8 @@ class SocieteController extends Controller
                 'telephone' => 'nullable|string|max:30',
                 'email' => 'nullable|email',
                 'site_web' => 'nullable|string',
-                'siren' => 'required|digits:9|unique:societes',
-                'numero_tva' => 'required|string|min:13|max:13',
+                'siren' => 'nullable|digits:9',
+                'numero_tva' => 'nullable|string|min:13|max:13|unique:societes,numero_tva',
                 'commentaire' => 'nullable|string',
                 'condition_paiement_id' => 'required|integer',
                 'condition_paiement_text' => 'nullable|string|max:255',
@@ -140,6 +141,16 @@ class SocieteController extends Controller
                 'commentaire.string' => 'Le commentaire doit être une chaîne de caractères',
             ]
         );
+        if ($request->siren == null && $request->societe_type_id != 2) {
+            return back()->with('error', 'Veuillez saisir un numéro SIREN');
+        } else if (Societe::where('siren', $request->siren)->exists() && $request->siren != null) {
+            return back()->with('error', 'Le numéro SIREN est déjà utilisé');
+        }
+        if ($request->numero_tva == null && $request->societe_type_id != 2) {
+            return back()->with('error', 'Veuillez saisir un numéro de TVA intracommunautaire');
+        } else if (Societe::where('numero_tva', $request->numero_tva)->exists() && $request->numero_tva != null) {
+            return back()->with('error', 'Le numéro de TVA intracommunautaire est déjà utilisé');
+        }
 
         if ($request->site_web == 'http://') {
             $request->merge(['site_web' => null]);
@@ -185,8 +196,8 @@ class SocieteController extends Controller
         $societe->telephone = $request->telephone;
         $societe->email = $request->email;
         $societe->site_web = $request->site_web;
-        $societe->siren = $request->siren;
-        $societe->numero_tva = $request->numero_tva;
+        $societe->siren = $request->siren ?? null;
+        $societe->numero_tva = $request->numero_tva ?? null;
         $societe->commentaire_id = $commentaire->id;
         $societe->condition_paiement_id = $condition_paiement_id;
         $societe->save();
@@ -200,7 +211,7 @@ class SocieteController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Societe $societe, Etablissement $etablissement = null): View|RedirectResponse
+    public function show(Societe $societe, ?Etablissement $etablissement = null): View|RedirectResponse
     {
         if ($etablissement == null) {
             $etablissement = $societe->etablissements->first();
@@ -254,8 +265,8 @@ class SocieteController extends Controller
                 'telephone' => 'nullable|string|max:30',
                 'email' => 'nullable|email',
                 'site_web' => 'nullable|string',
-                'siren' => 'required|digits:9|unique:societes,siren,' . $societe->id,
-                'numero_tva' => 'required|string|min:13|max:13',
+                'siren' => 'nullable|digits:9',
+                'numero_tva' => 'nullable|string|min:13|max:13',
                 'commentaire' => 'nullable|string',
                 'condition_paiement_id' => 'required|integer',
                 'condition_paiement_text' => 'nullable|string|max:255',
@@ -285,6 +296,16 @@ class SocieteController extends Controller
                 'commentaire.string' => 'Le commentaire doit être une chaîne de caractères',
             ]
         );
+        if ($request->siren == null && $request->societe_type_id != 2) {
+            return back()->with('error', 'Veuillez saisir un numéro SIREN');
+        } else if (Societe::where('siren', $request->siren)->exists() && $request->siren != null && $societe->siren != $request->siren) {
+            return back()->with('error', 'Le numéro SIREN est déjà utilisé');
+        }
+        if ($request->numero_tva == null && $request->societe_type_id != 2) {
+            return back()->with('error', 'Veuillez saisir un numéro de TVA intracommunautaire');
+        } else if (Societe::where('numero_tva', $request->numero_tva)->exists() && $request->numero_tva != null && $societe->numero_tva != $request->numero_tva) {
+            return back()->with('error', 'Le numéro de TVA intracommunautaire est déjà utilisé');
+        }
         if ($request->site_web == 'http://') {
             $request->merge(['site_web' => null]);
         }
@@ -320,6 +341,21 @@ class SocieteController extends Controller
             $condition_paiement_id = $condition_paiement->id;
         } else {
             $condition_paiement_id = $request->input('condition_paiement_id');
+        }
+        //envoie d'une notification si la societe devient cliente alors qu'elle etait fournisseur et que les etablissements n'ont pas de siret
+        if ($societe->societe_type_id == 2 && $request->societe_type_id != 2) {
+            foreach ($societe->etablissements as $etablissement) {
+                Notification::createNotification(
+                    auth()->user()->role,
+                    'system',
+                    'Société client ',
+                    'La société ' . $societe->raison_sociale . ' est devenue un client et '.$etablissement->nom.' n\'a pas de SIRET',
+                    'veuillez modifier le SIRET de l\'établissement',
+                    'etablissements.edit',
+                    ['etablissement' => $etablissement->id, 'societe' => $societe->id],
+                    'aller voir'
+                );
+            }
         }
         $societe->raison_sociale = $request->raison_sociale;
         $societe->societe_type_id = $request->societe_type_id;

@@ -51,7 +51,7 @@
                         <x-slot name="content">
                             <div class="flex justify-between p-2">
                                 <h2 class="font-semibold text-l text-gray-800 dark:text-gray-200 leading-tight ml-1">
-                                    {{ __('raccourcis') }}</h2>
+                                    {{ __('Raccourcis') }}</h2>
                                 <a href="{{ route('shortcuts.index') }}"
                                     class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-hidden transition ease-in-out duration-150"
                                     title="Modifier les raccourcis">

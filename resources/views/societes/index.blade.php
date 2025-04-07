@@ -90,7 +90,7 @@
                                             </a>
                                         </td>
                                     </tr>
-                                    <tr id="details-{{ $societe->id }}" class="hidden">
+                                    <tr id="details-{{ $societe->id }}" class="hidden transition-all ease-in-out duration-300">
                                         <td colspan="4"
                                             class="bg-gray-100 dark:bg-gray-900 rounded-r-md rounded-l-md rounded-t-none p-0">
                                             <div class="grid grid-cols-2">
@@ -98,7 +98,7 @@
                                                     <table class="min-w-full">
                                                         <tbody>
                                                             @foreach ($societe->etablissements as $etablissement)
-                                                                <tr class="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800"
+                                                                <tr class="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 transition ease-in-out duration-300"
                                                                     onclick="document.getElementById('details-{{ $societe->id }}-{{ $etablissement->id }}').classList.toggle('hidden');
                                                                     rotateArrow('{{ $societe->id }}-{{ $etablissement->id }}')">
                                                                     <td class="block py-3 pl-4 pr-2 w-1">

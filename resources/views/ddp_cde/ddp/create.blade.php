@@ -108,6 +108,15 @@
                                 </button>
                             </div>
                         </div>
+                        {{--
+ ######   #######  ##              #####
+##    ## ##     ## ##            ##     ##
+##       ##     ## ##                   ##
+##       ##     ## ##                 ##
+##       ##     ## ##              ##
+##    ## ##     ## ##            ##
+ ######   #######  ########      #########  --}}
+
                         <div class="w-full flex gap-4">
                             <div class="w-auto">
                                 <x-input-label for="ddp-entite" value="Pour" />
@@ -153,6 +162,7 @@
                                 <tbody id="matiere-choisi-table">
                                     @if ($ddp && $ddp->ddpLigne->count() > 0)
                                         @foreach ($ddp->ddpLigne as $ddp_ligne)
+                                            @if ($ddp_ligne->ligne_autre_id == null)
                                             <tr data-matiere-id="{{ $ddp_ligne->matiere->id }}" x-data
                                                 data-fournisseurs-ids="{{ $ddp_ligne->fournisseurs->pluck('id')->join(';') }}"
                                                 data-fournisseurs-noms="{{ $ddp_ligne->fournisseurs->pluck('raison_sociale')->join(';') }}"
@@ -208,18 +218,63 @@
                                                         value="{{ $ddp_ligne->fournisseurs->pluck('id')->join(';') }}">
                                                 </td>
                                             </tr>
+                                            @else
+                                            <tr data-matiere-id="ligne_autre_id-0"
+                                                class="border-b border-gray-200 dark:border-gray-700 rounded-r-md overflow-hidden bg-white dark:bg-gray-800 border-r-4 {{ $ddp_ligne->fournisseurs->count() > 0 ? 'border-r-green-500 dark:border-r-green-600' : '' }}">
+                                                <td class="text-left px-1">
+                                                    <x-text-input type="text" name="case_ref[ligne_autre_id-0]"
+                                                        value="{{ $ddp_ligne->case_ref }}"
+                                                        class="w-full" placeholder="AA-0052"
+                                                        oninput="saveChanges()" />
+                                                </td>
+                                                <td class="text-left px-1">
+                                                    <x-text-input type="text" name="case_designation[ligne_autre_id-0]"
+                                                        value="{{ $ddp_ligne->case_designation }}"
+                                                        class="w-full" placeholder="Désignation"
+                                                        oninput="saveChanges()" />
+                                                </td>
+                                                <td class="text-left px-5">
+                                                    <x-text-input type="text"
+                                                        name="case_quantite[ligne_autre_id-0]"
+                                                        oninput="saveChanges()"
+                                                        class="w-24 border-gray-300 dark:border-gray-700"
+                                                        value="{{ formatNumber($ddp_ligne->case_quantite) }}"
+                                                        min="0" />
+                                                </td>
+                                                <td>
+                                                    <div class="flex justify-end mx-4">
+                                                        <button class="float-right"
+                                                            data-matiere-id="ligne_autre_id-0"
+                                                            onclick="removeMatiere(event)">
+                                                            <x-icons.close size="2" class="icons"
+                                                                tabindex="-1" />
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            @endif
                                         @endforeach
                                     @else
-                                        <tr id="no-matiere">
+                                        {{-- <tr id="no-matiere">
                                             <td colspan="100" class="text-gray-500 dark:text-gray-400 text-center ">
                                                 Aucune matière sélectionnée
                                             </td>
-                                        </tr>
+                                        </tr> --}}
 
 
                                     @endif
+
                                 </tbody>
                             </table>
+                            <div class="w-full flex justify-center gap-2 text-center">
+                                <button type="button"
+                                    class="btn w-1/3 rounded-b-xl rounded-t-none bg-gray-800 hover:bg-gray-700 hover:shadow-lg transition-all duration-300"
+                                    onclick="addLigneVide()">
+                                    <span class="text-center w-full">
+                                        Ajouter une ligne vide
+                                    </span>
+                                </button>
+                            </div>
                         </div>
                     </form>
                     <div class="flex justify-between gap-4">
@@ -436,10 +491,10 @@
                 />
                     ${unites.map(unite => `
 
-                                    ${unite.short === matiereUnite ? '<div class="text-right bg-gray-100 dark:bg-gray-900 w-fit p-2 pl-0 border-1 border-l-0 rounded-r-sm border-gray-300 dark:border-gray-700" title="'+unite.full+'">' : ''}
+                                                ${unite.short === matiereUnite ? '<div class="text-right bg-gray-100 dark:bg-gray-900 w-fit p-2 pl-0 border-1 border-l-0 rounded-r-sm border-gray-300 dark:border-gray-700" title="'+unite.full+'">' : ''}
 
-                                    ${unite.short === matiereUnite ? unite.short+'</div>' : ''}
-                            `).join('')}
+                                                ${unite.short === matiereUnite ? unite.short+'</div>' : ''}
+                                        `).join('')}
                 </div>
             </td>
             <td class="text-right px-4" >
@@ -464,37 +519,62 @@
                 matiereChoisiTable.appendChild(tr);
             }
         }
-        // SELECT PLUS UTILISE
-        // <select
-        //         name="unite[${matiereId}]"
-        //         class="w-16 mx-2 select"
-        //         onchange="saveChanges()"
-        //     >
-        //         ${unites.map(unite => `
-    //                                                     <option
-    //                                                         value="${unite.id}" title="${unite.full}"
-    //                                                         ${unite.short === matiereUnite ? 'selected' : ''}
-    //                                                     >
-    //                                                         ${unite.short}
-    //                                                     </option>
-    //                                                 `).join('')}
-        //     </select>
-        // Function to remove selected material from the chosen list
+
+        function addLigneVide() {
+            const matiereChoisiTable = document.getElementById('matiere-choisi-table');
+            const tr = document.createElement('tr');
+            tr.classList.add('border-b', 'border-gray-200', 'dark:border-gray-700',
+                'rounded-r-md', 'overflow-hidden', 'bg-white', 'dark:bg-gray-800', 'border-r-4');
+            tr.setAttribute('data-matiere-id', 'ligne_autre_id-0');
+            tr.innerHTML = `
+                <td class="text-left px-1">
+                    <x-text-input type="text" name="case_ref[ligne_autre_id-0]" value="" class="w-full" placeholder="AA-0052"
+                    oninput="saveChanges()"
+                    />
+                </td>
+                <td class="text-left px-1">
+                    <x-text-input type="text" name="case_designation[ligne_autre_id-0]" value="" class="w-full" placeholder="Désignation"
+                    oninput="saveChanges()"
+                    />
+                </td>
+                <td class="text-left px-5">
+                    <x-text-input type="text"
+                                name="case_quantite[ligne_autre_id-0]"
+                                oninput="saveChanges()"
+                                class="w-24 border-gray-300 dark:border-gray-700"
+                                value=""
+                                min="0" />
+                </td>
+                <td>
+                    <div class="flex justify-end mx-4">
+                        <button class="float-right"
+                                data-matiere-id="ligne_autre_id-0"
+                                onclick="removeMatiere(event)">
+                                <x-icons.close size="2" class="icons"
+                                    tabindex="-1" />
+                            </button>
+                    </div>
+                </td>
+            `;
+            matiereChoisiTable.appendChild(tr);
+            tr.focus();
+        }
+
         function removeMatiere(event) {
             const matiereId = event.target.getAttribute('data-matiere-id');
             const row = event.target.closest('tr');
             row.remove();
-            const matiereChoisiTable = document.getElementById('matiere-choisi-table');
-            if (matiereChoisiTable.querySelectorAll('tr').length === 0) {
-                const tr = document.createElement('tr');
-                tr.id = 'no-matiere';
-                tr.innerHTML = `
-                <td colspan="100" class="text-gray-500 dark:text-gray-400 text-center ">
-                    Aucune matière sélectionnée
-                </td>
-            `;
-                matiereChoisiTable.appendChild(tr);
-            }
+            // const matiereChoisiTable = document.getElementById('matiere-choisi-table');
+            // if (matiereChoisiTable.querySelectorAll('tr').length === 0) {
+            //     const tr = document.createElement('tr');
+            //     tr.id = 'no-matiere';
+            //     tr.innerHTML = `
+            //     <td colspan="100" class="text-gray-500 dark:text-gray-400 text-center ">
+            //         Aucune matière sélectionnée
+            //     </td>
+            // `;
+            //     matiereChoisiTable.appendChild(tr);
+            // }
             saveChanges();
         }
 
@@ -693,15 +773,15 @@
             saveStatus0.classList.remove('hidden');
             saveStatus1.classList.add('hidden');
             saveStatus2.classList.add('hidden');
-            if ('' === ddpNom.value.trim()) {
-                saveStatus0.classList.add('hidden');
-                saveStatus2.classList.remove('hidden');
-                return;
-            }
+
             if ('' === ddpCode.value.trim()) {
                 saveStatus0.classList.add('hidden');
                 saveStatus2.classList.remove('hidden');
                 return;
+            }
+            if ('' === ddpNom.value.trim()) {
+                ddpNom.value = 'DDP-' + new Date().getFullYear().toString().slice(-2) + '-' + ddpCode.value + ddpCodeEntite
+                    .textContent;
             }
             if (ddpId === '') {
                 saveStatus0.classList.add('hidden');
@@ -714,49 +794,71 @@
                 saveStatus2.classList.remove('hidden');
                 return;
             }
-            if (matiereChoisiTable.querySelector('tr[data-matiere-id] input[name^="fournisseur-"]').value === '') {
-                saveStatus0.classList.add('hidden');
-                saveStatus2.classList.remove('hidden');
-                return;
-            }
+            // if (matiereChoisiTable.querySelector('tr[data-matiere-id] input[name^="fournisseur-"]').value === '') {
+            //     saveStatus0.classList.add('hidden');
+            //     saveStatus2.classList.remove('hidden');
+            //     return;
+            // }
             const matieres = [];
             document.querySelectorAll('#matiere-choisi-table tr[data-matiere-id]').forEach(row => {
                 const matiereId = row.getAttribute('data-matiere-id');
-                const quantity = row.querySelector(`input[name="quantite[${matiereId}]"]`).value;
-                const fournisseurs = row.querySelector(`input[name="fournisseur-${matiereId}"]`).value;
-                // const unite_id = row.querySelector(`select[name="unite[${matiereId}]`).value;
-                row.classList.remove('border-r-green-500', 'dark:border-r-green-600');
-                if (quantity < 1) {
-                    saveStatus0.classList.add('hidden');
-                    saveStatus2.classList.remove('hidden');
-                    return;
-                }
-                if (fournisseurs !== '') {
-                    matieres.push({
-                        id: matiereId,
-                        quantity: quantity,
-                        // unite_id: unite_id,
+                if (matiereId.startsWith('ligne_autre_id')) {
+                    const case_ref = row.querySelector(`input[name="case_ref[${matiereId}]"]`).value;
+                    const case_designation = row.querySelector(`input[name="case_designation[${matiereId}]"]`)
+                    .value;
+                    const case_quantite = row.querySelector(`input[name="case_quantite[${matiereId}]"]`).value;
 
-                        fournisseurs: fournisseurs.split(';')
+                    if (case_ref.trim() === '' && case_designation.trim() === '' && case_quantite.trim() === '') {
+                        saveStatus0.classList.add('hidden');
+                        saveStatus2.classList.remove('hidden');
+                        return;
+                    }
+
+                    matieres.push({
+                        ligne_autre_id: matiereId,
+                        case_ref: case_ref,
+                        case_designation: case_designation,
+                        case_quantite: case_quantite,
                     });
                     row.classList.add('border-r-green-500', 'dark:border-r-green-600');
-                    ddpNom.classList.add('border-r-green-500', 'dark:border-r-green-600', 'border-r-4');
-                    ddpCode.classList.add('border-r-green-500', 'dark:border-r-green-600', 'border-r-4');
-                    ddpEntite.classList.add('border-r-green-500', 'dark:border-r-green-600', 'border-r-4');
-                    if (ddpEntite.value == 1) {
-                        ddpCodeEntite.textContent = '';
-                    } else if (ddpEntite.value == 2) {
-                        ddpCodeEntite.textContent = 'AV';
-                    } else if (ddpEntite.value == 3) {
-                        ddpCodeEntite.textContent = 'AMB';
-                    } else {
-                        ddpCodeEntite.textContent = '';
+                } else {
+                    const quantity = row.querySelector(`input[name="quantite[${matiereId}]"]`).value;
+                    const fournisseurs = row.querySelector(`input[name="fournisseur-${matiereId}"]`).value;
+                    // const unite_id = row.querySelector(`select[name="unite[${matiereId}]`).value;
+                    row.classList.remove('border-r-green-500', 'dark:border-r-green-600');
+                    if (quantity < 1) {
+                        saveStatus0.classList.add('hidden');
+                        saveStatus2.classList.remove('hidden');
+                        return;
                     }
-                    document.title =
-                        `Créer - DDP-${new Date().getFullYear().toString().slice(-2)}-${ddpCode.value}${ddpCodeEntite.textContent}`;
+                    if (fournisseurs !== '') {
+                        matieres.push({
+                            id: matiereId,
+                            quantity: quantity,
+                            // unite_id: unite_id,
 
+                            fournisseurs: fournisseurs.split(';')
+                        });
+                        row.classList.add('border-r-green-500', 'dark:border-r-green-600');
+                        ddpNom.classList.add('border-r-green-500', 'dark:border-r-green-600', 'border-r-4');
+                        ddpCode.classList.add('border-r-green-500', 'dark:border-r-green-600', 'border-r-4');
+                        ddpEntite.classList.add('border-r-green-500', 'dark:border-r-green-600', 'border-r-4');
+                        if (ddpEntite.value == 1) {
+                            ddpCodeEntite.textContent = '';
+                        } else if (ddpEntite.value == 2) {
+                            ddpCodeEntite.textContent = 'AV';
+                        } else if (ddpEntite.value == 3) {
+                            ddpCodeEntite.textContent = 'AMB';
+                        } else {
+                            ddpCodeEntite.textContent = '';
+                        }
+                        document.title =
+                            `Créer - DDP-${new Date().getFullYear().toString().slice(-2)}-${ddpCode.value}${ddpCodeEntite.textContent}`;
+
+                    }
                 }
             });
+            console.log(matieres);
             fetch('/ddp/save', {
                     method: 'POST',
                     headers: {
@@ -805,11 +907,13 @@
                 fournisseursTable.appendChild(tr);
             } else {
                 const matiereChoisiTable = document.getElementById('matiere-choisi-table');
-                matiereId = document.getElementById('fournisseurs-table').querySelector('tr:first-child').getAttribute('data-matiere-id');
+                matiereId = document.getElementById('fournisseurs-table').querySelector('tr:first-child').getAttribute(
+                    'data-matiere-id');
                 const existingRow = matiereChoisiTable.querySelector(`tr[data-matiere-id="${matiereId}"]`);
                 const fournisseursIds = existingRow.getAttribute('data-fournisseurs-ids');
                 data.forEach(fournisseur => {
-                    if (!matiereId || !fournisseursIds || !fournisseursIds.split(';').includes(fournisseur.id.toString())) {
+                    if (!matiereId || !fournisseursIds || !fournisseursIds.split(';').includes(fournisseur.id
+                            .toString())) {
 
 
                         const tr = document.createElement('tr');

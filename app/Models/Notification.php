@@ -26,7 +26,7 @@ class Notification extends Model
      * @param string $label
      * @return \App\Models\Notification
      */
-    public static function createNotification(Role $role, string $type, string $title, string $message = null, string $action_requise = null, string $route_nom = null,array $route_data = null, string $label = 'aller voir'): Notification
+    public static function createNotification(Role $role, string $type, string $title, ?string $message = null, ?string $action_requise = null, ?string $route_nom = null,?array $route_data = null, string $label = 'aller voir'): Notification
     {
         $notification = new self();
         $notification->role_id = $role->id;

@@ -7,7 +7,7 @@
                 >>
                 <a href="{{ route('matieres.show', $matiere->id) }}"
                     class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">{!! __('Créer une demande de prix') !!}</a>
-                >> Validation
+                >> {{ $matiere->designation }}
             </h2>
         </div>
     </x-slot>
@@ -115,14 +115,21 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @if ($matiere->mouvements && $matiere->mouvements->count() > 0)
-                                @foreach ($matiere->mouvements as $mouvement)
+                            @if ($matiere->mouvementStocks && $matiere->mouvementStocks->count() > 0)
+                                @foreach ($matiere->mouvementStocks as $mouvement)
                                     <tr class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
                                         <td class="border px-4 py-2 whitespace-nowrap">
-                                            @if ($mouvement->type_mouvement == 0)
+                                            @if ($mouvement->type_mouvement == 'entree')
+
                                                 <span class="text-red-500">- {{ $mouvement->quantite }}</span>
+                                                @if ($mouvement->valeur_unitaire != null)
+                                                    <span class="text-red-500">x ({{ formatNumberArgent($mouvement->valeur_unitaire) . '/' . $matiere->unite->short }})</span>
+                                                @endif
                                             @else
                                                 <span class="text-green-500">+ {{ $mouvement->quantite }}</span>
+                                                @if ($mouvement->valeur_unitaire != null)
+                                                    <span class="text-green-500">x ({{ formatNumberArgent($mouvement->valeur_unitaire) . '/' . $matiere->unite->short }})</span>
+                                                @endif
                                             @endif
                                         </td>
                                         <td class="border px-4 py-2 whitespace-nowrap">

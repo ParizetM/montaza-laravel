@@ -20,12 +20,12 @@
     @else
         @if (!isset($no_redirect))
             <button type="button" class="btn-select-bottom-right" onclick="marquerCommeNonLu({{ $notification->id }})"
-                title="Marquer comme Lu">
+                title="Marquer comme non Lu">
                 <x-icon type="unread" size="1" class="icons-no_hover" />
             </button>
         @else
             <form method="POST" action="{{ route('notifications.nonlu', ['id' => $notification->id]) }}"
-                class="inline">
+                class="inline" title="Marquer comme non Lu">
                 @csrf
                 <button type="submit" class="btn-select-bottom-right" title="Marquer comme non-lu">
                     <x-icon type="unread" size="1" class="icons-no_hover" />

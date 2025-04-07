@@ -275,11 +275,15 @@ class DdpController extends Controller
             'code' => 'required|string|max:4',
             'nom' => 'required|string|max:255',
             'matieres' => 'required|array',
-            'matieres.*.id' => 'required|integer|exists:matieres,id',
-            'matieres.*.quantity' => 'required|numeric|min:0',
+            'matieres.*.id' => 'nullable|integer|exists:matieres,id',
+            'matieres.*.quantity' => 'nullable|numeric|min:0',
             // 'matieres.*.unite_id' => 'required|integer|exists:unites,id',
-            'matieres.*.fournisseurs' => 'required|array',
-            'matieres.*.fournisseurs.*' => 'required|string|max:255',
+            'matieres.*.fournisseurs' => 'nullable|array',
+            'matieres.*.fournisseurs.*' => 'nullable|string|max:255',
+            'matieres.*.ligne_autre_id' => 'nullable|string',
+            'matieres.*.case_ref' => 'nullable|string|max:255',
+            'matieres.*.case_designation' => 'nullable|string|max:255',
+            'matieres.*.case_quantite' => 'nullable|string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -306,30 +310,41 @@ class DdpController extends Controller
             $ddp->save();
             $ddp->ddpLigne()->delete();
             foreach ($request->matieres as $matiere) {
-                $ddpLigne = $ddp->ddpLigne()->updateOrCreate(
-                    ['matiere_id' => $matiere['id']],
-                    [
-                        'quantite' => $matiere['quantity'],
-                        // 'unite_id' => $matiere['unite_id'],
-                        'ddp_id' => $ddp->id
-                    ]
-                );
-
-                foreach ($matiere['fournisseurs'] as $fournisseur) {
-                    $ddpLigne->ddpLigneFournisseur()->updateOrCreate(
-                        ['societe_id' => $fournisseur],
+                if (isset($matiere['ligne_autre_id'])) {
+                    $ddpLigne = $ddp->ddpLigne()->updateOrCreate(
+                        ['ligne_autre_id' => $matiere['ligne_autre_id']],
                         [
-                            'ddp_ligne_id' => $ddpLigne->id,
-                            'ddp_cde_statut_id' => 1,
-                            // 'unite_id' => $matiere['unite_id'],
+                            'case_ref' => $matiere['case_ref'],
+                            'case_designation' => $matiere['case_designation'],
+                            'case_quantite' => $matiere['case_quantite'],
+                            'ddp_id' => $ddp->id
                         ]
                     );
+                } else {
+                    $ddpLigne = $ddp->ddpLigne()->updateOrCreate(
+                        ['matiere_id' => $matiere['id']],
+                        [
+                            'quantite' => $matiere['quantity'],
+                            // 'unite_id' => $matiere['unite_id'],
+                            'ddp_id' => $ddp->id
+                        ]
+                    );
+                    foreach ($matiere['fournisseurs'] as $fournisseur) {
+                        $ddpLigne->ddpLigneFournisseur()->updateOrCreate(
+                            ['societe_id' => $fournisseur],
+                            [
+                                'ddp_ligne_id' => $ddpLigne->id,
+                                'ddp_cde_statut_id' => 1,
+                                // 'unite_id' => $matiere['unite_id'],
+                            ]
+                        );
+                    }
                 }
             }
 
             return response()->json(['message' => 'Demande de prix sauvegardée avec succès']);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'An error occurred while saving data', 'message' => $e->getMessage()], 500);
+            return response()->json(['error' => 'erreur de sauvegarde', 'message' => $e->getMessage()], 500);
         }
     }
     public function destroy($id): RedirectResponse

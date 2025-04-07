@@ -14,8 +14,9 @@
                         @method('PATCH')
                         <div class="col-span-3">
                             <x-input-label for="raison_sociale" :value="__('Raison Sociale')" />
-                            <x-text-input id="raison_sociale" class="block mt-1 w-1/3" type="text" placeholder="Atlantis Montaza"
-                                name="raison_sociale" value="{{ old('raison_sociale', $societe->raison_sociale) }}" required autofocus />
+                            <x-text-input id="raison_sociale" class="block mt-1 w-1/3" type="text"
+                                placeholder="Atlantis Montaza" name="raison_sociale"
+                                value="{{ old('raison_sociale', $societe->raison_sociale) }}" required autofocus />
                             @error('raison_sociale')
                                 <span class="text-red-500 text-sm">{{ $message }}</span>
                             @enderror
@@ -23,10 +24,14 @@
 
                         <div class="col-span-1">
                             <x-input-label for="forme_juridique_id" :value="__('Forme Juridique')" />
-                            <select id="forme_juridique_id" name="forme_juridique_id" class="block mt-1 w-full select" required>
-                                <option value="" disabled {{ old('forme_juridique_id', $societe->forme_juridique_id) == '' ? 'selected' : '' }}>-- Choisir une forme juridique --</option>
+                            <select id="forme_juridique_id" name="forme_juridique_id" class="block mt-1 w-full select"
+                                required>
+                                <option value="" disabled
+                                    {{ old('forme_juridique_id', $societe->forme_juridique_id) == '' ? 'selected' : '' }}>
+                                    -- Choisir une forme juridique --</option>
                                 @foreach ($formeJuridiques as $formeJuridique)
-                                    <option value="{{ $formeJuridique->id }}" {{ old('forme_juridique_id', $societe->forme_juridique_id) == $formeJuridique->id ? 'selected' : '' }}>
+                                    <option value="{{ $formeJuridique->id }}"
+                                        {{ old('forme_juridique_id', $societe->forme_juridique_id) == $formeJuridique->id ? 'selected' : '' }}>
                                         {{ $formeJuridique->code }} {{ $formeJuridique->nom }}
                                     </option>
                                 @endforeach
@@ -39,9 +44,12 @@
                         <div class="col-span-1">
                             <x-input-label for="code_ape_id" :value="__('Code APE')" />
                             <select id="code_ape_id" name="code_ape_id" class="block mt-1 w-full select" required>
-                                <option value="" disabled {{ old('code_ape_id', $societe->code_ape_id) == '' ? 'selected' : '' }}>-- Choisir un code APE --</option>
+                                <option value="" disabled
+                                    {{ old('code_ape_id', $societe->code_ape_id) == '' ? 'selected' : '' }}>-- Choisir
+                                    un code APE --</option>
                                 @foreach ($codeApes as $codeApe)
-                                    <option value="{{ $codeApe->id }}" {{ old('code_ape_id', $societe->code_ape_id) == $codeApe->id ? 'selected' : '' }}>
+                                    <option value="{{ $codeApe->id }}"
+                                        {{ old('code_ape_id', $societe->code_ape_id) == $codeApe->id ? 'selected' : '' }}>
                                         {{ $codeApe->code }} {{ $codeApe->nom }}
                                     </option>
                                 @endforeach
@@ -53,10 +61,14 @@
 
                         <div class="col-span-1">
                             <x-input-label for="societe_type_id" :value="__('Type de Société')" />
-                            <select id="societe_type_id" name="societe_type_id" class="block mt-1 w-full select" required>
-                                <option value="" disabled {{ old('societe_type_id', $societe->societe_type_id) == '' ? 'selected' : '' }}>-- Choisir un type de société --</option>
+                            <select id="societe_type_id" name="societe_type_id" class="block mt-1 w-full select"
+                                required>
+                                <option value="" disabled
+                                    {{ old('societe_type_id', $societe->societe_type_id) == '' ? 'selected' : '' }}>--
+                                    Choisir un type de société --</option>
                                 @foreach ($societeTypes as $societeType)
-                                    <option value="{{ $societeType->id }}" {{ old('societe_type_id', $societe->societe_type_id) == $societeType->id ? 'selected' : '' }}>
+                                    <option value="{{ $societeType->id }}"
+                                        {{ old('societe_type_id', $societe->societe_type_id) == $societeType->id ? 'selected' : '' }}>
                                         {{ $societeType->nom }}
                                     </option>
                                 @endforeach
@@ -68,92 +80,113 @@
 
                         <div class="col-span-1">
                             <x-input-label for="telephone" :value="__('Téléphone')" optionnel />
-                            <x-text-input id="telephone" class="block mt-1 w-full" type="text" name="telephone" maxlength="30"
-                                placeholder="+33 XX XX XX XX XX" value="{{ old('telephone', $societe->telephone) }}"  />
+                            <x-text-input id="telephone" class="block mt-1 w-full" type="text" name="telephone"
+                                maxlength="30" placeholder="+33 XX XX XX XX XX"
+                                value="{{ old('telephone', $societe->telephone) }}" />
                             @error('telephone')
                                 <span class="text-red-500 text-sm">{{ $message }}</span>
                             @enderror
                         </div>
 
                         <div class="col-span-1">
-                            <x-input-label for="email" :value="__('Email')" optionnel/>
+                            <x-input-label for="email" :value="__('Email')" optionnel />
                             <x-text-input id="email" class="block mt-1 w-full" type="email" name="email"
-                                placeholder="info@atlantismontaza.fr" value="{{ old('email', $societe->email) }}"  />
+                                placeholder="info@atlantismontaza.fr" value="{{ old('email', $societe->email) }}" />
                             @error('email')
                                 <span class="text-red-500 text-sm">{{ $message }}</span>
                             @enderror
                         </div>
 
                         <div class="col-span-1">
-                            <x-input-label for="site_web" :value="__('Site Web')" optionnel/>
+                            <x-input-label for="site_web" :value="__('Site Web')" optionnel />
                             <x-text-input id="site_web" class="block mt-1 w-full" type="text" name="site_web"
-                                placeholder="https://www.exemple.com" value="{{ old('site_web', $societe->site_web) }}" />
+                                placeholder="https://www.exemple.com"
+                                value="{{ old('site_web', $societe->site_web) }}" />
                             @error('site_web')
                                 <span class="text-red-500 text-sm">{{ $message }}</span>
                             @enderror
                         </div>
 
-                        <div class="col-span-1">
-                            <div class="flex items-center justify-between">
-                                <x-input-label for="siren" :value="__('SIREN')" />
-                                <small>
-                                    <a href="#" id="verify-siren" class="text-blue-500">Vérifier le SIREN</a>
-                                    <script>
-                                        document.getElementById('verify-siren').addEventListener('click', function(event) {
-                                            event.preventDefault();
-                                            var siren = document.getElementById('siren').value;
-                                            var url = 'https://www.infogreffe.fr/entreprise-societe/' + siren;
-                                            window.open(url, '_blank');
-                                        });
-                                    </script>
-                                </small>
-                            </div>
-                            <x-text-input id="siren" class="block mt-1 w-full" type="text" name="siren" maxlength="11" minlength="9"
-                                placeholder="XXXXXXXXX" value="{{ old('siren', $societe->siren) }}" required />
-                            @error('siren')
-                                <span class="text-red-500 text-sm">{{ $message }}</span>
-                            @enderror
-                        </div>
+                        <x-tooltip
+                            slot_tooltip="Le SIREN est obligatoire pour les clients, mais optionnel pour les fournisseurs"
+                            position="top" class="text-gray-500">
+                            <x-slot name="slot_item">
 
-                        <div class="col-span-1">
-                            <x-input-label for="numero_tva" :value="__('Numéro TVA')" />
-                            <x-text-input id="numero_tva" class="block mt-1 w-full" type="text" name="numero_tva" maxlength="13" minlength="13"
-                                placeholder="FRXX XXXX XXXX" value="{{ old('numero_tva', $societe->numero_tva) }}" required />
-                            @error('numero_tva')
-                                <span class="text-red-500 text-sm">{{ $message }}</span>
-                            @enderror
-                        </div>
+                                <div class="col-span-1">
+                                    <div class="flex items-center justify-between">
+                                        <x-input-label for="siren" :value="__('SIREN')" />
+                                        <small>
+                                            <a href="#" id="verify-siren" class="text-blue-500">Vérifier le
+                                                SIREN</a>
+                                            <script>
+                                                document.getElementById('verify-siren').addEventListener('click', function(event) {
+                                                    event.preventDefault();
+                                                    var siren = document.getElementById('siren').value;
+                                                    var url = 'https://www.infogreffe.fr/entreprise-societe/' + siren;
+                                                    window.open(url, '_blank');
+                                                });
+                                            </script>
+                                        </small>
+                                    </div>
+                                    <x-text-input id="siren" class="block mt-1 w-full" type="text" name="siren"
+                                        maxlength="11" minlength="9" placeholder="XXXXXXXXX"
+                                        value="{{ old('siren', $societe->siren) }}" required />
+                                    @error('siren')
+                                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                                    @enderror
+
+                                </div>
+                            </x-slot>
+                        </x-tooltip>
+
+                        <x-tooltip
+                            slot_tooltip="Le numéro TVA est obligatoire pour les clients, mais optionnel pour les fournisseurs"
+                            position="top" class="text-gray-500">
+                            <x-slot name="slot_item">
+                                <div class="col-span-1">
+                                    <x-input-label for="numero_tva" :value="__('Numéro TVA')" />
+                                    <x-text-input id="numero_tva" class="block mt-1 w-full" type="text"
+                                        name="numero_tva" maxlength="13" placeholder="FRXX XXXX XXXX"
+                                        value="{{ old('numero_tva', $societe->numero_tva) }}" required />
+                                    @error('numero_tva')
+                                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </x-slot>
+                        </x-tooltip>
 
                         <div class="col-span-1">
                             <div class="flex flex-col">
                                 <x-input-label value="Conditions de paiement" />
                                 <div>
-                                <select name="condition_paiement_id" required class="block mt-1 w-full select" onchange="changeConditionPaiement()">
+                                    <select name="condition_paiement_id" required class="block mt-1 w-full select"
+                                        onchange="changeConditionPaiement()">
 
-                                    @foreach ($conditionsPaiement as $conditionPaiement)
-                                        <option value="{{ $conditionPaiement->id }}"
-                                            {{ old('condition_paiement_id', $societe->condition_paiement_id) == $conditionPaiement->id ? 'selected' : '' }}>
-                                            {{ $conditionPaiement->nom }}
-                                        </option>
-                                    @endforeach
-                                    <option value="0">Autre</option>
-                                </select>
-                                <x-text-input name="condition_paiement_text" :value="old('condition_paiement_text')" class="w-full rounded-t-none border-0 pt-2 -mt-2 hidden focus:border-t-0 focus:ring-0" />
-                                <script>
-                                    function changeConditionPaiement() {
-                                        const select = document.querySelector('select[name="condition_paiement_id"]');
-                                        const input = document.querySelector('input[name="condition_paiement_text"]');
-                                        if (select.value == 0) {
-                                            input.classList.remove('hidden');
-                                            input.required = true;
-                                            input.focus();
-                                        } else {
-                                            input.classList.add('hidden');
-                                            input.value = '';
-                                            input.required = false;
+                                        @foreach ($conditionsPaiement as $conditionPaiement)
+                                            <option value="{{ $conditionPaiement->id }}"
+                                                {{ old('condition_paiement_id', $societe->condition_paiement_id) == $conditionPaiement->id ? 'selected' : '' }}>
+                                                {{ $conditionPaiement->nom }}
+                                            </option>
+                                        @endforeach
+                                        <option value="0">Autre</option>
+                                    </select>
+                                    <x-text-input name="condition_paiement_text" :value="old('condition_paiement_text')"
+                                        class="w-full rounded-t-none border-0 pt-2 -mt-2 hidden focus:border-t-0 focus:ring-0" />
+                                    <script>
+                                        function changeConditionPaiement() {
+                                            const select = document.querySelector('select[name="condition_paiement_id"]');
+                                            const input = document.querySelector('input[name="condition_paiement_text"]');
+                                            if (select.value == 0) {
+                                                input.classList.remove('hidden');
+                                                input.required = true;
+                                                input.focus();
+                                            } else {
+                                                input.classList.add('hidden');
+                                                input.value = '';
+                                                input.required = false;
+                                            }
                                         }
-                                    }
-                                </script>
+                                    </script>
                                 </div>
 
                                 @error('condition_paiement_id')
@@ -190,9 +223,41 @@
                 sirenError.id = 'siren-error';
                 sirenError.className = 'text-red-500 text-sm';
                 sirenError.innerHTML = `ATTENTION :<br>
-                 - Le SIRET des établissements liés ne sera pas changé automatiquement.`;
+                 - Le SIRET des établissements associés ne sera pas modifié automatiquement.`;
                 this.parentNode.appendChild(sirenError);
             }
         });
+    </script>
+    <script>
+        document.getElementById('societe_type_id').addEventListener('change', function() {
+            const sirenField = document.getElementById('siren');
+            const selectedType = parseInt(this.value, 10);
+
+            const sirenLabel = document.querySelector('label[for="siren"]');
+            const tvaField = document.getElementById('numero_tva');
+            const tvaLabel = document.querySelector('label[for="numero_tva"]');
+
+            if (selectedType === 2) {
+                sirenField.required = false;
+                sirenLabel.querySelector('small')?.remove(); // Remove the "(Optionnel)" label if it exists
+                const optionalSirenLabel = document.createElement('small');
+                optionalSirenLabel.textContent = '(Optionnel)';
+                sirenLabel.appendChild(optionalSirenLabel);
+
+                tvaField.required = false;
+                tvaLabel.querySelector('small')?.remove(); // Remove the "(Optionnel)" label if it exists
+                const optionalTvaLabel = document.createElement('small');
+                optionalTvaLabel.textContent = '(Optionnel)';
+                tvaLabel.appendChild(optionalTvaLabel);
+
+            } else {
+                sirenField.required = true;
+                sirenLabel.querySelector('small')?.remove(); // Remove the "(Optionnel)" label if it exists
+                tvaField.required = true;
+                tvaLabel.querySelector('small')?.remove(); // Remove the "(Optionnel)" label if it exists
+            }
+        });
+        // Trigger the change event on page load to set the initial state
+        document.getElementById('societe_type_id').dispatchEvent(new Event('change'));
     </script>
 </x-app-layout>

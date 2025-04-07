@@ -31,7 +31,15 @@
                             </p>
                             <p class="mt-1 text-sm text-red-600 dark:text-red-400">
                                 {{ $data['action_requise'] ?? '' }}
+
                             </p>
+                            @if (isset($data['action'], $data['action']['route_nom'],$data['action']['route_data'], $data['action']['label']))
+                                    <a href="{{ route($data['action']['route_nom'],$data['action']['route_data']) }}"
+                                        class="btn">
+                                        {!! $data['action']['label'] !!}
+                                    </a>
+
+                                @endif
                         </div>
                     </div>
                 </div>
