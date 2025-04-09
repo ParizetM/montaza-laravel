@@ -4,7 +4,7 @@
 <div class="flex items-center lg:flex-col">
     @if (!isset($no_redirect))
         <a type="button" class="btn-select-top-left"
-            href="{{ route('notifications.detail', ['id' => $notification->id]) }}">
+            href="{{ route('notifications.detail', ['id' => $notification->id]) }}" target="_blank">
             <x-icon type="open_in_new" size="1" class=" icons-no_hover" />
         </a>
     @endif

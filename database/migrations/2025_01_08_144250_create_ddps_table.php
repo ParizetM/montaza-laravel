@@ -49,7 +49,7 @@ return new class extends Migration
             $table->foreignId('societe_id')->constrained('societes');
             $table->foreignId('ddp_cde_statut_id')->constrained(table: 'ddp_cde_statuts');
             $table->foreignId('societe_contact_id')->nullable()->constrained('societe_contacts');
-            $table->date('date_livraison')->nullable();
+            $table->string('date_livraison')->nullable();
             $table->timestamps();
         });
         Schema::table('societe_matiere_prixs', function (Blueprint $table) {

@@ -210,6 +210,20 @@ class CdeController extends Controller
         $poste = 1;
         $cde->cdeLignes()->delete();
         foreach ($request->input('matieres') as $matiere) {
+            if (isset($matiere['ligne_autre_id'])) {
+                $cde->cdeLignes()->updateOrCreate(
+                    ['ligne_autre_id' => $matiere['ligne_autre_id']],
+                    [
+                        'poste' => $poste++,
+                        'quantite' => $matiere['quantite'],
+                        'ref_interne' => $matiere['refInterne'] ?? null,
+                        'ref_fournisseur' => $matiere['refFournisseur'] ?? null,
+                        'designation' => $matiere['designation'] ?? null,
+                        'prix_unitaire' => $matiere['prix'],
+                        'prix' => $matiere['prix'] * $matiere['quantite'],
+                        'date_livraison' => $matiere['date'] ?? null,
+                    ]);
+                }else{
             $cde->cdeLignes()->updateOrCreate([
                 'poste' => $poste++,
                 'matiere_id' => $matiere['id'],
@@ -223,6 +237,7 @@ class CdeController extends Controller
                 'date_livraison' => $matiere['date'] ?? null,
             ]);
         }
+    }
         return response()->json(['success' => true]);
     }
     public function destroy($id): RedirectResponse

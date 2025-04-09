@@ -35,9 +35,14 @@
                     @endphp
                     <div class="flex flex-col gap-2 bg-gray-100 dark:bg-gray-700 p-4 rounded-md hover:scale-105 cursor-pointer transition-all relative"
                         id="pdf-{{ $pdf }}" title="Ouvrir le PDF dans un autre onglet">
+                        <div class="flex justify-between items-center mb-2">
                         <h2
                             class="text-xl font-semibold text-gray-700 dark:text-gray-200  border border-gray-300 dark:border-gray-700 pb-2 hover">
                             {{ explode('_', $pdf)[count(explode('_', $pdf)) - 1] }}</h2>
+                            <a href="{{ route('ddp.pdfdownload', ['ddp' => $ddp, 'annee' => $ddpannee, 'nom' => $pdf]) }}" class="" title="Télécharger le PDF">
+                            <x-icons.download size="2" class="icons"/>
+                            </a>
+                        </div>
                         <div style="background-color: rgba(0,0,0,0); height: 409px; width: 285px; margin-bottom: 15px;"
                             class="absolute bottom-4"></div>
                         <object data="{{ route('ddp.pdfshow', ['ddp' => $ddp, 'annee' => $ddpannee, 'nom' => $pdf]) }}"
@@ -77,9 +82,11 @@
         </div>
         <script>
             document.querySelectorAll('[id^="pdf-"]').forEach(function(element) {
-                element.addEventListener('click', function() {
-                    const pdfUrl = element.querySelector('object').data;
-                    window.open(pdfUrl, '_blank');
+                element.addEventListener('click', function(event) {
+                    if (event.target.tagName.toLowerCase() !== 'a') {
+                        const pdfUrl = element.querySelector('object').data;
+                        window.open(pdfUrl, '_blank');
+                    }
                 });
             });
         </script>

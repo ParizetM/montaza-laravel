@@ -1,5 +1,5 @@
 <x-app-layout>
-    @section('title', 'Créer commande '.$cde->code)
+    @section('title', 'Créer commande ' . $cde->code)
     <x-slot name="header">
         <div>
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
@@ -94,6 +94,15 @@
                         <x-quick-matiere />
                     </div>
                 </div>
+                {{--
+ ######   #######  ##              #####
+##    ## ##     ## ##            ##     ##
+##       ##     ## ##                   ##
+##       ##     ## ##                 ##
+##       ##     ## ##              ##
+##    ## ##     ## ##            ##
+ ######   #######  ########      #########  --}}
+
                 <div class="bg-white dark:bg-gray-800 p-4 flex flex-col gap-4 rounded-md">
                     <form class="bg-white dark:bg-gray-800 flex flex-col gap-4 rounded-md">
                         @csrf
@@ -143,7 +152,8 @@
                                         autofocus maxlength="4"
                                         value="{{ isset($cde) && $cde->code != 'undefined' ? substr($cde->code, 7, 4) : '' }}"
                                         class="border-0 focus:border-0 dark:border-0 focus:ring-0 dark:focus:ring-0 w-14 px-0 mx-0" />
-                                    <span class="-ml-2 mr-2" id="cde-code-entite">{{ isset($entite_code) ? $entite_code : "" }}</span>
+                                    <span class="-ml-2 mr-2"
+                                        id="cde-code-entite">{{ isset($entite_code) ? $entite_code : '' }}</span>
                                 </div>
                             </div>
                         </div>
@@ -218,8 +228,8 @@
                                     </tr>
                                 </thead>
                                 <tbody id="matiere-choisi-table">
-                                    @if ($cde && $cde->cdeLignes->count() > 0)
-                                        @foreach ($cde->cdeLignes as $cde_ligne)
+                                    @foreach ($cde->cdeLignes as $cde_ligne)
+                                        @if ($cde_ligne->ligne_autre_id == null)
                                             <tr class="border-b border-gray-200 dark:border-gray-700 rounded-r-md overflow-hidden bg-white dark:bg-gray-800 border-r-green-500 dark:border-r-green-600 border-r-4 text-sm"
                                                 data-matiere-id="{{ $cde_ligne->matiere_id }}">
                                                 <td class="text-left ml-1">
@@ -259,19 +269,19 @@
                                                 </td>
                                                 <td class="text-right py-2">
                                                     <div class="flex items-center justify-end">
-                                                            <div
-                                                        class="flex items-center focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-600 focus-within:focus:border-indigo-600 rounded-sm m-1">
-
-                                                        <x-text-input type="number"
-                                                            name="quantite[{{ $cde_ligne->matiere->id }}]"
-                                                            oninput="saveChanges()"
-                                                            class="w-20 border-r-0 rounded-r-none  dark:border-r-0 focus:ring-0 focus:border-0 dark:focus:ring-0"
-                                                            value="{{ formatNumber($cde_ligne->quantite) }}"
-                                                            min="0" />
                                                         <div
-                                                            class="text-right bg-gray-100 dark:bg-gray-900 w-fit p-2.5 pl-0 border-1 border-l-0 rounded-r-sm border-gray-300 dark:border-gray-700 ">
-                                                            {{ $cde_ligne->matiere->unite->short }}</div>
-                                                            </div>
+                                                            class="flex items-center focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-600 focus-within:focus:border-indigo-600 rounded-sm m-1">
+
+                                                            <x-text-input type="number"
+                                                                name="quantite[{{ $cde_ligne->matiere->id }}]"
+                                                                oninput="saveChanges()"
+                                                                class="w-20 border-r-0 rounded-r-none  dark:border-r-0 focus:ring-0 focus:border-0 dark:focus:ring-0"
+                                                                value="{{ formatNumber($cde_ligne->quantite) }}"
+                                                                min="0" />
+                                                            <div
+                                                                class="text-right bg-gray-100 dark:bg-gray-900 w-fit p-2.5 pl-0 border-1 border-l-0 rounded-r-sm border-gray-300 dark:border-gray-700 ">
+                                                                {{ $cde_ligne->matiere->unite->short }}</div>
+                                                        </div>
                                                         {{-- <select name="unite[{{ $cde_ligne->matiere_id }}]"
                                                             class="w-16 mx-2 select" onchange="saveChanges()">
                                                             @foreach ($unites as $unite)
@@ -305,18 +315,88 @@
                                                     </button>
                                                 </td>
                                             </tr>
-                                        @endforeach
-                                    @else
-                                        <tr id="no-matiere">
-                                            <td colspan="100" class="text-gray-500 dark:text-gray-400 text-center ">
-                                                Aucune matière sélectionnée
-                                            </td>
-                                        </tr>
+                                        @else
+                                            <tr class="border-b border-gray-200 dark:border-gray-700 rounded-r-md overflow-hidden bg-white dark:bg-gray-800 border-r-green-500 dark:border-r-green-600 border-r-4 text-sm"
+                                                data-matiere-id="{{ $cde_ligne->ligne_autre_id }}">
+                                                <td class="text-left ml-1">
+                                                    <div class="flex flex-col">
+                                                        <span class="text-xs">Réf. Interne</span>
+                                                        <x-text-input
+                                                            name="ref_interne[{{ $cde_ligne->ligne_autre_id }}]"
+                                                            value="{{ $cde_ligne->ref_interne ?? '' }}"
+                                                            class="font-bold p-0 border-0 bg-gray-100 dark:bg-gray-700 max-w-24 mb-1"
+                                                            onblur="saveChanges()" />
+                                                    </div>
+                                                    <div class="flex flex-col {{ $showRefFournisseur ? '' : 'hidden' }}"
+                                                        id="refs-{{ $cde_ligne->ligne_autre_id }}">
+                                                        <div class="flex flex-col">
+                                                            <span class="text-xs">Réf. Fournisseur</span>
+                                                            <x-text-input
+                                                                name="ref_fournisseur[{{ $cde_ligne->ligne_autre_id }}]"
+                                                                value="{{ $cde_ligne->ref_fournisseur ?? '' }}"
+                                                                class="font-bold p-0 border-0 bg-gray-100 dark:bg-gray-700 max-w-24 mb-1"
+                                                                onblur="saveChanges()" />
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="text-left py-2">
+                                                    <textarea
+                                                        name="designation[{{ $cde_ligne->ligne_autre_id }}]"
+                                                        class="w-full m-0 dark:bg-gray-900 rounded dark:border-gray-700 resize-none"
+                                                        oninput="saveChanges()">{{ $cde_ligne->designation ?? '' }}</textarea>
+                                                </td>
+                                                <td class="text-right py-2">
+                                                    <div class="flex items-center justify-end">
+                                                        <div
+                                                            class="flex items-center focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-600 focus-within:focus:border-indigo-600 rounded-sm m-1">
 
+                                                            <x-text-input type="number"
+                                                                name="quantite[{{ $cde_ligne->ligne_autre_id }}]"
+                                                                oninput="saveChanges()"
+                                                                class="w-20 border-r-0 rounded-r-none  dark:border-r-0 focus:ring-0 focus:border-0 dark:focus:ring-0"
+                                                                value="{{ formatNumber($cde_ligne->quantite) }}"
+                                                                min="0" />
+                                                            <div
+                                                                class="text-right bg-gray-100 dark:bg-gray-900 w-fit p-2.5 pl-0 border-1 border-l-0 rounded-r-sm border-gray-300 dark:border-gray-700 ">
+                                                                {{ $cde_ligne->matiere->unite->short }}</div>
+                                                        </div>
+                                                        <x-date-input name="date[{{ $cde_ligne->ligne_autre_id }}]"
+                                                            class="w-fit" value="{{ $cde_ligne->date_livraison }}"
+                                                            oninput="saveChanges()" />
+                                                    </div>
+                                                </td>
+                                                <td class="text-left py-2">
+                                                    <div class="price-input-container flex items-center">
+                                                        <x-text-input type="number"
+                                                            name="prix[{{ $cde_ligne->ligne_autre_id }}]"
+                                                            class="price-input"
+                                                            value="{{ $cde_ligne->prix_unitaire }}" min="0"
+                                                            step="0.01" oninput="saveChanges()" />
+                                                    </div>
+                                                </td>
+                                                <td class="text-right py-2">
+                                                    <button class="float-right"
+                                                        data-matiere-id="{{ $cde_ligne->ligne_autre_id }}"
+                                                        onclick="removeMatiere(event)">
+                                                        <x-icons.close size="2" class="icons"
+                                                            tabindex="-1" />
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        @endif
+                                    @endforeach
 
-                                    @endif
                                 </tbody>
                             </table>
+                            <div class="w-full flex justify-end gap-2 text-center">
+                                <button type="button"
+                                    class="btn w-fit rounded-none rounded-bl-xl bg-gray-800 hover:bg-gray-700 hover:shadow-lg transition-all duration-300 py-0 px-4 mt-0"
+                                    onclick="addLigneVide()" title="Ajouter une ligne vide">
+                                    <span class="text-center w-full text-4xl">
+                                        +
+                                    </span>
+                                </button>
+                            </div>
                         </div>
                         <div
                             class="bg-linear-to-r from-gray-200 to-gray-50 dark:from-gray-700 dark:to-gray-800 w-full h-6 -mt-4 flex items-center justify-between px-6">
@@ -326,7 +406,8 @@
                     </form>
                     <div class="flex justify-between gap-4">
                         <div>
-                            <button class="bg-red-500 hover:bg-red-600 btn hover:cursor-pointer text-white dark:text-gray-100"
+                            <button
+                                class="bg-red-500 hover:bg-red-600 btn hover:cursor-pointer text-white dark:text-gray-100"
                                 onclick="event.preventDefault(); document.getElementById('confirm-delete-modal').classList.remove('hidden');">Supprimer</button>
                             <button class="btn" type="button" x-data
                                 x-on:click="$dispatch('open-modal', 'reset-commande-modal')">Réinitialiser</button>
@@ -713,23 +794,19 @@
             }
         }
 
-        // Function to remove selected material from the chosen list
-        function removeMatiere(event) {
-            const matiereId = event.target.getAttribute('data-matiere-id');
-            const row = event.target.closest('tr');
-            row.remove();
+        function addLigneVide() {
             const matiereChoisiTable = document.getElementById('matiere-choisi-table');
-            if (matiereChoisiTable.querySelectorAll('tr').length === 0) {
-                const tr = document.createElement('tr');
-                tr.id = 'no-matiere';
-                tr.innerHTML = `
-                <td colspan="100" class="text-gray-500 dark:text-gray-400 text-center ">
-                    Aucune matière sélectionnée
-                </td>
-            `;
+            const tr = document.createElement('tr');
+            id = "ligne_autre_id-" + Date.now();
+            if (document.querySelector(`tr[data-matiere-id="${id}"]`)) {
+                id = id + Math.floor(Math.random() * 1000) + 1;
+            }
+            tr.classList.add('border-b', 'border-gray-200', 'dark:border-gray-700',
+                'rounded-r-md', 'overflow-hidden', 'bg-white', 'dark:bg-gray-800', 'border-r-4');
+            tr.setAttribute('data-matiere-id', id);
+
                 matiereChoisiTable.appendChild(tr);
                 document.getElementById('societe_select').disabled = false;
-            }
             saveChanges();
         }
 
@@ -753,15 +830,14 @@
             saveStatus0.classList.remove('hidden');
             saveStatus1.classList.add('hidden');
             saveStatus2.classList.add('hidden');
-            if ('' === cdeNom.value.trim()) {
-                saveStatus0.classList.add('hidden');
-                saveStatus2.classList.remove('hidden');
-                return;
-            }
             if ('' === cdeCode.value.trim()) {
                 saveStatus0.classList.add('hidden');
                 saveStatus2.classList.remove('hidden');
                 return;
+            }
+            if ('' === cdeNom.value.trim()) {
+                cdeNom.value = 'CDE-' + new Date().getFullYear().toString().slice(-2) + '-' + cdeCode.value + cdeCodeEntite
+                    .textContent;
             }
             if (cdeId === '') {
                 saveStatus0.classList.add('hidden');
@@ -783,68 +859,122 @@
             var Total = 0;
             document.querySelectorAll('#matiere-choisi-table tr[data-matiere-id]').forEach(row => {
                 const matiereId = row.getAttribute('data-matiere-id');
-                const quantity = row.querySelector(`input[name="quantite[${matiereId}]"]`).value;
-                const refInterne = row.querySelector(`input[name="ref_interne[${matiereId}]`).value;
-                const refFournisseur = row.querySelector(`input[name="ref_fournisseur[${matiereId}]`).value;
-                const designation = row.querySelector(`input[name="designation[${matiereId}]`).value;
-                const prix = row.querySelector(`input[name="prix[${matiereId}]`).value;
-                // const unite = row.querySelector(`select[name="unite[${matiereId}]`).value;
-                const date = row.querySelector(`input[name="date[${matiereId}]`).value;
-                row.classList.remove('border-r-green-500', 'dark:border-r-green-600');
-                if (quantity < 1) {
-                    saveStatus0.classList.add('hidden');
-                    saveStatus2.classList.remove('hidden');
-                    return;
-                }
-                matieres.push({
-                    id: matiereId,
-                    quantite: quantity,
-                    refInterne: refInterne,
-                    refFournisseur: refFournisseur,
-                    designation: designation,
-                    prix: prix,
-                    // unite_id: unite,
-                    date: date
-                });
-                row.classList.add('border-r-green-500', 'dark:border-r-green-600');
-                cdeNom.classList.add('border-r-green-500', 'dark:border-r-green-600', 'border-r-4');
-                cdeCode.classList.add('border-r-green-500', 'dark:border-r-green-600', 'border-r-4');
-                cdeEntite.classList.add('border-r-green-500', 'dark:border-r-green-600', 'border-r-4');
-                if (cdeEntite.value == 1) {
-                    cdeCodeEntite.textContent = '';
-                } else if (cdeEntite.value == 2) {
-                    cdeCodeEntite.textContent = 'AV';
-                } else if (cdeEntite.value == 3) {
-                    cdeCodeEntite.textContent = 'AMB';
-                } else {
-                    cdeCodeEntite.textContent = '';
-                }
-                document.title =
-                    `Créer - CDE-${new Date().getFullYear().toString().slice(-2)}-${cdeCode.value}${cdeCodeEntite.textContent}`;
-                Total += parseFloat(row.querySelector(`input[name="prix[${matiereId}]`).value) * quantity;
-            });
-            montantTotal.textContent = Total.toFixed(3) + ' €';
-            var showRefFournisseur = 0;
-            if (showRefFournisseurToggle.checked) {
-                var showRefFournisseur = 1;
+                const quantity = row.querySelector(`
+            input[name = "quantite[${matiereId}]"] `).value;
+                const refInterne = row.querySelector(`
+            input[name = "ref_interne[${matiereId}]`).value;
+            const refFournisseur = row.querySelector(`input[name="ref_fournisseur[${matiereId}]`).value;
+            const designation = row.querySelector(`input[name="designation[${matiereId}]`).value;
+            const prix = row.querySelector(`input[name="prix[${matiereId}]`).value;
+            // const unite = row.querySelector(`select[name="unite[${matiereId}]`).value;
+            const date = row.querySelector(`input[name="date[${matiereId}]`).value; row.classList.remove(
+                'border-r-green-500', 'dark:border-r-green-600');
+            if (quantity < 1) {
+                saveStatus0.classList.add('hidden');
+                saveStatus2.classList.remove('hidden');
+                return;
             }
-            console.log(showRefFournisseur);
-            fetch('/cde/save', {
+            matieres.push({
+                id: matiereId,
+                quantite: quantity,
+                refInterne: refInterne,
+                refFournisseur: refFournisseur,
+                designation: designation,
+                prix: prix,
+                // unite_id: unite,
+                date: date
+            }); row.classList.add('border-r-green-500', 'dark:border-r-green-600'); cdeNom.classList.add(
+                'border-r-green-500', 'dark:border-r-green-600', 'border-r-4'); cdeCode.classList.add(
+                'border-r-green-500', 'dark:border-r-green-600', 'border-r-4'); cdeEntite.classList.add(
+                'border-r-green-500', 'dark:border-r-green-600', 'border-r-4');
+            if (cdeEntite.value == 1) {
+                cdeCodeEntite.textContent = '';
+            } else if (cdeEntite.value == 2) {
+                cdeCodeEntite.textContent = 'AV';
+            } else if (cdeEntite.value == 3) {
+                cdeCodeEntite.textContent = 'AMB';
+            } else {
+                cdeCodeEntite.textContent = '';
+            }
+            document.title =
+            `Créer - CDE-${new Date().getFullYear().toString().slice(-2)}-${cdeCode.value}${cdeCodeEntite.textContent}`; Total +=
+            parseFloat(row.querySelector(`input[name="prix[${matiereId}]`).value) * quantity;
+        });
+    montantTotal.textContent = Total.toFixed(3) + ' €';
+    var showRefFournisseur = 0;
+    if (showRefFournisseurToggle.checked) {
+        var showRefFournisseur = 1;
+    }
+    console.log(showRefFournisseur);
+    fetch('/cde/save', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                cde_id: cdeId,
+                entite_id: cdeEntite.value,
+                code: cdeCode.value,
+                show_ref_fournisseur: showRefFournisseur,
+                contact_id: document.getElementById('societe_contact_select').value,
+                total_ht: Total,
+                nom: cdeNom.value,
+                matieres: matieres
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            saveStatus0.classList.add('hidden');
+            saveStatus1.classList.remove('hidden');
+        })
+        .catch(error => {
+            saveStatus0.classList.add('hidden');
+            saveStatus2.classList.remove('hidden');
+            console.error('Erreur lors de la sauvegarde des données :', error);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Event listener for famille selection change
+        document.getElementById('famille_id_search').addEventListener('change', function() {
+            updateSousFamilles();
+        });
+        document.getElementById('sous_famille_id_search').addEventListener('change', function() {
+            liveSearch();
+        });
+        const searchbar = document.getElementById('searchbar');
+        const matiereTable = document.getElementById('matiere-table');
+        const cdeEntite = document.getElementById('cde-entite');
+        const cdeNom = document.getElementById('cde-nom');
+        const toggleShowRefFournisseur = document.getElementById('show_ref_fournisseur');
+
+        // Event listener for search bar input
+
+        searchbar.addEventListener('input', function() {
+            liveSearch();
+        });
+
+
+        cdeNom.addEventListener('input', function() {
+            if (cdeNom.value !== undefined && cdeNom.value.trim() !== '') {
+                saveChanges();
+            }
+        });
+        cdeEntite.addEventListener('change', function() {
+
+            fetch('/cde/get-last-code/' + cdeEntite.value, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    },
-                    body: JSON.stringify({
-                        cde_id: cdeId,
-                        entite_id: cdeEntite.value,
-                        code: cdeCode.value,
-                        show_ref_fournisseur: showRefFournisseur,
-                        contact_id: document.getElementById('societe_contact_select').value,
-                        total_ht: Total,
-                        nom: cdeNom.value,
-                        matieres: matieres
-                    })
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                            .getAttribute('content')
+                    }
                 })
                 .then(response => {
                     if (!response.ok) {
@@ -853,60 +983,8 @@
                     return response.json();
                 })
                 .then(data => {
-                    saveStatus0.classList.add('hidden');
-                    saveStatus1.classList.remove('hidden');
-                })
-                .catch(error => {
-                    saveStatus0.classList.add('hidden');
-                    saveStatus2.classList.remove('hidden');
-                    console.error('Erreur lors de la sauvegarde des données :', error);
-                });
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            // Event listener for famille selection change
-            document.getElementById('famille_id_search').addEventListener('change', function() {
-                updateSousFamilles();
-            });
-            document.getElementById('sous_famille_id_search').addEventListener('change', function() {
-                liveSearch();
-            });
-            const searchbar = document.getElementById('searchbar');
-            const matiereTable = document.getElementById('matiere-table');
-            const cdeEntite = document.getElementById('cde-entite');
-            const cdeNom = document.getElementById('cde-nom');
-            const toggleShowRefFournisseur = document.getElementById('show_ref_fournisseur');
-
-            // Event listener for search bar input
-
-            searchbar.addEventListener('input', function() {
-                liveSearch();
-            });
-
-
-            cdeNom.addEventListener('input', function() {
-                if (cdeNom.value !== undefined && cdeNom.value.trim() !== '') {
-                    saveChanges();
-                }
-            });
-            cdeEntite.addEventListener('change', function() {
-
-                fetch('/cde/get-last-code/' + cdeEntite.value, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
-                                .getAttribute('content')
-                        }
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        document.title = `Créer CDE-${new Date().getFullYear().toString().slice(-2)}-${data.code}${data.entite_code}`;
+                    document.title =
+                        `Créer CDE-${new Date().getFullYear().toString().slice(-2)}-${data.code}${data.entite_code}`;
                         document.getElementById('cde-code').value = data.code;
                         document.getElementById('cde-code-entite').textContent = data.entite_code;
                     })

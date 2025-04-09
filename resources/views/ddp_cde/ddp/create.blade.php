@@ -219,23 +219,23 @@
                                                 </td>
                                             </tr>
                                             @else
-                                            <tr data-matiere-id="ligne_autre_id-0"
-                                                class="border-b border-gray-200 dark:border-gray-700 rounded-r-md overflow-hidden bg-white dark:bg-gray-800 border-r-4 {{ $ddp_ligne->fournisseurs->count() > 0 ? 'border-r-green-500 dark:border-r-green-600' : '' }}">
+                                            <tr data-matiere-id="{{ $ddp_ligne->ligne_autre_id }}"
+                                                class="border-b border-gray-200 dark:border-gray-700 rounded-r-md overflow-hidden bg-white dark:bg-gray-800 border-r-4 border-r-green-500 dark:border-r-green-600<<<<<">
                                                 <td class="text-left px-1">
-                                                    <x-text-input type="text" name="case_ref[ligne_autre_id-0]"
+                                                    <x-text-input type="text" name="case_ref[{{ $ddp_ligne->ligne_autre_id }}]"
                                                         value="{{ $ddp_ligne->case_ref }}"
                                                         class="w-full" placeholder="AA-0052"
                                                         oninput="saveChanges()" />
                                                 </td>
                                                 <td class="text-left px-1">
-                                                    <x-text-input type="text" name="case_designation[ligne_autre_id-0]"
+                                                    <x-text-input type="text" name="case_designation[{{ $ddp_ligne->ligne_autre_id }}]"
                                                         value="{{ $ddp_ligne->case_designation }}"
                                                         class="w-full" placeholder="Désignation"
                                                         oninput="saveChanges()" />
                                                 </td>
                                                 <td class="text-left px-5">
                                                     <x-text-input type="text"
-                                                        name="case_quantite[ligne_autre_id-0]"
+                                                        name="case_quantite[{{ $ddp_ligne->ligne_autre_id }}]"
                                                         oninput="saveChanges()"
                                                         class="w-24 border-gray-300 dark:border-gray-700"
                                                         value="{{ formatNumber($ddp_ligne->case_quantite) }}"
@@ -244,7 +244,7 @@
                                                 <td>
                                                     <div class="flex justify-end mx-4">
                                                         <button class="float-right"
-                                                            data-matiere-id="ligne_autre_id-0"
+                                                            data-matiere-id="{{ $ddp_ligne->ligne_autre_id }}"
                                                             onclick="removeMatiere(event)">
                                                             <x-icons.close size="2" class="icons"
                                                                 tabindex="-1" />
@@ -266,12 +266,12 @@
 
                                 </tbody>
                             </table>
-                            <div class="w-full flex justify-center gap-2 text-center">
+                            <div class="w-full flex justify-end gap-2 text-center">
                                 <button type="button"
-                                    class="btn w-1/3 rounded-b-xl rounded-t-none bg-gray-800 hover:bg-gray-700 hover:shadow-lg transition-all duration-300"
-                                    onclick="addLigneVide()">
-                                    <span class="text-center w-full">
-                                        Ajouter une ligne vide
+                                    class="btn w-fit rounded-none rounded-bl-xl bg-gray-800 hover:bg-gray-700 hover:shadow-lg transition-all duration-300 py-0 px-4 mt-0"
+                                    onclick="addLigneVide()" title="Ajouter une ligne vide">
+                                    <span class="text-center w-full text-4xl">
+                                        +
                                     </span>
                                 </button>
                             </div>
@@ -523,23 +523,27 @@
         function addLigneVide() {
             const matiereChoisiTable = document.getElementById('matiere-choisi-table');
             const tr = document.createElement('tr');
+            id = "ligne_autre_id-" + Date.now();
+            if (document.querySelector(`tr[data-matiere-id="${id}"]`)) {
+                id = id + Math.floor(Math.random() * 1000) + 1;
+            }
             tr.classList.add('border-b', 'border-gray-200', 'dark:border-gray-700',
                 'rounded-r-md', 'overflow-hidden', 'bg-white', 'dark:bg-gray-800', 'border-r-4');
-            tr.setAttribute('data-matiere-id', 'ligne_autre_id-0');
+            tr.setAttribute('data-matiere-id', id);
             tr.innerHTML = `
                 <td class="text-left px-1">
-                    <x-text-input type="text" name="case_ref[ligne_autre_id-0]" value="" class="w-full" placeholder="AA-0052"
+                    <x-text-input type="text" name="case_ref[`+id+`]" value="" class="w-full" placeholder="AA-0052"
                     oninput="saveChanges()"
                     />
                 </td>
                 <td class="text-left px-1">
-                    <x-text-input type="text" name="case_designation[ligne_autre_id-0]" value="" class="w-full" placeholder="Désignation"
+                    <x-text-input type="text" name="case_designation[`+id+`]" value="" class="w-full" placeholder="Désignation"
                     oninput="saveChanges()"
                     />
                 </td>
                 <td class="text-left px-5">
                     <x-text-input type="text"
-                                name="case_quantite[ligne_autre_id-0]"
+                                name="case_quantite[`+id+`]"
                                 oninput="saveChanges()"
                                 class="w-24 border-gray-300 dark:border-gray-700"
                                 value=""
@@ -548,7 +552,7 @@
                 <td>
                     <div class="flex justify-end mx-4">
                         <button class="float-right"
-                                data-matiere-id="ligne_autre_id-0"
+                                data-matiere-id="`+id+`"
                                 onclick="removeMatiere(event)">
                                 <x-icons.close size="2" class="icons"
                                     tabindex="-1" />

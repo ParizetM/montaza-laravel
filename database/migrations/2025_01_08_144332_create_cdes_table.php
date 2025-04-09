@@ -63,6 +63,7 @@ return new class extends Migration
             $table->decimal('prix', 10, places: 3)->nullable();
             $table->date('date_livraison')->nullable();
             $table->date('date_livraison_reelle')->nullable();
+            $table->string('ligne_autre_id')->nullable();
             $table->timestamps();
         });
         Schema::table('societe_matiere_prixs', function (Blueprint $table) {

@@ -184,6 +184,19 @@
                             <td>{{ $ligne->matiere->unite->short }}</td>
                         </tr>
                     @endforeach
+                    @foreach ($ligne_autres as $ligne)
+                        <tr>
+                            <td>{{ $ligne->case_ref }}</td>
+                            <td>{{ $ligne->case_designation }}</td>
+                            @if (strpos($ligne->case_quantite, ' ') !== false)
+                                @foreach (explode(' ', $ligne->case_quantite) as $word)
+                                    <td>{{ $word }}</td>
+                                @endforeach
+                            @else
+                                <td colspan="2">{{ $ligne->case_quantite }}</td>
+                            @endif
+                        </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>

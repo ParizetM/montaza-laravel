@@ -141,7 +141,8 @@ class DdpController extends Controller
             return view('ddp_cde.ddp.create', ['ddp' => $ddp, 'ddpid' => $ddpid, 'familles' => $familles, 'unites' => $unites, 'entites' => $entites, 'entite_code' => $entite_code]);
         }
         if ($ddp->ddp_cde_statut_id == 2) {
-            $ddp_societes = $ddp->ddpLigne->map(function ($ligne) {
+            $ddpLignes = $ddp->ddpLigne->where('ligne_autre_id', null);
+            $ddp_societes = $ddpLignes->map(function ($ligne) {
                 return $ligne->ddpLigneFournisseur->map(function ($fournisseur) {
                     return $fournisseur->societe;
                 });
@@ -175,7 +176,7 @@ class DdpController extends Controller
                 $colPrix = $this->getExcelColumnName($indexSociete + 1); // Colonne pour la somme
                 $colunite = 'UNDEFINED';
                 $colDate = $this->getExcelColumnName($indexSociete + 3); // Colonne pour le minimum
-                $rowCount = count($ddp->ddpLigne) + 1;
+                $rowCount = count($ddpLignes) + 1;
                 $row[] = "UNDEFINED";
                 $row[] = "=SUM({$colPrix}2:{$colPrix}{$rowCount})";
                 $row[] = $colunite;
@@ -241,7 +242,7 @@ class DdpController extends Controller
                 $indexSociete++;
             }
             $data[] = $row;
-            $ddplignes = $ddp->ddpLigne;
+            $ddplignes = $ddp->ddpLigne->where('ligne_autre_id', null)->values();
             return view('ddp_cde.ddp.show', compact('ddp', ['ddp_societes', 'data', 'ddplignes', 'ddp_societe_contacts']));
         }
     }
@@ -312,12 +313,13 @@ class DdpController extends Controller
             foreach ($request->matieres as $matiere) {
                 if (isset($matiere['ligne_autre_id'])) {
                     $ddpLigne = $ddp->ddpLigne()->updateOrCreate(
-                        ['ligne_autre_id' => $matiere['ligne_autre_id']],
+                        ['ligne_autre_id' => $matiere['ligne_autre_id'],
+                        'ddp_id' => $ddp->id],
                         [
                             'case_ref' => $matiere['case_ref'],
                             'case_designation' => $matiere['case_designation'],
                             'case_quantite' => $matiere['case_quantite'],
-                            'ddp_id' => $ddp->id
+
                         ]
                     );
                 } else {
@@ -359,6 +361,14 @@ class DdpController extends Controller
         $ddp = Ddp::findOrFail($id)->load('ddpLigne', 'ddpLigne.ddpLigneFournisseur');
         if ($ddp->nom == 'undefined') {
             return redirect()->route('ddp.show', $ddp->id)->with('error', 'Veuillez renseigner la demande de prix');
+        }
+        if ($ddp->ddpLigne->isEmpty()) {
+            return redirect()->route('ddp.show', $ddp->id)->with('error', 'Veuillez renseigner au moins une ligne de la demande de prix');
+        }
+        if ($ddp->ddpLigne->every(function ($ligne) {
+            return $ligne->ligne_autre_id !== null;
+        })) {
+            return redirect()->route('ddp.show', $ddp->id)->with('error', 'Veuillez ajouter au moins une ligne avec une matière.');
         }
         $ddp_societe = $ddp->ddpLigne->map(function ($ligne) {
             return $ligne->ddpLigneFournisseur->map(function ($fournisseur) {
@@ -455,13 +465,16 @@ class DdpController extends Controller
                     return $fournisseur->societe_contact_id == $contacts->id;
                 });
             });
+            $ligne_autres = $ddp->ddpLigne->filter(function ($ligne) use ($contacts) {
+                return $ligne->ligne_autre_id != null;
+            });
             $etablissement = $contacts->etablissement;
             $afficher_destinataire = $ddp->afficher_destinataire;
             $destinataire = $contacts->email;
             $fileName = $ddp->code . '_' . $etablissement->societe->raison_sociale . '.pdf';
             $entite = $ddp->entite;
             $pdf = app('dompdf.wrapper');
-            $pdf->loadView('ddp_cde.ddp.pdf', ['etablissement' => $etablissement, 'ddp' => $ddp, 'lignes' => $lignes, 'afficher_destinataire' => $afficher_destinataire, 'destinataire' => $destinataire, 'entite' => $entite]);
+            $pdf->loadView('ddp_cde.ddp.pdf', ['etablissement' => $etablissement, 'ddp' => $ddp, 'lignes' => $lignes, 'afficher_destinataire' => $afficher_destinataire, 'destinataire' => $destinataire, 'entite' => $entite,'ligne_autres' => $ligne_autres]);
             $pdf->setOption(['isRemoteEnabled' => true, 'isHtml5ParserEnabled' => true, 'isPhpEnabled' => true]);
             $pdf->output();
             $domPdf = $pdf->getDomPDF();
@@ -488,6 +501,11 @@ class DdpController extends Controller
         $response = Response::make($file, 200);
         $response->header('Content-Type', $type);
         return $response;
+    }
+    public function pdfDownload($ddp, $dossier, $path)
+    {
+        $path = 'DDP/' . $dossier . '/' . $path;
+        return Storage::download($path);
     }
     public function pdfsDownload($ddp_id)
     {
@@ -600,7 +618,9 @@ class DdpController extends Controller
         $data = array_map('str_getcsv', array_filter(explode("\r\n", $request->data), 'strlen'));
         array_shift($data);
         array_pop($data);
-        $ddp_societes = $ddp->ddpLigne->map(function ($ligne) {
+        $ddplignes = $ddp->ddpLigne->where('ligne_autre_id', null);
+
+        $ddp_societes = $ddplignes->map(function ($ligne) {
             return $ligne->ddpLigneFournisseur->map(function ($fournisseur) {
                 return $fournisseur->societe;
             });
@@ -615,8 +635,8 @@ class DdpController extends Controller
         //     }
         //     $data2[] = $row;
         // }
-
-        foreach ($ddp->ddpLigne as $index0 => $ddpLigne) {
+        $index0 = 0;
+        foreach ($ddplignes as $indexviré => $ddpLigne) {
             $row = [];
             $index_societe = 0;
             foreach ($ddp_societes as $index1 => $societe) {
@@ -696,6 +716,7 @@ class DdpController extends Controller
                 $index_societe += 4;
             }
             $data2[] = $row;
+            $index0 = $index0 + 1;
         }
 
         $data3[] = $data;
@@ -707,7 +728,8 @@ class DdpController extends Controller
     public function getRetours($id): array
     {
         $ddp = Ddp::findOrFail($id);
-        $ddp_societes = $ddp->ddpLigne->map(function ($ligne) {
+        $ddplignes = $ddp->ddpLigne->where('ligne_autre_id', null);
+        $ddp_societes = $ddplignes->map(function ($ligne) {
             return $ligne->ddpLigneFournisseur->map(function ($fournisseur) {
                 return $fournisseur->societe;
             });
@@ -716,7 +738,7 @@ class DdpController extends Controller
 
 
             $data = [];
-            foreach ($ddp->ddpLigne as $ddpLigne) {
+            foreach ($ddplignes as $ddpLigne) {
                 $row = [];
                 foreach ($ddp_societes as $societe) {
                     $ddpLigneFournisseur = $ddpLigne->ddpLigneFournisseur->where('societe_id', $societe->id)->first();
@@ -754,7 +776,7 @@ class DdpController extends Controller
             }
         } elseif ($ddp->ddp_cde_statut_id == 3) {
             $data = [];
-            foreach ($ddp->ddpLigne as $ddpLigne) {
+            foreach ($ddplignes as $ddpLigne) {
                 $row = [];
                 foreach ($ddp_societes as $societe) {
                     $ddpLigneFournisseur = $ddpLigne->ddpLigneFournisseur->where('societe_id', $societe->id)->first();
@@ -795,6 +817,7 @@ class DdpController extends Controller
                         $row[] = 'UNDEFINED';
                     }
                 }
+
                 $data[] = $row;
             }
         }
@@ -836,7 +859,8 @@ class DdpController extends Controller
             'condition_paiement_id' => 1,
         ]);
         $poste = 0;
-        foreach ($ddp->ddpLigne as $ddpLigne) {
+        $ddpLignes = $ddp->ddpLigne->where('ligne_autre_id', null);
+        foreach ($ddpLignes as $ddpLigne) {
             foreach ($ddpLigne->ddpLigneFournisseur as $ddpLigneFournisseur) {
                 if ($ddpLigneFournisseur->societe_id == $societe->id) {
                     $poste++;

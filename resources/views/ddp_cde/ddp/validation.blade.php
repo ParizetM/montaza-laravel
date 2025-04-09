@@ -1,5 +1,5 @@
 <x-app-layout>
-    @section('title', 'Validation - '. $ddp->code)
+    @section('title', 'Validation - ' . $ddp->code)
 
     <x-slot name="header">
         <div>
@@ -22,7 +22,8 @@
                     <div class="text-center w-fit px-2 text-xs leading-5 flex rounded-full font-bold items-center justify-center"
                         style="background-color: {{ $ddp->statut->couleur }}; color: {{ $ddp->statut->couleur_texte }}">
                         {{ $ddp->statut->nom }}</div>
-                </div>                <div class="flex justify-between">
+                </div>
+                <div class="flex justify-between">
                     <div class="flex flex-col gap-4 m-4">
                         <div>
                             <x-input-label value="Dossier suivi par ?" />
@@ -71,38 +72,57 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div class="">
                                 <div class="bg-white dark:bg-gray-900 w-fit h-full rounded-md overflow-auto mt-2">
-                                <table class="min-w-0  ">
-                                    <thead>
-                                        <tr>
-                                            <th class="py-2">Référence</th>
-                                            <th class="py-2">Désignation</th>
-                                            <th class="py-2">Quantité</th>
-                                            <th class="py-2">Unité</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($ddp->ddpLigne as $ddpLigne)
-                                            @foreach ($ddpLigne->ddpLigneFournisseur as $ddpLigneFournisseur)
-                                                @if ($ddpLigneFournisseur->societe_id == $societe->id)
+                                    <table class="min-w-0  ">
+                                        <thead>
+                                            <tr>
+                                                <th class="py-2">Référence</th>
+                                                <th class="py-2">Désignation</th>
+                                                <th class="py-2">Quantité</th>
+                                                <th class="py-2">Unité</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($ddp->ddpLigne as $ddpLigne)
+                                                @foreach ($ddpLigne->ddpLigneFournisseur as $ddpLigneFournisseur)
+                                                    @if ($ddpLigneFournisseur->societe_id == $societe->id)
+                                                        <tr>
+                                                            <td
+                                                                class="border border-gray-300 dark:border-gray-700 px-4 py-2">
+                                                                {{ $ddpLigne->matiere->ref_interne }}</td>
+                                                            <td
+                                                                class="border border-gray-300 dark:border-gray-700 px-4 py-2">
+                                                                {{ $ddpLigne->matiere->designation }}</td>
+                                                            <td
+                                                                class="border border-gray-300 dark:border-gray-700 px-4 py-2">
+                                                                {{ formatNumber($ddpLigne->quantite) }}</td>
+                                                            <td class="border border-gray-300 dark:border-gray-700 px-4 py-2"
+                                                                title="{{ $ddpLigne->matiere->unite->full }}">
+                                                                {{ $ddpLigne->matiere->unite->short }}
+                                                            </td>
+                                                        </tr>
+                                                    @endif
+                                                @endforeach
+                                            @endforeach
+                                            @foreach ($ddp->ddpLigne as $ddpLigne)
+                                                @if ($ddpLigne->ligne_autre_id != null)
                                                     <tr>
-                                                        <td class="border border-gray-300 dark:border-gray-700 px-4 py-2">
-                                                            {{ $ddpLigne->matiere->ref_interne }}</td>
-                                                        <td class="border border-gray-300 dark:border-gray-700 px-4 py-2">
-                                                            {{ $ddpLigne->matiere->designation }}</td>
-                                                        <td class="border border-gray-300 dark:border-gray-700 px-4 py-2">{{ formatNumber($ddpLigne->quantite) }}</td>
+                                                        <td
+                                                            class="border border-gray-300 dark:border-gray-700 px-4 py-2">
+                                                            {{ $ddpLigne->case_ref }}</td>
+                                                        <td
+                                                            class="border border-gray-300 dark:border-gray-700 px-4 py-2">
+                                                            {{ $ddpLigne->case_designation }}</td>
                                                         <td class="border border-gray-300 dark:border-gray-700 px-4 py-2"
-                                                            title="{{ $ddpLigne->matiere->unite->full }}">
-                                                            {{ $ddpLigne->matiere->unite->short }}
-                                                        </td>
+                                                            colspan="2">{{ $ddpLigne->case_quantite }}</td>
+
                                                     </tr>
                                                 @endif
                                             @endforeach
-                                        @endforeach
-                                        <tr class="h-14"></tr>
-                                    </tbody>
-                                </table>
+                                            <tr class="h-14"></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
-                        </div>
                             <div class="flex flex-col p-4 gap-1">
                                 <div class="flex flex-col mb-2">
                                     <x-input-label value="Établissement" />

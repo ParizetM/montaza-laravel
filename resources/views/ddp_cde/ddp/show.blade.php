@@ -71,7 +71,7 @@
                                         class="border border-gray-300 dark:border-gray-700 pl-2
                                             {{ $index % 2 == 1 ? 'bg-gray-50 dark:bg-gray-800' : '' }}
                                     ">
-                                        {{ $ddplignes[$index]->matiere->designation }}</td>
+                                        {{ Str::limit($ddplignes[$index]->matiere->designation, 30, '...') }}</td>
                                     <td
                                         class="text-center border border-gray-300 dark:border-gray-700
                                             {{ $index % 2 == 1 ? 'bg-gray-50 dark:bg-gray-800' : '' }}

@@ -98,7 +98,9 @@
             const rowHeaders = [
                 'Matières',
                 @foreach ($ddp->ddpLigne as $ddpLigne)
+                @if ($ddpLigne->ligne_autre_id == null)
                     '<span title="{{ $ddpLigne->matiere->ref_interne }} {{ $ddpLigne->matiere->designation }}" class="text-xs">{{ $ddpLigne->matiere->ref_interne }} {{ $ddpLigne->matiere->designation }}<span>',
+                        @endif
                 @endforeach
                 'Total',
                 // Ajoutez autant de matières que nécessaire
