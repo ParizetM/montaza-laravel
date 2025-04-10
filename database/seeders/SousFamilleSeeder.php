@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use DB;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -101,10 +102,12 @@ class SousFamilleSeeder extends Seeder
             ['nom' => 'Autre',     'famille_id' => 3, 'type_affichage_stock' => 1]
         ];
 
+        DB::beginTransaction();
 
         foreach ($sousFamilles as $sousFamille) {
             \App\Models\SousFamille::create($sousFamille);
         }
+        DB::commit();
     }
 }
         // $sousFamilles = [

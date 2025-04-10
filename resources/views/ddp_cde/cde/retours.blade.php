@@ -103,6 +103,9 @@
                     @endif
 
                 </div>
+                <div>
+                    @include('ddp_cde.cde.commentaire')
+                </div>
                 <div class="flex justify-between items-center mt-6  w-full">
                     <a href="{{ route('cde.cancel_validate', $cde->id) }}" class="btn float-right">Retour</a>
                     <a href="{{ route('cde.terminer', $cde->id) }}" class="btn float-right">Terminer</a>

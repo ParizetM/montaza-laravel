@@ -9,6 +9,7 @@ use App\Models\Standard;
 use App\Models\StandardVersion;
 use App\Models\Stock;
 use App\Models\Unite;
+use DB;
 use Illuminate\Database\Seeder;
 
 class MatiereProductionSeeder extends Seeder
@@ -20,6 +21,7 @@ class MatiereProductionSeeder extends Seeder
         }, file($path));
         $tour = 0;
         $erreur_standard = 0;
+        DB::beginTransaction();
         foreach ($csv as $row) {
             $unite = Unite::where('short', 'ILIKE', $row[8])->first()->id ?? null;
             $row[1] = preg_replace('/^\x{FEFF}/u', '', $row[1]);
@@ -59,6 +61,7 @@ class MatiereProductionSeeder extends Seeder
             ]);
             $tour++;
         }
+        DB::commit();
         echo $erreur_standard . " erreurs sur " . $tour . " lignes.\n";
 
     }

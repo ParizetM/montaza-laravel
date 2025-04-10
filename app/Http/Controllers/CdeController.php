@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cde;
 use App\Models\CdeLigne;
+use App\Models\Commentaire;
 use App\Models\ConditionPaiement;
 use App\Models\DdpCdeStatut;
 use App\Models\Entite;
@@ -95,6 +96,9 @@ class CdeController extends Controller
         $code = $lastCde ? $lastCde->code : 'CDE-' . now()->format('y') . '-0000';
         $code = explode('-', $code);
         $code = $code[1] + 1;
+        $commentaire_id = Commentaire::create([
+            'contenu' => '',
+        ])->id;
         $cde = Cde::create([
             'code' => 'undefined',
             'nom' => 'undefined',
@@ -103,6 +107,7 @@ class CdeController extends Controller
             'user_id' => Auth::id(),
             'tva' => 20,
             'type_expedition_id' => 1,
+            'commentaire_id' => $commentaire_id,
         ]);
         $cdeid =  $cde->id;
         return redirect()->route('cde.show', $cdeid);
@@ -158,7 +163,7 @@ class CdeController extends Controller
             $cdeid =  $cde->id;
             $showRefFournisseur = $cde->show_ref_fournisseur;
             $pdfcommande = $this->pdf($cdeid);
-            return view('ddp_cde.cde.show', compact('cde', ['showRefFournisseur','pdfcommande']));
+            return view('ddp_cde.cde.show', compact('cde', ['showRefFournisseur', 'pdfcommande']));
         }
     }
 
@@ -173,14 +178,15 @@ class CdeController extends Controller
             'contact_id' => 'required|integer|exists:societe_contacts,id',
             'nom' => 'required|string|max:255',
             'matieres' => 'required|array',
-            'matieres.*.id' => 'required|integer|exists:matieres,id',
-            'matieres.*.quantite' => 'required|numeric|min:1',
+            'matieres.*.id' => 'nullable|integer',
+            'matieres.*.quantite' => 'required|numeric|min:0',
             'matieres.*.refInterne' => 'nullable|string|max:255',
             'matieres.*.refFournisseur' => 'nullable|string|max:255',
-            'matieres.*.designation' => 'nullable|string|max:255',
+            'matieres.*.designation' => 'required|string|max:255',
             'matieres.*.prix' => 'required|numeric|min:0',
             // 'matieres.*.unite_id' => 'required|integer|exists:unites,id',
             'matieres.*.date' => 'nullable|date',
+            'matieres.*.ligne_autre_id' => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
@@ -222,22 +228,23 @@ class CdeController extends Controller
                         'prix_unitaire' => $matiere['prix'],
                         'prix' => $matiere['prix'] * $matiere['quantite'],
                         'date_livraison' => $matiere['date'] ?? null,
-                    ]);
-                }else{
-            $cde->cdeLignes()->updateOrCreate([
-                'poste' => $poste++,
-                'matiere_id' => $matiere['id'],
-                'quantite' => $matiere['quantite'],
-                'ref_interne' => $matiere['refInterne'] ?? null,
-                'ref_fournisseur' => $matiere['refFournisseur'] ?? null,
-                'designation' => $matiere['designation'] ?? null,
-                'prix_unitaire' => $matiere['prix'],
-                'prix' => $matiere['prix'] * $matiere['quantite'],
-                // 'unite_id' => $matiere['unite_id'],
-                'date_livraison' => $matiere['date'] ?? null,
-            ]);
+                    ]
+                );
+            } else {
+                $cde->cdeLignes()->updateOrCreate([
+                    'poste' => $poste++,
+                    'matiere_id' => $matiere['id'],
+                    'quantite' => $matiere['quantite'],
+                    'ref_interne' => $matiere['refInterne'] ?? null,
+                    'ref_fournisseur' => $matiere['refFournisseur'] ?? null,
+                    'designation' => $matiere['designation'] ?? null,
+                    'prix_unitaire' => $matiere['prix'],
+                    'prix' => $matiere['prix'] * $matiere['quantite'],
+                    // 'unite_id' => $matiere['unite_id'],
+                    'date_livraison' => $matiere['date'] ?? null,
+                ]);
+            }
         }
-    }
         return response()->json(['success' => true]);
     }
     public function destroy($id): RedirectResponse
@@ -266,19 +273,21 @@ class CdeController extends Controller
         if ($showRefFournisseur == true) {
             $listeChangement = [];
             foreach ($cde->cdeLignes as $ligne) {
-                $ligne->prix = $ligne->prix_unitaire * $ligne->quantite;
-                $ligne->save();
-                $societe_matiere = $ligne->matiere->societeMatiere($societe_id);
-                $ref_externe = $societe_matiere->ref_externe ?? null;
-                if ($ligne->ref_fournisseur != null && $ligne->ref_fournisseur != '' && $ref_externe != null && $ligne->ref_fournisseur != $ref_externe) {
-                    $listeChangement[] = [
-                        'id' => $ligne->id,
-                        'ref_interne' => $ligne->matiere->ref_interne,
-                        'ref_fournisseur' => $ligne->ref_fournisseur,
-                        'ref_externe' => $ref_externe,
-                        'designation' => $ligne->designation,
-                        'societe_matiere_id' => $societe_matiere->id
-                    ];
+                if ($ligne->ligne_autre_id == null) {
+                    $ligne->prix = $ligne->prix_unitaire * $ligne->quantite;
+                    $ligne->save();
+                    $societe_matiere = $ligne->matiere->societeMatiere($societe_id);
+                    $ref_externe = $societe_matiere->ref_externe ?? null;
+                    if ($ligne->ref_fournisseur != null && $ligne->ref_fournisseur != '' && $ref_externe != null && $ligne->ref_fournisseur != $ref_externe) {
+                        $listeChangement[] = [
+                            'id' => $ligne->id,
+                            'ref_interne' => $ligne->matiere->ref_interne,
+                            'ref_fournisseur' => $ligne->ref_fournisseur,
+                            'ref_externe' => $ref_externe,
+                            'designation' => $ligne->designation,
+                            'societe_matiere_id' => $societe_matiere->id
+                        ];
+                    }
                 }
             }
         } else {
@@ -386,7 +395,7 @@ class CdeController extends Controller
         $cde->save();
         return redirect()->route('cde.show', $cde->id);
     }
-    public function pdf($cde_id)
+    public function pdf($cde_id, $sans_prix = false)
     {
         $cde = Cde::findOrFail($cde_id)->load('cdeLignes', 'cdeLignes.matiere');
         $contacts = $cde->societeContact;
@@ -401,7 +410,21 @@ class CdeController extends Controller
         $cde->total_ttc = $total_ttc;
         $cde->save();
         $pdf = app('dompdf.wrapper');
-        $pdf->loadView('ddp_cde.cde.pdf', ['etablissement' => $etablissement, 'contact' => $contacts, 'cde' => $cde, 'lignes' => $lignes, 'afficher_destinataire' => $afficher_destinataire, 'entite' => $entite, 'showRefFournisseur' => $showRefFournisseur, 'total_ttc' => $total_ttc, 'total_ht' => $total_ht]);
+        $pdf->loadView(
+            'ddp_cde.cde.pdf',
+            [
+                'etablissement' => $etablissement,
+                'contact' => $contacts,
+                'cde' => $cde,
+                'lignes' => $lignes,
+                'afficher_destinataire' => $afficher_destinataire,
+                'entite' => $entite,
+                'showRefFournisseur' => $showRefFournisseur,
+                'total_ttc' => $total_ttc,
+                'total_ht' => $total_ht,
+                'sans_prix' => $sans_prix,
+            ]
+        );
         $pdf->setOption(['isRemoteEnabled' => true, 'isHtml5ParserEnabled' => true, 'isPhpEnabled' => true]);
         $pdf->output();
         $domPdf = $pdf->getDomPDF();
@@ -415,6 +438,9 @@ class CdeController extends Controller
             [0, 0, 0]
         );
         $year = now()->format('y');
+        if ($sans_prix) {
+            $fileName = 'sans_prix_' . $fileName;
+        }
         Storage::put('CDE/' . $year . '/' . $fileName, $pdf->output());
         return $fileName;
     }
@@ -426,6 +452,18 @@ class CdeController extends Controller
         $response = Response::make($file, 200);
         $response->header('Content-Type', $type);
         return $response;
+    }
+    public function pdfDownloadSansPrix($id)
+    {
+        $cde = Cde::findOrFail($id);
+        $pdf = $this->pdf($cde->id, true);
+        $cdeAnnee = explode('-', $cde->code)[1];
+        $pdfPath = 'CDE/' . $cdeAnnee . '/sans_prix_' . $cde->code . '.pdf';
+        if (!Storage::exists($pdfPath)) {
+            return redirect()->back()->with('error', 'PDF file not found');
+        }
+
+        return response()->download(storage_path('app/private/' . $pdfPath));
     }
     public function downloadPdfs($cde_id)
     {
@@ -580,7 +618,7 @@ class CdeController extends Controller
         $societe = $cde->societeContact->etablissement->societe;
         foreach ($cde->cdeLignes as $ligne) {
             $matiere = $ligne->matiere;
-            if ($ligne->date_livraison_reelle && $ligne->ddp_cde_statut_id != 4) {
+            if ($ligne->date_livraison_reelle && $ligne->ddp_cde_statut_id != 4 && $ligne->ligne_autre_id == null) {
                 $this->stockService->stock(
                     $matiere->id,
                     'entree',
@@ -590,7 +628,7 @@ class CdeController extends Controller
                 );
                 $societe_matiere = $matiere->societeMatieres()->firstOrCreate(['societe_id' => $societe->id]);
                 $newPrix = $ligne->prix_unitaire;
-                if ( $matiere->getLastPrice($societe->id) == null || $matiere->getLastPrice($societe->id)->prix_unitaire != $ligne->prix_unitaire) {
+                if ($matiere->getLastPrice($societe->id) == null || $matiere->getLastPrice($societe->id)->prix_unitaire != $ligne->prix_unitaire) {
                     SocieteMatierePrix::updateOrCreate(
                         [
                             'societe_matiere_id' => $societe_matiere->id,
@@ -612,7 +650,7 @@ class CdeController extends Controller
      * @param mixed $entite_id
      * @return string
      */
-    function getLastCode($entite_id)
+    public function getLastCode($entite_id)
     {
         $entite = Entite::findOrFail($entite_id);
         $lastcode = CDE::where('code', 'LIKE', 'CDE-' . date('y') . '%')
@@ -630,5 +668,28 @@ class CdeController extends Controller
         }
         return response()->json(['code' => $lastnumber, 'entite_code' => $entite_code]);
     }
-}
 
+    public function updateCommentaire(Request $request, $id)
+    {
+        $cde = Cde::find($id);
+        if ($cde) {
+            // Trouve le commentaire lié à la commande
+            $commentaire = $cde->commentaire;
+            if ($commentaire) {
+            if ($commentaire->contenu == $request->commentaire) {
+                return response()->json(['message' => 'Commentaire inchangé'], 200);
+            }
+            // Met à jour le commentaire avec la nouvelle valeur
+            $commentaire->contenu = $request->commentaire;
+            $commentaire->save();
+            return response()->json(['message' => 'Commentaire mis à jour avec succès'], 200);
+            } else {
+            // Si la commande n'a pas encore de commentaire, on en crée un
+            $commentaire = new Commentaire();
+            $commentaire->contenu = $request->commentaire;
+            $cde->commentaire()->save($commentaire);
+            return response()->json(['message' => 'Commentaire créé avec succès'], 201);
+            }
+        }
+    }
+}

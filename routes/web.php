@@ -146,6 +146,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::get('/ddp/create', [DdpController::class, 'create'])->name('ddp.create');
         Route::post('/ddp/save', [DdpController::class, 'save'])->name('ddp.save');
         Route::post('/ddp/get-last-code/{entite}', [DdpController::class, 'getLastCode'])->name('ddp.get_last_code');
+        Route::patch('/ddp/{id}/commentaire/save', [DdpController::class, 'updateCommentaire'])->name('ddp.commentaire');
         Route::delete('/ddp/{ddp}/destroy', [DdpController::class, 'destroy'])->name('ddp.destroy');
         Route::get('/ddp/{ddp}/validate', [DdpController::class, 'validation'])->name('ddp.validation');
         Route::post('/ddp/{ddp}/validate', [DdpController::class, 'validate'])->name('ddp.validate');
@@ -172,12 +173,14 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::post('/cde/save', [CdeController::class, 'save'])->name('cde.save');
         Route::post('/cde/get-last-code/{entite}', [CdeController::class, 'getLastCode'])->name('cde.get_last_code');
         Route::get('/cde/{cde}', [CdeController::class, 'show'])->name('cde.show');
+        Route::patch('/cde/{id}/commentaire/save', [CdeController::class, 'updateCommentaire'])->name('cde.commentaire');
         Route::delete('/cde/{cde}/destroy', [CdeController::class, 'destroy'])->name('cde.destroy');
         Route::get('/cde/{cde}/validate', [CdeController::class, 'validation'])->name('cde.validation');
         Route::post('/cde/{cde}/validate', [CdeController::class, 'validate'])->name('cde.validate');
         Route::get('/cde/{cde}/annuler-validation', [CdeController::class, 'cancelValidate'])->name('cde.cancel_validate');
         Route::post('/cde/{cde}/save-retours', [CdeController::class, 'saveRetours'])->name('cde.save_retours');
         Route::get('/cde/{cde}/reset', [CdeController::class, 'reset'])->name('cde.reset');
+        Route::get('/cde/{ddp}/pdf/download/sans-prix', [CdeController::class, 'pdfDownloadSansPrix'])->name('cde.pdfs.pdfdownload_sans_prix');
         Route::get('/cde/{cde}/pdfs/download', [CdeController::class, 'downloadPdfs'])->name('cde.pdfs.download');
         Route::get('/cde/{cde}/pdfshow/{annee}/{nom}', [CdeController::class, 'showPdf'])->name('cde.pdfshow');
         Route::get('/cde/{cde}/skipmails', [CdeController::class, 'skipMails'])->name('cde.skipmails');

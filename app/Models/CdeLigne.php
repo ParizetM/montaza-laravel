@@ -24,6 +24,7 @@ class CdeLigne extends Model
         'ddp_cde_statut_id',
         'type_expedition_id',
         'date_livraison_reele',
+        'ligne_autre_id',
     ];
     public function unite()
     {

@@ -61,6 +61,9 @@
             </style>
 
             <div id="handsontable-container" class="ht-theme-main-dark-auto"></div>
+            <div>
+                @include('ddp_cde.ddp.commentaire')
+            </div>
             <div class="flex justify-between items-center mt-6">
                 <button x-data x-on:click="$dispatch('open-modal', 'confirm-retour')" class="btn float-right">
                     Retour

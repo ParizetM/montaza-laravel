@@ -71,7 +71,16 @@
                                         class="border border-gray-300 dark:border-gray-700 pl-2
                                             {{ $index % 2 == 1 ? 'bg-gray-50 dark:bg-gray-800' : '' }}
                                     ">
-                                        {{ Str::limit($ddplignes[$index]->matiere->designation, 30, '...') }}</td>
+                                        <x-tooltip slot_tooltip=""
+                                            position="top">
+                                            <x-slot name="slot_tooltip">
+                                                <a href="{{ route('matieres.show',$ddplignes[$index]->matiere->id) }}" target="_blank" class="lien">{{ $ddplignes[$index]->matiere->designation }}</a>
+                                            </x-slot>
+                                            <x-slot name="slot_item">
+                                                {{ $ddplignes[$index]->matiere->ref_interne . ' ' . Str::limit($ddplignes[$index]->matiere->designation, 30, '...') }}
+                                            </x-slot>
+                                        </x-tooltip>
+                                    </td>
                                     <td
                                         class="text-center border border-gray-300 dark:border-gray-700
                                             {{ $index % 2 == 1 ? 'bg-gray-50 dark:bg-gray-800' : '' }}
@@ -99,21 +108,45 @@
                             @foreach ($ddp_societe_contacts as $societe_contact)
                                 <td colspan="3" class="">
                                     <a href="{{ route('ddp.commander', ['ddp' => $ddp->id, 'societe_contact' => $societe_contact->id]) }}"
-                                        class=" btn-select-bottom-right btn-select-bottom-left text-center mb-10 dark:bg-gray-700 dark:hover:bg-gray-600" title="Commander chez {{ $societe->raison_sociale }}">Commander</a>
+                                        class=" btn-select-bottom-right btn-select-bottom-left text-center mb-10 dark:bg-gray-700 dark:hover:bg-gray-600"
+                                        title="Commander chez {{ $societe->raison_sociale }}">Commander</a>
                                 </td>
                             @endforeach
                         </tr>
                     </tbody>
                 </table>
             </div>
-            <div class="flex justify-between items-center mt-6">
-                <a href="{{ route('ddp.annuler_terminer', $ddp->id) }}" class="btn float-right">Retour</a>
-                <a href="{{ route('ddp.terminer', $ddp->id) }}" class="btn float-right">Terminer</a>
+            <div>
+                @include('ddp_cde.ddp.commentaire')
             </div>
+            <div class="flex justify-between items-center mt-6">
+                <button x-data x-on:click="$dispatch('open-modal', 'confirm-retour')" class="btn float-right">
+                    Retour
+                </button>
+
+                {{-- <a href="{{ route('ddp.terminer', $ddp->id) }}" class="btn float-right">Terminer</a> --}}
+            </div>
+            <x-modal name="confirm-retour" :show="$errors->any()">
+                <div class="p-4">
+                    <a x-on:click="$dispatch('close')">
+                        <x-icons.close class="float-right mb-1 icons" size="1.5" unfocus />
+                    </a>
+                    <h2 class="text-xl font-semibold mb-4">Voulez-vous vraiment retourner en arrière ?</h2>
+                    <p class="mb-4">La date des prix</p>
+                    <p class="mb-4">Cette action est irréversible.</p>
+                    <div class="flex justify-end gap-4">
+                        <button x-on:click="$dispatch('close')"
+                            class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-sm">
+                            Annuler
+                        </button>
+                        <a href="{{ route('ddp.annuler_terminer', $ddp->id) }}"
+                            class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-sm">Retour</a>
+                    </div>
+            </x-modal>
         </div>
     </div>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const rows = document.querySelectorAll('tbody tr');
             rows.forEach(row => {
                 const cells = row.querySelectorAll('td');

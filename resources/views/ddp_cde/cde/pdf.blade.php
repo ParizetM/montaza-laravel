@@ -291,8 +291,10 @@
                         @endif
                         <th>Désignation</th>
                         <th>Qté</th>
+                        @if (!$sans_prix)
                         <th>PU HT</th>
                         <th>Total HT</th>
+                        @endif
                         <th>Pour le</th>
                     </tr>
                 </thead>
@@ -321,11 +323,13 @@
                                     </div>
                                 </div>
                             </td>
-                            <td style="text-align: left; padding-left: 10px;">{{ $ligne->matiere->designation }}</td>
+                            <td style="text-align: left; padding-left: 10px;">{{ $ligne->designation }}</td>
                             <td class="whitespace-nowrap">{{ formatNumber($ligne->quantite) }}
-                                {{ $ligne->matiere->unite->short }}</td>
+                                {{ $ligne->matiere ? $ligne->matiere->unite->short : '' }}</td>
+                            @if (!$sans_prix)
                             <td class="whitespace-nowrap">{{ formatNumberArgent($ligne->prix_unitaire) }} </td>
                             <td class="whitespace-nowrap">{{ formatNumberArgent($ligne->prix) }} </td>
+                            @endif
                             <td class="whitespace-nowrap">{{ \Carbon\Carbon::parse($ligne->date_livraison)->format('d/m/Y') }}</td>
                         </tr>
                     @endforeach
@@ -337,7 +341,9 @@
                 <thead>
                     <tr>
                         <th style="border-right: 2px solid #f0f0f0 ;">{{ $cde->typeExpedition->nom }}</th>
+                        @if(!$sans_prix)
                         <th colspan="3" style="border-left: 2px solid #f0f0f0 ;">Récapitulatif Financier</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -352,6 +358,8 @@
                             <br><span>horaires : {{ $adresse->horaires }}</span>
                         @endif
                     </td>
+                    @if(!$sans_prix)
+
                     <td style=" border-right: 2px solid #f0f0f0 ;">
                         <strong>Condition de paiement :</strong>
                         <br>{{ $cde->conditionPaiement->nom }}
@@ -377,6 +385,7 @@
                         <p><strong>{{ formatNumberArgent($cde->total_ttc - $total_ht) }} </strong></p>
                         <p><strong>{{ formatNumberArgent($cde->total_ttc) }} </strong></p>
                     </td>
+                    @endif
                 </tbody>
             </table>
         </div>

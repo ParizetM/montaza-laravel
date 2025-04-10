@@ -15,7 +15,7 @@ class Ddp extends Model
     /** @use HasFactory<\Database\Factories\DdpFactory> */
     use HasFactory;
 
-    protected $fillable = ['code', 'nom','entite_id', 'ddp_cde_statut_id', 'user_id', 'dossier_suivi_par_id', 'afficher_destinataire'];
+    protected $fillable = ['code', 'nom','entite_id', 'ddp_cde_statut_id', 'user_id', 'dossier_suivi_par_id', 'afficher_destinataire','commentaire_id', ];
 
     public function statut(): BelongsTo
     {
@@ -63,5 +63,9 @@ class Ddp extends Model
     public function entite(): BelongsTo
     {
         return $this->belongsTo(Entite::class);
+    }
+    public function commentaire(): BelongsTo
+    {
+        return $this->belongsTo(Commentaire::class);
     }
 }

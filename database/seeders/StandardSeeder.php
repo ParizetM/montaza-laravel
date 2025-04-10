@@ -18,26 +18,27 @@ class StandardSeeder extends Seeder
     {
         $p = Storage::path('standards');
         $ds = File::directories($p);
+        DB::beginTransaction();
         foreach ($ds as $d) {
             $fs = File::files($d);
             $doss = new DossierStandard;
             $doss->nom = basename($d);
             $doss->save();
             foreach ($fs as $f) {
-            if ($f->getExtension() === 'pdf') {
-                $std = new Standard();
-                $std->nom = str_replace('.pdf', '', $f->getFilename());
-                $std->dossier_standard_id = $doss->id;
-                $std->save();
+                if ($f->getExtension() === 'pdf') {
+                    $std = new Standard();
+                    $std->nom = str_replace('.pdf', '', $f->getFilename());
+                    $std->dossier_standard_id = $doss->id;
+                    $std->save();
 
-                $ver = new StandardVersion();
-                $ver->standard_id = $std->id;
-                $ver->version = 'A';
-                $ver->chemin_pdf = 'standards/' . $doss->nom . '/' . $std->nom . '.pdf';
-                $ver->save();
-            }
+                    $ver = new StandardVersion();
+                    $ver->standard_id = $std->id;
+                    $ver->version = 'A';
+                    $ver->chemin_pdf = 'standards/' . $doss->nom . '/' . $std->nom . '.pdf';
+                    $ver->save();
+                }
             }
         }
-            }
-        }
-
+        DB::commit();
+    }
+}

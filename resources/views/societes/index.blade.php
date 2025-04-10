@@ -150,7 +150,6 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class=" p-4 pt-0">
-                                                                            <div></div>
                                                                             <label for="commentaire"
                                                                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300">{!! __('Commentaire') !!}</label>
                                                                             <textarea rows="3" id="commentaire" name="commentaire"

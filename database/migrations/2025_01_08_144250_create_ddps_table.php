@@ -29,6 +29,7 @@ return new class extends Migration
             $table->foreignId('entite_id')->constrained('entites'); // entité pour qui on fait la commande
             $table->date('date_rendu')->nullable();
             $table->boolean('afficher_destinataire')->default(true);
+            $table->foreignId('commentaire_id')->constrained('commentaires')->nullable();
             $table->timestamps();
         });
         Schema::create('ddp_lignes', function (Blueprint $table) {

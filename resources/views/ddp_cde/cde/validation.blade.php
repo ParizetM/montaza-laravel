@@ -253,11 +253,11 @@
                                 </td>
                                 <td class="p-2 text-left border border-gray-200 dark:border-gray-700">
                                     {{ $ligne->designation }}</td>
-                                <td class="p-2 text-center border border-gray-200 dark:border-gray-700" title="{{ formatNumber($ligne->quantite).' '.$ligne->matiere->unite->full }}">
-                                    {{ formatNumber($ligne->quantite).' '.$ligne->matiere->unite->short }}</td>
+                                <td class="p-2 text-center border border-gray-200 dark:border-gray-700" title="{{ formatNumber($ligne->quantite).($ligne->matiere ? ' '.$ligne->matiere->unite->full : '') }}">
+                                    {{ formatNumber($ligne->quantite).($ligne->matiere ? ' '.$ligne->matiere->unite->short : '') }}</td>
                                 <td class="p-2 text-left border border-gray-200 dark:border-gray-700"
-                                    title="{{ formatNumberArgent($ligne->prix_unitaire) }} euro(s) par {{ $ligne->matiere->unite->full }}">
-                                    {{ formatNumberArgent($ligne->prix_unitaire) }}/{{ $ligne->matiere->unite->short }}
+                                    title="{{ formatNumberArgent($ligne->prix_unitaire) }} {{ $ligne->matiere ? 'euro(s) par'.$ligne->matiere->unite->full : '' }}">
+                                    {{ formatNumberArgent($ligne->prix_unitaire) }}{{ $ligne->matiere ? '/'.$ligne->matiere->unite->short : '' }}
                                 </td>
                                 <td class="p-2 text-left border border-gray-200 dark:border-gray-700">
                                     {{ formatNumberArgent($ligne->prix) }} </td>

@@ -33,6 +33,7 @@ class Cde extends Model
         'condition_paiement_id',
         'afficher_destinataire',
         'accuse_reception',
+        'commentaire_id',
     ];
     public function cdeLignes()
     {
@@ -87,7 +88,10 @@ class Cde extends Model
     {
         return $this->belongsTo(ConditionPaiement::class);
     }
-
+    public function commentaire(): BelongsTo
+    {
+        return $this->belongsTo(Commentaire::class);
+    }
 
 
 }

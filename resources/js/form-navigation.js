@@ -16,8 +16,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     let nextIndex = index + 1;
                     while (nextIndex < formElements.length) {
                         const nextElement = formElements[nextIndex];
-                        const tabIndex = nextElement.getAttribute('tabindex');
-                        if (!nextElement.disabled && nextElement.tagName !== "FIELDSET" && tabIndex !== "-1") {
+                        const tabIndex = nextElement.getAttribute("tabindex");
+                        if (
+                            !nextElement.disabled &&
+                            nextElement.tagName !== "FIELDSET" &&
+                            tabIndex !== "-1"
+                        ) {
                             nextElement.focus();
                             break;
                         }
@@ -27,4 +31,5 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
     });
+
 });

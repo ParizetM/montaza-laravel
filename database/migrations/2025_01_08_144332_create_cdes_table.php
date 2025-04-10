@@ -44,6 +44,7 @@ return new class extends Migration
             $table->string('accuse_reception')->nullable();
             $table->boolean('show_ref_fournisseur')->default(false);
             $table->boolean('afficher_destinataire')->default(true);
+            $table->foreignId('commentaire_id')->constrained('commentaires')->nullable();
             $table->timestamps();
         });
 

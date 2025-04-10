@@ -9,14 +9,15 @@
                     >>
                     <a href="{{ route('cde.show', $cde->id) }}"
                         class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">{!! __('Créer une commande') !!}</a>
-                        >>
-                        <a href="{{ route('cde.annuler_terminer', $cde->id) }}"
-                            class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">{!! __('Retours') !!}</a>
-                        >> Récapitulatif
+                    >>
+                    <a href="{{ route('cde.annuler_terminer', $cde->id) }}"
+                        class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">{!! __('Retours') !!}</a>
+                    >> Récapitulatif
                 </h2>
 
             </div>
             <a href="{{ route('cde.pdfs.download', $cde) }}" class="btn">Télécharger le PDF</a>
+            <a href="{{ route('cde.pdfs.pdfdownload_sans_prix', $cde) }}" class="btn">Télécharger le PDF sans prix</a>
         </div>
     </x-slot>
 
@@ -81,7 +82,8 @@
                                         </td>
                                         <td class="p-2 text-right line-through whitespace-nowrap"
                                             title="{{ formatNumber($ligne->quantite) }} {{ $ligne->matiere->unite->full }}">
-                                            {{ formatNumber($ligne->quantite) }} {{ $ligne->matiere->unite->short }}</td>
+                                            {{ formatNumber($ligne->quantite) }} {{ $ligne->matiere->unite->short }}
+                                        </td>
                                         <td class="p-2 text-center line-through whitespace-nowrap">
                                             {{ formatNumberArgent($ligne->prix_unitaire) }}
                                         </td>
@@ -120,8 +122,9 @@
                                         </td>
                                         <td class="p-2 text-left">{{ $ligne->designation }}</td>
                                         <td class="p-2 text-right"
-                                            title="{{ formatNumber($ligne->quantite) }} {{ $ligne->matiere->unite->full }}">
-                                            {{ formatNumber($ligne->quantite) }} {{ $ligne->matiere->unite->short }}</td>
+                                            title="{{ formatNumber($ligne->quantite) }} {{ $ligne->matiere ? $ligne->matiere->unite->full : '' }}">
+                                            {{ formatNumber($ligne->quantite) }}
+                                            {{ $ligne->matiere ? $ligne->matiere->unite->short : '' }}</td>
                                         <td class="p-2 text-center whitespace-nowrap">
                                             {{ formatNumberArgent($ligne->prix_unitaire) }}
                                         </td>
@@ -197,11 +200,11 @@
                             </tr>
                             <tr>
                                 <td colspan="100">
-                                        <div class="w-full">
-                                            <div class=" flex transition-all duration-500 max-h-0 overflow-hidden border-t border-gray-200 dark:border-gray-700"
-                                                id="slide-down-AR">
-                                                <div class="flex p-4">
-                                                    @if ($cde->accuse_reception)
+                                    <div class="w-full">
+                                        <div class=" flex transition-all duration-500 max-h-0 overflow-hidden border-t border-gray-200 dark:border-gray-700"
+                                            id="slide-down-AR">
+                                            <div class="flex p-4">
+                                                @if ($cde->accuse_reception)
                                                     <div class="flex flex-wrap gap-4">
                                                         <div class="flex flex-col flex-wrap gap-4">
                                                             {{-- @dd($pdfs) --}}
@@ -240,89 +243,95 @@
                                                             id="pdf-{{ $pdfcommande }}" title="Ouvrir le PDF">
                                                             <h2
                                                                 class="text-xl font-semibold text-gray-700 dark:text-gray-200  border border-gray-300 dark:border-gray-700 pb-2 hover">
-                                                                {{ explode('_', $pdfcommande)[count(explode('_', $pdfcommande)) - 1] }}</h2>
+                                                                {{ explode('_', $pdfcommande)[count(explode('_', $pdfcommande)) - 1] }}
+                                                            </h2>
                                                             <div style="background-color: rgba(0,0,0,0); height: 409px; width: 285px; margin-bottom: 15px;"
                                                                 class="absolute bottom-4"></div>
-                                                            <object data="{{ route('cde.pdfshow', ['cde' => $cde, 'annee' => $cdeannee, 'nom' => $pdfcommande]) }}"
+                                                            <object
+                                                                data="{{ route('cde.pdfshow', ['cde' => $cde, 'annee' => $cdeannee, 'nom' => $pdfcommande]) }}"
                                                                 type="application/pdf" height="424px" width="300px">
-                                                                <p>Il semble que vous n'ayez pas de plugin PDF pour ce navigateur. Pas de problème... vous
+                                                                <p>Il semble que vous n'ayez pas de plugin PDF pour ce
+                                                                    navigateur. Pas de problème... vous
                                                                     pouvez <a
                                                                         href="{{ route('cde.pdfshow', ['cde' => $cde, 'annee' => $cdeannee, 'nom' => $pdfcommande]) }}">cliquer
                                                                         ici pour télécharger le fichier PDF.</a></p>
                                                             </object>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                </div>
-                                                <script>
-                                                    document.querySelectorAll('[id^="pdf-"]').forEach(function(element) {
-                                                        element.addEventListener('click', function() {
-                                                            const pdfUrl = element.querySelector('object').data;
-                                                            window.open(pdfUrl, '_blank');
-                                                        });
-                                                    });
-                                                </script>
-                                            @else
-                                                <div class="flex flex-col gap-4 float-right m-12">
-                                                    <div class="flex flex-col gap-4">
-                                                        <div
-                                                            class="flex flex-col gap-2 bg-gray-100 dark:bg-gray-700 p-4 rounded-md">
-                                                            <h2
-                                                                class="text-xl font-semibold text-gray-700 dark:text-gray-200">
-                                                                Pas d'accusé de
-                                                                réception</h2>
+                                            </div>
+                                        </div>
+                                        <script>
+                                            document.querySelectorAll('[id^="pdf-"]').forEach(function(element) {
+                                                element.addEventListener('click', function() {
+                                                    const pdfUrl = element.querySelector('object').data;
+                                                    window.open(pdfUrl, '_blank');
+                                                });
+                                            });
+                                        </script>
+                                    @else
+                                        <div class="flex flex-col gap-4 float-right m-12">
+                                            <div class="flex flex-col gap-4">
+                                                <div
+                                                    class="flex flex-col gap-2 bg-gray-100 dark:bg-gray-700 p-4 rounded-md">
+                                                    <h2 class="text-xl font-semibold text-gray-700 dark:text-gray-200">
+                                                        Pas d'accusé de
+                                                        réception</h2>
 
-                                                        </div>
-                                                    </div>
                                                 </div>
-                                    @endif
+                                            </div>
+                                        </div>
+                                        @endif
+                                    </div>
+                                    <button
+                                        class="w-full  justify-center flex hover:bg-gray-100 dark:hover:bg-gray-700"
+                                        onclick="toggleSlide()">
+                                        <x-icon :size="2" type="arrow_back"
+                                            class="-rotate-90 icons-no_hover -mt-2 mb-1 transition-all duration-500"
+                                            id="arrow-slide-down-AR" />
+                                    </button>
+
+
+                                    <script>
+                                        function toggleSlide() {
+                                            const slideDown = document.getElementById('slide-down-AR');
+                                            const arrow = document.getElementById('arrow-slide-down-AR');
+                                            if (slideDown.classList.contains('max-h-0')) {
+                                                slideDown.classList.remove('max-h-0');
+                                                slideDown.classList.add('max-h-120'); // Adjust max height as needed
+                                                arrow.classList.remove('-rotate-90');
+                                                arrow.classList.add('rotate-90');
+                                                arrow.classList.remove('-mt-2');
+                                                arrow.classList.add('-mb-2');
+                                            } else {
+                                                slideDown.classList.remove('max-h-120');
+                                                slideDown.classList.add('max-h-0');
+                                                arrow.classList.remove('rotate-90');
+                                                arrow.classList.add('-rotate-90');
+                                                arrow.classList.remove('-mb-2');
+                                                arrow.classList.add('-mt-2');
+                                            }
+                                        }
+                                    </script>
                 </div>
-                <button class="w-full  justify-center flex hover:bg-gray-100 dark:hover:bg-gray-700"
-                    onclick="toggleSlide()">
-                    <x-icon :size="2" type="arrow_back"
-                        class="-rotate-90 icons-no_hover -mt-2 mb-1 transition-all duration-500"
-                        id="arrow-slide-down-AR" />
-                </button>
-
-
-                <script>
-                    function toggleSlide() {
-                        const slideDown = document.getElementById('slide-down-AR');
-                        const arrow = document.getElementById('arrow-slide-down-AR');
-                        if (slideDown.classList.contains('max-h-0')) {
-                            slideDown.classList.remove('max-h-0');
-                            slideDown.classList.add('max-h-120'); // Adjust max height as needed
-                            arrow.classList.remove('-rotate-90');
-                            arrow.classList.add('rotate-90');
-                            arrow.classList.remove('-mt-2');
-                            arrow.classList.add('-mb-2');
-                        } else {
-                            slideDown.classList.remove('max-h-120');
-                            slideDown.classList.add('max-h-0');
-                            arrow.classList.remove('rotate-90');
-                            arrow.classList.add('-rotate-90');
-                            arrow.classList.remove('-mb-2');
-                            arrow.classList.add('-mt-2');
-                        }
-                    }
-                </script>
+                </td>
+                </tr>
+                </tbody>
+                </table>
             </div>
-            </td>
-            </tr>
-            </tbody>
-            </table>
+
+
         </div>
+        <div class="mt-4 w-full md:w-5/6">
+            @include('ddp_cde.cde.commentaire')
+        </div>
+        <div class="flex justify-between items-center mt-6">
+            @if ($cde->statut->id == 3)
+                <a href="{{ route('cde.annuler_terminer', $cde->id) }}" class="btn float-right">Retour</a>
+                <a href="{{ route('cde.terminer_controler', $cde->id) }}" class="btn float-right">Terminer et
+                    controlé</a>
+            @endif
 
-
-    </div>
-    <div class="flex justify-between items-center mt-6">
-        @if ($cde->statut->id == 3)
-        <a href="{{ route('cde.annuler_terminer', $cde->id) }}" class="btn float-right">Retour</a>
-            <a href="{{ route('cde.terminer_controler', $cde->id) }}" class="btn float-right">Terminer et
-                controlé</a>
-        @endif
-
-    </div>
+        </div>
     </div>
     </div>
 

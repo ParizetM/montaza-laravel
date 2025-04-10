@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cde;
 use App\Models\CdeLigne;
+use App\Models\Commentaire;
 use App\Models\Ddp;
 use App\Models\DdpCdeStatut;
 use App\Models\DdpLigneFournisseur;
@@ -249,12 +250,16 @@ class DdpController extends Controller
     public function create()
     {
         Ddp::where('nom', 'undefined')->delete();
+        $commentaire_id = Commentaire::create([
+            'contenu' => '',
+        ])->id;
         $ddp = Ddp::create([
             'code' => 'undefined',
             'nom' => 'undefined',
             'ddp_cde_statut_id' => 1,
             'entite_id' => 1,
             'user_id' => Auth::id(),
+            'commentaire_id' => $commentaire_id,
         ]);
         $ddpid =  $ddp->id;
         return redirect()->route('ddp.show', $ddpid);
@@ -507,6 +512,7 @@ class DdpController extends Controller
         $path = 'DDP/' . $dossier . '/' . $path;
         return Storage::download($path);
     }
+
     public function pdfsDownload($ddp_id)
     {
         $ddp = Ddp::findOrFail($ddp_id);
@@ -525,7 +531,7 @@ class DdpController extends Controller
             return response()->download(storage_path('app/private/DDP/' . $ddpannee . '/' . $pdfs[0]));
         }
         $zip = new \ZipArchive();
-        $zipFileName = 'DDP_' . $ddp->code . '.zip';
+        $zipFileName = $ddp->code . '.zip';
         $tempDir = storage_path('app/private/temp');
         if (!file_exists($tempDir)) {
             mkdir($tempDir, 0755, true);
@@ -846,6 +852,9 @@ class DdpController extends Controller
         $ddp = Ddp::findOrFail($id);
         $societe_contact = SocieteContact::findOrFail($societe_contact_id);
         $societe = $societe_contact->etablissement->societe;
+        $commentaire = Commentaire::create(
+            ['contenu' => '']
+        );
         $cde = Cde::create([
             'code' => 'CDE-' . now()->format('y') . '-' . str_pad(Cde::whereYear('created_at', now()->year)->count() + 1, 4, '0', STR_PAD_LEFT),
             'nom' => 'Commande de ' . $ddp->code . ' ' . $societe->raison_sociale,
@@ -857,6 +866,7 @@ class DdpController extends Controller
             'tva' => 20,
             'type_expedition_id' => 1,
             'condition_paiement_id' => 1,
+            'commentaire_id' => $commentaire->id,
         ]);
         $poste = 0;
         $ddpLignes = $ddp->ddpLigne->where('ligne_autre_id', null);
@@ -886,7 +896,7 @@ class DdpController extends Controller
      * @param mixed $entite_id
      * @return string
      */
-    function getLastCode($entite_id)
+    public function getLastCode($entite_id)
     {
         $entite = Entite::findOrFail($entite_id);
         $lastcode = DDP::where('code', 'LIKE', 'DDP-' . date('y') . '%')
@@ -903,5 +913,30 @@ class DdpController extends Controller
             $entite_code = 'AMB';
         }
         return response()->json(['code' => $lastnumber, 'entite_code' => $entite_code]);
+    }
+
+    public function updateCommentaire(Request $request, $id)
+    {
+        $ddp = Ddp::find($id);
+        if ($ddp) {
+            // Trouve le commentaire lié à la demande de prix
+            $commentaire = $ddp->commentaire;
+            if ($commentaire) {
+                if ($commentaire->contenu == $request->commentaire) {
+                    return response()->json(['message' => 'Commentaire inchangé'], 200);
+                }
+                // Met à jour le commentaire avec la nouvelle valeur
+                $commentaire->contenu = $request->commentaire;
+                $commentaire->save();
+                return response()->json(['message' => 'Commentaire mis à jour avec succès'], 200);
+            } else {
+                // Si la demande de prix n'a pas encore de commentaire, on en crée un
+                $commentaire = new Commentaire();
+                $commentaire->contenu = $request->commentaire;
+                $ddp->commentaire()->save($commentaire);
+                return response()->json(['message' => 'Commentaire créé avec succès'], 201);
+            }
+        }
+        return response()->json(['message' => 'Demande de prix introuvable'], 404);
     }
 }

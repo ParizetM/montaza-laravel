@@ -10,6 +10,9 @@ class Commentaire extends Model
 {
     /** @use HasFactory<\Database\Factories\CommentaireFactory> */
     use HasFactory;
+    protected $fillable = [
+        'contenu',
+    ];
     public function societes()
     {
         return $this->hasMany(Societe::class);
