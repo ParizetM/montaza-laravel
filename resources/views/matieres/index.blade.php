@@ -31,10 +31,11 @@
                         </x-slot>
                         <x-slot name="slot_tooltip">
                             <ul class="whitespace-nowrap">
-                                <li>Tapez vos mots-clés,</li>
-                                <li>Si vous recherchez un DN, tapez "dn25"</li>
-                                <li>Si vous recherchez une épaisseur, tapez "ep10"</li>
-                                <li>Si vous recherchez une référence tapez seulement celle-ci</li>
+                                <li>Recherchez par mots-clés</li>
+                                <li>Pour une <strong>référence fournisseur</strong>, remplacez les espaces par un
+                                    <strong>"_"</strong></li>
+                                <li>Pour un <strong>DN</strong>, tapez "<strong>dn25</strong>"</li>
+                                <li>Pour une <strong>épaisseur</strong>, tapez "<strong>ep10</strong>"</li>
                             </ul>
                         </x-slot>
                     </x-tooltip>
@@ -178,38 +179,64 @@
             liveSearch();
         });
 
+        let debounceTimeout = null;
+        let currentController = null;
+
         function liveSearch() {
+            clearTimeout(debounceTimeout);
 
-            const searchQuery = document.querySelector('input[name="search"]').value.trim();
-            const familleId = document.getElementById('famille_id_search').value;
-            const sousFamilleId = document.getElementById('sous_famille_id_search').value;
-            const nombre = document.getElementById('nombre').value;
-            const containerSearch = document.getElementById('body_table');
-            const page = new URLSearchParams(window.location.search).get('page') || 1;
-            containerSearch.innerHTML =
-                '<tr><td colspan="100"><div id="loading-spinner" class=" mt-8 inset-0 bg-none bg-opacity-75 flex items-center justify-center z-50 h-32 w-full"><div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32"></div></div><style>.loader {border-top-color: #3498db;animation: spinner 1.5s linear infinite;}@keyframes spinner {0% {transform: rotate(0deg);}100% {transform: rotate(360deg);}}</style></tr></td>';
+            debounceTimeout = setTimeout(() => {
+                const searchQuery = document.querySelector('input[name="search"]').value.trim();
+                const familleId = document.getElementById('famille_id_search').value;
+                const sousFamilleId = document.getElementById('sous_famille_id_search').value;
+                const nombre = document.getElementById('nombre').value;
+                const containerSearch = document.getElementById('body_table');
+                const page = new URLSearchParams(window.location.search).get('page') || 1;
 
-            console.log(
-                `/matieres/search?search=${encodeURIComponent(searchQuery)}&famille=${familleId}&sous_famille=${sousFamilleId}&nombre=${nombre}&page=${page}`
-                );
-            fetch(
-                    `/matieres/search?search=${encodeURIComponent(searchQuery)}&famille=${familleId}&sous_famille=${sousFamilleId}&nombre=${nombre}&page=${page}`
-                    )
-                .then(response => {
-                    if (!response.ok) throw new Error('Erreur lors de la récupération des données');
-                    return response.json();
-                })
-                .then(data => {
-                    if (page > data.lastPage || page < 1) {
-                        window.location.href =
-                            `/matieres?search=${encodeURIComponent(searchQuery)}&famille=${familleId}&sous_famille=${sousFamilleId}&nombre=${nombre}&page=${data.lastPage}`;
-                    }
-                    updateTable(data.matieres); // Met à jour le tableau
-                    updatePagination(data.links); // Met à jour la pagination
+                // Annule la requête précédente si elle existe
+                if (currentController) {
+                    currentController.abort();
+                }
 
-                })
-                .catch(error => console.error('Erreur lors de la recherche :', error));
+                // Nouvelle requête avec AbortController
+                currentController = new AbortController();
+                const {
+                    signal
+                } = currentController;
+
+                containerSearch.innerHTML =
+                    '<tr><td colspan="100"><div id="loading-spinner" class="mt-8 inset-0 bg-none bg-opacity-75 flex items-center justify-center z-50 h-32 w-full"><div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32"></div></div><style>.loader {border-top-color: #3498db; animation: spinner 1.5s linear infinite;}@keyframes spinner {0% {transform: rotate(0deg);}100% {transform: rotate(360deg);}}</style></td></tr>';
+
+                const url =
+                    `/matieres/search?search=${encodeURIComponent(searchQuery)}&famille=${familleId}&sous_famille=${sousFamilleId}&nombre=${nombre}&page=${page}`;
+                console.log(url);
+
+                fetch(url, {
+                        signal
+                    })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Erreur lors de la récupération des données');
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (page > data.lastPage || page < 1) {
+                            window.location.href =
+                                `/matieres?search=${encodeURIComponent(searchQuery)}&famille=${familleId}&sous_famille=${sousFamilleId}&nombre=${nombre}&page=${data.lastPage}`;
+                        }
+                        updateTable(data.matieres);
+                        updatePagination(data.links);
+                    })
+                    .catch(error => {
+                        if (error.name === 'AbortError') {
+                            console.log('Requête annulée car une nouvelle a été lancée.');
+                        } else {
+                            console.error('Erreur lors de la recherche :', error);
+                        }
+                    });
+
+            }, 300); // 300ms = délai de debounce
         }
+
 
         function updateTable(matieres) {
             const tbody = document.querySelector('tbody');

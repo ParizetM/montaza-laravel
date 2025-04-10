@@ -48,16 +48,16 @@
                         </select>
                         <!-- Search bar for materials -->
                         <div class="flex w-full">
-                            <x-tooltip position="top" class="w-full">
+                            <x-tooltip position="bottom" class="w-full">
                                 <x-slot name="slot_item">
                                     <x-text-input placeholder="Recherchez une matière" id="searchbar" class="w-full" />
                                 </x-slot>
                                 <x-slot name="slot_tooltip">
                                     <ul class="whitespace-nowrap">
-                                        <li>Tapez vos mots-clés,</li>
-                                        <li>Si vous recherchez un DN, tapez "dn25"</li>
-                                        <li>Si vous recherchez une épaisseur, tapez "ep10"</li>
-                                        <li>Si vous recherchez une référence tapez seulement celle-ci</li>
+                                        <li>Recherchez par mots-clés</li>
+                                        <li>Pour une <strong>référence fournisseur</strong>, remplacez les espaces par un <strong>"_"</strong></li>
+                                        <li>Pour un <strong>DN</strong>, tapez "<strong>dn25</strong>"</li>
+                                        <li>Pour une <strong>épaisseur</strong>, tapez "<strong>ep10</strong>"</li>
                                     </ul>
                                 </x-slot>
                             </x-tooltip>
@@ -163,24 +163,26 @@
                                     @if ($ddp && $ddp->ddpLigne->count() > 0)
                                         @foreach ($ddp->ddpLigne as $ddp_ligne)
                                             @if ($ddp_ligne->ligne_autre_id == null)
-                                            <tr data-matiere-id="{{ $ddp_ligne->matiere->id }}" x-data
-                                                data-fournisseurs-ids="{{ $ddp_ligne->fournisseurs->pluck('id')->join(';') }}"
-                                                data-fournisseurs-noms="{{ $ddp_ligne->fournisseurs->pluck('raison_sociale')->join(';') }}"
-                                                class="border-b border-gray-200 dark:border-gray-700 rounded-r-md overflow-hidden bg-white dark:bg-gray-800 border-r-4 border-r-green-500 dark:border-r-green-600">
-                                                <td class="text-left px-4">{{ $ddp_ligne->matiere->ref_interne }}</td>
-                                                <td class="text-left px-4">{{ $ddp_ligne->matiere->designation }}</td>
-                                                <td class="text-right px-4"
-                                                    title="{{ $ddp_ligne->matiere->unite->full }}">
-                                                    <div
-                                                        class="flex items-center m-1 focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-600 focus-within:focus:border-indigo-600 rounded-sm">
+                                                <tr data-matiere-id="{{ $ddp_ligne->matiere->id }}" x-data
+                                                    data-fournisseurs-ids="{{ $ddp_ligne->fournisseurs->pluck('id')->join(';') }}"
+                                                    data-fournisseurs-noms="{{ $ddp_ligne->fournisseurs->pluck('raison_sociale')->join(';') }}"
+                                                    class="border-b border-gray-200 dark:border-gray-700 rounded-r-md overflow-hidden bg-white dark:bg-gray-800 border-r-4 border-r-green-500 dark:border-r-green-600">
+                                                    <td class="text-left px-4">{{ $ddp_ligne->matiere->ref_interne }}
+                                                    </td>
+                                                    <td class="text-left px-4">{{ $ddp_ligne->matiere->designation }}
+                                                    </td>
+                                                    <td class="text-right px-4"
+                                                        title="{{ $ddp_ligne->matiere->unite->full }}">
+                                                        <div
+                                                            class="flex items-center m-1 focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-600 focus-within:focus:border-indigo-600 rounded-sm">
 
-                                                        <x-text-input type="number"
-                                                            name="quantite[{{ $ddp_ligne->matiere->id }}]"
-                                                            oninput="saveChanges()"
-                                                            class="w-20 border-r-0 rounded-r-none focus:ring-0 focus:border-0 dark:focus:ring-0 border-gray-300 dark:border-gray-700"
-                                                            value="{{ formatNumber($ddp_ligne->quantite) }}"
-                                                            min="0" />
-                                                        {{-- <select name="unite[{{ $ddp_ligne->matiere_id }}]"
+                                                            <x-text-input type="number"
+                                                                name="quantite[{{ $ddp_ligne->matiere->id }}]"
+                                                                oninput="saveChanges()"
+                                                                class="w-20 border-r-0 rounded-r-none focus:ring-0 focus:border-0 dark:focus:ring-0 border-gray-300 dark:border-gray-700"
+                                                                value="{{ formatNumber($ddp_ligne->quantite) }}"
+                                                                min="0" />
+                                                            {{-- <select name="unite[{{ $ddp_ligne->matiere_id }}]"
                                                             class="w-16 mx-2 select" onchange="saveChanges()">
                                                             @foreach ($unites as $unite)
                                                                 <option value="{{ $unite->id }}"
@@ -190,68 +192,68 @@
                                                                 </option>
                                                             @endforeach
                                                         </select> --}}
-                                                        <div
-                                                            class="text-right bg-gray-100 dark:bg-gray-900 w-fit p-2 pl-0 border-1 border-l-0 rounded-r-sm border-gray-300 dark:border-gray-700">
-                                                            {{ $ddp_ligne->matiere->unite->short }}</div>
-                                                    </div>
-                                                </td>
+                                                            <div
+                                                                class="text-right bg-gray-100 dark:bg-gray-900 w-fit p-2 pl-0 border-1 border-l-0 rounded-r-sm border-gray-300 dark:border-gray-700">
+                                                                {{ $ddp_ligne->matiere->unite->short }}</div>
+                                                        </div>
+                                                    </td>
 
-                                                <td class="text-right px-4 ">
-                                                    <div class="flex">
-                                                        <button class="float-right"
-                                                            data-matiere-id="{{ $ddp_ligne->matiere->id }}"
-                                                            onclick="showFournisseurs(event)"
-                                                            x-on:click.prevent="$dispatch('open-modal', 'fournisseurs-modal')"
-                                                            title="Fournisseurs">
-                                                            <x-icons.list size="2" class="icons" />
-                                                        </button>
-                                                        <button class="float-right"
-                                                            data-matiere-id="{{ $ddp_ligne->matiere->id }}"
-                                                            onclick="removeMatiere(event)">
-                                                            <x-icons.close size="2" class="icons"
-                                                                tabindex="-1" />
-                                                        </button>
+                                                    <td class="text-right px-4 ">
+                                                        <div class="flex">
+                                                            <button class="float-right"
+                                                                data-matiere-id="{{ $ddp_ligne->matiere->id }}"
+                                                                onclick="showFournisseurs(event)"
+                                                                x-on:click.prevent="$dispatch('open-modal', 'fournisseurs-modal')"
+                                                                title="Fournisseurs">
+                                                                <x-icons.list size="2" class="icons" />
+                                                            </button>
+                                                            <button class="float-right"
+                                                                data-matiere-id="{{ $ddp_ligne->matiere->id }}"
+                                                                onclick="removeMatiere(event)">
+                                                                <x-icons.close size="2" class="icons"
+                                                                    tabindex="-1" />
+                                                            </button>
 
-                                                    </div>
-                                                    <input type="hidden"
-                                                        name="fournisseur-{{ $ddp_ligne->matiere->id }}"
-                                                        value="{{ $ddp_ligne->fournisseurs->pluck('id')->join(';') }}">
-                                                </td>
-                                            </tr>
+                                                        </div>
+                                                        <input type="hidden"
+                                                            name="fournisseur-{{ $ddp_ligne->matiere->id }}"
+                                                            value="{{ $ddp_ligne->fournisseurs->pluck('id')->join(';') }}">
+                                                    </td>
+                                                </tr>
                                             @else
-                                            <tr data-matiere-id="{{ $ddp_ligne->ligne_autre_id }}"
-                                                class="border-b border-gray-200 dark:border-gray-700 rounded-r-md overflow-hidden bg-white dark:bg-gray-800 border-r-4 border-r-green-500 dark:border-r-green-600<<<<<">
-                                                <td class="text-left px-1">
-                                                    <x-text-input type="text" name="case_ref[{{ $ddp_ligne->ligne_autre_id }}]"
-                                                        value="{{ $ddp_ligne->case_ref }}"
-                                                        class="w-full" placeholder="AA-0052"
-                                                        oninput="saveChanges()" />
-                                                </td>
-                                                <td class="text-left px-1">
-                                                    <x-text-input type="text" name="case_designation[{{ $ddp_ligne->ligne_autre_id }}]"
-                                                        value="{{ $ddp_ligne->case_designation }}"
-                                                        class="w-full" placeholder="Désignation"
-                                                        oninput="saveChanges()" />
-                                                </td>
-                                                <td class="text-left px-5">
-                                                    <x-text-input type="text"
-                                                        name="case_quantite[{{ $ddp_ligne->ligne_autre_id }}]"
-                                                        oninput="saveChanges()"
-                                                        class="w-24 border-gray-300 dark:border-gray-700"
-                                                        value="{{ formatNumber($ddp_ligne->case_quantite) }}"
-                                                        min="0" />
-                                                </td>
-                                                <td>
-                                                    <div class="flex justify-end mx-4">
-                                                        <button class="float-right"
-                                                            data-matiere-id="{{ $ddp_ligne->ligne_autre_id }}"
-                                                            onclick="removeMatiere(event)">
-                                                            <x-icons.close size="2" class="icons"
-                                                                tabindex="-1" />
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
+                                                <tr data-matiere-id="{{ $ddp_ligne->ligne_autre_id }}"
+                                                    class="border-b border-gray-200 dark:border-gray-700 rounded-r-md overflow-hidden bg-white dark:bg-gray-800 border-r-4 border-r-green-500 dark:border-r-green-600<<<<<">
+                                                    <td class="text-left px-1">
+                                                        <x-text-input type="text"
+                                                            name="case_ref[{{ $ddp_ligne->ligne_autre_id }}]"
+                                                            value="{{ $ddp_ligne->case_ref }}" class="w-full"
+                                                            placeholder="AA-0052" oninput="saveChanges()" />
+                                                    </td>
+                                                    <td class="text-left px-1">
+                                                        <x-text-input type="text"
+                                                            name="case_designation[{{ $ddp_ligne->ligne_autre_id }}]"
+                                                            value="{{ $ddp_ligne->case_designation }}" class="w-full"
+                                                            placeholder="Désignation" oninput="saveChanges()" />
+                                                    </td>
+                                                    <td class="text-left px-5">
+                                                        <x-text-input type="text"
+                                                            name="case_quantite[{{ $ddp_ligne->ligne_autre_id }}]"
+                                                            oninput="saveChanges()"
+                                                            class="w-24 border-gray-300 dark:border-gray-700"
+                                                            value="{{ formatNumber($ddp_ligne->case_quantite) }}"
+                                                            min="0" />
+                                                    </td>
+                                                    <td>
+                                                        <div class="flex justify-end mx-4">
+                                                            <button class="float-right"
+                                                                data-matiere-id="{{ $ddp_ligne->ligne_autre_id }}"
+                                                                onclick="removeMatiere(event)">
+                                                                <x-icons.close size="2" class="icons"
+                                                                    tabindex="-1" />
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
                                             @endif
                                         @endforeach
                                     @else
@@ -415,50 +417,102 @@
             }
         }
 
-        function liveSearch() {
-            const search = document.getElementById('searchbar').value;
-            const familleId = document.getElementById('famille_id_search').value;
-            const sousFamilleId = document.getElementById('sous_famille_id_search').value;
-            const matiereTable = document.getElementById('matiere-table');
+        let debounceQuickTimeout = null;
+let currentQuickSearchController = null;
 
-            fetch(
-                    `/matieres/quickSearch?search=${encodeURIComponent(search)}&famille=${familleId}&sous_famille=${sousFamilleId}`
-                )
-                .then(response => {
-                    if (!response.ok) throw new Error('Erreur lors de la récupération des données');
-                    return response.json();
-                })
-                .then(data => {
-                    matiereTable.innerHTML = '';
-                    if (data.matieres && data.matieres.length > 0) {
-                        data.matieres.forEach(matiere => {
-                            const tr = document.createElement('tr');
-                            tr.classList.add('border-b', 'border-gray-200', 'dark:border-gray-700',
-                                'rounded-r-md', 'overflow-hidden', 'bg-white', 'dark:bg-gray-800',
-                                'cursor-pointer', 'hover:bg-gray-200', 'dark:hover:bg-gray-700');
-                            tr.setAttribute('data-matiere-id', matiere.id || '');
-                            tr.setAttribute('data-matiere-ref', matiere.refInterne || '');
-                            tr.setAttribute('data-matiere-designation', matiere.designation || '');
-                            tr.setAttribute('data-matiere-basic-unite', matiere.lastPriceUnite || '');
-                            tr.setAttribute('data-matiere-unite', matiere.lastPriceUnite || matiere.Unite ||
-                                '');
-                            tr.addEventListener('click', addMatiere);
-                            tr.innerHTML = `
-                <td class="text-left px-4">${matiere.refInterne || '-'}</td>
-                <td class="text-left px-4">${matiere.designation || '-'}</td>
-                <td class="text-left px-4">${matiere.dn || '-'}</td>
-                <td class="text-left px-4">${matiere.epaisseur || '-'}</td>
-                <td class="text-right px-4" title="${matiere.Unite_full || '-'}">${matiere.lastPriceUnite || matiere.Unite || '-'}</td>
-                <td class="text-right px-4">${matiere.sousFamille || '-'}</td>
-                    `;
-                            matiereTable.appendChild(tr);
-                        });
-                    } else {
-                        matiereTable.innerHTML =
-                            '<tr><td colspan="100" class="text-gray-500 dark:text-gray-400 text-center ">Aucune matière trouvée</td></tr>';
-                    }
-                });
+function liveSearch() {
+    clearTimeout(debounceQuickTimeout);
+
+    debounceQuickTimeout = setTimeout(() => {
+        const search = document.getElementById('searchbar').value;
+        const familleId = document.getElementById('famille_id_search').value;
+        const sousFamilleId = document.getElementById('sous_famille_id_search').value;
+        const matiereTable = document.getElementById('matiere-table');
+
+        // Annule la requête précédente si elle existe
+        if (currentQuickSearchController) {
+            currentQuickSearchController.abort();
         }
+
+        // Affiche le loader dans le tableau
+        matiereTable.innerHTML = `
+            <tr>
+                <td colspan="100">
+                    <div id="loading-spinner" class="mt-8 inset-0 bg-none bg-opacity-75 flex items-center justify-center z-50 h-32 w-full">
+                        <div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-16 w-16"></div>
+                    </div>
+                    <style>
+                        .loader {
+                            border-top-color: #3498db;
+                            animation: spinner 1.5s linear infinite;
+                        }
+                        @keyframes spinner {
+                            0% { transform: rotate(0deg); }
+                            100% { transform: rotate(360deg); }
+                        }
+                    </style>
+                </td>
+            </tr>
+        `;
+
+        currentQuickSearchController = new AbortController();
+        const { signal } = currentQuickSearchController;
+
+        const url = `/matieres/quickSearch?search=${encodeURIComponent(search)}&famille=${familleId}&sous_famille=${sousFamilleId}`;
+        console.log(url);
+
+        fetch(url, { signal })
+            .then(response => {
+                if (!response.ok) throw new Error('Erreur lors de la récupération des données');
+                return response.json();
+            })
+            .then(data => {
+                matiereTable.innerHTML = '';
+
+                if (data.matieres && data.matieres.length > 0) {
+                    data.matieres.forEach(matiere => {
+                        const tr = document.createElement('tr');
+                        tr.classList.add(
+                            'border-b', 'border-gray-200', 'dark:border-gray-700',
+                            'rounded-r-md', 'overflow-hidden', 'bg-white', 'dark:bg-gray-800',
+                            'cursor-pointer', 'hover:bg-gray-200', 'dark:hover:bg-gray-700'
+                        );
+                        tr.setAttribute('data-matiere-id', matiere.id || '');
+                        tr.setAttribute('data-matiere-ref', matiere.refInterne || '');
+                        tr.setAttribute('data-matiere-designation', matiere.designation || '');
+                        tr.setAttribute('data-matiere-basic-unite', matiere.lastPriceUnite || '');
+                        tr.setAttribute('data-matiere-unite', matiere.lastPriceUnite || matiere.Unite || '');
+                        tr.addEventListener('click', addMatiere);
+
+                        tr.innerHTML = `
+                            <td class="text-left px-4">${matiere.refInterne || '-'}</td>
+                            <td class="text-left px-4">${matiere.designation || '-'}</td>
+                            <td class="text-left px-4">${matiere.dn || '-'}</td>
+                            <td class="text-left px-4">${matiere.epaisseur || '-'}</td>
+                            <td class="text-right px-4" title="${matiere.Unite_full || '-'}">${matiere.lastPriceUnite || matiere.Unite || '-'}</td>
+                            <td class="text-right px-4">${matiere.sousFamille || '-'}</td>
+                        `;
+                        matiereTable.appendChild(tr);
+                    });
+                } else {
+                    matiereTable.innerHTML = `
+                        <tr>
+                            <td colspan="100" class="text-gray-500 dark:text-gray-400 text-center">
+                                Aucune matière trouvée
+                            </td>
+                        </tr>
+                    `;
+                }
+            })
+            .catch(error => {
+                if (error.name !== 'AbortError') {
+                    console.error('Erreur lors de la recherche :', error);
+                }
+            });
+
+    }, 300); // délai de debounce
+}
+
 
 
         // Function to add selected material to the chosen list
@@ -491,10 +545,10 @@
                 />
                     ${unites.map(unite => `
 
-                                                ${unite.short === matiereUnite ? '<div class="text-right bg-gray-100 dark:bg-gray-900 w-fit p-2 pl-0 border-1 border-l-0 rounded-r-sm border-gray-300 dark:border-gray-700" title="'+unite.full+'">' : ''}
+                                                    ${unite.short === matiereUnite ? '<div class="text-right bg-gray-100 dark:bg-gray-900 w-fit p-2 pl-0 border-1 border-l-0 rounded-r-sm border-gray-300 dark:border-gray-700" title="'+unite.full+'">' : ''}
 
-                                                ${unite.short === matiereUnite ? unite.short+'</div>' : ''}
-                                        `).join('')}
+                                                    ${unite.short === matiereUnite ? unite.short+'</div>' : ''}
+                                            `).join('')}
                 </div>
             </td>
             <td class="text-right px-4" >
@@ -532,18 +586,18 @@
             tr.setAttribute('data-matiere-id', id);
             tr.innerHTML = `
                 <td class="text-left px-1">
-                    <x-text-input type="text" name="case_ref[`+id+`]" value="" class="w-full" placeholder="AA-0052"
+                    <x-text-input type="text" name="case_ref[` + id + `]" value="" class="w-full" placeholder="AA-0052"
                     oninput="saveChanges()"
                     />
                 </td>
                 <td class="text-left px-1">
-                    <x-text-input type="text" name="case_designation[`+id+`]" value="" class="w-full" placeholder="Désignation"
+                    <x-text-input type="text" name="case_designation[` + id + `]" value="" class="w-full" placeholder="Désignation"
                     oninput="saveChanges()"
                     />
                 </td>
                 <td class="text-left px-5">
                     <x-text-input type="text"
-                                name="case_quantite[`+id+`]"
+                                name="case_quantite[` + id + `]"
                                 oninput="saveChanges()"
                                 class="w-24 border-gray-300 dark:border-gray-700"
                                 value=""
@@ -552,7 +606,7 @@
                 <td>
                     <div class="flex justify-end mx-4">
                         <button class="float-right"
-                                data-matiere-id="`+id+`"
+                                data-matiere-id="` + id + `"
                                 onclick="removeMatiere(event)">
                                 <x-icons.close size="2" class="icons"
                                     tabindex="-1" />
@@ -573,10 +627,10 @@
             //     const tr = document.createElement('tr');
             //     tr.id = 'no-matiere';
             //     tr.innerHTML = `
-            //     <td colspan="100" class="text-gray-500 dark:text-gray-400 text-center ">
-            //         Aucune matière sélectionnée
-            //     </td>
-            // `;
+        //     <td colspan="100" class="text-gray-500 dark:text-gray-400 text-center ">
+        //         Aucune matière sélectionnée
+        //     </td>
+        // `;
             //     matiereChoisiTable.appendChild(tr);
             // }
             saveChanges();
@@ -809,7 +863,7 @@
                 if (matiereId.startsWith('ligne_autre_id')) {
                     const case_ref = row.querySelector(`input[name="case_ref[${matiereId}]"]`).value;
                     const case_designation = row.querySelector(`input[name="case_designation[${matiereId}]"]`)
-                    .value;
+                        .value;
                     const case_quantite = row.querySelector(`input[name="case_quantite[${matiereId}]"]`).value;
 
                     if (case_ref.trim() === '' && case_designation.trim() === '' && case_quantite.trim() === '') {

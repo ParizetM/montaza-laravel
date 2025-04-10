@@ -244,20 +244,20 @@
                 hideFlashMessage();
             }, duree);
         }
-
-
     </script>
     <script type="text/javascript">
-        function tooltip() {
+        // tooltip.js
+        window.tooltip = function(forcedPosition = 'auto') {
             return {
                 show: false,
                 style: '',
                 mouseX: 0,
                 mouseY: 0,
                 tooltipHovered: false,
-                offset: 8, // décalage en pixels
+                offset: 20, // décalage en pixels
+                position: forcedPosition, // 'auto', 'top', 'bottom', 'left' ou 'right'
 
-                // Calcule la position une fois quand la souris entre dans l'élément déclencheur
+                // Calcule la position une fois lors du mouseenter
                 calculatePosition(event) {
                     this.mouseX = event.clientX;
                     this.mouseY = event.clientY;
@@ -272,16 +272,50 @@
                     const tooltipRect = this.$refs.tooltip.getBoundingClientRect();
                     const triggerRect = this.$el.getBoundingClientRect();
 
-                    // Position par défaut : centré horizontalement au-dessus de la souris
+                    // Si une position forcée est passée, on l'utilise pour positionner le tooltip de manière fixe
+                    if (this.position !== 'auto') {
+                        let top, left;
+                        switch (this.position) {
+                            case 'top':
+                                top = triggerRect.top - tooltipRect.height - offset;
+                                left = triggerRect.left + (triggerRect.width - tooltipRect.width) / 2;
+                                break;
+                            case 'bottom':
+                                top = triggerRect.bottom + offset;
+                                left = triggerRect.left + (triggerRect.width - tooltipRect.width) / 2;
+                                break;
+                            case 'left':
+                                top = triggerRect.top + (triggerRect.height - tooltipRect.height) / 2;
+                                left = triggerRect.left - tooltipRect.width - offset;
+                                break;
+                            case 'right':
+                                top = triggerRect.top + (triggerRect.height - tooltipRect.height) / 2;
+                                left = triggerRect.right + offset;
+                                break;
+                            default:
+                                top = this.mouseY - tooltipRect.height - offset;
+                                left = this.mouseX - (tooltipRect.width / 2);
+                        }
+                        // Appliquer un ajustement pour rester dans le viewport horizontalement
+                        if (left < window.scrollX + offset) {
+                            left = window.scrollX + offset;
+                        }
+                        if ((left + tooltipRect.width) > (window.innerWidth + window.scrollX - offset)) {
+                            left = window.innerWidth - tooltipRect.width + window.scrollX - offset;
+                        }
+                        this.style =
+                            `position: absolute; top: ${top + window.scrollY}px; left: ${left + window.scrollX}px;`;
+                        return;
+                    }
+
+                    // Sinon, le calcul dynamique (position "auto" en fonction de la souris)
                     let top = this.mouseY - tooltipRect.height - offset;
                     let left = this.mouseX - (tooltipRect.width / 2);
 
-                    // Si le tooltip sort du haut, on le positionne sous la souris
                     if (top < window.scrollY + offset) {
                         top = this.mouseY + offset;
                     }
 
-                    // Ajustement horizontal pour rester dans le viewport
                     if (left < window.scrollX + offset) {
                         left = window.scrollX + offset;
                     }
@@ -289,7 +323,7 @@
                         left = window.innerWidth - tooltipRect.width + window.scrollX - offset;
                     }
 
-                    // Vérification pour éviter de se superposer sur l'élément déclencheur
+                    // Vérification pour éviter de superposer le déclencheur
                     const candidate = {
                         top: top,
                         bottom: top + tooltipRect.height,
@@ -298,22 +332,19 @@
                     };
 
                     const overlapping = !(candidate.right < triggerRect.left ||
-                                          candidate.left > triggerRect.right ||
-                                          candidate.bottom < triggerRect.top ||
-                                          candidate.top > triggerRect.bottom);
+                        candidate.left > triggerRect.right ||
+                        candidate.bottom < triggerRect.top ||
+                        candidate.top > triggerRect.bottom);
 
                     if (overlapping) {
-                        // Positionner le tooltip en haut ou en bas suivant la position de la souris par rapport au trigger
                         const triggerMidY = triggerRect.top + triggerRect.height / 2;
                         if (this.mouseY < triggerMidY) {
                             top = triggerRect.top - tooltipRect.height - offset;
                         } else {
                             top = triggerRect.bottom + offset;
                         }
-                        // Recentrer horizontalement sur la souris
                         left = this.mouseX - (tooltipRect.width / 2);
 
-                        // Ajustement horizontal supplémentaire
                         if (left < window.scrollX + offset) {
                             left = window.scrollX + offset;
                         }
@@ -322,10 +353,11 @@
                         }
                     }
 
-                    this.style = `position: absolute; top: ${top}px; left: ${left}px;`;
+                    this.style =
+                    `position: absolute; top: ${top + window.scrollY}px; left: ${left + window.scrollX}px;`;
                 },
 
-                // Maintenir le tooltip visible lorsqu'on le survole
+                // Permet de garder le tooltip visible au survol
                 enterTooltip() {
                     this.tooltipHovered = true;
                 },
@@ -340,7 +372,6 @@
                 },
 
                 hideTooltip() {
-                    // Cacher le tooltip seulement si la souris ne survole pas le tooltip lui-même
                     setTimeout(() => {
                         if (!this.tooltipHovered) {
                             this.show = false;
@@ -348,7 +379,7 @@
                     }, 100);
                 }
             }
-        }
+        };
     </script>
 
 </body>

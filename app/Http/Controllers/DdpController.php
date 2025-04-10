@@ -653,6 +653,7 @@ class DdpController extends Controller
 
                 // Récupération des valeurs
                 $ref_fournisseur = $data[$index0][$index_societe] ?? null;
+                $ref_fournisseur = str_replace(' ', '_', $ref_fournisseur);
                 $newPrix = $data[$index0][$index_societe + 1] ?? null;
                 // $newUnite = Unite::where('short', $data[$index0][$index_societe + 2] ?? '')->first()->id ?? null;
                 $dateString = $data[$index0][$index_societe + 3] ?? '';

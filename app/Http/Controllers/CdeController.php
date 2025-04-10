@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cde;
 use App\Models\CdeLigne;
+use App\Models\CdeNote;
 use App\Models\Commentaire;
 use App\Models\ConditionPaiement;
 use App\Models\DdpCdeStatut;
@@ -269,6 +270,7 @@ class CdeController extends Controller
         $typesExpedition = TypeExpedition::all();
         $conditionsPaiement = ConditionPaiement::all();
         $societe_id = $cde->societeContact->societe->id;
+        $cde_notes = CdeNote::all();
         //verifier si
         if ($showRefFournisseur == true) {
             $listeChangement = [];
@@ -293,7 +295,7 @@ class CdeController extends Controller
         } else {
             $listeChangement = false;
         }
-        return view('ddp_cde.cde.validation', compact('cde', ['users', 'entite', 'showRefFournisseur', 'typesExpedition', 'conditionsPaiement', 'listeChangement']));
+        return view('ddp_cde.cde.validation', compact('cde', ['users', 'entite', 'showRefFournisseur', 'typesExpedition', 'conditionsPaiement', 'listeChangement','cde_notes']));
     }
     public function reset($id): RedirectResponse
     {

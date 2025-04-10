@@ -16,7 +16,7 @@ use App\Models\Unite;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-
+use Log;
 
 class MatiereController extends Controller
 {
@@ -41,36 +41,55 @@ class MatiereController extends Controller
         }
         // Filtrer par societe (optionnel, utilisé uniquement dans quickSearch)
         // Filtrer par le champ "search"
+        // $explication = [];
+        // $explication[] = "Initial query: " . $query->toSql();
+        // $explication[] = $request->all();
         if ($request->filled('search')) {
             $search = $request->input('search');
             $terms = explode(' ', $search);
-            $query->where(function ($q) use ($terms) {
-                // Pour chaque terme, appliquer des filtres spécifiques
-                foreach ($terms as $term) {
-                    $q->where(function ($subQuery) use ($term, $terms) {
-                        if (stripos($term, 'dn') === 0) {
-                            $value = substr($term, 2);
-                            $subQuery->where('dn', 'ILIKE', "%{$value}%");
-                        } elseif (stripos($term, 'ep') === 0) {
-                            $value = str_replace([',', '.'], ['.', ','], substr($term, 2));
-                            $subQuery->where('epaisseur', 'ILIKE', "%{$value}%");
-                        } else {
-                            $subQuery->whereRaw("unaccent(designation) ILIKE unaccent(?)", ["%{$term}%"])
-                                ->orWhereHas('sousFamille', function ($subSubQuery) use ($term) {
-                                    $subSubQuery->where('nom', 'ILIKE', "%{$term}%");
-                                })
-                                ->orWhere('ref_interne', 'ILIKE', "%{$term}%");
-                            if (count($terms) == 1) {
-                                $subQuery->orWhereHas('societeMatieres', function ($subSubQuery) use ($term) {
-                                    $subSubQuery->orWhere('ref_externe', 'ILIKE', "%{$term}%");
-                                });
+            if (count($terms) == 1) {
+                $query->where('ref_interne', '=', "{$search}");
+                $query->orWhereHas('societeMatieres', function ($subSubQuery) use ($search) {
+                    $subSubQuery->Where('ref_externe', 'ILIKE', "{$search}");
+                });
+            } else {
+                $query->where(function ($q) use ($terms) {
+                    // Pour chaque terme, appliquer des filtres spécifiques
+
+                    foreach ($terms as $term) {
+                        $q->where(function ($subQuery) use ($term, $terms, &$explication) {
+                            if (stripos($term, 'dn') === 0) {
+                                $value = substr($term, 2);
+                                $subQuery->where('dn', '=', "{$value}");
+                            } elseif (stripos($term, 'ep') === 0) {
+                                $value = str_replace([',', '.'], ['.', ','], substr($term, 2));
+                                $subQuery->where('epaisseur', '=', "{$value}");
+                            } else {
+                                $explication[] = "Searching in 'designation', 'sousFamille.nom', or 'ref_interne' for term: {$term}";
+                                $subQuery->whereRaw("unaccent(designation) ILIKE unaccent(?)", ["%{$term}%"])
+                                    ->orWhereHas('sousFamille', function ($subSubQuery) use ($term, &$explication) {
+                                        $subSubQuery->where('nom', 'ILIKE', "%{$term}%");
+                                    })
+                                    ->orWhere('ref_interne', 'ILIKE', "%{$term}%");
+                                if (count($terms) == 1) {
+                                    $subQuery->orWhereHas('societeMatieres', function ($subSubQuery) use ($term) {
+                                        $subSubQuery->orWhere('ref_externe', 'ILIKE', "%{$term}%");
+                                    });
+                                }
                             }
-                        }
-                    });
-                }
-            });
+                        });
+                    }
+                });
+            }
         }
         // dd($query->toSql(), $query->getBindings());
+        // $explication[] = "Final query: " . $query->toSql();
+        // $explication[] = "Bindings: " . json_encode($query->getBindings());
+        if (!empty($explication)) {
+            Log::info("Explication log:", $explication);
+        } else {
+            Log::warning("No explanation data was generated for the query.");
+        }
         return $query;
     }
 

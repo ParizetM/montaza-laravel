@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Cde extends Model
 {
@@ -34,6 +35,7 @@ class Cde extends Model
         'afficher_destinataire',
         'accuse_reception',
         'commentaire_id',
+        'cde_note_id',
     ];
     public function cdeLignes()
     {
@@ -91,6 +93,9 @@ class Cde extends Model
     public function commentaire(): BelongsTo
     {
         return $this->belongsTo(Commentaire::class);
+    }
+    public function cdeNotes() {
+        return $this->belongsToMany(CdeNote::class, CdeCdeNote::class, 'cde_id', 'cde_note_id');
     }
 
 

@@ -1,11 +1,10 @@
-@props(['slot_item', 'slot_tooltip', 'class' => ''])
+@props(['slot_item', 'slot_tooltip', 'position' => 'auto', 'class' => ''])
 
-<div x-data="tooltip()" class="relative inline-block {{ $class }}"
+<div x-data="tooltip('{{ $position }}')" class="relative inline-block {{ $class }}"
      @mouseenter="calculatePosition($event); show = true"
      @mouseleave="hideTooltip()">
     {{ $slot_item }}
 
-    <!-- On téléporte toujours le template, mais l'affichage se contrôle par x-show -->
     <template x-teleport="body">
         <div x-ref="tooltip" x-show="show" x-transition :style="style" class="z-[9999]"
              @mouseenter="enterTooltip" @mouseleave="leaveTooltip">
@@ -16,4 +15,3 @@
         </div>
     </template>
 </div>
-

@@ -198,5 +198,7 @@ class DatabaseProductionSeeder extends Seeder
         $this->call(TypeExpeditionSeeder::class);
         echo "types d'expédition à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
         // $this->call(CdeSeeder::class);
+        $this->call(CdeNoteSeeder::class);
+        echo "notes de commande à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
     }
 }

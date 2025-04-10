@@ -340,6 +340,58 @@
                 <h2 class="text-xl font-bold mb-6 text-left border-b-2 border-gray-200 dark:border-gray-700 p-2">Pied
                     de page</h2>
                 <div class="flex ">
+                    <div>
+                    <div class="flex flex-col gap-4 m-4">
+                        <h3 class="font-medium text-lg">Notes de commande</h3>
+
+                        <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                            <div class="mb-3">
+                                <label class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    <span class="mr-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+                                        </svg>
+                                    </span>
+                                    Notes prédéfinies
+                                </label>
+                            </div>
+
+                            <div class="grid grid-cols-1 gap-2 mb-4">
+                                @foreach ($cde_notes as $note)
+                                    <label class="flex items-center p-3 rounded-md border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors">
+                                        <input type="checkbox" name="cdenotes[]" value="{{ $note->id }}"
+                                            {{ in_array($note->id, old('cdenotes', $cde->cdenotes->pluck('id')->toArray())) ? 'checked' : '' }}
+                                            class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                        <span class="ml-3">{{ $note->contenu }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
+
+                            <div class="mt-4 border-t border-gray-200 dark:border-gray-700 pt-4">
+                                <label class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    <span class="mr-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                                            <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" />
+                                        </svg>
+                                    </span>
+                                    Note personnalisée
+                                </label>
+                                <textarea name="note_personnalisee"
+                                    class="w-full rounded-md border-gray-300 dark:border-gray-600 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 resize-none dark:bg-gray-800 dark:text-gray-100"
+                                    rows="3"
+                                    placeholder="Ajoutez ici des informations spécifiques à cette commande...">{{ old('note_personnalisee', $cde->note_personnalisee) }}</textarea>
+                            </div>
+                        </div>
+
+                        @error('cdenotes')
+                            <span class="text-red-500 text-sm">{{ $message }}</span>
+                        @enderror
+                        @error('note_personnalisee')
+                            <span class="text-red-500 text-sm">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
                     <div class="flex flex-col gap-4 m-4">
                         <x-input-label value="type d'expédition" />
                         <select name="type_expedition_id" required class="select w-fit min-w-96"

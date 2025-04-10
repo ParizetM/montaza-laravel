@@ -17,6 +17,13 @@ return new class extends Migration
             $table->string('nom');
             $table->timestamps();
         });
+        Schema::create('cde_notes', function (Blueprint $table) {
+            $table->id();
+            $table->text('contenu')->nullable();
+            $table->integer('utilisation')->default(0);
+            $table->timestamps();
+        });
+
         Schema::create('cdes', function (Blueprint $table) {
             $table->id();
             $table->string('code');
@@ -47,7 +54,12 @@ return new class extends Migration
             $table->foreignId('commentaire_id')->constrained('commentaires')->nullable();
             $table->timestamps();
         });
-
+        Schema::create('cde_cde_notes', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('cde_id')->constrained()->onDelete('cascade');
+            $table->foreignId('cde_note_id')->constrained()->onDelete('cascade');
+            $table->timestamps();
+        });
         Schema::create('cde_lignes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('cde_id')->constrained('cdes')->onDelete('cascade');
@@ -77,11 +89,14 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('societe_matiere', function (Blueprint $table) {
-            $table->dropForeign(['cde_ligne_fournisseur_id']);
+        Schema::table('societe_matiere_prixs', function (Blueprint $table) {
+            $table->dropForeign(['cde_ligne_id']);
+            $table->dropColumn('cde_ligne_id');
         });
         Schema::dropIfExists('cde_lignes');
+        Schema::dropIfExists('cde_cde_notes');
         Schema::dropIfExists('cdes');
+        Schema::dropIfExists('cde_notes');
         Schema::dropIfExists('type_expeditions');
     }
 };
