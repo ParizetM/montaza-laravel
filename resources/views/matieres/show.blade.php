@@ -116,7 +116,10 @@
                         </thead>
                         <tbody>
                             @if ($matiere->mouvementStocks && $matiere->mouvementStocks->count() > 0)
-                                @foreach ($matiere->mouvementStocks as $mouvement)
+                            @php
+                                $mouvements = $matiere->mouvementStocks->sortByDesc('created_at');
+                            @endphp
+                                @foreach ($mouvements as $mouvement)
                                     <tr class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
                                         <td class="border px-4 py-2 whitespace-nowrap">
                                             @if ($mouvement->type_mouvement == 'entree')

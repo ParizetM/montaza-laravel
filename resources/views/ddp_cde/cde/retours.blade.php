@@ -1,5 +1,5 @@
 <x-app-layout>
-    @section('title', 'Retours - '.$cde->code)
+    @section('title', 'Retours - ' . $cde->code)
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <div>
@@ -14,10 +14,13 @@
 
             </div>
             <a href="{{ route('cde.pdfs.download', $cde) }}" class="btn">Télécharger le PDF</a>
+            <a href="{{ route('cde.pdfs.pdfdownload_sans_prix', $cde) }}" class="btn">Télécharger le PDF sans prix</a>
+
         </div>
     </x-slot>
     <div class="max-w-8xl py-4 mx-auto sm:px-4 lg:px-6">
-        <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-6 rounded-md shadow-md" id="retour-container">
+        <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-6 rounded-md shadow-md"
+            id="retour-container">
             <div class="flex justify-between items-center mb-6 flex-wrap ">
                 <div class="flex items-center mb-12 flex-wrap ">
                     <h1 class="text-3xl font-bold  text-left mr-2">{{ $cde->nom }} - Récapitulatif</h1>
@@ -60,41 +63,43 @@
                         Retour de commande</h1>
                     <div id="handsontable-container" class="ht-theme-main-dark-auto "></div>
                 </div>
+                 {{-- Affichage des changements de livraison --}}
+                 @include('ddp_cde.cde.partials.changement_livraison')
                 <div class="">
                     <h1
                         class="text-xl font-semibold text-gray-700 dark:text-gray-200 border-b border-gray-500 pb-2 mb-4">
                         Accusé de reception</h1>
                     @if ($cde->accuse_reception)
-                    <div class="flex flex-wrap gap-4">
-                        <div class="flex flex-col flex-wrap gap-4">
-                            {{-- @dd($pdfs) --}}
-                            @php
-                                $pdf = $cde->accuse_reception;
-                                $cdeannee = explode('-', $cde->code)[1];
-                            @endphp
-                            <button class="btn h-fit w-fit" onclick="changeAr(this)">
-                                Changer
-                            </button>
-                            <div class="flex flex-col gap-2 bg-gray-100 dark:bg-gray-700 p-4 rounded-md hover:scale-105 cursor-pointer transition-all relative"
-                                id="pdf" title="Ouvrir le PDF">
-                                <h2
-                                    class="text-xl font-semibold text-gray-700 dark:text-gray-200  border border-gray-300 dark:border-gray-700 pb-2 hover">
-                                    {{ explode('_', $pdf)[count(explode('_', $pdf)) - 1] }}</h2>
-                                <div style="background-color: rgba(0,0,0,0); height: 409px; width: 285px; margin-bottom: 15px;"
-                                    class="absolute bottom-4"></div>
-                                <object
-                                    data="{{ route('cde.pdfshow', ['cde' => $cde, 'annee' => $cdeannee, 'nom' => $pdf]) }}"
-                                    type="application/pdf" height="424px" width="300px">
-                                    <p>Il semble que vous n'ayez pas de plugin PDF pour ce navigateur. Pas de
-                                        problème... vous
-                                        pouvez <a
-                                            href="{{ route('cde.pdfshow', ['cde' => $cde, 'annee' => $cdeannee, 'nom' => $pdf]) }}">cliquer
-                                            ici pour télécharger le fichier PDF.</a></p>
-                                </object>
+                        <div class="flex flex-wrap gap-4">
+                            <div class="flex flex-col flex-wrap gap-4">
+                                {{-- @dd($pdfs) --}}
+                                @php
+                                    $pdf = $cde->accuse_reception;
+                                    $cdeannee = explode('-', $cde->code)[1];
+                                @endphp
+                                <button class="btn h-fit w-fit" onclick="changeAr(this)">
+                                    Changer
+                                </button>
+                                <div class="flex flex-col gap-2 bg-gray-100 dark:bg-gray-700 p-4 rounded-md hover:scale-105 cursor-pointer transition-all relative"
+                                    id="pdf" title="Ouvrir le PDF">
+                                    <h2
+                                        class="text-xl font-semibold text-gray-700 dark:text-gray-200  border border-gray-300 dark:border-gray-700 pb-2 hover">
+                                        {{ explode('_', $pdf)[count(explode('_', $pdf)) - 1] }}</h2>
+                                    <div style="background-color: rgba(0,0,0,0); height: 409px; width: 285px; margin-bottom: 15px;"
+                                        class="absolute bottom-4"></div>
+                                    <object
+                                        data="{{ route('cde.pdfshow', ['cde' => $cde, 'annee' => $cdeannee, 'nom' => $pdf]) }}"
+                                        type="application/pdf" height="424px" width="300px">
+                                        <p>Il semble que vous n'ayez pas de plugin PDF pour ce navigateur. Pas de
+                                            problème... vous
+                                            pouvez <a
+                                                href="{{ route('cde.pdfshow', ['cde' => $cde, 'annee' => $cdeannee, 'nom' => $pdf]) }}">cliquer
+                                                ici pour télécharger le fichier PDF.</a></p>
+                                    </object>
+                                </div>
                             </div>
-                        </div>
 
-                    </div>
+                        </div>
                         <div class="hidden m-4 h-[424px] w-[300px]" id="ar-parent">
                             <x-dropzone-input id="ar" name="ar" />
                         </div>
@@ -104,7 +109,7 @@
 
                 </div>
                 <div>
-                    @include('ddp_cde.cde.commentaire')
+                    @include('ddp_cde.cde.partials.commentaire')
                 </div>
                 <div class="flex justify-between items-center mt-6  w-full">
                     <a href="{{ route('cde.cancel_validate', $cde->id) }}" class="btn float-right">Retour</a>
@@ -124,9 +129,10 @@
             pdf = document.getElementById('pdf');
             if (pdf) {
                 pdf.addEventListener('click', function() {
-                const pdfUrl = pdf.querySelector('object').data;
-                window.open(pdfUrl, '_blank');
-            });}
+                    const pdfUrl = pdf.querySelector('object').data;
+                    window.open(pdfUrl, '_blank');
+                });
+            }
 
             const inputAR = document.getElementById('ar');
             const url = '{{ route('cde.upload_ar', $cde) }}';
@@ -240,8 +246,10 @@
                 rowHeaders: rowHeaders,
                 colHeaders: colHeaders,
                 rowHeaderWidth: Math.min(
-                    rowHeaders.reduce((maxLength, header) => Math.max(maxLength, header.length), 0) * 10,
-                    Math.min(window.innerWidth * 0.4) // Limite maximale de largeur ajustée selon la taille de l'écran
+                    rowHeaders.reduce((maxLength, header) => Math.max(maxLength, header.length), 0) *
+                    10,
+                    Math.min(window.innerWidth *
+                    0.4) // Limite maximale de largeur ajustée selon la taille de l'écran
                 ),
                 columns: columns,
                 manualColumnResize: true,

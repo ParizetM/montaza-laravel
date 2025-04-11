@@ -335,6 +335,16 @@
                     @endforeach
                 </tbody>
             </table>
+            @if (!empty($cde_notes))
+                <div class="notes">
+                    @foreach ($cde_notes as $note)
+                        <p>{{ $note->contenu }}</p>
+                    @endforeach
+                </div>
+            @endif
+            @if ($cde->custom_note != null && $cde->custom_note != '')
+                    <p>{{ $cde->custom_note }}</p>
+            @endif
         </div>
         <div>
             <table class="table_recap">

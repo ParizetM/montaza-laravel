@@ -36,6 +36,7 @@ class Cde extends Model
         'accuse_reception',
         'commentaire_id',
         'cde_note_id',
+        'changement_livraison',
     ];
     public function cdeLignes()
     {
@@ -94,8 +95,9 @@ class Cde extends Model
     {
         return $this->belongsTo(Commentaire::class);
     }
-    public function cdeNotes() {
-        return $this->belongsToMany(CdeNote::class, CdeCdeNote::class, 'cde_id', 'cde_note_id');
+    public function cdeNotes()
+    {
+        return $this->belongsToMany(CdeNote::class, 'cde_cde_notes', 'cde_id', 'cde_note_id');
     }
 
 

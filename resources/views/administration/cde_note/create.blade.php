@@ -46,6 +46,16 @@
                         @endforeach
                     </select>
                 </div>
+                <div class="mb-4">
+                    <x-toggle
+                        id="is_checked"
+                        name="is_checked"
+                        label=" Précocher la note de commande"
+                         />
+                    @error('is_checked')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
 
                 <div class="flex justify-end">
                     <a href="{{ route('administration.cdeNote.index', $entite) }}" class="mr-4 text-gray-600 dark:text-gray-400 hover:underline">Annuler</a>

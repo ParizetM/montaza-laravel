@@ -71,7 +71,7 @@
                                         class="border border-gray-300 dark:border-gray-700 pl-2
                                             {{ $index % 2 == 1 ? 'bg-gray-50 dark:bg-gray-800' : '' }}
                                     ">
-                                        <x-tooltip slot_tooltip=""
+                                        <x-tooltip
                                             position="top">
                                             <x-slot name="slot_tooltip">
                                                 <a href="{{ route('matieres.show',$ddplignes[$index]->matiere->id) }}" target="_blank" class="lien">{{ $ddplignes[$index]->matiere->designation }}</a>

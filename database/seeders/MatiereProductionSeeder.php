@@ -55,6 +55,7 @@ class MatiereProductionSeeder extends Seeder
                 'sous_famille_id' => $sous_famille ?? throw new \Exception("SousFamille ID is null for row: " . json_encode($row)),
                 'standard_version_id' => $standard,
                 'material_id' => $matierial_id,
+                'ref_valeur_unitaire' => 6,
                 'dn' => $row[6],
                 'epaisseur' => $row[7],
                 'stock_min' => 0,

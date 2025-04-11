@@ -20,7 +20,7 @@ return new class extends Migration
         Schema::create('cde_notes', function (Blueprint $table) {
             $table->id();
             $table->text('contenu')->nullable();
-            $table->integer('ordre')->unique()->nullable();
+            $table->integer('ordre')->nullable();
             $table->boolean('is_checked')->default(false);
             $table->foreignId('entite_id')->constrained('entites');
             $table->timestamps();
@@ -54,6 +54,8 @@ return new class extends Migration
             $table->boolean('show_ref_fournisseur')->default(false);
             $table->boolean('afficher_destinataire')->default(true);
             $table->foreignId('commentaire_id')->constrained('commentaires')->nullable();
+            $table->string('custom_note')->nullable();
+            $table->json('changement_livraison')->nullable();
             $table->timestamps();
         });
         Schema::create('cde_cde_notes', function (Blueprint $table) {

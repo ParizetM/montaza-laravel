@@ -346,8 +346,8 @@
                         <div class="flex flex-col gap-4 m-4">
 
                             <div
-                                class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-                                <div class="flex justify-between">
+                                class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 pr-0 border border-gray-200 dark:border-gray-700">
+                                <div class="flex justify-between pr-4">
                                     <h3 class="font-medium text-lg">Notes de commande</h3>
                                     <a href="{{ route('administration.cdeNote.index', $cde->entite_id) }}" target="_blank">
                                         <x-tooltip position="bottom">
@@ -356,25 +356,25 @@
                                             </x-slot>
                                             <x-slot name="slot_tooltip">
                                                 <span>Ajouter ou modifier les notes de commande</span> <br />
-                                                <span class="text-sm">Veuillez actualiser cette page après avoir modifié
+                                                <span class="text-sm text-gray-500">Veuillez actualiser cette page après avoir modifié
                                                     les notes de commande.</span>
                                             </x-slot>
                                         </x-tooltip>
                                     </a>
                                 </div>
-                                <div class="grid grid-cols-1 gap-2 mb-4 max-h-80 overflow-y-auto">
+                                <div class="grid grid-cols-1 gap-2 mb-4 max-h-80 overflow-y-auto pr-2">
                                     @foreach ($cde_notes as $note)
                                         <label
                                             class="flex items-center p-3 rounded-md border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors">
                                             <input type="checkbox" name="cdenotes[]" value="{{ $note->id }}"
-                                                {{ in_array($note->id, old('cdenotes', $cde->cdenotes->pluck('id')->toArray())) ? 'checked' : '' }}
+                                                {{ in_array($note->id, old('cdenotes', $cde->cdenotes->pluck('id')->toArray())) ? 'checked' : ($note->is_checked ? 'checked' : '') }}
                                                 class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                             <span class="ml-3">{{ $note->contenu }}</span>
                                         </label>
                                     @endforeach
                                 </div>
 
-                                <div class="mt-4 border-t border-gray-200 dark:border-gray-700 pt-4">
+                                <div class="mt-4 border-t border-gray-200 dark:border-gray-700 pt-4 pr-4 -ml-4 pl-4">
                                     <label
                                         class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                         <span class="mr-2">
@@ -389,9 +389,14 @@
                                         </span>
                                         Note personnalisée
                                     </label>
-                                    <textarea name="note_personnalisee"
-                                        class="w-full rounded-md border-gray-300 dark:border-gray-600 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 resize-none dark:bg-gray-800 dark:text-gray-100"
-                                        rows="3" placeholder="Ajoutez ici des informations spécifiques à cette commande...">{{ old('note_personnalisee', $cde->note_personnalisee) }}</textarea>
+                                    <textarea name="custom_note"
+                                        class="textarea"
+                                        rows="3" placeholder="Ajoutez ici des informations spécifiques à cette commande...">{{ old('note_personnalisee', $cde->custom_note) }}</textarea>
+                                        <x-toggle name="save_custom_note" id="save_custom_note" :checked="old('save_custom_note'
+                                        )" :label="'Enregistrer cette note personnalisée pour les prochaines commandes ?'" class="toggle-class" />
+                                            @error('custom_note')
+                                                <span class="text-red-500 text-sm">{{ $message }}</span>
+                                            @enderror
                                 </div>
                             </div>
 

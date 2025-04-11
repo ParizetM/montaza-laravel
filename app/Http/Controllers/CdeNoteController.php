@@ -32,10 +32,13 @@ class CdeNoteController extends Controller
     {
         $request->validate([
             'contenu' => 'required',
-            'entite_id' => 'required|exists:entites,id'
+            'entite_id' => 'required|exists:entites,id',
+            'is_checked' => 'string',
         ]);
         $cde_note = new CdeNote();
         $cde_note->contenu = $request->contenu;
+        $cde_note->ordre = CdeNote::where('entite_id', $request->entite_id)->count();
+        $cde_note->is_checked = $request->is_checked == 'on' ? true : false;
         $cde_note->entite_id = $request->entite_id;
         $cde_note->save();
         return redirect()->route('administration.cdeNote.index', $request->entite_id)->with('success', 'Note Crée avec succès.');
@@ -44,13 +47,38 @@ class CdeNoteController extends Controller
     {
         $request->validate([
             'contenu' => 'required',
-            'entite_id' => 'required|exists:entites,id'
+            'entite_id' => 'required|exists:entites,id',
+            'is_checked' => 'string',
         ]);
         $cde_note = CdeNote::findOrFail($id);
         $cde_note->contenu = $request->contenu;
+        $cde_note->ordre = CdeNote::where('entite_id', $request->entite_id)->count();
+        $cde_note->is_checked = $request->is_checked == 'on' ? true : false;
         $cde_note->entite_id = $request->entite_id;
         $cde_note->save();
-        return redirect()->route('administration.cdeNote.show', $id)->with('success', 'Note modifiée avec succès.');
+        return redirect()->route('administration.cdeNote.index', $cde_note->entite_id)->with('success', 'Note modifiée avec succès.');
+    }
+    public function updateOrder(Request $request)
+    {
+        $request->validate([
+            'order' => 'required|array',
+            'order.*' => 'exists:cde_notes,id',
+        ]);
+
+        foreach ($request->order as $index => $id) {
+            $cde_note = CdeNote::findOrFail($id);
+            $cde_note->ordre = $index;
+            $cde_note->save();
+        }
+
+        return response()->json(['success' => true, 'message' => 'Ordre mis à jour avec succès.']);
+    }
+    public function destroy($id)
+    {
+        $cde_note = CdeNote::findOrFail($id);
+        $entite_id = $cde_note->entite_id;
+        $cde_note->delete();
+        return redirect()->route('administration.cdeNote.index', $entite_id)->with('success', 'Note supprimée avec succès.');
     }
 
 }

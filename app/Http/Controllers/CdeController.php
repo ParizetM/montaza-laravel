@@ -20,9 +20,11 @@ use App\Models\User;
 use App\Services\StockService;
 use Auth;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Log;
 use Mail;
 use Response;
 use Storage;
@@ -295,7 +297,7 @@ class CdeController extends Controller
         } else {
             $listeChangement = false;
         }
-        return view('ddp_cde.cde.validation', compact('cde', ['users', 'entite', 'showRefFournisseur', 'typesExpedition', 'conditionsPaiement', 'listeChangement','cde_notes']));
+        return view('ddp_cde.cde.validation', compact('cde', ['users', 'entite', 'showRefFournisseur', 'typesExpedition', 'conditionsPaiement', 'listeChangement', 'cde_notes']));
     }
     public function reset($id): RedirectResponse
     {
@@ -326,6 +328,9 @@ class CdeController extends Controller
             'frais_divers' => 'nullable|numeric|min:0',
             'frais_divers_texte' => 'nullable|string|max:255',
             'enregistrer_changement' => 'nullable', // Ajout de la validation pour enregistrer changement de ref fournisseur
+            'cdenotes' => 'nullable|array',
+            'custom_note' => 'nullable|string|max:255',
+            'save_custom_note' => 'nullable|string|max:255',
         ]);
         $type_expedition_id = $request->input('type_expedition_id');
         if ($type_expedition_id == 1) {
@@ -350,9 +355,29 @@ class CdeController extends Controller
         } else {
             $condition_paiement_id = $request->input('condition_paiement_id');
         }
+
+        if ($request->cdenotes) {
+            $cde->cdeNotes()->detach();
+            foreach ($request->cdenotes as $cdenote) {
+                $cde_note = CdeNote::findOrFail($cdenote);
+                $cde->cdeNotes()->attach($cde_note);
+            }
+        }
+
         $societe = $cde->societeContact->etablissement->societe;
         $societe->condition_paiement_id = $condition_paiement_id;
         $societe->save();
+
+        if ($request->save_custom_note && $request->save_custom_note == 'on' && !empty($request->custom_note)) {
+            CdeNote::create([
+                'contenu' => $request->custom_note,
+                'ordre' => CdeNote::where('entite_id', $request->entite_id)->count(),
+                'entite_id' => $cde->entite_id,
+                'is_checked' => false,
+            ]);
+        } else {
+        }
+        $cde->custom_note = $request->custom_note ?? null;
         $cde->affaire_numero = $request->input('numero_affaire') ?? null;
         $cde->affaire_nom = $request->input('nom_affaire') ?? null;
         $cde->devis_numero = $request->input('numero_devis') ?? null;
@@ -386,6 +411,7 @@ class CdeController extends Controller
             }
         }
         $pdf = $this->pdf($cde->id);
+        $this->pdf($cde->id, true);
         $mailtemplate = Mailtemplate::where('nom', 'cde')->first();
         $mailtemplate->sujet = str_replace('{code_cde}', $cde->code, $mailtemplate->sujet);
         return view('ddp_cde.cde.pdf_preview', compact('cde', ['pdf', 'mailtemplate']));
@@ -394,6 +420,7 @@ class CdeController extends Controller
     {
         $cde = Cde::findOrFail($id);
         $cde->ddp_cde_statut_id = 1;
+        $cde->changement_livraison = null;
         $cde->save();
         return redirect()->route('cde.show', $cde->id);
     }
@@ -409,6 +436,7 @@ class CdeController extends Controller
         $showRefFournisseur = $cde->show_ref_fournisseur;
         $total_ht = $cde->total_ht + $cde->frais_de_port + $cde->frais_divers;
         $total_ttc = $total_ht * (1 + ($cde->tva / 100));
+        $cde_notes = $cde->cdeNotes;
         $cde->total_ttc = $total_ttc;
         $cde->save();
         $pdf = app('dompdf.wrapper');
@@ -425,6 +453,7 @@ class CdeController extends Controller
                 'total_ttc' => $total_ttc,
                 'total_ht' => $total_ht,
                 'sans_prix' => $sans_prix,
+                'cde_notes' => $cde_notes,
             ]
         );
         $pdf->setOption(['isRemoteEnabled' => true, 'isHtml5ParserEnabled' => true, 'isPhpEnabled' => true]);
@@ -458,7 +487,6 @@ class CdeController extends Controller
     public function pdfDownloadSansPrix($id)
     {
         $cde = Cde::findOrFail($id);
-        $pdf = $this->pdf($cde->id, true);
         $cdeAnnee = explode('-', $cde->code)[1];
         $pdfPath = 'CDE/' . $cdeAnnee . '/sans_prix_' . $cde->code . '.pdf';
         if (!Storage::exists($pdfPath)) {
@@ -562,12 +590,64 @@ class CdeController extends Controller
         $cde = Cde::findOrFail($id);
         $data = array_map('str_getcsv', array_filter(explode("\r\n", $request->data), 'strlen'));
         $compteur = 0;
+        $changements = $cde->changement_livraison ? json_decode($cde->changement_livraison, true) : [];
         foreach ($cde->cdeLignes as $ligne) {
+            $originalData = [
+                'ddp_cde_statut_id' => $ligne->ddp_cde_statut_id,
+                'quantite' => $ligne->quantite,
+                'prix_unitaire' => $ligne->prix_unitaire,
+                'type_expedition_id' => $ligne->type_expedition_id,
+            ];
+
             $ligne->ddp_cde_statut_id = DdpCdeStatut::where('nom', $data[$compteur][0])->first()->id ?? $ligne->ddp_cde_statut_id;
             $ligne->quantite = $data[$compteur][1];
             $ligne->prix_unitaire = $data[$compteur][2];
             $ligne->type_expedition_id = TypeExpedition::where('short', $data[$compteur][3])->first()->id ?? $ligne->type_expedition_id;
             $ligne->date_livraison_reelle = $data[$compteur][4] ? Carbon::createFromFormat('d/m/Y', $data[$compteur][4]) : null;
+
+            $newData = [
+                'ddp_cde_statut_id' => $ligne->ddp_cde_statut_id,
+                'quantite' => $ligne->quantite,
+                'prix_unitaire' => $ligne->prix_unitaire,
+                'type_expedition_id' => $ligne->type_expedition_id,
+            ];
+
+            foreach ($originalData as $key => $value) {
+                if ($value != $newData[$key]) {
+                    // Traduction des noms de champs en français
+                    $fieldNames = [
+                        'ddp_cde_statut_id' => 'Statut',
+                        'quantite' => 'Quantité',
+                        'prix_unitaire' => 'Prix unitaire',
+                        'type_expedition_id' => 'Type d\'expédition'
+                    ];
+
+                    $fieldName = $fieldNames[$key] ?? $key;
+
+                    // Récupération des valeurs lisibles pour les IDs
+                    $oldValue = $value;
+                    $newValue = $newData[$key];
+
+                    if ($key === 'ddp_cde_statut_id') {
+                        $oldValue = DdpCdeStatut::find($value)->nom ?? $value;
+                        $newValue = DdpCdeStatut::find($newData[$key])->nom ?? $newData[$key];
+                    } elseif ($key === 'type_expedition_id') {
+                        $oldValue = TypeExpedition::find($value)->short ?? $value;
+                        $newValue = TypeExpedition::find($newData[$key])->short ?? $newData[$key];
+                    }
+
+                    $changements[] = [
+                        'ligne_id' => $ligne->id,
+                        'description' => "Modification de {$fieldName} : {$oldValue} → {$newValue}",
+                        'field' => $key,
+                        'old_value' => $value,
+                        'new_value' => $newData[$key],
+                        'date' => now(),
+                    ];
+                }
+            }
+            $cde->changement_livraison = json_encode($changements);
+            $cde->save();
             $ligne->save();
             $compteur++;
             $data2[] = $ligne;
@@ -621,13 +701,18 @@ class CdeController extends Controller
         foreach ($cde->cdeLignes as $ligne) {
             $matiere = $ligne->matiere;
             if ($ligne->date_livraison_reelle && $ligne->ddp_cde_statut_id != 4 && $ligne->ligne_autre_id == null) {
-                $this->stockService->stock(
-                    $matiere->id,
-                    'entree',
-                    $ligne->quantite,
-                    null,
-                    'Livraison commande - ' . $cde->code
-                );
+                try {
+                    $this->stockService->stock(
+                        $matiere->id,
+                        'entree',
+                        $ligne->quantite,
+                        null,
+                        'Livraison commande - ' . $cde->code
+                    );
+                } catch (Exception $e) {
+                    Log::error('Erreur lors de la mise à jour du stock pour la matière ID: ' . $matiere->id .
+                                ' dans la commande ' . $cde->code . ' - ' . $e->getMessage());
+                }
                 $societe_matiere = $matiere->societeMatieres()->firstOrCreate(['societe_id' => $societe->id]);
                 $newPrix = $ligne->prix_unitaire;
                 if ($matiere->getLastPrice($societe->id) == null || $matiere->getLastPrice($societe->id)->prix_unitaire != $ligne->prix_unitaire) {
@@ -678,19 +763,19 @@ class CdeController extends Controller
             // Trouve le commentaire lié à la commande
             $commentaire = $cde->commentaire;
             if ($commentaire) {
-            if ($commentaire->contenu == $request->commentaire) {
-                return response()->json(['message' => 'Commentaire inchangé'], 200);
-            }
-            // Met à jour le commentaire avec la nouvelle valeur
-            $commentaire->contenu = $request->commentaire;
-            $commentaire->save();
-            return response()->json(['message' => 'Commentaire mis à jour avec succès'], 200);
+                if ($commentaire->contenu == $request->commentaire) {
+                    return response()->json(['message' => 'Commentaire inchangé'], 200);
+                }
+                // Met à jour le commentaire avec la nouvelle valeur
+                $commentaire->contenu = $request->commentaire;
+                $commentaire->save();
+                return response()->json(['message' => 'Commentaire mis à jour avec succès'], 200);
             } else {
-            // Si la commande n'a pas encore de commentaire, on en crée un
-            $commentaire = new Commentaire();
-            $commentaire->contenu = $request->commentaire;
-            $cde->commentaire()->save($commentaire);
-            return response()->json(['message' => 'Commentaire créé avec succès'], 201);
+                // Si la commande n'a pas encore de commentaire, on en crée un
+                $commentaire = new Commentaire();
+                $commentaire->contenu = $request->commentaire;
+                $cde->commentaire()->save($commentaire);
+                return response()->json(['message' => 'Commentaire créé avec succès'], 201);
             }
         }
     }

@@ -24,7 +24,10 @@
                         style="background-color: {{ $cde->statut->couleur }}; color: {{ $cde->statut->couleur_texte }}">
                         {{ $cde->statut->nom }}</div>
                 </div>
+                <div class="flex gap-2">
                 <a href="{{ route('cde.pdfs.download', $cde) }}" class="btn">Télécharger le PDF</a>
+                <a href="{{ route('cde.pdfs.pdfdownload_sans_prix', $cde) }}" class="btn">Télécharger le PDF sans prix</a>
+            </div>
 
             </div>
             <div class="flex flex-wrap gap-4">

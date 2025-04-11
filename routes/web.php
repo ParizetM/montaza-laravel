@@ -147,6 +147,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::get('/administration/cde-note/{note}', [CdeNoteController::class, 'show'])->name('administration.cdeNote.show');
         Route::post('/administration/cde-note/store', [CdeNoteController::class, 'store'])->name('administration.cdeNote.store');
         Route::patch('/administration/cde-note/{note}/update', [CdeNoteController::class, 'update'])->name('administration.cdeNote.update');
+        Route::delete('/administration/cde-note/{note}/destroy', [CdeNoteController::class, 'destroy'])->name('administration.cdeNote.destroy');
         Route::patch('/administration/cde-note/update-order', [CdeNoteController::class, 'updateOrder'])->name('administration.cdeNote.updateOrder');
         Route::get('/ddp&cde', [DdpController::class, 'indexDdp_cde'])->name('ddp_cde.index');
         Route::get('/ddp', [DdpController::class, 'index'])->name('ddp.index');

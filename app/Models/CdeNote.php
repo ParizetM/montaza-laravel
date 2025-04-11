@@ -12,10 +12,14 @@ class CdeNote extends Model
         'is_checked',
         'entite_id',
     ];
-
-    public function cde()
+    protected static function boot()
     {
-        return $this->belongsTo(Cde::class);
+        parent::boot();
+
+        // Ajout d'une portée globale pour trier par 'ordre'
+        static::addGlobalScope('ordre', function ($query) {
+            $query->orderBy('ordre');
+        });
     }
 
     public function cdenote()
@@ -26,8 +30,16 @@ class CdeNote extends Model
     {
         return $this->hasMany(CdeCdeNote::class);
     }
+    public function cdes()
+    {
+        return $this->belongsToMany(Cde::class, 'cde_cde_notes', 'cde_note_id', 'cde_id');
+    }
     public function entite()
     {
         return $this->belongsTo(Entite::class);
+    }
+    public function isChecked()
+    {
+        return $this->is_checked;
     }
 }

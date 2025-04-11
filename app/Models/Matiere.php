@@ -20,6 +20,8 @@ class Matiere extends Model
         'epaisseur',
         'standard_version_id',
         'stock_min',
+        'ref_valeur_unitaire',
+        'material_id',
     ];
 
     protected static function booted()
