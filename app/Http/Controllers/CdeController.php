@@ -270,7 +270,7 @@ class CdeController extends Controller
         $typesExpedition = TypeExpedition::all();
         $conditionsPaiement = ConditionPaiement::all();
         $societe_id = $cde->societeContact->societe->id;
-        $cde_notes = CdeNote::all();
+        $cde_notes = CdeNote::where('entite_id', $cde->entite_id)->get();
         //verifier si
         if ($showRefFournisseur == true) {
             $listeChangement = [];

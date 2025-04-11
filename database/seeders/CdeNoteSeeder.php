@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\CdeNote;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Seeder;
 
@@ -12,11 +13,52 @@ class CdeNoteSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('cde_notes')->insert(array_map(fn($contenu) => ['contenu' => $contenu, 'created_at' => now(), 'updated_at' => now()], [
-            'Ceci est une note fictive qui décrit une journée ensoleillée où tout semble aller pour le mieux. Les oiseaux chantent, et l\'air est frais.',
-            'Aujourd\'hui, j\'ai découvert un petit café caché dans une ruelle. Le café était délicieux, et l\'ambiance était chaleureuse.',
-            'Je me suis promené dans le parc cet après-midi. Les feuilles des arbres commencent à changer de couleur, annonçant l\'arrivée de l\'automne.',
-            'Ce soir, j\'ai regardé un film inspirant qui m\'a donné envie de poursuivre mes rêves avec encore plus de détermination.',
-        ]));
+        CdeNote::create(
+            [
+                'contenu' => 'La matière sera acceptée sous réserve de conformité avec notre demande de prix initiale. Notre responsabilité ne pourra être engagée',
+                'entite_id' => 1,
+            ]);
+            CdeNote::create(
+                [
+                    'contenu' => 'Tout bon de livraison doit être signé par une personne de chez Atlantis Montaza. Dans le cas contraire, nous ne serions tenus responsables pour tout manquement',
+                        'entite_id' => 1,
+                ]);
+            CdeNote::create(
+                [
+                    'contenu' => 'Livraison et conditions de règlement suivant accord cadre',
+                        'entite_id' => 1,
+                ]
+            );
+            CdeNote::create(
+                [
+                    'contenu' => 'Dans le cas de qualité non avérée, les frais refacturés par le client vous seront imputés',
+                        'entite_id' => 1,
+                ]
+            );
+            CdeNote::create(
+                [
+                    'contenu' => 'La matière sera acceptée sous réserve de conformité avec notre demande de prix initiale. Notre responsabilité ne pourra être engagée',
+                        'entite_id' => 2,
+                ]
+            );
+            CdeNote::create(
+                [
+                    'contenu' => 'Tout bon de livraison doit être signé par une personne de chez Atlantis Ventilation. Dans le cas contraire, nous ne serions tenus responsables pour tout manquement',
+                        'entite_id' => 2,
+                ]
+            );
+            CdeNote::create(
+                [
+                    'contenu' => 'La matière sera acceptée sous réserve de conformité avec notre demande de prix initiale. Notre responsabilité ne pourra être engagée',
+                        'entite_id' => 3,
+                ]
+            );
+            CdeNote::create(
+                [
+                    'contenu' => 'Tout bon de livraison doit être signé par une personne de chez AMB. Dans le cas contraire, nous ne serions tenus responsables pour tout manquement',
+                    'entite_id' => 3,
+                ]
+            );
+
     }
 }

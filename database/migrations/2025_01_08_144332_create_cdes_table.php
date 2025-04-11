@@ -20,7 +20,9 @@ return new class extends Migration
         Schema::create('cde_notes', function (Blueprint $table) {
             $table->id();
             $table->text('contenu')->nullable();
-            $table->integer('utilisation')->default(0);
+            $table->integer('ordre')->unique()->nullable();
+            $table->boolean('is_checked')->default(false);
+            $table->foreignId('entite_id')->constrained('entites');
             $table->timestamps();
         });
 

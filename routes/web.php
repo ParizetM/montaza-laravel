@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdministrationController;
 use App\Http\Controllers\CdeController;
+use App\Http\Controllers\CdeNoteController;
 use App\Http\Controllers\DdpController;
 use App\Http\Controllers\EtablissementController;
 use App\Http\Controllers\MailtemplateController;
@@ -29,11 +30,13 @@ Route::get('/dashboard/paillettes', function () {
 })->middleware(['auth', 'verified', 'GetGlobalVariable'])->name('dashboard.paillettes');
 
 Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(function () {
+
     Route::get('/administration', [AdministrationController::class, 'index'])->name('administration.index');
     Route::get('/administration/info', [AdministrationController::class, 'info'])->name('administration.info');
     Route::get('/administration/icons', function () {return view('administration.icons');})->name('administration.icons');
     Route::get('/administration/info/{entite}', [AdministrationController::class, 'info'])->name('administration.info_entite');
     Route::patch('/administration/info/{entite}/update', [AdministrationController::class, 'update'])->name('administration.update');
+
     Route::get('/profile/{id}', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::patch('/profile-admin', [ProfileController::class, 'updateAdmin'])->name('profile.update_admin');
@@ -139,6 +142,12 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
     });
 
     Route::middleware('permission:voir_les_ddp_et_cde')->group(function () {
+        Route::get('/administration/cde-notes/{entite}', [CdeNoteController::class, 'index'])->name('administration.cdeNote.index');
+        Route::get('/administration/cde-note/{entite}/create', [CdeNoteController::class, 'create'])->name('administration.cdeNote.create');
+        Route::get('/administration/cde-note/{note}', [CdeNoteController::class, 'show'])->name('administration.cdeNote.show');
+        Route::post('/administration/cde-note/store', [CdeNoteController::class, 'store'])->name('administration.cdeNote.store');
+        Route::patch('/administration/cde-note/{note}/update', [CdeNoteController::class, 'update'])->name('administration.cdeNote.update');
+        Route::patch('/administration/cde-note/update-order', [CdeNoteController::class, 'updateOrder'])->name('administration.cdeNote.updateOrder');
         Route::get('/ddp&cde', [DdpController::class, 'indexDdp_cde'])->name('ddp_cde.index');
         Route::get('/ddp', [DdpController::class, 'index'])->name('ddp.index');
         Route::get('/colddp', [DdpController::class, 'indexColDdp'])->name('ddp.index_col_ddp');

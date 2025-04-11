@@ -49,6 +49,16 @@
                         </div>
                     </div>
                 @endcan
+                @can('voir_les_ddp_et_cde')
+                    <div class="flex p-6 text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-900 w-96 h-auto rounded-md cursor-pointer transition-all hover:scale-105 hover:bg-gray-200 dark:hover:bg-gray-700"
+                        onclick="window.location='{{ route('administration.cdeNote.index',1) }}'">
+                        <x-icons.edit-note class="w-12 h-12 mr-2 fill-gray-400 dark:fill-gray-100" />
+                        <div class=" flex flex-col justify-between">
+                            <h1 class="text-3xl font-bold mb-6 text-left">{{ __('Notes de commande') }}</h1>
+                            <p class=" p-1 rounded-sm">{{ __('Gérer les notes de commande') }}</p>
+                        </div>
+                    </div>
+                @endcan
                 @can('gerer_info_entreprise')
                     <div class="flex p-6 text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-900 w-96 h-auto rounded-md cursor-pointer transition-all hover:scale-105 hover:bg-gray-200 dark:hover:bg-gray-700"
                         onclick="window.location='{{ route('administration.info') }}'">

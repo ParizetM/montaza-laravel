@@ -253,11 +253,13 @@
                                 </td>
                                 <td class="p-2 text-left border border-gray-200 dark:border-gray-700">
                                     {{ $ligne->designation }}</td>
-                                <td class="p-2 text-center border border-gray-200 dark:border-gray-700" title="{{ formatNumber($ligne->quantite).($ligne->matiere ? ' '.$ligne->matiere->unite->full : '') }}">
-                                    {{ formatNumber($ligne->quantite).($ligne->matiere ? ' '.$ligne->matiere->unite->short : '') }}</td>
+                                <td class="p-2 text-center border border-gray-200 dark:border-gray-700"
+                                    title="{{ formatNumber($ligne->quantite) . ($ligne->matiere ? ' ' . $ligne->matiere->unite->full : '') }}">
+                                    {{ formatNumber($ligne->quantite) . ($ligne->matiere ? ' ' . $ligne->matiere->unite->short : '') }}
+                                </td>
                                 <td class="p-2 text-left border border-gray-200 dark:border-gray-700"
-                                    title="{{ formatNumberArgent($ligne->prix_unitaire) }} {{ $ligne->matiere ? 'euro(s) par'.$ligne->matiere->unite->full : '' }}">
-                                    {{ formatNumberArgent($ligne->prix_unitaire) }}{{ $ligne->matiere ? '/'.$ligne->matiere->unite->short : '' }}
+                                    title="{{ formatNumberArgent($ligne->prix_unitaire) }} {{ $ligne->matiere ? 'euro(s) par' . $ligne->matiere->unite->full : '' }}">
+                                    {{ formatNumberArgent($ligne->prix_unitaire) }}{{ $ligne->matiere ? '/' . $ligne->matiere->unite->short : '' }}
                                 </td>
                                 <td class="p-2 text-left border border-gray-200 dark:border-gray-700">
                                     {{ formatNumberArgent($ligne->prix) }} </td>
@@ -339,59 +341,68 @@
 --}}
                 <h2 class="text-xl font-bold mb-6 text-left border-b-2 border-gray-200 dark:border-gray-700 p-2">Pied
                     de page</h2>
-                <div class="flex ">
+                <div class="flex flex-col md:flex-row gap-4">
                     <div>
-                    <div class="flex flex-col gap-4 m-4">
-                        <h3 class="font-medium text-lg">Notes de commande</h3>
+                        <div class="flex flex-col gap-4 m-4">
 
-                        <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-                            <div class="mb-3">
-                                <label class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    <span class="mr-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
-                                        </svg>
-                                    </span>
-                                    Notes prédéfinies
-                                </label>
-                            </div>
+                            <div
+                                class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                                <div class="flex justify-between">
+                                    <h3 class="font-medium text-lg">Notes de commande</h3>
+                                    <a href="{{ route('administration.cdeNote.index', $cde->entite_id) }}" target="_blank">
+                                        <x-tooltip position="bottom">
+                                            <x-slot name="slot_item">
+                                                <x-icons.edit-note size="2" class="icons" />
+                                            </x-slot>
+                                            <x-slot name="slot_tooltip">
+                                                <span>Ajouter ou modifier les notes de commande</span> <br />
+                                                <span class="text-sm">Veuillez actualiser cette page après avoir modifié
+                                                    les notes de commande.</span>
+                                            </x-slot>
+                                        </x-tooltip>
+                                    </a>
+                                </div>
+                                <div class="grid grid-cols-1 gap-2 mb-4 max-h-80 overflow-y-auto">
+                                    @foreach ($cde_notes as $note)
+                                        <label
+                                            class="flex items-center p-3 rounded-md border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors">
+                                            <input type="checkbox" name="cdenotes[]" value="{{ $note->id }}"
+                                                {{ in_array($note->id, old('cdenotes', $cde->cdenotes->pluck('id')->toArray())) ? 'checked' : '' }}
+                                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                            <span class="ml-3">{{ $note->contenu }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
 
-                            <div class="grid grid-cols-1 gap-2 mb-4">
-                                @foreach ($cde_notes as $note)
-                                    <label class="flex items-center p-3 rounded-md border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors">
-                                        <input type="checkbox" name="cdenotes[]" value="{{ $note->id }}"
-                                            {{ in_array($note->id, old('cdenotes', $cde->cdenotes->pluck('id')->toArray())) ? 'checked' : '' }}
-                                            class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                        <span class="ml-3">{{ $note->contenu }}</span>
+                                <div class="mt-4 border-t border-gray-200 dark:border-gray-700 pt-4">
+                                    <label
+                                        class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        <span class="mr-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                                                viewBox="0 0 20 20" fill="currentColor">
+                                                <path
+                                                    d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                                                <path fill-rule="evenodd"
+                                                    d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                        </span>
+                                        Note personnalisée
                                     </label>
-                                @endforeach
+                                    <textarea name="note_personnalisee"
+                                        class="w-full rounded-md border-gray-300 dark:border-gray-600 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 resize-none dark:bg-gray-800 dark:text-gray-100"
+                                        rows="3" placeholder="Ajoutez ici des informations spécifiques à cette commande...">{{ old('note_personnalisee', $cde->note_personnalisee) }}</textarea>
+                                </div>
                             </div>
 
-                            <div class="mt-4 border-t border-gray-200 dark:border-gray-700 pt-4">
-                                <label class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    <span class="mr-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                            <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
-                                            <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" />
-                                        </svg>
-                                    </span>
-                                    Note personnalisée
-                                </label>
-                                <textarea name="note_personnalisee"
-                                    class="w-full rounded-md border-gray-300 dark:border-gray-600 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 resize-none dark:bg-gray-800 dark:text-gray-100"
-                                    rows="3"
-                                    placeholder="Ajoutez ici des informations spécifiques à cette commande...">{{ old('note_personnalisee', $cde->note_personnalisee) }}</textarea>
-                            </div>
+                            @error('cdenotes')
+                                <span class="text-red-500 text-sm">{{ $message }}</span>
+                            @enderror
+                            @error('note_personnalisee')
+                                <span class="text-red-500 text-sm">{{ $message }}</span>
+                            @enderror
                         </div>
-
-                        @error('cdenotes')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
-                        @error('note_personnalisee')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
                     </div>
-                </div>
                     <div class="flex flex-col gap-4 m-4">
                         <x-input-label value="type d'expédition" />
                         <select name="type_expedition_id" required class="select w-fit min-w-96"
@@ -507,7 +518,7 @@
                     <button type="submit" class="btn">{{ __('Valider') }}</button>
                 </div>
             </div>
-    {{--
+            {{--
  ######  ##     ##    ###    ##    ##  ######   ######## ##     ## ######## ##    ## ########
 ##    ## ##     ##   ## ##   ###   ## ##    ##  ##       ###   ### ##       ###   ##    ##
 ##       ##     ##  ##   ##  ####  ## ##        ##       #### #### ##       ####  ##    ##
@@ -529,60 +540,64 @@
 --}}
 
             @if ($listeChangement != false)
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    document.getElementById('open-modal-listeChangement').click();
-                });
-            </script>
-            <x-modal name="listeChangement-modal" id="listeChangement-modal" title="Liste des changements" maxWidth="5xl">
-                <div class="p-2">
-                    <a x-on:click="$dispatch('close')">
-                        <x-icons.close class="float-right mb-1 icons" size="1.5" unfocus />
-                    </a>
-                    <div class="p-6 ">
-                        <div class="flex flex-col gap-4">
-                            <h2
-                                class="text-xl font-bold mb-6 text-left border-b-2 border-gray-200 dark:border-gray-700 p-2">
-                                Ces références ont changé, voulez-vous les enregistrer ou les garder seulement pour cette commande ?</h2>
-                            <table class="min-w-0 bg-gray-100 dark:bg-gray-900 ">
-                                <thead>
-                                    <tr>
-                                        <th class="text-left">Ref Interne</th>
-                                        <th class="text-left">Désignation</th>
-                                        <th class="text-left">Changement</th>
-
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($listeChangement as $changement)
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        document.getElementById('open-modal-listeChangement').click();
+                    });
+                </script>
+                <x-modal name="listeChangement-modal" id="listeChangement-modal" title="Liste des changements"
+                    maxWidth="5xl">
+                    <div class="p-2">
+                        <a x-on:click="$dispatch('close')">
+                            <x-icons.close class="float-right mb-1 icons" size="1.5" unfocus />
+                        </a>
+                        <div class="p-6 ">
+                            <div class="flex flex-col gap-4">
+                                <h2
+                                    class="text-xl font-bold mb-6 text-left border-b-2 border-gray-200 dark:border-gray-700 p-2">
+                                    Ces références ont changé, voulez-vous les enregistrer ou les garder seulement pour
+                                    cette commande ?</h2>
+                                <table class="min-w-0 bg-gray-100 dark:bg-gray-900 ">
+                                    <thead>
                                         <tr>
-                                            <td class="p-2 text-left">{{ $changement['ref_interne'] }}</td>
-                                            <td class="p-2 text-left">{{ $changement['designation'] }}</td>
-                                            <td class="p-2 text-left flex items-center">
-                                                <span title="Ancienne référence">{{ $changement['ref_externe'] }}</span>
-                                                <x-icon size="1" type="arrow_forward" class="icons-no_hover" />
-                                                <span title="Nouvelle référence">{{ $changement['ref_fournisseur'] }}</span>
-                                            </td>
+                                            <th class="text-left">Ref Interne</th>
+                                            <th class="text-left">Désignation</th>
+                                            <th class="text-left">Changement</th>
+
                                         </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($listeChangement as $changement)
+                                            <tr>
+                                                <td class="p-2 text-left">{{ $changement['ref_interne'] }}</td>
+                                                <td class="p-2 text-left">{{ $changement['designation'] }}</td>
+                                                <td class="p-2 text-left flex items-center">
+                                                    <span
+                                                        title="Ancienne référence">{{ $changement['ref_externe'] }}</span>
+                                                    <x-icon size="1" type="arrow_forward"
+                                                        class="icons-no_hover" />
+                                                    <span
+                                                        title="Nouvelle référence">{{ $changement['ref_fournisseur'] }}</span>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                                <div class="flex justify-end mt-4">
+                                    <x-toggle :checked="old('enregistrer_changement', true)" :label="'Enregistrer les changements ?'" id="enregistrer_changement"
+                                        name="enregistrer_changement" class="toggle-class" />
+                                    @error('enregistrer_changement')
+                                        <span class="text-red-500">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
                             <div class="flex justify-end mt-4">
-                                <x-toggle :checked="old('enregistrer_changement', true)"
-                                    :label="'Enregistrer les changements ?'" id="enregistrer_changement"
-                                    name="enregistrer_changement" class="toggle-class" />
-                                @error('enregistrer_changement')
-                                    <span class="text-red-500">{{ $message }}</span>
-                                @enderror
+                                <button type="button" x-on:click="$dispatch('close')"
+                                    class="btn">{{ __('Fermer') }}</button>
                             </div>
                         </div>
-                        <div class="flex justify-end mt-4">
-                            <button type="button" x-on:click="$dispatch('close')"
-                                class="btn">{{ __('Fermer') }}</button>
-                        </div>
-                    </div>
-            </x-modal>
-        @endif
+                </x-modal>
+            @endif
         </form>
     </div>
 
