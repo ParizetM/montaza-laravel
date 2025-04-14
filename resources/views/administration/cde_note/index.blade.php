@@ -1,5 +1,5 @@
 <x-app-layout>
-    @section('title', 'Informations entreprise')
+    @section('title', 'Notes de commandes')
 
     <x-slot name="header">
         <div class="flex items-center">
