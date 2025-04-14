@@ -42,10 +42,10 @@
                 <div class="mt-4">
                     <x-input-label for="role_id" :value="__('Poste')" />
                     <div class="flex">
-                        <x-select_id_role :entites="$entites" class="select-left" />
-                        <button type="button" class="btn-select-right" x-data="" x-on:click.prevent="$dispatch('open-modal', 'create-role-modal')">
+                        <x-select_id_role :entites="$entites" class="select" />
+                        {{-- <button type="button" class="btn-select-right" x-data="" x-on:click.prevent="$dispatch('open-modal', 'create-role-modal')">
                             +
-                        </button>
+                        </button> --}}
 
                     </div>
                     <x-input-error :messages="$errors->get('role_id')" class="mt-2" />
@@ -59,7 +59,7 @@
                 </div>
 
             </form>
-            <x-modal name="create-role-modal" focusable :show="old('role_name')">
+            {{-- <x-modal name="create-role-modal" focusable :show="old('role_name')">
                 <form method="POST" action="{{ route('role.store') }}" x-show="show" class="p-6">
                     @csrf
                     <div class="p-8">
@@ -90,7 +90,7 @@
                     </div>
                 </div>
                 </form>
-            </x-modal>
+            </x-modal> --}}
         </div>
     </div>
 </x-app-layout>
