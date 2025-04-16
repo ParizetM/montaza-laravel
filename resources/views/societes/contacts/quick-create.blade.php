@@ -9,7 +9,7 @@
                 <div>
                     <label for="societe_id_quick_create"
                         class="block text-sm font-medium text-gray-700 dark:text-gray-300">Société</label>
-                    <select name="societe_id" id="societe_id_quick_create" class=" select mt-1 block w-full form-select"
+                    <select name="societe_id" id="societe_id_quick_create" class="select mt-1 block w-full"
                         required>
                         @if (isset($selected_societe))
                             <option value="{{ $selected_societe->id }}" selected>
@@ -31,7 +31,7 @@
                     <label for="etablissement_id_quick_create"
                         class="block text-sm font-medium text-gray-700 dark:text-gray-300">Établissement</label>
                     <select name="etablissement_id" id="etablissement_id_quick_create"
-                        class="select mt-1 block w-full form-select" required>
+                        class="select mt-1 block w-full" required>
                         @if (isset($selected_societe, $selected_etablissement))
                             <option value="{{ $selected_etablissement->id }}" selected>
                                 {{ $selected_etablissement->nom }}</option>
