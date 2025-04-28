@@ -20,6 +20,7 @@ use App\Models\User;
 use App\Services\StockService;
 use Auth;
 use Carbon\Carbon;
+use DB;
 use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -166,12 +167,20 @@ class CdeController extends Controller
             $cdeid =  $cde->id;
             $showRefFournisseur = $cde->show_ref_fournisseur;
             $pdfcommande = $this->pdf($cdeid);
-            return view('ddp_cde.cde.show', compact('cde', ['showRefFournisseur', 'pdfcommande']));
+            if ($cde->ddpCdeStatut->id == 5) {
+                $changements_stock = $cde->mouvementsStock()->get();
+            } else {
+                $changements_stock = null;
+            }
+
+            return view('ddp_cde.cde.show', compact('cde', ['showRefFournisseur', 'pdfcommande','changements_stock'
+            ]));
         }
     }
 
     public function save(Request $request)
     {
+
         $validator = \Validator::make($request->all(), [
             'cde_id' => 'required|integer|exists:cdes,id',
             'entite_id' => 'required|integer|exists:entites,id',
@@ -191,8 +200,9 @@ class CdeController extends Controller
             'matieres.*.date' => 'nullable|date',
             'matieres.*.ligne_autre_id' => 'nullable|string',
         ]);
-
+        DB::beginTransaction();
         if ($validator->fails()) {
+            DB::rollBack();
             return response()->json(['errors' => $validator->errors()], 422);
         }
         $entite_code = Entite::findOrFail($request->entite_id)->id;
@@ -234,13 +244,6 @@ class CdeController extends Controller
                     ]
                 );
             } else {
-                // Check if a line with this position already exists and delete it
-                $existingLine = $cde->cdeLignes()->where('poste', $poste)->first();
-                if ($existingLine) {
-                    $existingLine->delete();
-                }
-
-                // Create the new line
                 $cde->cdeLignes()->create([
                     'poste' => $poste++,
                     'matiere_id' => $matiere['id'],
@@ -255,6 +258,7 @@ class CdeController extends Controller
                 ]);
             }
         }
+        DB::commit();
         return response()->json(['success' => true]);
     }
     public function destroy($id): RedirectResponse
@@ -280,6 +284,9 @@ class CdeController extends Controller
         $conditionsPaiement = ConditionPaiement::all();
         $societe_id = $cde->societeContact->societe->id;
         $cde_notes = CdeNote::where('entite_id', $cde->entite_id)->get();
+        foreach ($cde->cdeLignes as $ligne) {
+
+        }
         //verifier si
         if ($showRefFournisseur == true) {
             $listeChangement = [];
@@ -705,17 +712,22 @@ class CdeController extends Controller
         $cde = Cde::findOrFail($id);
         $cde->ddp_cde_statut_id = 5;
         $societe = $cde->societeContact->etablissement->societe;
+        $changement_stock = [];
         foreach ($cde->cdeLignes as $ligne) {
             $matiere = $ligne->matiere;
             if ($ligne->date_livraison_reelle && $ligne->ddp_cde_statut_id != 4 && $ligne->ligne_autre_id == null) {
                 try {
-                    $this->stockService->stock(
+                    $stock = $this->stockService->stock(
                         $matiere->id,
                         'entree',
                         $ligne->quantite,
                         $matiere->ref_valeur_unitaire ?? null,
                         'Livraison commande - ' . $cde->code
                     );
+                    $changement_stock[] = $stock['mouvement'];
+                    if ($stock['mouvement1'] != null) {
+                        $changement_stock[] = $stock['mouvement1'];
+                    }
                 } catch (Exception $e) {
                     Log::error('Erreur lors de la mise à jour du stock pour la matière ID: ' . $matiere->id .
                                 ' dans la commande ' . $cde->code . ' - ' . $e->getMessage());
@@ -737,7 +749,9 @@ class CdeController extends Controller
             }
         }
         $cde->save();
-        return redirect()->route('cde.show', $cde->id);
+        return redirect()->route('cde.show', [
+            'cde' => $cde->id,
+        ])->with('success', 'Commande terminée avec succès');
     }
     /**
      * Retourne le prochain code de CDE

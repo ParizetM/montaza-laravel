@@ -33,7 +33,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
 
     Route::get('/administration', [AdministrationController::class, 'index'])->name('administration.index');
     Route::get('/administration/info', [AdministrationController::class, 'info'])->name('administration.info');
-    Route::get('/administration/icons', function () {return view('administration.icons');})->name('administration.icons');
+    Route::get('/icons', function () {return view('administration.icons');})->name('administration.icons');
     Route::get('/administration/info/{entite}', [AdministrationController::class, 'info'])->name('administration.info_entite');
     Route::patch('/administration/info/{entite}/update', [AdministrationController::class, 'update'])->name('administration.update');
 

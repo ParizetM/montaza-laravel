@@ -29,43 +29,43 @@
 }
 
 @utility btn {
-  @apply mt-4 sm:mt-0 inline-flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-md font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 active:bg-indigo-700 focus:outline-hidden focus:border-indigo-700 focus:ring-0 disabled:opacity-25 transition;
+  @apply mt-4 sm:mt-0 inline-flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-md font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200  disabled:opacity-25 transition;
 }
 
 @utility select {
-  @apply block w-full px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-md font-semibold text-xs text-gray-900 dark:text-gray-100 tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 active:bg-indigo-700 disabled:opacity-25 transition;
+  @apply block w-full px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-md font-semibold text-xs text-gray-900 dark:text-gray-100 tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200  disabled:opacity-25 transition;
 }
 
 @utility select-left {
-  @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-l-md rounded-r-none font-semibold text-xs text-gray-900 dark:text-gray-100 tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 active:bg-indigo-700 focus:outline-hidden disabled:opacity-25 transition;
+  @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-l-md rounded-r-none font-semibold text-xs text-gray-900 dark:text-gray-100 tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200  disabled:opacity-25 transition;
 }
 
 @utility btn-select-right {
-  @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-r-md rounded-l-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 active:bg-indigo-700 focus:outline-hidden focus:border-indigo-700 focus:ring-3 disabled:opacity-25 transition;
+  @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-r-md rounded-l-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 disabled:opacity-25 transition;
 }
 
 @utility btn-select-left {
-  @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-l-md rounded-r-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 active:bg-indigo-700 focus:outline-hidden focus:border-indigo-700 focus:ring-3 disabled:opacity-25 transition;
+  @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-l-md rounded-r-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 disabled:opacity-25 transition;
 }
 
 @utility btn-select-top-right {
-  @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-t-md rounded-b-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 active:bg-indigo-700 focus:outline-hidden focus:border-indigo-700 focus:ring-3 disabled:opacity-25 transition;
+  @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-t-md rounded-b-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 disabled:opacity-25 transition;
 }
 
 @utility btn-select-top-left {
-  @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-t-md rounded-b-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 active:bg-indigo-700 focus:outline-hidden focus:border-indigo-700 focus:ring-3 disabled:opacity-25 transition;
+  @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-t-md rounded-b-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 disabled:opacity-25 transition;
 }
 
 @utility btn-select-bottom-right {
-  @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-b-md rounded-t-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 active:bg-indigo-700 focus:outline-hidden focus:border-indigo-700 focus:ring-3 disabled:opacity-25 transition;
+  @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-b-md rounded-t-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 disabled:opacity-25 transition;
 }
 
 @utility btn-select-bottom-left {
-  @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-b-md rounded-t-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 active:bg-indigo-700 focus:outline-hidden focus:border-indigo-700 focus:ring-3 disabled:opacity-25 transition;
+  @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-b-md rounded-t-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 disabled:opacity-25 transition;
 }
 
 @utility btn-select-square {
-  @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 active:bg-indigo-700 focus:outline-hidden focus:border-indigo-700 focus:ring-3 disabled:opacity-25 transition;
+  @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 disabled:opacity-25 transition;
 }
 
 @utility icons {

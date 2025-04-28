@@ -100,5 +100,8 @@ class Cde extends Model
         return $this->belongsToMany(CdeNote::class, 'cde_cde_notes', 'cde_id', 'cde_note_id');
     }
 
-
+    public function mouvementsStock(): HasManyThrough
+    {
+        return $this->hasManyThrough(MouvementStock::class, CdeLigne::class);
+    }
 }

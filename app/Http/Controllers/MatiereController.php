@@ -25,7 +25,7 @@ class MatiereController extends Controller
     /**
      * Méthode privée qui construit la requête de recherche principale.
      */
-    private function buildMatiereQuery(Request $request)
+    private function buildMatiereQuery(Request $request, $second_search = false)
     {
         $query = Matiere::with(['sousFamille', 'societe', 'standardVersion']);
 
@@ -47,11 +47,17 @@ class MatiereController extends Controller
         if ($request->filled('search')) {
             $search = $request->input('search');
             $terms = explode(' ', $search);
-            if (count($terms) == 1) {
-                $query->where('ref_interne', '=', "{$search}");
-                $query->orWhereHas('societeMatieres', function ($subSubQuery) use ($search) {
-                    $subSubQuery->Where('ref_externe', 'ILIKE', "{$search}");
-                });
+            if (count($terms) == 1 && !$second_search) {
+                $query->where('ref_interne', '=', "{$search}")
+                    ->orWhereHas('societeMatieres', function ($subSubQuery) use ($search) {
+                        $subSubQuery->where('ref_externe', 'ILIKE', "{$search}");
+                    });
+                $query_test = clone $query;
+                $query_test = $query_test->get();
+                if ($query_test->isEmpty()) {
+                    Log::info("No results found for single term search: {$search}");
+                    return $this->buildMatiereQuery($request, true);
+                }
             } else {
                 $query->where(function ($q) use ($terms) {
                     // Pour chaque terme, appliquer des filtres spécifiques
@@ -85,11 +91,11 @@ class MatiereController extends Controller
         // dd($query->toSql(), $query->getBindings());
         // $explication[] = "Final query: " . $query->toSql();
         // $explication[] = "Bindings: " . json_encode($query->getBindings());
-        if (!empty($explication)) {
-            Log::info("Explication log:", $explication);
-        } else {
-            Log::warning("No explanation data was generated for the query.");
-        }
+        // if (!empty($explication)) {
+        //     Log::info("Explication log:", $explication);
+        // } else {
+        //     Log::warning("No explanation data was generated for the query.");
+        // }
         return $query;
     }
 
@@ -146,6 +152,7 @@ class MatiereController extends Controller
         ]);
 
         // Construction de la requête avec la logique principale
+
         $query = $this->buildMatiereQuery($request);
         $query->orderBy('sous_famille_id')->limit(50);
 

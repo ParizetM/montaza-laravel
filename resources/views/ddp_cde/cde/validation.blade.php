@@ -219,6 +219,9 @@
                 <table class="min-w-0 bg-gray-100 dark:bg-gray-900 ">
                     <thead>
                         <tr>
+                            <th style="width: 5px; padding: 0%;padding-top:5px;">
+                                <div class="poste">Poste</div>
+                            </th>
                             <th class="text-left">Référence</th>
                             <th class="text-left">Désignation</th>
                             <th class="text-left px-1">Quantité</th>
@@ -230,6 +233,9 @@
                     <tbody>
                         @foreach ($cde->cdeLignes as $ligne)
                             <tr class="border-b border-gray-200 dark:border-gray-700">
+                                <td class="w-6 text-center border border-gray-200 dark:border-gray-700">
+                                    {{ $ligne->poste ?? '-' }}
+                                </td>
                                 <td class="text-left ml-1 p-2">
                                     <div class="flex flex-col {{ $showRefFournisseur ? '' : 'hidden' }}"
                                         id="refs-{{ $ligne->matiere_id }}">
@@ -349,14 +355,16 @@
                                 class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 pr-0 border border-gray-200 dark:border-gray-700">
                                 <div class="flex justify-between pr-4">
                                     <h3 class="font-medium text-lg">Notes de commande</h3>
-                                    <a href="{{ route('administration.cdeNote.index', $cde->entite_id) }}" target="_blank">
+                                    <a href="{{ route('administration.cdeNote.index', $cde->entite_id) }}"
+                                        target="_blank">
                                         <x-tooltip position="bottom">
                                             <x-slot name="slot_item">
                                                 <x-icons.edit-note size="2" class="icons" />
                                             </x-slot>
                                             <x-slot name="slot_tooltip">
                                                 <span>Ajouter ou modifier les notes de commande</span> <br />
-                                                <span class="text-sm text-gray-500">Veuillez actualiser cette page après avoir modifié
+                                                <span class="text-sm text-gray-500">Veuillez actualiser cette page
+                                                    après avoir modifié
                                                     les notes de commande.</span>
                                             </x-slot>
                                         </x-tooltip>
@@ -389,14 +397,13 @@
                                         </span>
                                         Note personnalisée
                                     </label>
-                                    <textarea name="custom_note"
-                                        class="textarea"
-                                        rows="3" placeholder="Ajoutez ici des informations spécifiques à cette commande...">{{ old('note_personnalisee', $cde->custom_note) }}</textarea>
-                                        <x-toggle name="save_custom_note" id="save_custom_note" :checked="old('save_custom_note'
-                                        )" :label="'Enregistrer cette note personnalisée pour les prochaines commandes ?'" class="toggle-class" />
-                                            @error('custom_note')
-                                                <span class="text-red-500 text-sm">{{ $message }}</span>
-                                            @enderror
+                                    <textarea name="custom_note" class="textarea" rows="3"
+                                        placeholder="Ajoutez ici des informations spécifiques à cette commande...">{{ old('note_personnalisee', $cde->custom_note) }}</textarea>
+                                    <x-toggle name="save_custom_note" id="save_custom_note" :checked="old('save_custom_note')"
+                                        :label="'Enregistrer cette note personnalisée pour les prochaines commandes ?'" class="toggle-class" />
+                                    @error('custom_note')
+                                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                                    @enderror
                                 </div>
                             </div>
 

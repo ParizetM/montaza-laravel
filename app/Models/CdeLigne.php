@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CdeLigne extends Model
 {
@@ -42,8 +44,13 @@ class CdeLigne extends Model
     {
         return $this->belongsTo(DdpCdeStatut::class);
     }
-    public function typeExpedition()
+    public function typeExpedition(): BelongsTo
     {
         return $this->belongsTo(TypeExpedition::class);
+    }
+
+    public function mouvementsStock(): HasMany
+    {
+        return $this->hasMany(MouvementStock::class);
     }
 }

@@ -21,7 +21,7 @@
                 prix</a>
         </div>
     </x-slot>
-
+    <x-changements-stock />
     <div class="max-w-8xl py-4 mx-auto sm:px-4 lg:px-6">
         <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-6 rounded-md shadow-md ">
             <div class="flex items-center mb-12">
