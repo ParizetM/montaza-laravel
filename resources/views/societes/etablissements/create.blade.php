@@ -30,7 +30,7 @@
                         </div>
                         <div class="col-span-1 ">
                             <x-input-label for="code_postal" :value="__('Code Postal')" />
-                            <x-text-input id="code_postal" class="block mt-1 w-1/3" type="text" name="code_postal" placeholder=" (Optionnel) 44570"
+                            <x-text-input id="code_postal" class="block mt-1 w-full" type="text" name="code_postal" placeholder=" (Optionnel) 44570"
                                 value="{{ old('code_postal') }}" />
                             @error('code_postal')
                                 <span class="text-red-500 text-sm">{{ $message }}</span>
@@ -38,7 +38,7 @@
                         </div>
                         <div class="col-span-3 ">
                             <x-input-label for="ville" :value="__('Ville')" />
-                            <x-text-input id="ville" class="block mt-1 w-full" type="text" name="ville" placeholder="(Optionnel) Trignac"
+                            <x-text-input id="ville" class="block mt-1 w-1/3" type="text" name="ville" placeholder="(Optionnel) Trignac"
                                 value="{{ old('ville') }}" />
                             @error('ville')
                                 <span class="text-red-500 text-sm">{{ $message }}</span>
