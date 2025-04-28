@@ -129,7 +129,7 @@
                                         </small>
                                     </div>
                                     <x-text-input id="siren" class="block mt-1 w-full" type="text" name="siren"
-                                        maxlength="11" minlength="9" placeholder="XXXXXXXXX"
+                                        minlength="9" placeholder="XXXXXXXXX"
                                         value="{{ old('siren', $societe->siren) }}" required />
                                     @error('siren')
                                         <span class="text-red-500 text-sm">{{ $message }}</span>
@@ -146,7 +146,7 @@
                                 <div class="col-span-1">
                                     <x-input-label for="numero_tva" :value="__('Numéro TVA')" />
                                     <x-text-input id="numero_tva" class="block mt-1 w-full" type="text"
-                                        name="numero_tva" maxlength="13" placeholder="FRXX XXXX XXXX"
+                                        name="numero_tva" placeholder="FRXX XXXX XXXX"
                                         value="{{ old('numero_tva', $societe->numero_tva) }}" required />
                                     @error('numero_tva')
                                         <span class="text-red-500 text-sm">{{ $message }}</span>

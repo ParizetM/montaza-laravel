@@ -337,6 +337,7 @@ class MatiereController extends Controller
             'epaisseur' => 'nullable|string|max:50',
             'quantite' => 'required|integer',
             'stock_min' => 'required|integer',
+            'ref_valeur_unitaire' => 'nullable|numeric',
         ]);
         $lastref = Matiere::max('id') + 1;
         $dn = $request->input('dn') ?: null;
@@ -368,6 +369,7 @@ class MatiereController extends Controller
                 'date_dernier_achat' => null,
                 'quantite' => $request->input('quantite'),
                 'stock_min' => $request->input('stock_min'),
+                'ref_valeur_unitaire' => $request->input('ref_valeur_unitaire'),
             ]
         );
 

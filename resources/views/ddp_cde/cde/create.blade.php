@@ -307,7 +307,7 @@
                                                     </div>
                                                 </td>
                                                 <td class="text-right py-2">
-                                                    <button class="float-right"
+                                                    <button class="float-right" type="button"
                                                         data-matiere-id="{{ $cde_ligne->matiere_id }}"
                                                         onclick="removeMatiere(event)">
                                                         <x-icons.close size="2" class="icons"
@@ -370,7 +370,7 @@
                                                     </div>
                                                 </td>
                                                 <td class="text-right py-2">
-                                                    <button class="float-right"
+                                                    <button class="float-right" type="button"
                                                         data-matiere-id="{{ $cde_ligne->ligne_autre_id }}"
                                                         onclick="removeMatiere(event)">
                                                         <x-icons.close size="2" class="icons"
@@ -1082,7 +1082,12 @@ function liveSearch() {
                     console.error('Erreur lors de la sauvegarde des données :', error);
                 });
         }
-
+        function removeMatiere(event) {
+            const matiereId = event.target.getAttribute('data-matiere-id');
+            const row = event.target.closest('tr');
+            row.remove();
+            saveChanges();
+        }
         document.addEventListener('DOMContentLoaded', function() {
             // Event listener for famille selection change
             document.getElementById('famille_id_search').addEventListener('change', function() {

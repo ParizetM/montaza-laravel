@@ -4,8 +4,7 @@
     </a>
     <div class="p-6 ">
         <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Ajouter une Matière</h2>
-        <form method="POST" action="{{ route('matieres.quickStore',$modal_id) }}"
-            onsubmit="handleFormSubmit(event)"
+        <form method="POST" action="{{ route('matieres.quickStore', $modal_id) }}" onsubmit="handleFormSubmit(event)"
             class="w-full text-gray-900 dark:text-gray-100" id="quick-create-form">
             @csrf
             <div class="mb-4">
@@ -28,6 +27,7 @@
                     <x-input-label for="sous_famille_id-{{ $modal_id }}">Sous Famille</x-input-label>
                     <div class="flex">
                         <select name="sous_famille_id" id="sous_famille_id-{{ $modal_id }}"
+                        onchange="updateQuantiteType()"
                             class="select-left w-full" required>
                             <option value="" disabled selected>Sélectionner d'abord une famille</option>
                         </select>
@@ -42,7 +42,8 @@
             {{-- STANDARD --}}
             <div class="mb-4 flex">
                 <div class="mb-4 w-fit mr-2">
-                    <x-input-label for="dossier_standard_id-{{ $modal_id }}" optionnel class="whitespace-nowrap">Dossier Standard</x-input-label>
+                    <x-input-label for="dossier_standard_id-{{ $modal_id }}" optionnel
+                        class="whitespace-nowrap">Dossier Standard</x-input-label>
                     <select name="dossier_standard_id" id="dossier_standard_id-{{ $modal_id }}" class="select"
                         onchange="updateStandardSelect(this.value)">
                         <option value="" disabled selected>Sélectionner un dossier</option>
@@ -66,17 +67,25 @@
                 </div>
             </div>
             <div class="mb-4 flex">
-                <div class=" w-full mr-2">
+                <div class=" mr-2">
                     <x-input-label for="quantite" value="{{ __('Quantité') }}" />
-                    <x-text-input type="number" name="quantite" id="quantite" class="mt-1 block w-full"
-                        value="0" required />
+                    <x-text-input type="number" name="quantite" id="quantite" class="mt-1 block" value="0"
+                        required />
+                </div>
+                <div class="hidden mr-2">
+                    <x-input-label for="ref_valeur_unitaire-{{ $modal_id }}"
+                        value="{{ __('Valeur Réf Unitaire') }}" />
+                    <x-text-input type="number" name="ref_valeur_unitaire"
+                        id="ref_valeur_unitaire-{{ $modal_id }}" class="mt-1 block w-full " value="0"
+                        required />
                 </div>
                 <div class="w-1/4">
                     <x-input-label for="unite_id">Unité</x-input-label>
-                    <select name="unite_id" id="unite_id" class="mt-1 pt-4 select" required>
-                        <option value="" disabled selected>Sélectionner une unité</option>
+                    <select name="unite_id" id="unite_id" class="mt-1 py-3 select" required>
+                        <option value="" disabled selected>Sélectionner</option>
                         @foreach ($unites as $unite)
-                            <option value="{{ $unite->id }}" title="{{ $unite->full }}">{{ $unite->short }}</option>
+                            <option value="{{ $unite->id }}" title="{{ $unite->full }}">{{ $unite->short }}
+                            </option>
                         @endforeach
                     </select>
                 </div>
@@ -91,10 +100,12 @@
             </div>
             <div class="mb-4">
                 <x-input-label for="stock_min" value="{{ __('Stock Minimum') }}" />
-                <x-text-input type="number" name="stock_min" id="stock_min" class="mt-1 block w-full" value="0" required />
+                <x-text-input type="number" name="stock_min" id="stock_min" class="mt-1 block w-full"
+                    value="0" required />
             </div>
             <div class="col-span-2 flex justify-between">
-                <button type="button" class="btn" x-on:click="$dispatch('close')" id="quick-create-matiere-cancel-{{ $modal_id }}">Annuler</button>
+                <button type="button" class="btn" x-on:click="$dispatch('close')"
+                    id="quick-create-matiere-cancel-{{ $modal_id }}">Annuler</button>
                 <button type="submit" class="btn">Ajouter</button>
             </div>
 
@@ -120,7 +131,7 @@
                             <select name="famille_id" id="addSousFamille-famille_id_hidden-{{ $modal_id }}"
                                 class="hidden">
                                 @foreach ($familles as $famille)
-                                    <option value="{{ $famille->id }}" >{{ $famille->nom }}</option>
+                                    <option value="{{ $famille->id }}">{{ $famille->nom }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -130,7 +141,8 @@
                                 required />
                         </div>
                         <div class="col-span-2 flex justify-between">
-                            <button type="button" class="btn" x-on:click="$dispatch('close')" id="addSousFamille-button_cancel-{{ $modal_id }}" > Annuler</button>
+                            <button type="button" class="btn" x-on:click="$dispatch('close')"
+                                id="addSousFamille-button_cancel-{{ $modal_id }}"> Annuler</button>
                             <button type="submit" class="btn">Ajouter</button>
                         </div>
                     </form>
@@ -186,6 +198,7 @@
                     var option = document.createElement('option');
                     option.value = sousFamille.id;
                     option.textContent = sousFamille.nom;
+                    option.setAttribute('type_affichage_stock', sousFamille.type_affichage_stock);
                     sousFamilleSelect.appendChild(option);
                 });
                 document.getElementById('addSousFamille-{{ $modal_id }}').disabled = false;
@@ -197,6 +210,19 @@
                 console.error('Erreur lors de la récupération des sous familles :', error);
             });
     }
+
+    function updateQuantiteType() {
+        var sousFamilleSelect = document.getElementById('sous_famille_id-{{ $modal_id }}');
+        var selectedOption = sousFamilleSelect.options[sousFamilleSelect.selectedIndex];
+        var valeurRefUnitaireDiv = document.getElementById('ref_valeur_unitaire-{{ $modal_id }}').parentElement;
+
+        if (selectedOption && selectedOption.getAttribute('type_affichage_stock') === '2') {
+            valeurRefUnitaireDiv.classList.remove('hidden');
+        } else {
+            valeurRefUnitaireDiv.classList.add('hidden');
+        }
+    }
+
     function updateStandardSelect(dossierId) {
         var standardSelect = document.getElementById('standard_id-{{ $modal_id }}');
         standardSelect.innerHTML = '<option value="" disabled selected>Sélectionner un standard</option>';
@@ -234,6 +260,7 @@
                 console.error('Erreur lors de la récupération des versions :', error);
             });
     }
+
     function handleFormSubmit(event) {
         event.preventDefault();
         var form = event.target;
@@ -262,4 +289,3 @@
             });
     }
 </script>
-

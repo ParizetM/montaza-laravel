@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\MatiereMouvement;
+use Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -24,6 +25,7 @@ class Matiere extends Model
         'material_id',
     ];
 
+
     protected static function booted()
     {
         static::created(function ($matiere) {
@@ -32,7 +34,32 @@ class Matiere extends Model
                 'quantite' => 0,
                 'valeur_unitaire' => 0,
             ]);
+            self::logChange($matiere, 'creating');
+
         });
+
+        // Enregistrer avant la mise à jour d'un modèle
+        static::updating(function ($model): void {
+            if ($model->isDirty('remember_token')) {
+                return;
+            }
+            self::logChange($model, 'updating');
+        });
+
+        // Enregistrer avant la suppression d'un modèle
+        static::deleting(function ($model): void {
+            self::logChange($model, 'deleting');
+        });
+    }
+    protected static function logChange(Model $model, string $event): void
+    {
+        ModelChange::create([
+            'user_id' => Auth::id(),
+            'model_type' => 'matiere',
+            'before' => $model->getOriginal(),
+            'after' => $model->getAttributes(),
+            'event' => $event,
+        ]);
     }
     public function societes()
     {

@@ -19,7 +19,8 @@
                 @endif
                 <ul class="text-sm space-y-1">
                     @foreach ($matiere->stock as $stock)
-                        <li>- {{ $stock->quantite }} x {{ $stock->valeur_unitaire }} {{ $matiere->unite->short }}</li>
+                        <li>- {{ formatNumber($stock->quantite) }} x {{ formatNumber($stock->valeur_unitaire) }} {{ $matiere->unite->short }}</li>
+
                     @endforeach
                 </ul>
 

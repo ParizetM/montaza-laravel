@@ -234,7 +234,14 @@ class CdeController extends Controller
                     ]
                 );
             } else {
-                $cde->cdeLignes()->updateOrCreate([
+                // Check if a line with this position already exists and delete it
+                $existingLine = $cde->cdeLignes()->where('poste', $poste)->first();
+                if ($existingLine) {
+                    $existingLine->delete();
+                }
+
+                // Create the new line
+                $cde->cdeLignes()->create([
                     'poste' => $poste++,
                     'matiere_id' => $matiere['id'],
                     'quantite' => $matiere['quantite'],
@@ -706,7 +713,7 @@ class CdeController extends Controller
                         $matiere->id,
                         'entree',
                         $ligne->quantite,
-                        null,
+                        $matiere->ref_valeur_unitaire ?? null,
                         'Livraison commande - ' . $cde->code
                     );
                 } catch (Exception $e) {

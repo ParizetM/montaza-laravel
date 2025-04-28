@@ -100,42 +100,52 @@
                                 <span class="text-red-500 text-sm">{{ $message }}</span>
                             @enderror
                         </div>
-                        <x-tooltip slot_tooltip="Le SIREN est obligatoire pour les clients, mais optionnel pour les fournisseurs" position="top" class="text-gray-500">
-                            <x-slot name="slot_item">
 
                         <div class="col-span-1">
-                                    <div class="flex items-center justify-between">
-                                        <x-input-label for="siren" :value="__('SIREN')" />
-                                        <small>
-                                            <a href="#" id="verify-siren" class="text-blue-500">Vérifier le
-                                                SIREN</a>
-                                            <script>
-                                                document.getElementById('verify-siren').addEventListener('click', function(event) {
-                                                    event.preventDefault();
-                                                    var siren = document.getElementById('siren').value;
-                                                    var url = 'https://www.infogreffe.fr/entreprise-societe/' + siren;
-                                                    window.open(url, '_blank');
-                                                });
-                                            </script>
-                                        </small>
-                                    </div>
-                                <x-text-input id="siren" class="block mt-1 w-full" type="text" name="siren"
-                                    maxlength="11" minlength="9" placeholder="XXXXXXXXX" value="{{ old('siren') }}"
-                                    required />
-                                @error('siren')
-                                    <span class="text-red-500 text-sm">{{ $message }}</span>
-                                @enderror
+                            <div class="flex items-center justify-between">
+                                <x-input-label for="siren" :value="__('SIREN')" />
+                                <small>
+                                    <a href="#" id="verify-siren" class="text-blue-500">Vérifier le
+                                        SIREN</a>
+                                    <script>
+                                        document.getElementById('verify-siren').addEventListener('click', function(event) {
+                                            event.preventDefault();
+                                            var siren = document.getElementById('siren').value;
+                                            var url = 'https://www.infogreffe.fr/entreprise-societe/' + siren;
+                                            window.open(url, '_blank');
+                                        });
+                                    </script>
+                                </small>
+                            </div>
+                            <x-tooltip position="bottom" class="text-gray-500 w-full">
+                                <x-slot name="slot_tooltip">
+                                    <p>Le SIREN est obligatoire pour les clients, mais optionnel pour les fournisseurs
+                                        <br /> Le siren doit être composé de <strong>9</strong> chiffres</p>
+                                    </x-slot>
+
+                                    <x-slot name="slot_item">
+
+                                        <x-text-input id="siren" class="block mt-1 w-full" type="text"
+                                            name="siren" minlength="9" placeholder="XXXXXXXXX"
+                                            value="{{ old('siren') }}" required />
+                                    </x-slot>
+                            </x-tooltip>
+                            @error('siren')
+                                <span class="text-red-500 text-sm">{{ $message }}</span>
+                            @enderror
 
                         </div>
-                    </x-slot>
-                    </x-tooltip>
 
-                        <x-tooltip slot_tooltip="Le numéro TVA est obligatoire pour les clients, mais optionnel pour les fournisseurs" position="top" class="text-gray-500">
+
+                        <x-tooltip
+                            slot_tooltip="Le numéro TVA est obligatoire pour les clients, mais optionnel pour les fournisseurs"
+                            position="top" class="text-gray-500">
                             <x-slot name="slot_item">
                                 <div class="col-span-1">
                                     <x-input-label for="numero_tva" :value="__('Numéro TVA')" />
-                                    <x-text-input id="numero_tva" class="block mt-1 w-full" type="text" name="numero_tva"
-                                        maxlength="13" placeholder="FRXX XXXX XXXX" value="{{ old('numero_tva') }}" required />
+                                    <x-text-input id="numero_tva" class="block mt-1 w-full" type="text"
+                                        name="numero_tva" placeholder="FRXX XXXX XXXX"
+                                        value="{{ old('numero_tva') }}" required />
                                     @error('numero_tva')
                                         <span class="text-red-500 text-sm">{{ $message }}</span>
                                     @enderror
