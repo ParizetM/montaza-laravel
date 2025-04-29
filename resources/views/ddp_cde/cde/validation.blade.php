@@ -399,11 +399,14 @@
                                     </label>
                                     <textarea name="custom_note" class="textarea" rows="3"
                                         placeholder="Ajoutez ici des informations spécifiques à cette commande...">{{ old('note_personnalisee', $cde->custom_note) }}</textarea>
-                                    <x-toggle name="save_custom_note" id="save_custom_note" :checked="old('save_custom_note')"
-                                        :label="'Enregistrer cette note personnalisée pour les prochaines commandes ?'" class="toggle-class" />
+                                    <div class="hidden" id="save_custom_note_div">
+                                        <x-toggle name="save_custom_note" id="save_custom_note" :checked="old('save_custom_note')"
+                                            :label="'Enregistrer cette note personnalisée pour les prochaines commandes ?'" class="toggle-class" />
+                                    </div>
                                     @error('custom_note')
                                         <span class="text-red-500 text-sm">{{ $message }}</span>
                                     @enderror
+
                                 </div>
                             </div>
 
@@ -665,8 +668,24 @@
                 adresse_livraison.classList.add('hidden');
             }
         }
+
+
         document.addEventListener('DOMContentLoaded', function() {
             const typeExpedition = document.querySelector('select[name="type_expedition_id"]');
+            const customNoteTextarea = document.querySelector('textarea[name="custom_note"]');
+            const saveCustomNoteToggleParent = document.getElementById('save_custom_note_div');
+
+            if (customNoteTextarea.value.trim() !== '') {
+                saveCustomNoteToggleParent.classList.remove('hidden');
+            }
+
+            customNoteTextarea.addEventListener('input', function() {
+                if (customNoteTextarea.value.trim() !== '') {
+                    saveCustomNoteToggleParent.classList.remove('hidden');
+                } else {
+                    saveCustomNoteToggleParent.classList.add('hidden');
+                }
+            });
             changeTypeExpedition(typeExpedition);
             changeConditionPaiement();
         });

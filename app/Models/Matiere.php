@@ -100,7 +100,11 @@ class Matiere extends Model
     }
     public function typeAffichageStock(): int
     {
-        return $this->sousFamille->type_affichage_stock;
+        if (is_numeric($this->ref_valeur_unitaire) && $this->ref_valeur_unitaire > 0) {
+            return 2; // Affichage par valeur unitaire
+        } else {
+            return 1; // Affichage par quantité et valeur unitaire
+        }
     }
     public function quantite()
     {

@@ -21,7 +21,165 @@
                 prix</a>
         </div>
     </x-slot>
-    <x-changements-stock />
+    {{-- VOLET STOCK --}}
+    @if ($cde->IS_STOCKE == null)
+        <div class="fixed top-1/2 right-0 transform -translate-y-1/2" x-data>
+            <button @click="$dispatch('open-volet', 'changements-stock')"
+                class="btn-select-left flex items-center px-2 py-8 bg-gray-200 dark:bg-gray-800 shadow-lg hover:bg-gray-300 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-700">
+                <x-icon :size="1" type="arrow_back" />
+                <span
+                    class=" whitespace-nowrap font-medium transform -rotate-90 inline-block w-1 mt-30 -mb-7">Changements
+                    stock</span>
+            </button>
+
+        </div>
+        <x-volet-modal name="changements-stock" direction="right" x-init="$dispatch('open-volet', 'changements-stock')" show>
+            <div class="p-2 text-gray-900 dark:text-gray-100">
+                <a @click="$dispatch('close')">
+                    <x-icons.close class="float-right mb-1 icons" size="1.5" unfocus />
+                </a>
+
+                <div class="p-6">
+                    <h2 class="text-lg font-semibold mb-4 text-center">Mouvements de stock</h2>
+
+                    <form id="stock-form" method="POST" action="{{ route('cde.index', $cde->id) }}">
+                        @csrf
+                        <table class="table-auto w-full border-collapse border border-gray-300 dark:border-gray-700">
+                            <thead>
+                                {{-- <tr class="bg-gray-100 dark:bg-gray-700">
+                                    <th class="px-4 py-2 text-left">Matière</th>
+                                    <th class="px-4 py-2 text-right">Stock actuel</th>
+                                    <th class="px-4 py-2 text-right">Mvt. stock</th>
+                                </tr> --}}
+                            </thead>
+                            <tbody>
+                                @foreach ($cde->cdeLignes as $ligne)
+                                    @if ($ligne->ddpCdeStatut->nom != 'Annulée')
+                                        <tr
+                                            class="border-b border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800">
+                                            <td>{{ $ligne->poste }}</td>
+                                            <td colspan="3" class="p-0">
+                                                <div x-data="{ open: false }" class="w-full">
+                                                    <button type="button" @click="open = !open"
+                                                        class="w-full p-3 text-left flex justify-between items-center focus:outline-none">
+                                                        <span class="font-medium">{{ $ligne->matiere->ref_interne }} {{ $ligne->matiere->designation }}
+
+                                                        </span>
+                                                        <x-icon size="1.5" type="arrow_back"
+                                                            class="transform transition-transform duration-200"
+                                                            class="{'rotate-90': open, '-rotate-90': !open}" />
+                                                    </button>
+
+                                                    <div x-show="open" x-transition
+                                                        class="p-3 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+                                                        <div class="grid grid-cols-1 gap-4">
+                                                            @if ($ligne->matiere->typeAffichageStock() === 2)
+                                                                <!-- Affichage par valeur unitaire -->
+                                                                <div class="flex items-center justify-between mb-2">
+                                                                    <span class="font-medium">Stock valorisé total:
+                                                                        {{ formatNumberArgent($ligne->matiere->quantite()) }}</span>
+                                                                    <div class="text-right">
+                                                                        <span
+                                                                            class="block text-sm text-gray-500 dark:text-gray-400">Quantité
+                                                                            commandée:
+                                                                            {{ formatNumber($ligne->quantite) }}
+                                                                            {{ $ligne->matiere->unite->short }}</span>
+                                                                    </div>
+                                                                </div>
+                                                                <div
+                                                                    class="p-2 bg-white dark:bg-gray-800 rounded shadow">
+                                                                    <div class="mb-2 font-medium">Entrez la valeur
+                                                                        unitaire du mouvement :</div>
+                                                                    <input type="number" step="0.01"
+                                                                        name="stock[{{ $ligne->matiere_id }}][valeur]"
+                                                                        class="form-input w-full md:w-1/3 rounded"
+                                                                        placeholder="Valeur unitaire">
+                                                                    <input type="hidden"
+                                                                        name="stock[{{ $ligne->matiere_id }}][quantite]"
+                                                                        value="{{ $ligne->quantite }}">
+                                                                </div>
+                                                            @else
+                                                                <!-- Affichage standard par quantité -->
+                                                                <div class="flex items-center justify-between mb-2">
+                                                                    <span class="font-medium">Stock actuel:
+                                                                        {{ formatNumber($ligne->matiere->quantite()) }}
+                                                                        {{ $ligne->matiere->unite->short }}</span>
+                                                                    <div class="text-right">
+                                                                        <span
+                                                                            class="block text-sm text-gray-500 dark:text-gray-400">Quantité
+                                                                            commandée:
+                                                                            {{ formatNumber($ligne->quantite) }}
+                                                                            {{ $ligne->matiere->unite->short }}</span>
+                                                                    </div>
+                                                                </div>
+
+                                                                @foreach ($ligne->matiere->stock as $stock)
+                                                                    <div
+                                                                        class="p-2 bg-white dark:bg-gray-800 rounded shadow">
+                                                                        <div class="flex justify-between items-center">
+                                                                            <div>
+                                                                                <span class="text-sm">Stock
+                                                                                    #{{ $stock->id }}</span>
+                                                                                <span
+                                                                                    class="block text-xs text-gray-500 dark:text-gray-400">
+                                                                                    Qté:
+                                                                                    {{ formatNumber($stock->quantite) }}
+                                                                                    / PU:
+                                                                                    {{ formatNumberArgent($stock->valeur_unitaire) }}
+                                                                                </span>
+                                                                            </div>
+                                                                            <div>
+                                                                                <input type="number" step="0.01"
+                                                                                    name="stock[{{ $ligne->matiere_id }}][items][{{ $stock->id }}]"
+                                                                                    class="form-input rounded"
+                                                                                    placeholder="Qté à ajouter">
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                @endforeach
+
+                                                                <div
+                                                                    class="p-2 bg-white dark:bg-gray-800 rounded shadow border-t-2 border-blue-500">
+                                                                    <div class="font-medium mb-2">Nouveau stock</div>
+                                                                    <div class="grid grid-cols-2 gap-4">
+                                                                        <div>
+                                                                            <label
+                                                                                class="block text-sm mb-1">Quantité</label>
+                                                                            <input type="number" step="0.01"
+                                                                                name="stock[{{ $ligne->matiere_id }}][new][quantite]"
+                                                                                class="form-input w-full rounded">
+                                                                        </div>
+                                                                        <div>
+                                                                            <label class="block text-sm mb-1">Valeur
+                                                                                unitaire</label>
+                                                                            <input type="number" step="0.01"
+                                                                                name="stock[{{ $ligne->matiere_id }}][new][valeur_unitaire]"
+                                                                                class="form-input w-full rounded">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endif
+                                @endforeach
+                            </tbody>
+                        </table>
+                        <div class="mt-4 flex justify-end">
+                            <button type="submit" class="btn">Enregistrer les mouvements de stock</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </x-volet-modal>
+    @else
+        @if ($cde->statut->id == 5)
+            <x-changements-stock :changements_stock="$changements_stock" />
+        @endif
+    @endif
     <div class="max-w-8xl py-4 mx-auto sm:px-4 lg:px-6">
         <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-6 rounded-md shadow-md ">
             <div class="flex items-center mb-12">
@@ -64,7 +222,8 @@
                                                 </div>
                                                 <div class="flex flex-col">
                                                     <span class="text-xs">Réf. Fournisseur</span>
-                                                    <span class="font-bold">{{ $ligne->ref_fournisseur ?? '-' }}</span>
+                                                    <span
+                                                        class="font-bold">{{ $ligne->ref_fournisseur ?? '-' }}</span>
 
                                                 </div>
                                             </div>

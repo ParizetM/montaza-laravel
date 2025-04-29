@@ -6,16 +6,16 @@
     id="quickMatiereModalBtn-{{ $quickMatiereModalId }}"
     x-on:click.prevent="$dispatch('open-modal', '{{ $quickMatiereModalId }}')"
     onclick="showquickMatiereModal('{{ $quickMatiereModalId }}')">
-    Ajouter une Matière
+    Nouvelle Matière
 </button>
 {{-- Script temporaire !!!!!!!!!!!!!!!!!
  A RETIRER--}}
- {{--
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('quickMatiereModalBtn-{{ $quickMatiereModalId }}').click();
     });
-</script> --}}
+</script>
 <!-- Modal -->
 <x-modal id="{{ $quickMatiereModalId }}" name="{{ $quickMatiereModalId }}" title="Quick Create Matiere">
     <div id="modal-body-{{ $quickMatiereModalId }}"></div>

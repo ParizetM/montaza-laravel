@@ -31,21 +31,26 @@
                     <h1 class="text-xl font-semibold mb-2">Sélection des matières</h1>
                     <div class="flex flex-wrap gap-2">
                         <!-- Famille selection dropdown -->
-                        <select name="famille" id="famille_id_search"
-                            class="px-4 py-2 mr-2 border select mb-2 sm:mb-0 w-fit">
-                            <option value="" selected>{!! __('Tous les types&nbsp;&nbsp;') !!}</option>
-                            @foreach ($familles as $famille)
-                                <option value="{{ $famille->id }}"
-                                    {{ request('famille') == $famille->id ? 'selected' : '' }}>
-                                    {!! $famille->nom . '&nbsp;&nbsp;' !!}
-                                </option>
-                            @endforeach
-                        </select>
-                        <!-- Sous-famille selection dropdown -->
-                        <select name="sous_famille" id="sous_famille_id_search"
-                            class="px-4 py-2 mr-2 border select mb-2 sm:mb-0 w-fit">
-                            <option value="" selected>{!! __('Toutes les sous-familles &nbsp;&nbsp;') !!}</option>
-                        </select>
+                        <div class="flex items-center gap-2 justify-between flex-wrap w-full">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <select name="famille" id="famille_id_search"
+                                    class="px-4 py-2 border select mb-2 sm:mb-0 w-fit">
+                                    <option value="" selected>{!! __('Tous les types&nbsp;&nbsp;') !!}</option>
+                                    @foreach ($familles as $famille)
+                                        <option value="{{ $famille->id }}"
+                                            {{ request('famille') == $famille->id ? 'selected' : '' }}>
+                                            {!! $famille->nom . '&nbsp;&nbsp;' !!}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <!-- Sous-famille selection dropdown -->
+                                <select name="sous_famille" id="sous_famille_id_search"
+                                    class="px-4 py-2 border select mb-2 sm:mb-0 w-fit">
+                                    <option value="" selected>{!! __('Toutes les sous-familles &nbsp;&nbsp;') !!}</option>
+                                </select>
+                            </div>
+                            <x-quick-matiere class="justify-end" />
+                        </div>
                         <!-- Search bar for materials -->
                         <div class="flex w-full">
                             <x-tooltip position="bottom" class="w-full">
@@ -55,7 +60,8 @@
                                 <x-slot name="slot_tooltip">
                                     <ul class="whitespace-nowrap">
                                         <li>Recherchez par mots-clés</li>
-                                        <li>Pour une <strong>référence fournisseur</strong>, remplacez les espaces par un <strong>"_"</strong></li>
+                                        <li>Pour une <strong>référence fournisseur</strong>, remplacez les espaces par
+                                            un <strong>"_"</strong></li>
                                         <li>Pour un <strong>DN</strong>, tapez "<strong>dn25</strong>"</li>
                                         <li>Pour une <strong>épaisseur</strong>, tapez "<strong>ep10</strong>"</li>
                                     </ul>
@@ -89,9 +95,6 @@
                             </tbody>
                         </table>
 
-                    </div>
-                    <div class="flex justify-center">
-                        <x-quick-matiere />
                     </div>
                 </div>
                 {{--
@@ -584,36 +587,37 @@
         }
 
         let debounceSearchPrixTimeout = null;
-let currentPrixSearchController = null;
+        let currentPrixSearchController = null;
 
-function liveSearch() {
-    clearTimeout(debounceSearchPrixTimeout);
+        function liveSearch() {
+            clearTimeout(debounceSearchPrixTimeout);
 
-    debounceSearchPrixTimeout = setTimeout(() => {
-        const searchbar = document.getElementById('searchbar');
-        const search = searchbar.value;
-        const familleId = document.getElementById('famille_id_search').value;
-        const sousFamilleId = document.getElementById('sous_famille_id_search').value;
-        const matiereTable = document.getElementById('matiere-table');
-        const societeContactSelect = document.getElementById('societe_contact_select');
-        const societe_select = document.getElementById('societe_select');
+            debounceSearchPrixTimeout = setTimeout(() => {
+                const searchbar = document.getElementById('searchbar');
+                const search = searchbar.value;
+                const familleId = document.getElementById('famille_id_search').value;
+                const sousFamilleId = document.getElementById('sous_famille_id_search').value;
+                const matiereTable = document.getElementById('matiere-table');
+                const societeContactSelect = document.getElementById('societe_contact_select');
+                const societe_select = document.getElementById('societe_select');
 
-        // Vérifie que le destinataire est bien sélectionné
-        if (societeContactSelect.value === "") {
-            searchbar.classList.add('border-red-500', 'dark:border-red-600', 'border-2', 'focus:border-red-500', 'dark:focus:border-red-600');
-            showFlashMessageFromJs('Veuillez d\'abord sélectionner un destinataire', 2000, 'error');
-            searchbar.blur();
-            societe_select.focus();
-            return;
-        }
+                // Vérifie que le destinataire est bien sélectionné
+                if (societeContactSelect.value === "") {
+                    searchbar.classList.add('border-red-500', 'dark:border-red-600', 'border-2',
+                        'focus:border-red-500', 'dark:focus:border-red-600');
+                    showFlashMessageFromJs('Veuillez d\'abord sélectionner un destinataire', 2000, 'error');
+                    searchbar.blur();
+                    societe_select.focus();
+                    return;
+                }
 
-        // Annule la requête précédente si elle existe
-        if (currentPrixSearchController) {
-            currentPrixSearchController.abort();
-        }
+                // Annule la requête précédente si elle existe
+                if (currentPrixSearchController) {
+                    currentPrixSearchController.abort();
+                }
 
-        // Spinner de chargement
-        matiereTable.innerHTML = `
+                // Spinner de chargement
+                matiereTable.innerHTML = `
             <tr>
                 <td colspan="100">
                     <div id="loading-spinner" class="mt-8 inset-0 bg-none bg-opacity-75 flex items-center justify-center z-50 h-32 w-full">
@@ -633,39 +637,47 @@ function liveSearch() {
             </tr>
         `;
 
-        currentPrixSearchController = new AbortController();
-        const { signal } = currentPrixSearchController;
+                currentPrixSearchController = new AbortController();
+                const {
+                    signal
+                } = currentPrixSearchController;
 
-        const url = `/matieres/quickSearch?search=${encodeURIComponent(search)}&famille=${familleId}&sous_famille=${sousFamilleId}&with_last_price=1&societe=${societe_select.value}`;
-        console.log(url);
+                const url =
+                    `/matieres/quickSearch?search=${encodeURIComponent(search)}&famille=${familleId}&sous_famille=${sousFamilleId}&with_last_price=1&societe=${societe_select.value}`;
+                console.log(url);
 
-        fetch(url, { signal })
-            .then(response => {
-                if (!response.ok) throw new Error('Erreur lors de la récupération des données');
-                return response.json();
-            })
-            .then(data => {
-                matiereTable.innerHTML = '';
+                fetch(url, {
+                        signal
+                    })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Erreur lors de la récupération des données');
+                        return response.json();
+                    })
+                    .then(data => {
+                        matiereTable.innerHTML = '';
 
-                if (data.matieres && data.matieres.length > 0) {
-                    data.matieres.forEach(matiere => {
-                        const tr = document.createElement('tr');
-                        tr.classList.add(
-                            'border-b', 'border-gray-200', 'dark:border-gray-700',
-                            'rounded-r-md', 'overflow-hidden', 'bg-white', 'dark:bg-gray-800',
-                            'cursor-pointer', 'hover:bg-gray-200', 'dark:hover:bg-gray-700'
-                        );
+                        if (data.matieres && data.matieres.length > 0) {
+                            data.matieres.forEach(matiere => {
+                                const tr = document.createElement('tr');
+                                tr.classList.add(
+                                    'border-b', 'border-gray-200', 'dark:border-gray-700',
+                                    'rounded-r-md', 'overflow-hidden', 'bg-white',
+                                    'dark:bg-gray-800',
+                                    'cursor-pointer', 'hover:bg-gray-200', 'dark:hover:bg-gray-700'
+                                );
 
-                        tr.setAttribute('data-matiere-id', matiere.id || '');
-                        tr.setAttribute('data-matiere-ref', matiere.refInterne || '');
-                        tr.setAttribute('data-matiere-ref-fournisseur', matiere.lastPriceRefFournisseur || '');
-                        tr.setAttribute('data-matiere-designation', matiere.designation || '');
-                        tr.setAttribute('data-prix', matiere.lastPrice || '');
-                        tr.setAttribute('data-matiere-unite', matiere.lastPriceUnite || matiere.Unite || '');
-                        tr.addEventListener('click', addMatiere);
+                                tr.setAttribute('data-matiere-id', matiere.id || '');
+                                tr.setAttribute('data-matiere-ref', matiere.refInterne || '');
+                                tr.setAttribute('data-matiere-ref-fournisseur', matiere
+                                    .lastPriceRefFournisseur || '');
+                                tr.setAttribute('data-matiere-designation', matiere.designation || '');
+                                tr.setAttribute('data-prix', matiere.lastPrice || '');
+                                tr.setAttribute('data-matiere-unite', matiere.lastPriceUnite || matiere
+                                    .Unite || '');
+                                tr.addEventListener('click', addMatiere);
 
-                        if (matiere.lastPrice) {
-                            tr.innerHTML = `
+                                if (matiere.lastPrice) {
+                                    tr.innerHTML = `
                                 <td class="text-left px-2">${matiere.refInterne || '-'}</td>
                                 <td class="text-right px-2">${matiere.sousFamille || '-'}</td>
                                 <td class="text-left px-2">${matiere.material || '-'}</td>
@@ -676,35 +688,35 @@ function liveSearch() {
                                 <td class="text-right px-2 font-bold whitespace-nowrap">${matiere.lastPrice_formated + '/' + matiere.Unite}</td>
                                 <td class="text-left px-2">${matiere.lastPriceDate || '-'}</td>
                             `;
-                        } else {
-                            tr.innerHTML = `
+                                } else {
+                                    tr.innerHTML = `
                                 <td class="text-left px-2">${matiere.refInterne || '-'}</td>
                                 <td class="text-right px-2">${matiere.sousFamille || '-'}</td>
                                 <td class="text-left px-2">${matiere.material || '-'}</td>
                                 <td class="text-left px-2">${matiere.designation || '-'}</td>
                                 <td class="text-left px-2">${matiere.dn || '-'}</td>
                                 <td class="text-left px-2">${matiere.epaisseur || '-'}</td>
-                                <td class="text-left px-2">${matiere.quantite + ' ' + matiere.Unite || '-'}</td>
+                                <td class="text-left px-2">${matiere.tooltip || '-'}</td>
                                 <td class="text-center pr-6" colspan="2">Aucun prix</td>
                             `;
-                        }
+                                }
 
-                        matiereTable.appendChild(tr);
-                    });
-                } else {
-                    matiereTable.innerHTML = `
+                                matiereTable.appendChild(tr);
+                            });
+                        } else {
+                            matiereTable.innerHTML = `
                         <tr><td colspan="100" class="text-gray-500 dark:text-gray-400 text-center">Aucune matière trouvée</td></tr>
                     `;
-                }
-            })
-            .catch(error => {
-                if (error.name !== 'AbortError') {
-                    console.error('Erreur lors de la recherche :', error);
-                }
-            });
+                        }
+                    })
+                    .catch(error => {
+                        if (error.name !== 'AbortError') {
+                            console.error('Erreur lors de la recherche :', error);
+                        }
+                    });
 
-    }, 300); // délai de debounce
-}
+            }, 300); // délai de debounce
+        }
 
 
         // Function to add selected material to the chosen list
@@ -1082,6 +1094,7 @@ function liveSearch() {
                     console.error('Erreur lors de la sauvegarde des données :', error);
                 });
         }
+
         function removeMatiere(event) {
             const matiereId = event.target.getAttribute('data-matiere-id');
             const row = event.target.closest('tr');

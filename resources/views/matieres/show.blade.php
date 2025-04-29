@@ -26,7 +26,24 @@
                         <th class="px-4 py-2">Sous Famille</th>
                         <th class="px-4 py-2">Matière</th>
                         <th class="px-4 py-2">Désignation</th>
-                        <th class="px-4 py-2">Qté</th>
+                        <th class="px-4 py-2">Stock</th>
+                        <th class="px-4 py-2">
+                                <x-tooltip position="top" class="w-full">
+                                    <x-slot name="slot_item">
+                                        <div class="w-full flex justify-between">
+
+                                        <span>Réf. unitaire</span>
+                                        <x-icons.question class="icons" size="1" />
+                                    </div>
+
+                                    </x-slot>
+                                    <x-slot name="slot_tooltip">
+                                        <p class="text-sm font-bold">Valeur de référence unitaire de la matière</p>
+                                        <p class="text-sm">Exemple: Longueur standard de stockage, comme 6m ou 12m pour
+                                            un tuyau.</p>
+                                    </x-slot>
+                                </x-tooltip>
+                        </th>
                         <th class="px-4 py-2">Standard</th>
                         <th class="px-4 py-2">DN</th>
                         <th class="px-4 py-2">Ép</th>
@@ -40,6 +57,7 @@
                         <td class="border px-4 py-2">{{ $matiere->designation }}</td>
 
                         <td class="border px-4 py-2"><x-stock-tooltip matiereId="{{ $matiere->id }}" /></td>
+                        <td class="border px-4 py-2">{{ $matiere->ref_valeur_unitaire }}</td>
                         <td class="border px-4 py-2 ">
                             @if ($matiere->standardVersion == null)
                                 <span class="">Aucun standard</span>
@@ -74,15 +92,13 @@
                         </thead>
                         <tbody>
                             @foreach ($fournisseurs as $fournisseur)
-                                <tr
-                                @if ($fournisseur->prix != null && $fournisseur->prix->prix_unitaire != null)
-                                 onclick="window.location.href = '{{ route('matieres.show_prix', ['matiere' => $matiere->id, 'fournisseur' => $fournisseur->id]) }}';"
+                                <tr @if ($fournisseur->prix != null && $fournisseur->prix->prix_unitaire != null) onclick="window.location.href = '{{ route('matieres.show_prix', ['matiere' => $matiere->id, 'fournisseur' => $fournisseur->id]) }}';"
                                  class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer
                                  @else
-                                    class="
-                                 @endif
-                                     h-fit">
-                                    <td class="border px-4 py-2 whitespace-nowrap">{{ $fournisseur->ref_externe ?? 'Aucune référence' }}
+                                    class=" @endif
+                                    h-fit">
+                                    <td class="border px-4 py-2 whitespace-nowrap">
+                                        {{ $fournisseur->ref_externe ?? 'Aucune référence' }}
                                     </td>
                                     <td class="border px-4 py-2 whitespace-nowrap">{{ $fournisseur->raison_sociale }}
                                     </td>
@@ -116,22 +132,23 @@
                         </thead>
                         <tbody>
                             @if ($matiere->mouvementStocks && $matiere->mouvementStocks->count() > 0)
-                            @php
-                                $mouvements = $matiere->mouvementStocks->sortByDesc('created_at');
-                            @endphp
+                                @php
+                                    $mouvements = $matiere->mouvementStocks->sortByDesc('created_at');
+                                @endphp
                                 @foreach ($mouvements as $mouvement)
                                     <tr class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
                                         <td class="border px-4 py-2 whitespace-nowrap">
                                             @if ($mouvement->type_mouvement == 'entree')
-
                                                 <span class="text-red-500">- {{ $mouvement->quantite }}</span>
                                                 @if ($mouvement->valeur_unitaire != null)
-                                                    <span class="text-red-500">x ({{ formatNumberArgent($mouvement->valeur_unitaire) . '/' . $matiere->unite->short }})</span>
+                                                    <span class="text-red-500">x
+                                                        ({{ formatNumber($mouvement->valeur_unitaire) . ' ' . $matiere->unite->short }})</span>
                                                 @endif
                                             @else
                                                 <span class="text-green-500">+ {{ $mouvement->quantite }}</span>
                                                 @if ($mouvement->valeur_unitaire != null)
-                                                    <span class="text-green-500">x ({{ formatNumberArgent($mouvement->valeur_unitaire) . '/' . $matiere->unite->short }})</span>
+                                                    <span class="text-green-500">x
+                                                        ({{ formatNumber($mouvement->valeur_unitaire) . ' ' . $matiere->unite->short }})</span>
                                                 @endif
                                             @endif
                                         </td>

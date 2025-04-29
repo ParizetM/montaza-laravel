@@ -56,6 +56,7 @@ return new class extends Migration
             $table->foreignId('commentaire_id')->constrained('commentaires')->nullable();
             $table->string('custom_note')->nullable();
             $table->json('changement_livraison')->nullable();
+            $table->boolean('IS_STOCKE')->nullable()->default(null);
             $table->timestamps();
         });
         Schema::create('cde_cde_notes', function (Blueprint $table) {

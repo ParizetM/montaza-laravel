@@ -23,6 +23,25 @@
                         </div>
 
                         <div class="col-span-1">
+                            <x-input-label for="societe_type_id" :value="__('Type de Société')" />
+                            <select id="societe_type_id" name="societe_type_id" class="block mt-1 w-full select"
+                                required>
+                                <option value="" disabled
+                                    {{ old('societe_type_id', $societe->societe_type_id) == '' ? 'selected' : '' }}>--
+                                    Choisir un type de société --</option>
+                                @foreach ($societeTypes as $societeType)
+                                    <option value="{{ $societeType->id }}"
+                                        {{ old('societe_type_id', $societe->societe_type_id) == $societeType->id ? 'selected' : '' }}>
+                                        {{ $societeType->nom }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('societe_type_id')
+                                <span class="text-red-500 text-sm">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="col-span-1">
                             <x-input-label for="forme_juridique_id" :value="__('Forme Juridique')" />
                             <select id="forme_juridique_id" name="forme_juridique_id" class="block mt-1 w-full select"
                                 required>
@@ -43,7 +62,7 @@
 
                         <div class="col-span-1">
                             <x-input-label for="code_ape_id" :value="__('Code APE')" />
-                            <select id="code_ape_id" name="code_ape_id" class="block mt-1 w-full select" required>
+                            <select id="code_ape_id" name="code_ape_id" class="block mt-1 w-full select">
                                 <option value="" disabled
                                     {{ old('code_ape_id', $societe->code_ape_id) == '' ? 'selected' : '' }}>-- Choisir
                                     un code APE --</option>
@@ -59,24 +78,7 @@
                             @enderror
                         </div>
 
-                        <div class="col-span-1">
-                            <x-input-label for="societe_type_id" :value="__('Type de Société')" />
-                            <select id="societe_type_id" name="societe_type_id" class="block mt-1 w-full select"
-                                required>
-                                <option value="" disabled
-                                    {{ old('societe_type_id', $societe->societe_type_id) == '' ? 'selected' : '' }}>--
-                                    Choisir un type de société --</option>
-                                @foreach ($societeTypes as $societeType)
-                                    <option value="{{ $societeType->id }}"
-                                        {{ old('societe_type_id', $societe->societe_type_id) == $societeType->id ? 'selected' : '' }}>
-                                        {{ $societeType->nom }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('societe_type_id')
-                                <span class="text-red-500 text-sm">{{ $message }}</span>
-                            @enderror
-                        </div>
+
 
                         <div class="col-span-1">
                             <x-input-label for="telephone" :value="__('Téléphone')" optionnel />
@@ -237,6 +239,9 @@
             const tvaField = document.getElementById('numero_tva');
             const tvaLabel = document.querySelector('label[for="numero_tva"]');
 
+            const apeField = document.getElementById('code_ape_id');
+            const apeLabel = document.querySelector('label[for="code_ape_id"]');
+
             if (selectedType === 2) {
                 sirenField.required = false;
                 sirenLabel.querySelector('small')?.remove(); // Remove the "(Optionnel)" label if it exists
@@ -250,11 +255,19 @@
                 optionalTvaLabel.textContent = '(Optionnel)';
                 tvaLabel.appendChild(optionalTvaLabel);
 
+                apeField.required = false;
+                apeLabel.querySelector('small')?.remove(); // Remove the "(Optionnel)" label if it exists
+                const optionalApeLabel = document.createElement('small');
+                optionalApeLabel.textContent = '(Optionnel)';
+                apeLabel.appendChild(optionalApeLabel);
+
             } else {
                 sirenField.required = true;
                 sirenLabel.querySelector('small')?.remove(); // Remove the "(Optionnel)" label if it exists
                 tvaField.required = true;
                 tvaLabel.querySelector('small')?.remove(); // Remove the "(Optionnel)" label if it exists
+                apeField.required = true;
+                apeLabel.querySelector('small')?.remove(); // Remove the "(Optionnel)" label if it exists
             }
         });
         // Trigger the change event on page load to set the initial state

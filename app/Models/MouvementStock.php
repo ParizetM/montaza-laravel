@@ -15,6 +15,7 @@ class MouvementStock extends Model
         'valeur_unitaire',
         'raison',
         'date',
+        'cde_ligne_id',
     ];
     protected static function booted(): void
     {
@@ -41,7 +42,7 @@ class MouvementStock extends Model
     {
         ModelChange::create([
             'user_id' => Auth::id(),
-            'model_type' => 'Utilisateurs',
+            'model_type' => 'MouvementStock',
             'before' => $model->getOriginal(),
             'after' => $model->getAttributes(),
             'event' => $event,

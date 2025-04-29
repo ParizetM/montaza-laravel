@@ -30,6 +30,11 @@ class MatiereProductionSeeder extends Seeder
             }
             $matierial_id = Material::where('nom', 'ILIKE', $row[2])->first()->id ?? null;
             $sous_famille_model = SousFamille::where('nom','ILIKE',trim($row[1]))->first();
+            if ($sous_famille_model->type_affichage_stock == 2) {
+                $ref_valeur_unitaire = '6';
+            } else {
+                $ref_valeur_unitaire = null;
+            }
             $sous_famille = $sous_famille_model ? $sous_famille_model->id : null;
             $standardModel = Standard::where('nom', 'ILIKE', $row[5])->first();
             $standard = $standardModel ? $standardModel->getLatestVersion()->id : null;
@@ -55,7 +60,7 @@ class MatiereProductionSeeder extends Seeder
                 'sous_famille_id' => $sous_famille ?? throw new \Exception("SousFamille ID is null for row: " . json_encode($row)),
                 'standard_version_id' => $standard,
                 'material_id' => $matierial_id,
-                'ref_valeur_unitaire' => 6,
+                'ref_valeur_unitaire' => $ref_valeur_unitaire,
                 'dn' => $row[6],
                 'epaisseur' => $row[7],
                 'stock_min' => 0,

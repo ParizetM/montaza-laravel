@@ -321,7 +321,6 @@ class MatiereController extends Controller
     }
     public function quickCreate($modal_id): View
     {
-
         $familles = Famille::all();
         $dossier_standards = DossierStandard::all();
         $unites = Unite::all();
@@ -334,6 +333,7 @@ class MatiereController extends Controller
     }
     public function quickStore(Request $request)
     {
+        Log::info('QuickStore request data:', $request->all());
         $request->validate([
             'standard_id' => 'nullable|exists:standards,nom',
             'standard_version_id' => 'nullable|exists:standard_versions,version',
@@ -344,24 +344,34 @@ class MatiereController extends Controller
             'epaisseur' => 'nullable|string|max:50',
             'quantite' => 'required|integer',
             'stock_min' => 'required|integer',
-            'ref_valeur_unitaire' => 'nullable|numeric',
+            'ref_valeur_unitaire' => 'nullable',
         ]);
         $lastref = Matiere::max('id') + 1;
         $dn = $request->input('dn') ?: null;
         $epaisseur = $request->input('epaisseur') ?: null;
-        if ($request->input('standard_version_id') === '' || $request->input('standard_id') === '') {
-            $standard_version = null;
+        if ($request->input('standard_version_id')) {
+            if ($request->input('standard_version_id') === '' || $request->input('standard_id') === '') {
+                $standard_version_id = null;
+            } else {
+                $standard_id = Standard::where('nom', 'ILIKE', $request->input('standard_id'))->first()->id;
+                if ($standard_id === null) {
+                    return response()->json(['error' => 'Le standard n\'existe pas'], 422);
+                }
+                $standard_version_id = StandardVersion::where('version', 'ILIKE', $request->input('standard_version_id'))
+                    ->where('standard_id', $standard_id)
+                    ->first()->id;
+                if ($standard_version_id === null) {
+                    return response()->json(['error' => 'La version du standard n\'existe pas'], 422);
+                }
+            }
         } else {
-            $standard_id = Standard::where('nom', 'ILIKE', $request->input('standard_id'))->first()->id;
-            if ($standard_id === null) {
-                return response()->json(['error' => 'Le standard n\'existe pas'], 422);
-            }
-            $standard_version_id = StandardVersion::where('version', 'ILIKE', $request->input('standard_version_id'))
-                ->where('standard_id', $standard_id)
-                ->first()->id;
-            if ($standard_version_id === null) {
-                return response()->json(['error' => 'La version du standard n\'existe pas'], 422);
-            }
+            $standard_version_id = null;
+        }
+
+        if ($request->input('ref_valeur_unitaire') === '' || $request->input('ref_valeur_unitaire') === 'non'){
+            $ref_valeur_unitaire = null;
+        } else {
+            $ref_valeur_unitaire = $request->input('ref_valeur_unitaire');
         }
         $matiere = Matiere::create(
             [
@@ -376,7 +386,7 @@ class MatiereController extends Controller
                 'date_dernier_achat' => null,
                 'quantite' => $request->input('quantite'),
                 'stock_min' => $request->input('stock_min'),
-                'ref_valeur_unitaire' => $request->input('ref_valeur_unitaire'),
+                'ref_valeur_unitaire' => $ref_valeur_unitaire,
             ]
         );
 

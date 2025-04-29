@@ -37,6 +37,7 @@ class Cde extends Model
         'commentaire_id',
         'cde_note_id',
         'changement_livraison',
+        'IS_STOCKE',
     ];
     public function cdeLignes()
     {
@@ -64,7 +65,7 @@ class Cde extends Model
     }
     public function societeContact(): BelongsTo
     {
-        return $this->belongsTo(SocieteContact::class);
+        return $this->belongsTo(SocieteContact::class, 'societe_contact_id');
     }
 
     public function etablissement()
@@ -102,6 +103,13 @@ class Cde extends Model
 
     public function mouvementsStock(): HasManyThrough
     {
-        return $this->hasManyThrough(MouvementStock::class, CdeLigne::class);
+        return $this->hasManyThrough(
+            MouvementStock::class,
+            CdeLigne::class,
+            'cde_id',        // Foreign key on CdeLigne that references Cde
+            'cde_ligne_id',  // Foreign key on MouvementStock that references CdeLigne
+            'id',            // Local key on Cde
+            'id'             // Local key on CdeLigne
+        );
     }
 }

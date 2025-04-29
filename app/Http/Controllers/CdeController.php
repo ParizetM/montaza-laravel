@@ -173,8 +173,12 @@ class CdeController extends Controller
                 $changements_stock = null;
             }
 
-            return view('ddp_cde.cde.show', compact('cde', ['showRefFournisseur', 'pdfcommande','changements_stock'
-            ]));
+            return view('ddp_cde.cde.show', [
+                'cde' => $cde,
+                'showRefFournisseur' => $showRefFournisseur,
+                'pdfcommande' => $pdfcommande,
+                'changements_stock' => $changements_stock,
+            ]);
         }
     }
 
@@ -285,7 +289,6 @@ class CdeController extends Controller
         $societe_id = $cde->societeContact->societe->id;
         $cde_notes = CdeNote::where('entite_id', $cde->entite_id)->get();
         foreach ($cde->cdeLignes as $ligne) {
-
         }
         //verifier si
         if ($showRefFournisseur == true) {
@@ -712,26 +715,22 @@ class CdeController extends Controller
         $cde = Cde::findOrFail($id);
         $cde->ddp_cde_statut_id = 5;
         $societe = $cde->societeContact->etablissement->societe;
-        $changement_stock = [];
         foreach ($cde->cdeLignes as $ligne) {
             $matiere = $ligne->matiere;
             if ($ligne->date_livraison_reelle && $ligne->ddp_cde_statut_id != 4 && $ligne->ligne_autre_id == null) {
-                try {
-                    $stock = $this->stockService->stock(
-                        $matiere->id,
-                        'entree',
-                        $ligne->quantite,
-                        $matiere->ref_valeur_unitaire ?? null,
-                        'Livraison commande - ' . $cde->code
-                    );
-                    $changement_stock[] = $stock['mouvement'];
-                    if ($stock['mouvement1'] != null) {
-                        $changement_stock[] = $stock['mouvement1'];
-                    }
-                } catch (Exception $e) {
-                    Log::error('Erreur lors de la mise à jour du stock pour la matière ID: ' . $matiere->id .
-                                ' dans la commande ' . $cde->code . ' - ' . $e->getMessage());
-                }
+                // try {
+                //     $this->stockService->stock(
+                //         $matiere->id,
+                //         'entree',
+                //         $ligne->quantite,
+                //         $matiere->ref_valeur_unitaire ?? null,
+                //         'Livraison commande - ' . $cde->code,
+                //         $ligne->id,
+                //     );
+                // } catch (Exception $e) {
+                //     Log::error('Erreur lors de la mise à jour du stock pour la matière ID: ' . $matiere->id .
+                //         ' dans la commande ' . $cde->code . ' - ' . $e->getMessage());
+                // }
                 $societe_matiere = $matiere->societeMatieres()->firstOrCreate(['societe_id' => $societe->id]);
                 $newPrix = $ligne->prix_unitaire;
                 if ($matiere->getLastPrice($societe->id) == null || $matiere->getLastPrice($societe->id)->prix_unitaire != $ligne->prix_unitaire) {

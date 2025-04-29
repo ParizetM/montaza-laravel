@@ -177,7 +177,7 @@
                                                     <x-copiable_text titre="Forme juridique : "
                                                         text="{{ $societe->formeJuridique->code }}" />
                                                     <x-copiable_text titre="Code APE : "
-                                                        text="{{ $societe->codeApe->code }}" />
+                                                        text="{{ $societe->codeApe->code ?? '' }}" />
                                                     <x-copiable_text titre="N° de TVA intra. : "
                                                         text="{{ $societe->numero_tva }}" />
                                                     <x-copiable_text titre="Téléphone : "

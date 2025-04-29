@@ -62,8 +62,8 @@
                             </div>
                             <div>
                                 <strong class="text-gray-800 dark:text-gray-200">{{ __('Code APE :') }}</strong>
-                                <x-copiable_text text="{{ $societe->codeApe->code }}" />
-                                <small>({{ $societe->codeApe->nom }})</small>
+                                <x-copiable_text text="{{ $societe->codeApe->code ?? '' }}" />
+                                <small>{{ $societe->codeApe ? '($societe->codeApe->nom)' : '' }}</small>
                             </div>
                             <div>
                                 <strong class="text-gray-800 dark:text-gray-200">{{ __('SIREN :') }}</strong>
@@ -136,6 +136,15 @@
                                 </div>
                             @endcan
                         </div>
+                        <div>
+                            @if ($etablissement->societeContacts->count() == 0)
+                                <p class="text-sm text-red-500 dark:text-red-400 flex items-center">
+                                    <x-icon :size="1" type="error_icon" class="icons-no_hover fill-red-500 dark:fill-red-400 mr-2" />
+                                    Aucun contact n'est actuellement associé à cet établissement.
+                                </p>
+
+                            @endif
+                        </div>
                         <div class="flex mt-4">
                             <select name="etablissement_id" id="etablissement_id" class="select-left w-full"
                                 onchange="changeEtablissement(this)">
@@ -150,12 +159,14 @@
                                 class="btn-select-right dark:bg-gray-900">+</a>
                             </a>
                         </div>
-                    </div>
 
+                    </div>
+                    <!-- En-tête Etablissement -->
                     <div class="mx-8 flex justify-between border-b-2">
                         <h1 class="font-bold text-2xl text-gray-800 dark:text-gray-200 leading-tight">
                             {{ $etablissement->nom }}
                         </h1>
+
                         <div class="flex gap-2">
                             <button type="button" class="btn mb-2 dark:bg-gray-900" title="Contacts"
                                 x-data=""
@@ -181,6 +192,7 @@
                             ])
                         </x-modal>
                     </div>
+
                     <!-- Contenu Principal -->
                     <div class="px-8 pb-6 mt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                         <!-- Informations Générales -->
@@ -210,14 +222,14 @@
             <div class="max-w-xl w-full sm:pr-6 lg:pr-8">
                 <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden" id="etablissements">
                     <div class=" py-6 px-8 text-gray-800 dark:text-gray-200 flex flex-col gap-4">
-                    <h1 class="text-3xl font-bold mb-1">
-                        Aucun établissement
-                    </h1>
-                    <a href="{{ route('etablissements.create', ['societe' => $societe->id]) }}"
-                        class="btn dark:bg-gray-900">Ajouter un établissement</a>
-                    </a>
+                        <h1 class="text-3xl font-bold mb-1">
+                            Aucun établissement
+                        </h1>
+                        <a href="{{ route('etablissements.create', ['societe' => $societe->id]) }}"
+                            class="btn dark:bg-gray-900">Ajouter un établissement</a>
+                        </a>
+                    </div>
                 </div>
-            </div>
         @endif
     </div>
     <script>

@@ -11,6 +11,8 @@
 @endphp
 
 <x-app-layout>
+    @section('title', 'Historique')
+
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
 
@@ -127,6 +129,14 @@
                                         if (isset($after['entite_id'])) {
                                             $after['entite_id'] =
                                                 \App\Models\Entite::find($after['entite_id'])->name ?? 'Unknown';
+                                        }
+                                        if (isset($before['user_id'])) {
+                                            $user = \App\Models\User::find($before['user_id']);
+                                            $before['user_id'] = $user ? ($user->first_name . ' ' . $user->last_name) : 'Unknown';
+                                        }
+                                        if (isset($after['user_id'])) {
+                                            $user = \App\Models\User::find($after['user_id']);
+                                            $after['user_id'] = $user ? ($user->first_name . ' ' . $user->last_name) : 'Unknown';
                                         }
                                         if ($event === 'creating') {
                                             $before = ' ';

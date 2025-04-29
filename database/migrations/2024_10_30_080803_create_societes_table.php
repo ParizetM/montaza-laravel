@@ -49,7 +49,7 @@ return new class extends Migration
             $table->string(column: 'raison_sociale', length: 100);
             $table->integer(column: 'siren', autoIncrement: false)->unique()->nullable();
             $table->foreignId('forme_juridique_id')->constrained('forme_juridiques');
-            $table->foreignId('code_ape_id')->constrained('code_apes');
+            $table->foreignId('code_ape_id')->nullable()->constrained('code_apes');
             $table->foreignId('societe_type_id')->constrained('societe_types');
             $table->string('telephone', length: 20)->nullable();
             $table->string('email', length: 100)->nullable();

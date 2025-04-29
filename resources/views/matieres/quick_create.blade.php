@@ -27,7 +27,6 @@
                     <x-input-label for="sous_famille_id-{{ $modal_id }}">Sous Famille</x-input-label>
                     <div class="flex">
                         <select name="sous_famille_id" id="sous_famille_id-{{ $modal_id }}"
-                        onchange="updateQuantiteType()"
                             class="select-left w-full" required>
                             <option value="" disabled selected>Sélectionner d'abord une famille</option>
                         </select>
@@ -72,12 +71,22 @@
                     <x-text-input type="number" name="quantite" id="quantite" class="mt-1 block" value="0"
                         required />
                 </div>
-                <div class="hidden mr-2">
+                <div class=" mr-2">
+                    <div class="w-full flex justify-between">
                     <x-input-label for="ref_valeur_unitaire-{{ $modal_id }}"
                         value="{{ __('Valeur Réf Unitaire') }}" />
-                    <x-text-input type="number" name="ref_valeur_unitaire"
-                        id="ref_valeur_unitaire-{{ $modal_id }}" class="mt-1 block w-full " value="0"
-                        required />
+                        <x-tooltip position="top">
+                            <x-slot name="slot_item">
+                                <x-icons.question class="icons" size="1" />
+                            </x-slot>
+                            <x-slot name="slot_tooltip">
+                                <p class="text-sm font-bold">Valeur de référence unitaire de la matière</p>
+                                <p class="text-sm">Exemple: Longueur standard de stockage, comme 6m ou 12m pour un tuyau.</p>
+                            </x-slot>
+                        </x-tooltip>
+                    </div>
+                    <x-no-or-number name="ref_valeur_unitaire" id="ref_valeur_unitaire-{{ $modal_id }}" required
+                        class="mt-1" />
                 </div>
                 <div class="w-1/4">
                     <x-input-label for="unite_id">Unité</x-input-label>
@@ -198,7 +207,6 @@
                     var option = document.createElement('option');
                     option.value = sousFamille.id;
                     option.textContent = sousFamille.nom;
-                    option.setAttribute('type_affichage_stock', sousFamille.type_affichage_stock);
                     sousFamilleSelect.appendChild(option);
                 });
                 document.getElementById('addSousFamille-{{ $modal_id }}').disabled = false;
@@ -211,21 +219,11 @@
             });
     }
 
-    function updateQuantiteType() {
-        var sousFamilleSelect = document.getElementById('sous_famille_id-{{ $modal_id }}');
-        var selectedOption = sousFamilleSelect.options[sousFamilleSelect.selectedIndex];
-        var valeurRefUnitaireDiv = document.getElementById('ref_valeur_unitaire-{{ $modal_id }}').parentElement;
-
-        if (selectedOption && selectedOption.getAttribute('type_affichage_stock') === '2') {
-            valeurRefUnitaireDiv.classList.remove('hidden');
-        } else {
-            valeurRefUnitaireDiv.classList.add('hidden');
-        }
-    }
 
     function updateStandardSelect(dossierId) {
         var standardSelect = document.getElementById('standard_id-{{ $modal_id }}');
         standardSelect.innerHTML = '<option value="" disabled selected>Sélectionner un standard</option>';
+
         fetch(`/matieres/standards/${dossierId}/standards/json`)
             .then(response => response.json())
             .then(data => {
@@ -245,7 +243,8 @@
         var versionSelect = document.getElementById('standard_version_id-{{ $modal_id }}');
         var dossierId = document.getElementById('dossier_standard_id-{{ $modal_id }}').value;
         var standard = document.getElementById('standard_id-{{ $modal_id }}').value;
-        versionSelect.innerHTML = '<option value="" disabled selected>Sélectionner une version</option>';
+        versionSelect.innerHTML = '';
+
         fetch(`/matieres/standards/${dossierId}/${standard}/versions/json`)
             .then(response => response.json())
             .then(data => {

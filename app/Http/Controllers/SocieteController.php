@@ -104,7 +104,7 @@ class SocieteController extends Controller
                 'raison_sociale' => 'required|string',
                 'societe_type_id' => 'required|exists:societe_types,id',
                 'forme_juridique_id' => 'required|exists:forme_juridiques,id',
-                'code_ape_id' => 'required|exists:code_apes,id',
+                'code_ape_id' => 'nullable|exists:code_apes,id',
                 'telephone' => 'nullable|string|max:30',
                 'email' => 'nullable|email',
                 'site_web' => 'nullable|string',
@@ -121,7 +121,6 @@ class SocieteController extends Controller
                 'societe_type_id.exists' => 'Le type de société est invalide',
                 'forme_juridique_id.required' => 'La forme juridique est obligatoire',
                 'forme_juridique_id.exists' => 'La forme juridique est invalide',
-                'code_ape_id.required' => 'Le code APE est obligatoire',
                 'code_ape_id.exists' => 'Le code APE est invalide',
                 'telephone.required' => 'Le numéro de téléphone est obligatoire',
                 'telephone.string' => 'Le numéro de téléphone doit être une chaîne de caractères',
@@ -150,6 +149,9 @@ class SocieteController extends Controller
             return back()->with('error', 'Veuillez saisir un numéro de TVA intracommunautaire');
         } else if (Societe::where('numero_tva', $request->numero_tva)->exists() && $request->numero_tva != null) {
             return back()->with('error', 'Le numéro de TVA intracommunautaire est déjà utilisé');
+        }
+        if ($request->code_ape_id == null && $request->societe_type_id != 2) {
+            return back()->with('error', 'Veuillez saisir un code APE');
         }
 
         if ($request->site_web == 'http://') {
@@ -192,7 +194,7 @@ class SocieteController extends Controller
         $societe->raison_sociale = $request->raison_sociale;
         $societe->societe_type_id = $request->societe_type_id;
         $societe->forme_juridique_id = $request->forme_juridique_id;
-        $societe->code_ape_id = $request->code_ape_id;
+        $societe->code_ape_id = $request->code_ape_id ?? null;
         $societe->telephone = $request->telephone;
         $societe->email = $request->email;
         $societe->site_web = $request->site_web;
