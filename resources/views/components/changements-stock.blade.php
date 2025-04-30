@@ -9,61 +9,69 @@
 
 </div>
 <x-volet-modal name="changements-stock" direction="right" x-init="$dispatch('open-volet', 'changements-stock')">
-    <div class="p-2 text-gray-900 dark:text-gray-100">
-        <a @click="$dispatch('close')">
-            <x-icons.close class="float-right mb-1 icons" size="1.5" unfocus />
-        </a>
+    <div class="text-gray-900 dark:text-gray-100 h-full flex flex-col">
+        <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+            <h2 class="text-lg font-semibold">Mouvements de stock</h2>
+            <button @click="$dispatch('close')" class="hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full p-1 transition-colors">
+                <x-icons.close size="1.5" unfocus />
+            </button>
+        </div>
 
-        <div class="p-6">
-            <h2 class="text-lg font-semibold mb-4 text-center">Mouvements de stock</h2>
-
-        <table class="table-auto w-full border-collapse border border-gray-300 dark:border-gray-700">
-            <thead>
-                <tr class="">
-                    <th class=" px-4 py-2">Matière</th>
-                    <th class=" px-4 py-2">Mouvement</th>
-                    <th class=" px-4 py-2">Date</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($changements_stock as $mouvement)
-                        <tr class="">
-                            <td class="border px-4 py-2 border-gray-300 dark:border-gray-700 ">
-                                <x-tooltip position="top">
-                                    <x-slot name="slot_tooltip">
-                                        <a href="{{ route('matieres.show', $mouvement->matiere_id) }}"
-                                            target="_blank"
-                                            class="lien">{{ $mouvement->matiere->designation }}</a>
-                                    </x-slot>
-                                    <x-slot name="slot_item">
-                                    {{ $mouvement->matiere->designation }}
-                                    </x-slot>
-                                </x-tooltip>
-                            </td>
-                            <td class="border px-4 py-2 whitespace-nowrap border-gray-300 dark:border-gray-700 ">
-                                @if ($mouvement->type_mouvement == 'entree')
-                                    <span class="text-red-500">- {{ $mouvement->quantite }}</span>
-                                    @if ($mouvement->valeur_unitaire != null)
-                                        <span class="text-red-500">x ({{ formatNumber($mouvement->valeur_unitaire) . ' ' . $mouvement->matiere->unite->short }})</span>
-                                    @endif
-                                @else
-                                    <span class="text-green-500">+ {{ $mouvement->quantite }}</span>
-                                    @if ($mouvement->valeur_unitaire != null)
-                                        <span class="text-green-500">x ({{ formatNumber($mouvement->valeur_unitaire) . ' ' . $mouvement->matiere->unite->short }})</span>
-                                    @endif
-                                @endif
-                            </td>
-                            <td class="border px-4 py-2 whitespace-nowrap border-gray-300 dark:border-gray-700 ">
-                                {{ $mouvement->created_at->format('d/m/Y H:i') }}</td>
-                    </tr>
-                @endforeach
-                @if ($changements_stock->isEmpty())
+        <div class="flex-1 p-4 overflow-auto">
+            <table class="w-full border-collapse">
+                <thead>
                     <tr>
-                        <td colspan="3" class="text-center py-4">Aucun mouvement de stock trouvé.</td>
+                        <th class="text-left px-4 py-2 bg-gray-50 dark:bg-gray-800 font-medium text-sm">Matière</th>
+                        <th class="text-left px-4 py-2 bg-gray-50 dark:bg-gray-800 font-medium text-sm">Mouvement</th>
+                        <th class="text-left px-4 py-2 bg-gray-50 dark:bg-gray-800 font-medium text-sm">Date</th>
                     </tr>
-                @endif
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach ($changements_stock as $mouvement)
+                    <tr class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800">
+                        <td class="px-4 py-2">
+                            <x-tooltip position="top">
+                                <x-slot name="slot_tooltip">
+                                    <a href="{{ route('matieres.show', $mouvement->matiere_id) }}"
+                                       target="_blank"
+                                       class="lien">{{ $mouvement->matiere->designation }}</a>
+                                </x-slot>
+                                <x-slot name="slot_item">
+                                    {{ $mouvement->matiere->designation }}
+                                </x-slot>
+                            </x-tooltip>
+                        </td>
+                        <td class="px-4 py-2 whitespace-nowrap">
+                            @if ($mouvement->type_mouvement == 'entree')
+                                <span class="text-red-500">- {{ $mouvement->quantite }}</span>
+                                @if ($mouvement->valeur_unitaire != null)
+                                    <span class="text-gray-600 dark:text-gray-400">
+                                        × {{ formatNumber($mouvement->valeur_unitaire) . ' ' . $mouvement->matiere->unite->short }}
+                                    </span>
+                                @endif
+                            @else
+                                <span class="text-green-500">+ {{ $mouvement->quantite }}</span>
+                                @if ($mouvement->valeur_unitaire != null)
+                                    <span class="text-gray-600 dark:text-gray-400">
+                                        × {{ formatNumber($mouvement->valeur_unitaire) . ' ' . $mouvement->matiere->unite->short }}
+                                    </span>
+                                @endif
+                            @endif
+                        </td>
+                        <td class="px-4 py-2 whitespace-nowrap text-gray-600 dark:text-gray-400">
+                            {{ $mouvement->created_at->format('d/m/Y H:i') }}
+                        </td>
+                    </tr>
+                    @endforeach
+                    @if ($changements_stock->isEmpty())
+                    <tr>
+                        <td colspan="3" class="py-6 text-center text-gray-500 dark:text-gray-400">
+                            Aucun mouvement de stock trouvé.
+                        </td>
+                    </tr>
+                    @endif
+                </tbody>
+            </table>
         </div>
     </div>
 </x-volet-modal>

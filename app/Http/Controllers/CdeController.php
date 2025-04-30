@@ -167,11 +167,8 @@ class CdeController extends Controller
             $cdeid =  $cde->id;
             $showRefFournisseur = $cde->show_ref_fournisseur;
             $pdfcommande = $this->pdf($cdeid);
-            if ($cde->ddpCdeStatut->id == 5) {
-                $changements_stock = $cde->mouvementsStock()->get();
-            } else {
-                $changements_stock = null;
-            }
+            $changements_stock = $cde->mouvementsStock()->get();
+
 
             return view('ddp_cde.cde.show', [
                 'cde' => $cde,
@@ -752,6 +749,62 @@ class CdeController extends Controller
             'cde' => $cde->id,
         ])->with('success', 'Commande terminée avec succès');
     }
+    public function storeStock(Request $request, $cdeId)
+    {
+        $cde = Cde::findOrFail($cdeId);
+        $stockData = $request->input('stock', []);
+
+        DB::beginTransaction();
+        try {
+            foreach ($stockData as $poste => $data) {
+                $ligne = $cde->cdeLignes()->where('poste', $poste)->firstOrFail();
+                $matiere = $ligne->matiere;
+
+                if (isset($data['rows'])) {
+                    foreach ($data['rows'] as $row) {
+                        $quantity = $row['quantity'] ?? 0;
+                        $unitValue = $row['unit_value'] ?? null;
+
+                        if ($quantity > 0) {
+                            $this->stockService->stock(
+                                $matiere->id,
+                                'entree',
+                                $quantity,
+                                $unitValue,
+                                'Livraison commande - ' . $cde->code,
+                                $ligne->id
+                            );
+                        }
+                    }
+                } elseif (isset($data['entree'])) {
+                    $quantity = $data['entree'] ?? 0;
+
+                    if ($quantity > 0) {
+                        $this->stockService->stock(
+                            $matiere->id,
+                            'entree',
+                            $quantity,
+                            null,
+                            'Livraison commande - ' . $cde->code,
+                            $ligne->id
+                        );
+                    }
+                }
+            }
+
+            DB::commit();
+            $cde->IS_STOCKE = true;
+            $cde->save();
+            return redirect()->route('cde.show', $cdeId)->with('success', 'Mouvements de stock enregistrés avec succès.');
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('Erreur lors de l\'enregistrement des mouvements de stock', [
+                'exception' => $e->getMessage(),
+                'cde_id' => $cdeId,
+            ]);
+            return redirect()->back()->with('error', 'Une erreur est survenue lors de l\'enregistrement des mouvements de stock.');
+        }
+    }
     /**
      * Retourne le prochain code de CDE
      * @param mixed $entite_id
@@ -799,4 +852,5 @@ class CdeController extends Controller
             }
         }
     }
+
 }

@@ -140,7 +140,10 @@
     @apply rounded-md dark:bg-[#2d3748] bg-[#f9fafb];
   }
 }
-
+@utility bg-gray-750 {
+    --tw-bg-opacity: 1;
+    background-color: oklch(32.55% 0.0335 258.2905);
+}
 @utility bg-gray-850 {
   background-color: #18202f;
 }

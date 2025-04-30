@@ -34,149 +34,314 @@
 
         </div>
         <x-volet-modal name="changements-stock" direction="right" x-init="$dispatch('open-volet', 'changements-stock')" show>
-            <div class="p-2 text-gray-900 dark:text-gray-100">
-                <a @click="$dispatch('close')">
-                    <x-icons.close class="float-right mb-1 icons" size="1.5" unfocus />
-                </a>
-
-                <div class="p-6">
-                    <h2 class="text-lg font-semibold mb-4 text-center">Mouvements de stock</h2>
-
-                    <form id="stock-form" method="POST" action="{{ route('cde.index', $cde->id) }}">
-                        @csrf
-                        <table class="table-auto w-full border-collapse border border-gray-300 dark:border-gray-700">
-                            <thead>
-                                {{-- <tr class="bg-gray-100 dark:bg-gray-700">
-                                    <th class="px-4 py-2 text-left">Matière</th>
-                                    <th class="px-4 py-2 text-right">Stock actuel</th>
-                                    <th class="px-4 py-2 text-right">Mvt. stock</th>
-                                </tr> --}}
-                            </thead>
-                            <tbody>
-                                @foreach ($cde->cdeLignes as $ligne)
-                                    @if ($ligne->ddpCdeStatut->nom != 'Annulée')
-                                        <tr
-                                            class="border-b border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800">
-                                            <td>{{ $ligne->poste }}</td>
-                                            <td colspan="3" class="p-0">
-                                                <div x-data="{ open: false }" class="w-full">
-                                                    <button type="button" @click="open = !open"
-                                                        class="w-full p-3 text-left flex justify-between items-center focus:outline-none">
-                                                        <span class="font-medium">{{ $ligne->matiere->ref_interne }} {{ $ligne->matiere->designation }}
-
-                                                        </span>
-                                                        <x-icon size="1.5" type="arrow_back"
-                                                            class="transform transition-transform duration-200"
-                                                            class="{'rotate-90': open, '-rotate-90': !open}" />
-                                                    </button>
-
-                                                    <div x-show="open" x-transition
-                                                        class="p-3 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
-                                                        <div class="grid grid-cols-1 gap-4">
-                                                            @if ($ligne->matiere->typeAffichageStock() === 2)
-                                                                <!-- Affichage par valeur unitaire -->
-                                                                <div class="flex items-center justify-between mb-2">
-                                                                    <span class="font-medium">Stock valorisé total:
-                                                                        {{ formatNumberArgent($ligne->matiere->quantite()) }}</span>
-                                                                    <div class="text-right">
-                                                                        <span
-                                                                            class="block text-sm text-gray-500 dark:text-gray-400">Quantité
-                                                                            commandée:
-                                                                            {{ formatNumber($ligne->quantite) }}
-                                                                            {{ $ligne->matiere->unite->short }}</span>
-                                                                    </div>
-                                                                </div>
-                                                                <div
-                                                                    class="p-2 bg-white dark:bg-gray-800 rounded shadow">
-                                                                    <div class="mb-2 font-medium">Entrez la valeur
-                                                                        unitaire du mouvement :</div>
-                                                                    <input type="number" step="0.01"
-                                                                        name="stock[{{ $ligne->matiere_id }}][valeur]"
-                                                                        class="form-input w-full md:w-1/3 rounded"
-                                                                        placeholder="Valeur unitaire">
-                                                                    <input type="hidden"
-                                                                        name="stock[{{ $ligne->matiere_id }}][quantite]"
-                                                                        value="{{ $ligne->quantite }}">
-                                                                </div>
-                                                            @else
-                                                                <!-- Affichage standard par quantité -->
-                                                                <div class="flex items-center justify-between mb-2">
-                                                                    <span class="font-medium">Stock actuel:
-                                                                        {{ formatNumber($ligne->matiere->quantite()) }}
-                                                                        {{ $ligne->matiere->unite->short }}</span>
-                                                                    <div class="text-right">
-                                                                        <span
-                                                                            class="block text-sm text-gray-500 dark:text-gray-400">Quantité
-                                                                            commandée:
-                                                                            {{ formatNumber($ligne->quantite) }}
-                                                                            {{ $ligne->matiere->unite->short }}</span>
-                                                                    </div>
-                                                                </div>
-
-                                                                @foreach ($ligne->matiere->stock as $stock)
-                                                                    <div
-                                                                        class="p-2 bg-white dark:bg-gray-800 rounded shadow">
-                                                                        <div class="flex justify-between items-center">
-                                                                            <div>
-                                                                                <span class="text-sm">Stock
-                                                                                    #{{ $stock->id }}</span>
-                                                                                <span
-                                                                                    class="block text-xs text-gray-500 dark:text-gray-400">
-                                                                                    Qté:
-                                                                                    {{ formatNumber($stock->quantite) }}
-                                                                                    / PU:
-                                                                                    {{ formatNumberArgent($stock->valeur_unitaire) }}
-                                                                                </span>
-                                                                            </div>
-                                                                            <div>
-                                                                                <input type="number" step="0.01"
-                                                                                    name="stock[{{ $ligne->matiere_id }}][items][{{ $stock->id }}]"
-                                                                                    class="form-input rounded"
-                                                                                    placeholder="Qté à ajouter">
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                @endforeach
-
-                                                                <div
-                                                                    class="p-2 bg-white dark:bg-gray-800 rounded shadow border-t-2 border-blue-500">
-                                                                    <div class="font-medium mb-2">Nouveau stock</div>
-                                                                    <div class="grid grid-cols-2 gap-4">
-                                                                        <div>
-                                                                            <label
-                                                                                class="block text-sm mb-1">Quantité</label>
-                                                                            <input type="number" step="0.01"
-                                                                                name="stock[{{ $ligne->matiere_id }}][new][quantite]"
-                                                                                class="form-input w-full rounded">
-                                                                        </div>
-                                                                        <div>
-                                                                            <label class="block text-sm mb-1">Valeur
-                                                                                unitaire</label>
-                                                                            <input type="number" step="0.01"
-                                                                                name="stock[{{ $ligne->matiere_id }}][new][valeur_unitaire]"
-                                                                                class="form-input w-full rounded">
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            @endif
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endif
-                                @endforeach
-                            </tbody>
-                        </table>
-                        <div class="mt-4 flex justify-end">
-                            <button type="submit" class="btn">Enregistrer les mouvements de stock</button>
-                        </div>
-                    </form>
+            <div class="p-6 text-gray-900 dark:text-gray-100">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-semibold">Mouvements de stock</h2>
+                    <button @click="$dispatch('close')">
+                        <x-icons.close class="icons" size="1.5" unfocus />
+                    </button>
                 </div>
+
+                <form id="stock-form" method="POST" action="{{ route('cde.stock.store', $cde->id) }}">
+                    @csrf
+                    <table class="w-full border-collapse border-0 rounded-md">
+                        <thead>
+                            <tr>
+                                {{-- <th style="width: 5px; padding: 0%;padding-top:5px;">
+                                    <div class="poste">Poste</div>
+                                </th>
+                                <th class="p-2">Mouvements</th> --}}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($cde->cdeLignes->where('ddpCdeStatut.nom', '!=', 'Annulée') as $ligne)
+                                <tr class="">
+                                    {{-- <td class="text-center border border-gray-300 dark:border-gray-700 px-1">
+                                        {{ $ligne->poste }}
+                                    </td> --}}
+                                    <td class="">
+                                        <button id="button-{{ $ligne->poste }}" type="button"
+                                            class="flex justify-between items-center p-3 w-full text-left transition-colors rounded dark:hover:bg-gray-700 hover:bg-gray-200 bg-gray-100 dark:bg-gray-900">
+                                            <div class="flex items-center space-x-2">
+                                                <span
+                                                    class="font-medium text-gray-700 dark:text-gray-200 inline-block min-w-8 px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-md text-center">
+                                                    {{ $ligne->poste }}
+                                                </span>
+                                                <div class="flex flex-col">
+                                                    <span
+                                                        class="font-medium text-sm">{{ $ligne->matiere->ref_interne }}</span>
+                                                    <span
+                                                        class="text-gray-600 dark:text-gray-400 text-sm line-clamp-1">{{ $ligne->matiere->designation }}</span>
+                                                </div>
+                                            </div>
+                                            <x-icon type="arrow_back" :size="1" class="transition-transform"
+                                                id="arrow-{{ $ligne->poste }}" />
+                                        </button>
+
+                                        <div id="stock-{{ $ligne->poste }}"
+                                            class="hidden p-3 bg-gray-50 dark:bg-gray-850 rounded-b border border-gray-200 dark:border-gray-700">
+                                            <div class="flex flex-col">
+                                                <p class="text-sm font-medium text-gray-500 mb-4">Quantité commandée :
+                                                    {{ formatNumber($ligne->quantite) }}
+                                                    {{ $ligne->matiere->unite->short }}</p>
+                                                <p class="text-sm ">Quantité à ajouter au stock :</p>
+                                                @if (
+                                                    $ligne->matiere->typeAffichageStock() == '2' &&
+                                                        $ligne->matiere->ref_valeur_unitaire != null &&
+                                                        $ligne->matiere->ref_valeur_unitaire != 0)
+                                                    @php
+                                                        $unites = floor(
+                                                            $ligne->quantite / $ligne->matiere->ref_valeur_unitaire,
+                                                        );
+                                                        $reste =
+                                                            $ligne->quantite % $ligne->matiere->ref_valeur_unitaire;
+                                                    @endphp
+                                                    <div class="flex w-full justify-end">
+                                                        <p class="text-sm ">Valeur unitaire :
+                                                            {{ $ligne->matiere->ref_valeur_unitaire }}
+                                                            {{ $ligne->matiere->unite->short }}</p>
+                                                    </div>
+
+                                                    <table
+                                                        class="w-full border-collapse border border-gray-300 dark:border-gray-700 mt-2 mb-2">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="p-1 text-sm bg-gray-100 dark:bg-gray-750">
+                                                                    Quantité</th>
+                                                                <th class="w-1 p-0"></th>
+                                                                <th
+                                                                    class="p-1 text-sm border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-750">
+                                                                    Valeur unitaire
+                                                                    ({{ $ligne->matiere->unite->full }})
+                                                                </th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @if ($unites > 0)
+                                                                <tr
+                                                                    class="border-b border-gray-300 dark:border-gray-700"
+                                                                    id="stock-{{ $ligne->poste }}-row-0">
+                                                                    <td class="p-1 ">
+                                                                        <x-text-input type="number"
+                                                                            name="stock[{{ $ligne->poste }}][rows][0][quantity]"
+                                                                            id="stock-{{ $ligne->poste }}-row-0-quantity"
+                                                                            class="w-full border-0 focus:ring-0 p-1"
+                                                                            min="0" step="0.01"
+                                                                            value="{{ $unites }}" />
+                                                                    </td>
+                                                                    <td class="w-1">X</td>
+                                                                    <td class="p-1 ">
+                                                                        <x-text-input type="number"
+                                                                            name="stock[{{ $ligne->poste }}][rows][0][unit_value]"
+                                                                            id="stock-{{ $ligne->poste }}-row-0-unit-value"
+                                                                            class="w-full border-0 focus:ring-0 p-1"
+                                                                            min="0" step="0.01"
+                                                                            value="{{ $ligne->matiere->ref_valeur_unitaire }}" />
+                                                                    </td>
+                                                                    <td class="p-1 w-10 flex justify-center">
+                                                                        <button type="button"
+                                                                            class="delete-row-button text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 focus:outline-none"
+                                                                            title="Supprimer cette ligne"
+                                                                            data-row-id="stock-{{ $ligne->poste }}-row-0"
+                                                                            onclick="deleteStockRow('stock-{{ $ligne->poste }}-row-0')"
+                                                                            >
+                                                                            <x-icons.close size="1" />
+                                                                        </button>
+                                                                    </td>
+                                                                </tr>
+                                                            @endif
+                                                            @if ($reste > 0)
+                                                                <tr
+                                                                    class="border-b border-gray-300 dark:border-gray-700"
+                                                                    id="stock-{{ $ligne->poste }}-row-1">
+                                                                    <td class="p-1 ">
+                                                                        <x-text-input type="number"
+                                                                            name="stock[{{ $ligne->poste }}][rows][1][quantity]"
+                                                                            id="stock-{{ $ligne->poste }}-row-1-quantity"
+                                                                            class="w-full border-0 focus:ring-0 p-1"
+                                                                            min="0" step="0.01"
+                                                                            value="1" />
+                                                                    </td>
+                                                                    <td class="w-1">X</td>
+                                                                    <td class="p-1 ">
+                                                                        <x-text-input type="number"
+                                                                            name="stock[{{ $ligne->poste }}][rows][1][unit_value]"
+                                                                            id="stock-{{ $ligne->poste }}-row-1-unit-value"
+                                                                            class="w-full border-0 focus:ring-0 p-1"
+                                                                            min="0" step="0.01"
+                                                                            value="{{ $ligne->matiere->ref_valeur_unitaire + $reste }}" />
+                                                                    </td>
+                                                                    <td class="p-1 w-10 flex justify-center">
+                                                                        <button type="button"
+                                                                            class="delete-row-button text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 focus:outline-none"
+                                                                            title="Supprimer cette ligne"
+                                                                            data-row-id="stock-{{ $ligne->poste }}-row-1"
+                                                                            onclick="deleteStockRow('stock-{{ $ligne->poste }}-row-1')"
+                                                                            >
+                                                                            <x-icons.close size="1" />
+                                                                        </button>
+                                                                    </td>
+                                                                </tr>
+                                                            @endif
+                                                            <tr class="border-b border-gray-300 dark:border-gray-700"
+                                                                id="add-row-container-{{ $ligne->poste }}">
+                                                                <td class="p-1 text-center" colspan="4">
+                                                                    <button type="button"
+                                                                        id="add-row-button-{{ $ligne->poste }}"
+                                                                        class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium">
+                                                                        <span class="flex items-center justify-center">
+                                                                            Ajouter une ligne
+                                                                        </span>
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                            <script>
+                                                                function deleteStockRow(rowId) {
+                                                                        const row = document.getElementById(rowId);
+                                                                        if (row) {
+                                                                            row.remove();
+                                                                        }
+                                                                    }
+                                                                document.addEventListener('DOMContentLoaded', function() {
+                                                                    const poste = '{{ $ligne->poste }}';
+                                                                    const addButton = document.getElementById(`add-row-button-${poste}`);
+                                                                    const container = document.getElementById(`add-row-container-${poste}`);
+
+                                                                    // Initialize row counter
+                                                                    if (!window.rowCounters) {
+                                                                        window.rowCounters = {};
+                                                                    }
+
+                                                                    // Start from correct index based on existing rows
+                                                                    window.rowCounters[poste] = {{ ($unites > 0 ? 1 : 0) + ($reste > 0 ? 1 : 0) }};
+
+                                                                    // Handle delete buttons for existing rows
+                                                                    document.querySelectorAll('.delete-row-button').forEach(button => {
+                                                                        button.addEventListener('click', function() {
+                                                                            const rowId = this.getAttribute('data-row-id');
+                                                                            const row = document.getElementById(rowId);
+                                                                            if (row) {
+                                                                                row.remove();
+                                                                            }
+                                                                        });
+                                                                    });
+
+                                                                    // Create a reusable function for deleting rows
+
+
+                                                                    // Create a reusable function for adding rows
+                                                                    function addStockRow(poste, rowIndex) {
+                                                                        const container = document.getElementById(`add-row-container-${poste}`);
+
+                                                                        const newRow = document.createElement('tr');
+                                                                        newRow.className = 'border-b border-gray-300 dark:border-gray-700';
+                                                                        newRow.id = `stock-${poste}-row-${rowIndex}`;
+
+                                                                        newRow.innerHTML = `
+                                                                                <td class="p-1">
+                                                                                    <x-text-input type="number"
+                                                                                        name="stock[${poste}][rows][${rowIndex}][quantity]"
+                                                                                        id="stock-${poste}-row-${rowIndex}-quantity"
+                                                                                        class="w-full border-0 focus:ring-0 p-1"
+                                                                                        min="0" step="0.01"
+                                                                                        value="1" />
+                                                                                </td>
+                                                                                <td class="w-1">X</td>
+                                                                                <td class="p-1">
+                                                                                    <x-text-input type="number"
+                                                                                        name="stock[${poste}][rows][${rowIndex}][unit_value]"
+                                                                                        id="stock-${poste}-row-${rowIndex}-unit-value"
+                                                                                        class="w-full border-0 focus:ring-0 p-1"
+                                                                                        min="0" step="0.01"
+                                                                                        value="0" />
+                                                                                </td>
+                                                                                <td class="p-1 w-10">
+                                                                                    <button type="button" class="delete-row-button text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 focus:outline-none" title="Supprimer cette ligne" onclick="deleteStockRow('stock-${poste}-row-${rowIndex}')">
+                                                                                        <x-icons.close size="1" />
+                                                                                    </button>
+                                                                                </td>
+                                                                            `;
+
+                                                                        container.parentNode.insertBefore(newRow, container);
+                                                                    }
+
+                                                                    // Setup event handlers for existing elements
+                                                                    document.querySelectorAll('.delete-row-button').forEach(button => {
+                                                                        const rowId = button.getAttribute('data-row-id');
+                                                                        button.onclick = function() {
+                                                                            deleteStockRow(rowId);
+                                                                        };
+                                                                    });
+
+                                                                    addButton.addEventListener('click', function() {
+                                                                        const rowIndex = window.rowCounters[poste];
+                                                                        window.rowCounters[poste]++;
+
+                                                                        addStockRow(poste, rowIndex);
+                                                                    });
+                                                                });
+                                                            </script>
+                                                        </tbody>
+                                                    </table>
+                                                @else
+                                                    <table
+                                                        class="w-1/2 border-collapse border border-gray-300 dark:border-gray-700 mt-2 mb-2">
+                                                        <thead>
+                                                            <tr>
+                                                                <th
+                                                                    class="p-1 text-sm border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-750">
+                                                                    Quantité ({{ $ligne->matiere->unite->full }})</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td
+                                                                    class="p-1 border border-gray-300 dark:border-gray-700">
+                                                                    <x-text-input type="number"
+                                                                        name="stock[{{ $ligne->poste }}][entree]"
+                                                                        id="stock-{{ $ligne->poste }}-entree"
+                                                                        class="w-full border-0 focus:ring-0 p-1"
+                                                                        min="0" step="0.01"
+                                                                        value="{{ formatNumber($ligne->quantite) }}" />
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                @endif
+
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="h-4"></tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+
+                    <div class="mt-4 flex justify-end">
+                        <button type="submit" class="btn">Enregistrer</button>
+                    </div>
+                </form>
             </div>
         </x-volet-modal>
+        <script>
+            document.querySelectorAll('[id^="button-"]').forEach(function(element) {
+                element.addEventListener('click', function() {
+                    const poste = element.id.split('-')[1];
+                    const arrowElement = document.getElementById('arrow-' + poste);
+                    const stockElement = document.getElementById('stock-' + poste);
+                    if (stockElement.classList.contains('hidden')) {
+                        stockElement.classList.remove('hidden');
+                        arrowElement.classList.add('rotate-90');
+                    } else {
+                        stockElement.classList.add('hidden');
+                        arrowElement.classList.remove('rotate-90');
+                    }
+                });
+            });
+        </script>
     @else
-        @if ($cde->statut->id == 5)
+        @if (in_array($cde->ddpCdeStatut->id, [3, 4, 5]))
             <x-changements-stock :changements_stock="$changements_stock" />
         @endif
     @endif
