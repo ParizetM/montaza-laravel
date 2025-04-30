@@ -11,11 +11,11 @@
 {{-- Script temporaire !!!!!!!!!!!!!!!!!
  A RETIRER--}}
 
-<script>
+{{-- <script>
     document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('quickMatiereModalBtn-{{ $quickMatiereModalId }}').click();
     });
-</script>
+</script> --}}
 <!-- Modal -->
 <x-modal id="{{ $quickMatiereModalId }}" name="{{ $quickMatiereModalId }}" title="Quick Create Matiere">
     <div id="modal-body-{{ $quickMatiereModalId }}"></div>

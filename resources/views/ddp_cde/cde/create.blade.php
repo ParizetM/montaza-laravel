@@ -3,8 +3,8 @@
     <x-slot name="header">
         <div>
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                <a href="{{ route('ddp_cde.index') }}"
-                    class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">Demandes de prix et commandes</a>
+                <a href="{{ route('cde.index') }}"
+                    class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">Commandes</a>
                 >>
                 {!! __('Créer une commande') !!}
             </h2>
@@ -406,7 +406,8 @@
                         <div>
                             <button
                                 class="bg-red-500 hover:bg-red-600 btn hover:cursor-pointer text-white dark:text-gray-100"
-                                onclick="event.preventDefault(); document.getElementById('confirm-delete-modal').classList.remove('hidden');">Supprimer</button>
+                                x-data
+                                x-on:click="$dispatch('open-modal', 'delete-commande-modal')">Supprimer</button>
                             <button class="btn" type="button" x-data
                                 x-on:click="$dispatch('open-modal', 'reset-commande-modal')">Réinitialiser</button>
                         </div>
@@ -428,14 +429,18 @@
                                 </div>
                             </div>
                         </x-modal>
-                        <div id="confirm-delete-modal"
-                            class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 hidden">
-                            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-                                <h2 class="text-xl font-semibold mb-4">Voulez-vous vraiment supprimer ?</h2>
-                                <p class="mb-4">Cette action est irréversible.</p>
+                        <x-modal name="delete-commande-modal" title="Supprimer" max-width="5xl">
+                            <div class="flex flex-col gap-4 p-4 text-gray-900 dark:text-gray-100">
+                                <div class="flex justify-between items-center">
+                                    <h1 class="text-xl font-semibold">Supprimer la commande</h1>
+                                    <a x-on:click="$dispatch('close')">
+                                        <x-icons.close class="float-right mb-1 icons" size="1.5" unfocus />
+                                    </a>
+                                </div>
+                                <p class="text-gray-500 dark:text-gray-400">Voulez-vous vraiment supprimer cette commande ? Cette action est irréversible.</p>
                                 <div class="flex justify-end gap-4">
-                                    <button class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-sm"
-                                        onclick="document.getElementById('confirm-delete-modal').classList.add('hidden');">Annuler</button>
+                                    <button class=" text-white px-4 py-2 rounded-sm btn"
+                                        x-on:click="$dispatch('close')">Annuler</button>
                                     <form action="{{ route('cde.destroy', ['cde' => $cdeid]) }}" method="POST">
                                         @csrf
                                         @method('DELETE')
@@ -444,7 +449,7 @@
                                     </form>
                                 </div>
                             </div>
-                        </div>
+                        </x-modal>
                         <button class=" btn"
                             onclick="if (document.getElementById('cde-nom').value.trim() != '') { window.location.href = '{{ route('cde.validation', ['cde' => $cdeid]) }}'; } else { alert('Veuillez renseigner le nom de la demande de prix'); }">Suivant</button>
                     </div>

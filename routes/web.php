@@ -200,6 +200,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::get('/cde/{cde}/annuler_terminer', [CdeController::class, 'annulerTerminer'])->name('cde.annuler_terminer');
         Route::get('/cde/{cde}/terminer_controler', [CdeController::class, 'terminerControler'])->name('cde.terminer_controler');
         Route::post('/cde/{cde}/stock/store', [CdeController::class, 'storeStock'])->name('cde.stock.store');
+        Route::get('/cde/{cde}/stock/no', [CdeController::class, 'noStock'])->name('cde.stock.no');
     });
 });
 require __DIR__ . '/auth.php';

@@ -3,8 +3,8 @@
     <x-slot name="header">
         <div>
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                <a href="{{ route('ddp_cde.index') }}"
-                    class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">Demandes de prix et commandes</a>
+                <a href="{{ route('cde.index') }}"
+                    class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">Commandes</a>
                 >>
                 <a href="{{ route('cde.show', $cde->id) }}"
                     class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">{!! __('Créer une Commande') !!}</a>

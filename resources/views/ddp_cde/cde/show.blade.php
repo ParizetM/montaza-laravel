@@ -4,8 +4,8 @@
         <div class="flex justify-between items-center">
             <div>
                 <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                    <a href="{{ route('ddp_cde.index') }}"
-                        class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">Demandes de prix et commandes</a>
+                    <a href="{{ route('cde.index') }}"
+                    class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">Commandes</a>
                     >>
                     <a href="{{ route('cde.show', $cde->id) }}"
                         class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">{!! __('Créer une commande') !!}</a>
@@ -36,7 +36,19 @@
         <x-volet-modal name="changements-stock" direction="right" x-init="$dispatch('open-volet', 'changements-stock')" show>
             <div class="p-6 text-gray-900 dark:text-gray-100">
                 <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-lg font-semibold">Mouvements de stock</h2>
+                    <div class="flex items-center">
+                        <h2 class="text-lg font-semibold">Mouvements de stock</h2>
+                        <x-tooltip position="top" class="ml-2">
+                            <x-slot name="slot_item">
+                                <x-icons.question class="icons" size="1" />
+                            </x-slot>
+                            <x-slot name="slot_tooltip">
+                                <p class="text-sm font-bold">Gestion des entrées en stock</p>
+                                <p class="text-sm">Ce volet permet d'enregistrer les quantités reçues pour chaque matière commandée et de les ajouter au stock.</p>
+                                <p class="text-sm">Vous pouvez ajuster les quantités avant validation.</p>
+                            </x-slot>
+                        </x-tooltip>
+                    </div>
                     <button @click="$dispatch('close')">
                         <x-icons.close class="icons" size="1.5" unfocus />
                     </button>
@@ -110,10 +122,11 @@
                                                                     Quantité</th>
                                                                 <th class="w-1 p-0"></th>
                                                                 <th
-                                                                    class="p-1 text-sm border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-750">
+                                                                    class="p-1 text-sm border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-750 border-r-0">
                                                                     Valeur unitaire
                                                                     ({{ $ligne->matiere->unite->full }})
                                                                 </th>
+                                                                <th class="w-1 p-0 bg-gray-100 dark:bg-gray-750"></th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -138,14 +151,14 @@
                                                                             min="0" step="0.01"
                                                                             value="{{ $ligne->matiere->ref_valeur_unitaire }}" />
                                                                     </td>
-                                                                    <td class="p-1 w-10 flex justify-center">
+                                                                    <td class="flex w-fit justify-center items-center pt-1">
                                                                         <button type="button"
-                                                                            class="delete-row-button text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 focus:outline-none"
+                                                                            class="delete-row-button focus:outline-none"
                                                                             title="Supprimer cette ligne"
                                                                             data-row-id="stock-{{ $ligne->poste }}-row-0"
                                                                             onclick="deleteStockRow('stock-{{ $ligne->poste }}-row-0')"
                                                                             >
-                                                                            <x-icons.close size="1" />
+                                                                            <x-icons.close size="2" class="icons"/>
                                                                         </button>
                                                                     </td>
                                                                 </tr>
@@ -171,14 +184,14 @@
                                                                             min="0" step="0.01"
                                                                             value="{{ $ligne->matiere->ref_valeur_unitaire + $reste }}" />
                                                                     </td>
-                                                                    <td class="p-1 w-10 flex justify-center">
+                                                                    <td class="flex w-fit justify-center items-center pt-1">
                                                                         <button type="button"
-                                                                            class="delete-row-button text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 focus:outline-none"
+                                                                            class="delete-row-button focus:outline-none"
                                                                             title="Supprimer cette ligne"
                                                                             data-row-id="stock-{{ $ligne->poste }}-row-1"
                                                                             onclick="deleteStockRow('stock-{{ $ligne->poste }}-row-1')"
                                                                             >
-                                                                            <x-icons.close size="1" />
+                                                                            <x-icons.close size="2" class="icons"/>
                                                                         </button>
                                                                     </td>
                                                                 </tr>
@@ -255,9 +268,9 @@
                                                                                         min="0" step="0.01"
                                                                                         value="0" />
                                                                                 </td>
-                                                                                <td class="p-1 w-10">
-                                                                                    <button type="button" class="delete-row-button text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 focus:outline-none" title="Supprimer cette ligne" onclick="deleteStockRow('stock-${poste}-row-${rowIndex}')">
-                                                                                        <x-icons.close size="1" />
+                                                                                <td class="flex w-fit justify-center items-center pt-1">
+                                                                                    <button type="button" class="delete-row-button focus:outline-none" title="Supprimer cette ligne" onclick="deleteStockRow('stock-${poste}-row-${rowIndex}')">
+                                                                                        <x-icons.close size="2" class="icons" />
                                                                                     </button>
                                                                                 </td>
                                                                             `;
@@ -318,10 +331,37 @@
                         </tbody>
                     </table>
 
-                    <div class="mt-4 flex justify-end">
-                        <button type="submit" class="btn">Enregistrer</button>
-                    </div>
+                    <div class="mt-4 flex justify-between">
+                        <button
+                            class="bg-red-500 hover:bg-red-600 btn hover:cursor-pointer text-white dark:text-gray-100"
+                            x-data
+                            x-on:click="$dispatch('open-modal', 'delete-stock-modal')">Ne pas enregistrer</button>
+                            <button type="submit" class="btn">Enregistrer</button>
+
+                        </div>
+
                 </form>
+                <x-modal name="delete-stock-modal" title="Ne pas enregistrer" max-width="5xl">
+                    <div class="flex flex-col gap-4 p-4 text-gray-900 dark:text-gray-100">
+                        <div class="flex justify-between items-center">
+                            <h1 class="text-xl font-semibold">Ne pas enregistrer les changements</h1>
+                            <a x-on:click="$dispatch('close')">
+                                <x-icons.close class="float-right mb-1 icons" size="1.5" unfocus />
+                            </a>
+                        </div>
+                        <p class="text-gray-500 dark:text-gray-400">Voulez-vous vraiment ne pas enregistrer cette commande dans le stock ? Cette action est irréversible.</p>
+                        <div class="flex justify-end gap-4">
+                            <button class="text-white px-4 py-2 rounded-sm btn"
+                                x-on:click="$dispatch('close')">Annuler</button>
+                            <form action="{{ route('cde.stock.no', ['cde' => $cde->id]) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit"
+                                    class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-sm hover:cursor-pointer">Ne pas enregistrer</button>
+                            </form>
+                        </div>
+                    </div>
+                </x-modal>
             </div>
         </x-volet-modal>
         <script>

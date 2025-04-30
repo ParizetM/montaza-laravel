@@ -805,6 +805,13 @@ class CdeController extends Controller
             return redirect()->back()->with('error', 'Une erreur est survenue lors de l\'enregistrement des mouvements de stock.');
         }
     }
+    public function noStock($id)
+    {
+        $cde = Cde::findOrFail($id);
+        $cde->IS_STOCKE = false;
+        $cde->save();
+        return redirect()->route('cde.show', $cde->id)->with('success', 'Commande validée sans mouvement de stock');
+    }
     /**
      * Retourne le prochain code de CDE
      * @param mixed $entite_id
