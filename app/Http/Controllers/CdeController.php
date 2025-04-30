@@ -648,7 +648,14 @@ class CdeController extends Controller
                     } elseif ($key === 'type_expedition_id') {
                         $oldValue = TypeExpedition::find($value)->short ?? $value;
                         $newValue = TypeExpedition::find($newData[$key])->short ?? $newData[$key];
+                    } elseif ($key === 'prix_unitaire') {
+                        $oldValue = formatNumberArgent($value);
+                        $newValue = formatNumberArgent($newData[$key]);
+                    } elseif ($key === 'quantite') {
+                        $oldValue = formatNumber($value);
+                        $newValue = formatNumber($newData[$key]);
                     }
+
 
                     $changements[] = [
                         'ligne_id' => $ligne->id,

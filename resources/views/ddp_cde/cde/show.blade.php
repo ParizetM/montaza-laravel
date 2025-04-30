@@ -22,7 +22,7 @@
         </div>
     </x-slot>
     {{-- VOLET STOCK --}}
-    @if ($cde->IS_STOCKE == null)
+    @if ($cde->IS_STOCKE == null && $cde->ddpCdeStatut->id == 5)
         <div class="fixed top-1/2 right-0 transform -translate-y-1/2" x-data>
             <button @click="$dispatch('open-volet', 'changements-stock')"
                 class="btn-select-left flex items-center px-2 py-8 bg-gray-200 dark:bg-gray-800 shadow-lg hover:bg-gray-300 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-700">
@@ -105,11 +105,10 @@
                                                         $unites = floor(
                                                             $ligne->quantite / $ligne->matiere->ref_valeur_unitaire,
                                                         );
-                                                        $reste =
-                                                            $ligne->quantite % $ligne->matiere->ref_valeur_unitaire;
+                                                        $reste = $ligne->quantite - ($unites * $ligne->matiere->ref_valeur_unitaire);
                                                     @endphp
                                                     <div class="flex w-full justify-end">
-                                                        <p class="text-sm ">Valeur unitaire :
+                                                        <p class="text-sm -mt-9 md:-mt-5">Valeur unitaire :
                                                             {{ $ligne->matiere->ref_valeur_unitaire }}
                                                             {{ $ligne->matiere->unite->short }}</p>
                                                     </div>
@@ -122,15 +121,20 @@
                                                                     Quantité</th>
                                                                 <th class="w-1 p-0"></th>
                                                                 <th
-                                                                    class="p-1 text-sm border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-750 border-r-0">
+                                                                    class="p-1 text-sm border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-750 border-r-0" title="Valeur unitaire ({{ $ligne->matiere->unite->full }})">
                                                                     Valeur unitaire
-                                                                    ({{ $ligne->matiere->unite->full }})
+                                                                    ({{ $ligne->matiere->unite->short }})
                                                                 </th>
                                                                 <th class="w-1 p-0 bg-gray-100 dark:bg-gray-750"></th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            @if ($unites > 0)
+                                                            @if (($unites > 1)  )
+                                                                @php
+                                                                    if ($unites > 1 && $reste > 0) {
+                                                                        $unites = $unites - 1;
+                                                                    }
+                                                                @endphp
                                                                 <tr
                                                                     class="border-b border-gray-300 dark:border-gray-700"
                                                                     id="stock-{{ $ligne->poste }}-row-0">
@@ -176,13 +180,23 @@
                                                                             value="1" />
                                                                     </td>
                                                                     <td class="w-1">X</td>
+                                                                    @php
+                                                                        if ($ligne->quantite < $ligne->matiere->ref_valeur_unitaire) {
+                                                                            $value_reste = $ligne->quantite;
+                                                                        } elseif ($ligne->quantite > $ligne->matiere->ref_valeur_unitaire) {
+                                                                            $value_reste = $ligne->matiere->ref_valeur_unitaire+$reste;
+                                                                        } else {
+                                                                            $value_reste = $reste;
+                                                                        }
+                                                                        $value_reste = formatNumber($value_reste);
+                                                                    @endphp
                                                                     <td class="p-1 ">
                                                                         <x-text-input type="number"
                                                                             name="stock[{{ $ligne->poste }}][rows][1][unit_value]"
                                                                             id="stock-{{ $ligne->poste }}-row-1-unit-value"
                                                                             class="w-full border-0 focus:ring-0 p-1"
                                                                             min="0" step="0.01"
-                                                                            value="{{ $ligne->matiere->ref_valeur_unitaire + $reste }}" />
+                                                                            value="{{ $value_reste }}" />
                                                                     </td>
                                                                     <td class="flex w-fit justify-center items-center pt-1">
                                                                         <button type="button"
@@ -336,7 +350,7 @@
                             class="bg-red-500 hover:bg-red-600 btn hover:cursor-pointer text-white dark:text-gray-100"
                             x-data
                             x-on:click="$dispatch('open-modal', 'delete-stock-modal')">Ne pas enregistrer</button>
-                            <button type="submit" class="btn">Enregistrer</button>
+                            <button type="submit" class="btn">Enregistrer dans le stock</button>
 
                         </div>
 
@@ -380,10 +394,8 @@
                 });
             });
         </script>
-    @else
-        @if (in_array($cde->ddpCdeStatut->id, [3, 4, 5]))
+    @elseif ($cde->ddpCdeStatut->id == 5)
             <x-changements-stock :changements_stock="$changements_stock" />
-        @endif
     @endif
     <div class="max-w-8xl py-4 mx-auto sm:px-4 lg:px-6">
         <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-6 rounded-md shadow-md ">
