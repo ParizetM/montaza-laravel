@@ -124,7 +124,7 @@ $positionClasses = $positions[$position] ?? $positions['right'];
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
     >
-        <div class="absolute inset-0 bg-gray-500/30 dark:bg-gray-900/30 bg-opacity-75"></div>
+        <div class="absolute inset-0 bg-gray-500/50 dark:bg-gray-900/50 bg-opacity-75"></div>
     </div>
 
     <div class="fixed inset-0 overflow-hidden pointer-events-none">
