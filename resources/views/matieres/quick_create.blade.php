@@ -278,6 +278,39 @@
                 if (data.success) {
                     showFlashMessageFromJs('Matière ajoutée avec succès !', 2000, 'success');
                     document.getElementById('quick-create-matiere-cancel-{{ $modal_id }}').click();
+                    // Check if a searchbar exists on the page
+                    if (document.getElementById('searchbar')) {
+                        // Get the designation from the form
+                        var designation = formData.get('designation');
+                        // Get the searchbar element
+                        var searchbar = document.getElementById('searchbar');
+
+                        // Clear the current value
+                        searchbar.value = '';
+
+                        // Simulate typing the designation letter by letter
+                        var i = 0;
+                        function typeDesignation() {
+                            if (i < designation.length) {
+                                // Create and dispatch keyboard event
+                                const event = new KeyboardEvent('keydown', {
+                                    key: designation.charAt(i),
+                                    code: 'Key' + designation.charAt(i).toUpperCase(),
+                                    bubbles: true
+                                });
+                                searchbar.dispatchEvent(event);
+                                // Also update the value
+                                searchbar.value += designation.charAt(i);
+                                // Trigger input event to ensure search functionality activates
+                                searchbar.dispatchEvent(new Event('input', { bubbles: true }));
+                                i++;
+                                setTimeout(typeDesignation, 50); // 50ms delay between each character
+                            }
+                        }
+
+                        // Start typing after a small delay
+                        setTimeout(typeDesignation, 300);
+                    }
                 } else {
                     showFlashMessageFromJs('Erreur lors de l\'ajout de la matière.', 2000, 'error');
                 }
