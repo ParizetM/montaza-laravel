@@ -570,7 +570,7 @@
                                                         TVA ({{ $cde->tva }}%) :
                                                     </td>
                                                     <td id="total_tva_plus">
-                                                        {{ formatNumberArgent(round(($cde->total_ht * $cde->tva) / 100, 3)) }}
+                                                        {{ formatNumberArgent(($cde->total_ht * $cde->tva) / 100) }}
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -578,7 +578,7 @@
                                                         Total TTC :
                                                     </td>
                                                     <td id="total_ttc">
-                                                        {{ formatNumberArgent(round($cde->total_ht + (($cde->total_ht + $cde->frais_de_port + $cde->frais_divers) * $cde->tva) / 100, 3)) }}
+                                                        {{ formatNumberArgent($cde->total_ttc) }}
 
                                                     </td>
                                                 </tr>

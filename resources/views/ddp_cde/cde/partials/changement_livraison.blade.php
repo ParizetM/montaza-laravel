@@ -2,7 +2,7 @@
     <x-tooltip position="auto" class="">
         <x-slot name="slot_tooltip">
             <span>
-                Liste de tout les changements fait depuis la generation du pdf
+                Liste de tout les changements fait depuis la création de la commande
             </span>
         </x-slot>
         <x-slot name="slot_item">

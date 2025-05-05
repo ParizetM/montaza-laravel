@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 class Cde extends Model
 {
@@ -21,7 +22,6 @@ class Cde extends Model
         'user_id',
         'entite_id',
         'ddp_id',
-        'societe_contact_id',
         'affaire_numero',
         'affaire_nom',
         'devis_numero',
@@ -37,6 +37,7 @@ class Cde extends Model
         'commentaire_id',
         'cde_note_id',
         'changement_livraison',
+        'show_ref_fournisseur',
         'IS_STOCKE',
     ];
     public function cdeLignes()
@@ -47,7 +48,8 @@ class Cde extends Model
     {
         return $this->belongsTo(DdpCdeStatut::class, 'ddp_cde_statut_id');
     }
-    public function statut(): BelongsTo {
+    public function statut(): BelongsTo
+    {
         return $this->belongsTo(DdpCdeStatut::class, 'ddp_cde_statut_id');
     }
 
@@ -63,18 +65,33 @@ class Cde extends Model
     {
         return $this->belongsTo(Ddp::class);
     }
-    public function societeContact(): BelongsTo
+    public function societeContacts(): HasManyThrough
     {
-        return $this->belongsTo(SocieteContact::class, 'societe_contact_id');
+        return $this->hasManyThrough(
+            SocieteContact::class,
+            CdeSocieteContact::class,
+            'cde_id',            // Foreign key on CdeSocieteContact that references Cde
+            'id',                // Foreign key on SocieteContact that references SocieteContact
+            'id',                // Local key on Cde
+            'societe_contact_id' // Local key on CdeSocieteContact
+        );
     }
-
+    public function hasSocieteContact(): bool
+    {
+        return $this->societeContacts()->exists();
+    }
     public function etablissement()
     {
-        return $this->hasOneThrough(Etablissement::class, SocieteContact::class, 'id', 'id', 'societe_contact_id', 'etablissement_id');
+        // Get the first societe contact's etablissement
+        $societeContact = $this->societeContacts()->first();
+        return $societeContact ? $societeContact->etablissement() : null;
     }
+
     public function societe()
     {
-        return $this->societeContact->etablissement->societe();
+        // Get the first societe contact's societe
+        $societeContact = $this->societeContacts()->first();
+        return $societeContact ? $societeContact->societe() : null;
     }
     public function affaireSuiviPar(): BelongsTo
     {

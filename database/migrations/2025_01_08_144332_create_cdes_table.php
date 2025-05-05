@@ -34,7 +34,6 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('entite_id')->constrained('entites'); // entité pour qui on fait la commande
             $table->foreignId('ddp_id')->nullable()->constrained('ddps');
-            $table->foreignId('societe_contact_id')->nullable()->constrained('societe_contacts');
             $table->string('affaire_numero')->nullable();
             $table->string('affaire_nom')->nullable();
             $table->string('devis_numero')->nullable();
@@ -52,7 +51,7 @@ return new class extends Migration
             $table->foreignId('condition_paiement_id')->nullable()->constrained('condition_paiements');
             $table->string('accuse_reception')->nullable();
             $table->boolean('show_ref_fournisseur')->default(false);
-            $table->boolean('afficher_destinataire')->default(true);
+            $table->boolean('afficher_destinataire')->default(false);
             $table->foreignId('commentaire_id')->constrained('commentaires')->nullable();
             $table->string('custom_note')->nullable();
             $table->json('changement_livraison')->nullable();
@@ -87,6 +86,13 @@ return new class extends Migration
         Schema::table('societe_matiere_prixs', function (Blueprint $table) {
             $table->foreignId('cde_ligne_id')->nullable()->constrained('cde_lignes')->onDelete('cascade');
         });
+        Schema::create('cde_societe_contacts', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('societe_contact_id')->constrained('societe_contacts')->onDelete('cascade');
+            $table->foreignId('cde_id')->constrained('cdes')->onDelete('cascade');
+            $table->timestamps();
+        });
+
     }
 
     /**
@@ -94,6 +100,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('cde_societe_contacts');
         Schema::table('societe_matiere_prixs', function (Blueprint $table) {
             $table->dropForeign(['cde_ligne_id']);
             $table->dropColumn('cde_ligne_id');

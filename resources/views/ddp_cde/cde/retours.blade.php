@@ -5,7 +5,7 @@
             <div>
                 <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                     <a href="{{ route('cde.index') }}"
-                    class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">Commandes</a>
+                        class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">Commandes</a>
                     >>
                     <a href="{{ route('cde.show', $cde->id) }}"
                         class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">{!! __('Créer une demande de prix') !!}</a>
@@ -23,7 +23,7 @@
             id="retour-container">
             <div class="flex justify-between items-center mb-6 flex-wrap ">
                 <div class="flex items-center mb-12 flex-wrap ">
-                    <h1 class="text-3xl font-bold  text-left mr-2">{{ $cde->nom }} - Récapitulatif</h1>
+                    <h1 class="text-3xl font-bold  text-left mr-2">{{ $cde->nom }} - Livraison</h1>
                     <div class="text-center w-fit px-2 text-xs leading-5 flex rounded-full font-bold items-center justify-center"
                         style="background-color: {{ $cde->statut->couleur }}; color: {{ $cde->statut->couleur_texte }}">
                         {{ $cde->statut->nom }}</div>
@@ -42,6 +42,9 @@
                     </button>
                 </div>
             </div>
+            <small class="text-gray-500 dark:text-gray-400 block -mt-15 mb-2">Remplissez les dates de livraison de
+                chaque matière</small>
+
             <style>
                 /* Style pour centrer le texte de la première ligne */
                 .ht-center-first-row {
@@ -63,8 +66,8 @@
                         Retour de commande</h1>
                     <div id="handsontable-container" class="ht-theme-main-dark-auto "></div>
                 </div>
-                 {{-- Affichage des changements de livraison --}}
-                 @include('ddp_cde.cde.partials.changement_livraison')
+                {{-- Affichage des changements de livraison --}}
+                @include('ddp_cde.cde.partials.changement_livraison')
                 <div class="">
                     <h1
                         class="text-xl font-semibold text-gray-700 dark:text-gray-200 border-b border-gray-500 pb-2 mb-4">
@@ -119,6 +122,8 @@
         </div>
     </div>
     <script>
+        const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
         function changeAr(button) {
             const ar = document.getElementById('ar-parent');
             ar.classList.toggle('hidden');
@@ -249,7 +254,7 @@
                     rowHeaders.reduce((maxLength, header) => Math.max(maxLength, header.length), 0) *
                     10,
                     Math.min(window.innerWidth *
-                    0.4) // Limite maximale de largeur ajustée selon la taille de l'écran
+                        0.4) // Limite maximale de largeur ajustée selon la taille de l'écran
                 ),
                 columns: columns,
                 manualColumnResize: true,

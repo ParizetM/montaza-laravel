@@ -164,46 +164,67 @@
                             <div>
                                 <x-input-label for="societe_select" value="Fournisseur" />
                                 <select name="societe_select" id="societe_select"
-                                    class="select w-48 {{ isset($cde->societe_contact_id) ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : '' }}"
+                                    class="select w-48 {{ $cde->hasSocieteContact() ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : '' }}"
                                     onchange="selectSociete()">
                                     @if ($cde->societe_contact_id == null)
                                         <option value="" selected disabled>Choisir une société</option>
                                     @endif
                                     @foreach ($societes as $societe)
                                         <option value="{{ $societe->id }}"
-                                            {{ isset($cde->societe_contact_id) && $cde->societe->id == $societe->id ? 'selected' : '' }}>
+                                            {{ $cde->hasSocieteContact() && $cde->societe->id == $societe->id ? 'selected' : '' }}>
                                             {{ $societe->raison_sociale }}
                                         </option>
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="mt-auto">
+                            <div class="">
+
+
+                                <x-input-label for="etablissement_select" value="Établissement"
+                                    id="etablissement_select_label"
+                                    class="{{ $cde->hasSocieteContact() ? '' : 'hidden' }} " />
                                 <select name="etablissement_select" id="etablissement_select"
-                                    class="select w-auto {{ isset($cde->societe_contact_id) ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : 'hidden' }}"
+                                    class="select w-auto {{ $cde->hasSocieteContact() ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : 'hidden' }}"
                                     onchange="etablissementSelect()">
-                                    @if ($cde->societe_contact_id)
+                                    @if ($cde->hasSocieteContact())
                                         @foreach ($cde->societe->etablissements as $etablissement)
                                             <option value="{{ $etablissement->id }}"
-                                                {{ isset($cde->societe_contact_id) && $cde->etablissement->id == $etablissement->id ? 'selected' : '' }}>
+                                                {{ $cde->hasSocieteContact() && $cde->etablissement->id == $etablissement->id ? 'selected' : '' }}>
                                                 {{ $etablissement->nom }}
                                             </option>
                                         @endforeach
                                     @endif
                                 </select>
                             </div>
-                            <div class="mt-auto">
-                                <select name="societe_contact_select" id="societe_contact_select"
-                                    class="select w-auto {{ isset($cde->societe_contact_id) ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : 'hidden' }}"
-                                    onchange="saveChanges(); document.getElementById('searchbar').focus();liveSearch()">
-                                    @if ($cde->societe_contact_id)
-                                        @foreach ($cde->societe->societeContacts as $contact)
-                                            <option value="{{ $contact->id }}"
-                                                {{ isset($cde->societe_contact_id) && $cde->societeContact->id == $contact->id ? 'selected' : '' }}>
-                                                {{ $contact->nom }} {{ $contact->prenom }}
-                                            </option>
-                                        @endforeach
-                                    @endif
-                                </select>
+                            <div class="{{ $cde->hasSocieteContact() ? '' : 'hidden' }}"
+                                id="societe_contact_select_div">
+
+
+                                @php
+                                    $options = [];
+                                    if (!($cde->societeContacts->count() == 0)) {
+                                        foreach ($cde->societe->societeContacts as $contact) {
+                                            $options[$contact->id] =
+                                                $contact->nom .
+                                                ' <small class="text-gray-500 whitespace-nowrap">' .
+                                                $contact->email .
+                                                '</small>';
+                                        }
+                                    }
+                                    if ($cde->hasSocieteContact()) {
+                                        $selected_options = [];
+                                        foreach ($cde->societeContacts as $contact) {
+                                            $selected_options[] = $contact->id;
+                                        }
+                                    }
+
+                                @endphp
+                                <x-input-label for="societe_contact_select" value="Destinataire(s)"
+                                    id="societe_contact_select_label" />
+
+                                <x-select-multiple :options="$options" name="societe_contact_select" :selected="$selected_options ?? []"
+                                    id="societe_contact_select" placeholder="Sélectionner un contact"
+                                    emptyMessage="Aucun contact trouvé" class="w-full" />
                             </div>
 
                         </div>
@@ -251,7 +272,7 @@
                                                             <x-text-input
                                                                 name="ref_fournisseur[{{ $cde_ligne->matiere_id }}]"
                                                                 value="{{ $cde_ligne->ref_fournisseur ?? '' }}"
-                                                                class="font-bold p-0 border-0 bg-gray-100 dark:bg-gray-700 max-w-24 mb-1"
+                                                                class="font-bold p-0 border-0 bg-gray-200 dark:bg-gray-700 max-w-24 mb-1"
                                                                 onblur="saveChanges()" />
                                                         </div>
                                                     </div>
@@ -285,16 +306,6 @@
                                                                 class="text-right bg-gray-100 dark:bg-gray-900 w-fit p-2.5 pl-0 border-1 border-l-0 rounded-r-sm border-gray-300 dark:border-gray-700 ">
                                                                 {{ $cde_ligne->matiere->unite->short }}</div>
                                                         </div>
-                                                        {{-- <select name="unite[{{ $cde_ligne->matiere_id }}]"
-                                                            class="w-16 mx-2 select" onchange="saveChanges()">
-                                                            @foreach ($unites as $unite)
-                                                                <option value="{{ $unite->id }}"
-                                                                    title="{{ $unite->full }}"
-                                                                    {{ $unite->id === $cde_ligne->unite_id ? 'selected' : '' }}>
-                                                                    {{ $unite->short }}
-                                                                </option>
-                                                            @endforeach
-                                                        </select> --}}
                                                         <x-date-input name="date[{{ $cde_ligne->matiere_id }}]"
                                                             class="w-fit" value="{{ $cde_ligne->date_livraison }}"
                                                             oninput="saveChanges()" />
@@ -327,7 +338,7 @@
                                                         <x-text-input
                                                             name="ref_interne[{{ $cde_ligne->ligne_autre_id }}]"
                                                             value="{{ $cde_ligne->ref_interne ?? '' }}"
-                                                            class="font-bold p-0 border-0 bg-gray-100 dark:bg-gray-700 max-w-24 mb-1"
+                                                            class="font-bold p-0 border-0 bg-gray-200 dark:bg-gray-700 max-w-24 mb-1"
                                                             onblur="saveChanges()" />
                                                     </div>
                                                     <div class="flex flex-col {{ $showRefFournisseur ? '' : 'hidden' }}"
@@ -337,7 +348,7 @@
                                                             <x-text-input
                                                                 name="ref_fournisseur[{{ $cde_ligne->ligne_autre_id }}]"
                                                                 value="{{ $cde_ligne->ref_fournisseur ?? '' }}"
-                                                                class="font-bold p-0 border-0 bg-gray-100 dark:bg-gray-700 max-w-24 mb-1"
+                                                                class="font-bold p-0 border-0 bg-gray-200 dark:bg-gray-700 max-w-24 mb-1"
                                                                 onblur="saveChanges()" />
                                                         </div>
                                                     </div>
@@ -388,7 +399,7 @@
                             </table>
                             <div class="w-full flex justify-end gap-2 text-center">
                                 <button type="button"
-                                    class="btn w-fit rounded-none rounded-bl-xl bg-gray-800 hover:bg-gray-700 hover:shadow-lg transition-all duration-300 py-0 px-4 mt-0"
+                                    class="btn w-fit rounded-none rounded-bl-xl bg-white dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 hover:shadow-lg transition-all duration-300 py-0 px-4 mt-0"
                                     onclick="addLigneVide()" title="Ajouter une ligne vide">
                                     <span class="text-center w-full text-4xl">
                                         +
@@ -406,8 +417,7 @@
                         <div>
                             <button
                                 class="bg-red-500 hover:bg-red-600 btn hover:cursor-pointer text-white dark:text-gray-100"
-                                x-data
-                                x-on:click="$dispatch('open-modal', 'delete-commande-modal')">Supprimer</button>
+                                x-data x-on:click="$dispatch('open-modal', 'delete-commande-modal')">Supprimer</button>
                             <button class="btn" type="button" x-data
                                 x-on:click="$dispatch('open-modal', 'reset-commande-modal')">Réinitialiser</button>
                         </div>
@@ -437,7 +447,8 @@
                                         <x-icons.close class="float-right mb-1 icons" size="1.5" unfocus />
                                     </a>
                                 </div>
-                                <p class="text-gray-500 dark:text-gray-400">Voulez-vous vraiment supprimer cette commande ? Cette action est irréversible.</p>
+                                <p class="text-gray-500 dark:text-gray-400">Voulez-vous vraiment supprimer cette
+                                    commande ? Cette action est irréversible.</p>
                                 <div class="flex justify-end gap-4">
                                     <button class=" text-white px-4 py-2 rounded-sm btn"
                                         x-on:click="$dispatch('close')">Annuler</button>
@@ -499,8 +510,14 @@
         function selectSociete() {
             var societeId = document.getElementById('societe_select').value;
             var etablissementSelectDOM = document.getElementById('etablissement_select');
+            var etablissementSelectLabel = document.getElementById('etablissement_select_label');
             const societeContactSelect = document.getElementById('societe_contact_select');
+            var societeContactSelectDiv = document.getElementById('societe_contact_select_div');
+
             etablissementSelectDOM.innerHTML = '';
+            etablissementSelectLabel.classList.add('hidden');
+            etablissementSelectDOM.classList.add('hidden');
+            societeContactSelectDiv.classList.add('hidden');
             societeContactSelect.innerHTML = '';
             fetch(`/societe/${societeId}/etablissements/json`)
                 .then(response => response.json())
@@ -519,6 +536,7 @@
                         option.selected = true;
                         etablissementSelectDOM.appendChild(option);
                         etablissementSelectDOM.classList.remove('hidden');
+                        etablissementSelectLabel.classList.remove('hidden');
                         etablissementSelectDOM.dispatchEvent(new Event('change'));
                         etablissementSelect();
                         return;
@@ -535,6 +553,7 @@
                         option.textContent = etablissement.nom;
                         etablissementSelectDOM.appendChild(option);
                         etablissementSelectDOM.classList.remove('hidden');
+                        etablissementSelectLabel.classList.remove('hidden');
                     });
 
                 })
@@ -545,46 +564,37 @@
 
         function etablissementSelect() {
             var etablissementId = document.getElementById('etablissement_select').value;
-            var societeContactSelect = document.getElementById('societe_contact_select');
+            var societeContactSelectDiv = document.getElementById('societe_contact_select_div');
+            var societeContactContainer = document.getElementById('societe_contact_select-container');
             var societeId = document.getElementById('societe_select').value;
-            societeContactSelect.innerHTML = '';
+            var societeContactSelect = document.getElementById('societe_contact_select');
+            societeContactSelectDiv.classList.add('hidden');
+            if (societeContactContainer && Alpine) {
+                Alpine.evaluate(societeContactContainer, '$data.clearSelected()');
+            }
             fetch(`/societes/${societeId}/etablissements/${etablissementId}/contacts/json`)
                 .then(response => response.json())
                 .then(data => {
-                    societeContactSelect.innerHTML = '';
+                    // Afficher le conteneur si masqué
+                    societeContactSelectDiv.classList.remove('hidden');
                     if (data.length == 0) {
-                        var option = document.createElement('option');
-                        option.value = '';
-                        option.textContent = 'Aucun contact trouvé';
-                        option.disabled = true;
-                        societeContactSelect.appendChild(option);
-                        return;
-                    } else if (data.length == 1) {
-                        var option = document.createElement('option');
-                        option.value = data[0].id;
-                        option.textContent = data[0].nom + ' ' + data[0].email;
-                        option.selected = true;
-                        societeContactSelect.appendChild(option);
-                        societeContactSelect.classList.remove('hidden');
-                        saveChanges();
-                        document.getElementById('searchbar').focus();
-                        liveSearch();
                         return;
                     }
-                    var option = document.createElement('option');
-                    option.value = '';
-                    option.textContent = 'Choisir un contact';
-                    option.selected = true;
-                    option.disabled = true;
-                    societeContactSelect.appendChild(option);
+                    // Formatter les données pour le select multiple
+                    let formattedOptions = {};
                     data.forEach(contact => {
-                        var option = document.createElement('option');
-                        option.value = contact.id;
-                        option.textContent = contact.nom + ' ' + contact.email;
-                        societeContactSelect.appendChild(option);
-                        societeContactSelect.classList.remove('hidden');
+                        formattedOptions[contact.id] = contact.nom +
+                            ' <small class="text-gray-500 whitespace-nowrap">' + contact.email + '</small>';
                     });
 
+                    // Version alternative utilisant la méthode updateOptions
+                    if (societeContactContainer && Alpine) {
+                        Alpine.evaluate(societeContactContainer, '$data.updateOptions($el.dataset.newOptions)');
+                        societeContactContainer.dataset.newOptions = JSON.stringify(formattedOptions);
+                    }
+
+                    document.getElementById('searchbar').focus();
+                    liveSearch();
                 })
                 .catch(error => {
                     console.error('Erreur lors de la récupération des contacts :', error);
@@ -640,8 +650,7 @@
                     </style>
                 </td>
             </tr>
-        `;
-
+                `;
                 currentPrixSearchController = new AbortController();
                 const {
                     signal
@@ -649,7 +658,7 @@
 
                 const url =
                     `/matieres/quickSearch?search=${encodeURIComponent(search)}&famille=${familleId}&sous_famille=${sousFamilleId}&with_last_price=1&societe=${societe_select.value}`;
-                console.log(url);
+                // console.log(url);
 
                 fetch(url, {
                         signal
@@ -719,10 +728,8 @@
                             console.error('Erreur lors de la recherche :', error);
                         }
                     });
-
             }, 300); // délai de debounce
         }
-
 
         // Function to add selected material to the chosen list
         function addMatiere(event) {
@@ -756,7 +763,7 @@
                         </div>
                         <div class="flex flex-col">
                             <span class="text-xs">Réf. Fournisseur</span>
-                            <x-text-input name="ref_fournisseur[${matiereId}]" value="${matiereRefFournisseur || ''}" class="font-bold p-0 border-0 bg-white dark:bg-gray-700 max-w-24" onblur="saveChanges()" />
+                            <x-text-input name="ref_fournisseur[${matiereId}]" value="${matiereRefFournisseur || ''}" class="font-bold p-0 border-0 bg-gray-200 dark:bg-gray-700 max-w-24" onblur="saveChanges()" />
                             </div>
                     </div>
                     <div class="flex flex-col hidden" id="ref-${matiereId}">
@@ -778,7 +785,7 @@
                         </div>
                         <div class="flex flex-col">
                             <span class="text-xs">Réf. Fournisseur</span>
-                            <x-text-input name="ref_fournisseur[${matiereId}]" value="${matiereRefFournisseur || ''}" class="font-bold p-0 border-0 bg-white dark:bg-gray-700 w-auto" onblur="saveChanges()" />
+                            <x-text-input name="ref_fournisseur[${matiereId}]" value="${matiereRefFournisseur || ''}" class="font-bold p-0 border-0 bg-gray-200 dark:bg-gray-700 w-auto" onblur="saveChanges()" />
                             </div>
                     </div>
                     <div class="flex flex-col " id="ref-${matiereId}">
@@ -879,7 +886,7 @@
                                     <x-text-input
                                         name="ref_interne[${id}]"
                                         value=""
-                                        class="font-bold p-0 border-0 bg-gray-100 dark:bg-gray-700 max-w-24 mb-1"
+                                        class="font-bold p-0 border-0 bg-gray-200 dark:bg-gray-700 max-w-24 mb-1"
                                         onblur="saveChanges()" />
                                 </div>
                                 <div class="flex flex-col">
@@ -887,7 +894,7 @@
                                     <x-text-input
                                         name="ref_fournisseur[${id}]"
                                         value=""
-                                        class="font-bold p-0 border-0 bg-gray-100 dark:bg-gray-700 max-w-24 mb-1"
+                                        class="font-bold p-0 border-0 bg-gray-200 dark:bg-gray-700 max-w-24 mb-1"
                                         onblur="saveChanges()" />
                                 </div>
                             </div>
@@ -898,7 +905,7 @@
                                     <x-text-input
                                         name="ref_interne[${id}]"
                                         value=""
-                                        class="font-bold p-0 border-0 bg-gray-100 dark:bg-gray-700 max-w-24 mb-1"
+                                        class="font-bold p-0 border-0 bg-gray-200 dark:bg-gray-700 max-w-24 mb-1"
                                         onblur="saveChanges()" />
                                 </div>
                             </div>
@@ -963,11 +970,13 @@
             const searchbar = document.getElementById('searchbar');
             const montantTotal = document.getElementById('montant-total');
             const showRefFournisseurToggle = document.getElementById('show_ref_fournisseur');
+            const societeContactContainer = document.getElementById('societe_contact_select-container');
             searchbar.classList.remove('border-red-500', 'dark:border-red-600', 'border-2', 'focus:border-red-500',
                 'dark:focus:border-red-600');
             saveStatus0.classList.remove('hidden');
             saveStatus1.classList.add('hidden');
             saveStatus2.classList.add('hidden');
+            checkContact();
             if ('' === cdeCode.value.trim()) {
                 saveStatus0.classList.add('hidden');
                 saveStatus2.classList.remove('hidden');
@@ -982,17 +991,17 @@
                 saveStatus2.classList.remove('hidden');
                 return;
             }
-            if (!matiereChoisiTable.querySelector('tr[data-matiere-id]')) {
+            // if (!matiereChoisiTable.querySelector('tr[data-matiere-id]')) {
 
-                saveStatus0.classList.add('hidden');
-                saveStatus2.classList.remove('hidden');
-                return;
-            }
-            if (matiereChoisiTable.querySelector('tr[data-matiere-id]').value === '') {
-                saveStatus0.classList.add('hidden');
-                saveStatus2.classList.remove('hidden');
-                return;
-            }
+            //     saveStatus0.classList.add('hidden');
+            //     saveStatus2.classList.remove('hidden');
+            //     return;
+            // }
+            // if (matiereChoisiTable.querySelector('tr[data-matiere-id]').value === '') {
+            //     saveStatus0.classList.add('hidden');
+            //     saveStatus2.classList.remove('hidden');
+            //     return;
+            // }
             const matieres = [];
             var Total = 0;
             document.querySelectorAll('#matiere-choisi-table tr[data-matiere-id]').forEach(row => {
@@ -1040,32 +1049,34 @@
                 }
 
                 row.classList.add('border-r-green-500', 'dark:border-r-green-600');
-                cdeNom.classList.add(
-                    'border-r-green-500', 'dark:border-r-green-600', 'border-r-4');
-                cdeCode.classList.add(
-                    'border-r-green-500', 'dark:border-r-green-600', 'border-r-4');
-                cdeEntite.classList.add(
-                    'border-r-green-500', 'dark:border-r-green-600', 'border-r-4');
-                if (cdeEntite.value == 1) {
-                    cdeCodeEntite.textContent = '';
-                } else if (cdeEntite.value == 2) {
-                    cdeCodeEntite.textContent = 'AV';
-                } else if (cdeEntite.value == 3) {
-                    cdeCodeEntite.textContent = 'AMB';
-                } else {
-                    cdeCodeEntite.textContent = '';
-                }
-                document.title =
-                    `Créer - CDE-${new Date().getFullYear().toString().slice(-2)}-${cdeCode.value}${cdeCodeEntite.textContent}`;
                 Total +=
                     parseFloat(row.querySelector(`input[name="prix[${matiereId}]`).value) * quantity;
             });
+            cdeNom.classList.add(
+                'border-r-green-500', 'dark:border-r-green-600', 'border-r-4');
+            cdeCode.classList.add(
+                'border-r-green-500', 'dark:border-r-green-600', 'border-r-4');
+            cdeEntite.classList.add(
+                'border-r-green-500', 'dark:border-r-green-600', 'border-r-4');
+            societeContactContainer.classList.add(
+                'border-r-green-500', 'dark:border-r-green-600', 'border-r-4');
+
+            if (cdeEntite.value == 1) {
+                cdeCodeEntite.textContent = '';
+            } else if (cdeEntite.value == 2) {
+                cdeCodeEntite.textContent = 'AV';
+            } else if (cdeEntite.value == 3) {
+                cdeCodeEntite.textContent = 'AMB';
+            } else {
+                cdeCodeEntite.textContent = '';
+            }
+            document.title =
+                `Créer - CDE-${new Date().getFullYear().toString().slice(-2)}-${cdeCode.value}${cdeCodeEntite.textContent}`;
             montantTotal.textContent = Total.toFixed(3) + ' €';
             var showRefFournisseur = 0;
             if (showRefFournisseurToggle.checked) {
                 var showRefFournisseur = 1;
             }
-            console.log(showRefFournisseur);
             fetch('/cde/save', {
                     method: 'POST',
                     headers: {
@@ -1078,14 +1089,17 @@
                         code: cdeCode.value,
                         show_ref_fournisseur: showRefFournisseur,
                         contact_id: document.getElementById('societe_contact_select').value,
-                        total_ht: Total,
+                        // total_ht: Total,
                         nom: cdeNom.value,
                         matieres: matieres
                     })
                 })
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('Network response was not ok');
+                        // Parse the JSON error response to get the error message
+                        return response.json().then(errData => {
+                            throw new Error(errData.error || 'Une erreur est survenue');
+                        });
                     }
                     return response.json();
                 })
@@ -1097,6 +1111,16 @@
                     saveStatus0.classList.add('hidden');
                     saveStatus2.classList.remove('hidden');
                     console.error('Erreur lors de la sauvegarde des données :', error);
+                    showFlashMessageFromJs(
+                        error.message || 'Erreur lors de la sauvegarde des données', 2000, 'error');
+                    cdeNom.classList.remove(
+                        'border-r-green-500', 'dark:border-r-green-600', 'border-r-4');
+                    cdeCode.classList.remove(
+                        'border-r-green-500', 'dark:border-r-green-600', 'border-r-4');
+                    cdeEntite.classList.remove(
+                        'border-r-green-500', 'dark:border-r-green-600', 'border-r-4');
+                    societeContactContainer.classList.remove(
+                        'border-r-green-500', 'dark:border-r-green-600', 'border-r-4');
                 });
         }
 
@@ -1106,6 +1130,23 @@
             row.remove();
             saveChanges();
         }
+
+        function checkContact() {
+            const cdeContacts = document.getElementById('societe_contact_select');
+
+            if (cdeContacts.value.length > 2 || cdeContacts.value != '[]') {
+                // If contacts are selected, disable the societe and etablissement selects
+                document.getElementById('societe_select').disabled = true;
+                document.getElementById('etablissement_select').disabled = true;
+            } else {
+                // If no contact is selected, re-enable the selects
+                document.getElementById('societe_select').disabled = false;
+                document.getElementById('etablissement_select').disabled = false;
+
+            }
+        }
+
+        // DOM CONTENT LOADED ///////////////////////////////////////////////////////////////////
         document.addEventListener('DOMContentLoaded', function() {
             // Event listener for famille selection change
             document.getElementById('famille_id_search').addEventListener('change', function() {
@@ -1119,14 +1160,13 @@
             const cdeEntite = document.getElementById('cde-entite');
             const cdeNom = document.getElementById('cde-nom');
             const toggleShowRefFournisseur = document.getElementById('show_ref_fournisseur');
+            const cdeContacts = document.getElementById('societe_contact_select');
+            const matiereChoisiTable = document.getElementById('matiere-choisi-table');
 
             // Event listener for search bar input
-
             searchbar.addEventListener('input', function() {
                 liveSearch();
             });
-
-
             cdeNom.addEventListener('input', function() {
                 if (cdeNom.value !== undefined && cdeNom.value.trim() !== '') {
                     saveChanges();
@@ -1159,6 +1199,7 @@
                     });
                 saveChanges();
             });
+
             toggleShowRefFournisseur.addEventListener('change', function() {
                 const refElements = document.querySelectorAll('[id^="refs-"]');
                 refElements.forEach(element => {
@@ -1178,7 +1219,17 @@
                 });
                 saveChanges();
             });
-            saveChanges();
+            cdeContacts.addEventListener('change', function() {
+                // Disable fournisseur and etablissement selects if they have values
+                console.log(cdeContacts.value);
+                checkContact();
+                if (cdeContacts.value.length > 2 || cdeContacts.value != '[]') {
+                    saveChanges();
+                }
+            });
+            if (matiereChoisiTable.querySelector('tr[data-matiere-id]')) {
+                saveChanges();
+            }
         });
         // Add CSS for euro symbol
     </script>

@@ -25,9 +25,10 @@
                         {{ $cde->statut->nom }}</div>
                 </div>
                 <div class="flex gap-2">
-                <a href="{{ route('cde.pdfs.download', $cde) }}" class="btn">Télécharger le PDF</a>
-                <a href="{{ route('cde.pdfs.pdfdownload_sans_prix', $cde) }}" class="btn">Télécharger le PDF sans prix</a>
-            </div>
+                    <a href="{{ route('cde.pdfs.download', $cde) }}" class="btn">Télécharger le PDF</a>
+                    <a href="{{ route('cde.pdfs.pdfdownload_sans_prix', $cde) }}" class="btn">Télécharger le PDF sans
+                        prix</a>
+                </div>
 
             </div>
             <div class="flex flex-wrap gap-4">
@@ -51,6 +52,22 @@
                     </object>
                 </div>
             </div>
+            {{--
+            DIV TEMPORAIRE
+             --}}
+            <div class="flex w-full justify-between">
+                    <a href="{{ route('cde.validation', $cde->id) }}" class="btn h-fit">retour</a>
+                <a href="{{ route('cde.skipmails', $cde) }}" class="btn">Suivant</a>
+            </div>
+            {{--
+##     ##    ###    #### ##        ######
+###   ###   ## ##    ##  ##       ##    ##
+#### ####  ##   ##   ##  ##       ##
+## ### ## ##     ##  ##  ##        ######
+##     ## #########  ##  ##             ##
+##     ## ##     ##  ##  ##       ##    ##
+##     ## ##     ## #### ########  ######
+
             <div>
                 <div class="flex justify-between items-center border-b border-gray-300 dark:border-gray-700 mt-6 mb-4">
                     <h1 class="text-3xl font-bold mb-6 text-left">Mails</h1>
@@ -79,7 +96,7 @@
 
                 </div>
 
-            </div>
+            </div> --}}
         </div>
         <script>
             document.querySelectorAll('[id^="pdf-"]').forEach(function(element) {

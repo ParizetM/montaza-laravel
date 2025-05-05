@@ -44,9 +44,21 @@ class CdeController extends Controller
     }
     public function indexColCde($isSmall = false)
     {
-        $cdes = Cde::whereIn('ddp_cde_statut_id', [1, 2])->orderBy('ddp_cde_statut_id', 'asc')
-            ->where('nom', '!=', 'undefined')
+        $cdes = Cde::where('nom', '!=', 'undefined')
+            ->orderBy('ddp_cde_statut_id', 'asc')
+            ->orderBy('created_at', 'desc')
             ->take(7)->get();
+
+        if ($cdes->count() < 5) {
+            $existingIds = $cdes->pluck('id')->toArray();
+            $additionalCdes = Cde::where('nom', '!=', 'undefined')
+            ->whereNotIn('id', $existingIds)
+            ->orderBy('created_at', 'desc')
+            ->take(5 - $cdes->count())
+            ->get();
+
+            $cdes = $cdes->concat($additionalCdes);
+        }
         $cdes->load('user');
         $cdes->load('ddpCdeStatut');
         return view('ddp_cde.cde.index_col', compact('cdes', 'isSmall'));
@@ -111,6 +123,7 @@ class CdeController extends Controller
             'user_id' => Auth::id(),
             'tva' => 20,
             'type_expedition_id' => 1,
+            'show_ref_fournisseur' => true,
             'commentaire_id' => $commentaire_id,
         ]);
         $cdeid =  $cde->id;
@@ -125,7 +138,7 @@ class CdeController extends Controller
             $unites = Unite::all();
             $entites = Entite::all();
             $societes = Societe::whereIn('societe_type_id', [2, 3])->get();
-            $showRefFournisseur = $cde->show_ref_fournisseur;
+            $showRefFournisseur = $cde->show_ref_fournisseur ;
             $entite_code = Entite::findOrFail($cde->entite_id)->id;
             $lastcode = CDE::where('code', 'LIKE', 'CDE-' . date('y') . '%')
                 ->where('entite_id', $cde->entite_id)
@@ -187,10 +200,9 @@ class CdeController extends Controller
             'entite_id' => 'required|integer|exists:entites,id',
             'code' => 'required|string|max:4',
             'show_ref_fournisseur' => 'required|boolean',
-            'total_ht' => 'required|numeric|min:0',
-            'contact_id' => 'required|integer|exists:societe_contacts,id',
+            'contact_id' => 'required|string',
             'nom' => 'required|string|max:255',
-            'matieres' => 'required|array',
+            'matieres' => 'nullable|array',
             'matieres.*.id' => 'nullable|integer',
             'matieres.*.quantite' => 'required|numeric|min:0',
             'matieres.*.refInterne' => 'nullable|string|max:255',
@@ -217,18 +229,43 @@ class CdeController extends Controller
         if ($request->code && ctype_digit($request->code)) {
             $code = str_pad($request->code, 4, '0', STR_PAD_LEFT);
         } else {
-            response()->json(['error' => 'Invalid code format'], 400);
+            DB::rollBack();
+            return response()->json(['error' => 'Invalid code format'], 400);
         }
         $cde = Cde::findOrFail($request->input('cde_id'));
+        // Parse the JSON string and attach each societe contact to the CDE
+        $contactIds = json_decode($request->input('contact_id'));
+        if (!empty($contactIds)) {
+            // Delete existing relations first
+            DB::table('cde_societe_contacts')->where('cde_id', $cde->id)->delete();
+
+            // Attach each contact
+            foreach ($contactIds as $contactId) {
+            DB::table('cde_societe_contacts')->insert([
+                'cde_id' => $cde->id,
+                'societe_contact_id' => $contactId,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+            }
+        } else {
+            DB::rollBack();
+            return response()->json(['error' => 'il n\'y a pas de destinataire sélectionné'], 422);
+
+        }
         $cde->entite_id = $request->input('entite_id');
-        $cde->societe_contact_id = $request->input('contact_id');
         $cde->show_ref_fournisseur = $request->input('show_ref_fournisseur');
         $cde->nom = $request->input('nom');
-        $cde->total_ht = $request->input('total_ht');
+        // $cde->total_ht = $request->input('total_ht');
         $cde->code = "CDE-" . date('y') . "-" . $code . $entite_code;
         $cde->save();
         $poste = 1;
         $cde->cdeLignes()->delete();
+
+        if (empty($request->input('matieres'))) {
+            DB::commit();
+            return response()->json(['success' => true]);
+        }
         foreach ($request->input('matieres') as $matiere) {
             if (isset($matiere['ligne_autre_id'])) {
                 $cde->cdeLignes()->updateOrCreate(
@@ -275,6 +312,12 @@ class CdeController extends Controller
             return redirect()->route('ddp_cde.index');
         }
     }
+    public function reset($id): RedirectResponse
+    {
+        $cde = Cde::findOrFail($id);
+        $cde->delete();
+        return redirect()->route('cde.create');
+    }
     public function validation($id): View
     {
         $cde = Cde::findOrFail($id);
@@ -283,10 +326,13 @@ class CdeController extends Controller
         $showRefFournisseur = $cde->show_ref_fournisseur;
         $typesExpedition = TypeExpedition::all();
         $conditionsPaiement = ConditionPaiement::all();
-        $societe_id = $cde->societeContact->societe->id;
+        $societe_id = $cde->societe->id;
         $cde_notes = CdeNote::where('entite_id', $cde->entite_id)->get();
+        $total_ht = 0;
         foreach ($cde->cdeLignes as $ligne) {
+            $total_ht += $ligne->prix * $ligne->quantite;
         }
+        $cde->total_ht = $total_ht;
         //verifier si
         if ($showRefFournisseur == true) {
             $listeChangement = [];
@@ -313,12 +359,7 @@ class CdeController extends Controller
         }
         return view('ddp_cde.cde.validation', compact('cde', ['users', 'entite', 'showRefFournisseur', 'typesExpedition', 'conditionsPaiement', 'listeChangement', 'cde_notes']));
     }
-    public function reset($id): RedirectResponse
-    {
-        $cde = Cde::findOrFail($id);
-        $cde->delete();
-        return redirect()->route('cde.create');
-    }
+
     public function validate(Request $request, $id)
     {
         $cde = Cde::findOrFail(id: $id);
@@ -345,6 +386,7 @@ class CdeController extends Controller
             'cdenotes' => 'nullable|array',
             'custom_note' => 'nullable|string|max:255',
             'save_custom_note' => 'nullable|string|max:255',
+            'quick_save' => 'required|string|max:6',
         ]);
         $type_expedition_id = $request->input('type_expedition_id');
         if ($type_expedition_id == 1) {
@@ -378,10 +420,9 @@ class CdeController extends Controller
             }
         }
 
-        $societe = $cde->societeContact->etablissement->societe;
+        $societe = $cde->societe;
         $societe->condition_paiement_id = $condition_paiement_id;
         $societe->save();
-
         if ($request->save_custom_note && $request->save_custom_note == 'on' && !empty($request->custom_note)) {
             CdeNote::create([
                 'contenu' => $request->custom_note,
@@ -399,12 +440,14 @@ class CdeController extends Controller
         $cde->acheteur_id = $request->input('acheteur_id') ?? null;
         $cde->afficher_destinataire = $request->input('afficher_destinataire') ? true : false;
         $cde->tva = $request->input('tva');
+
         $cde->adresse_livraison = $adresse;
         $cde->type_expedition_id = $request->input('type_expedition_id');
         $cde->condition_paiement_id = $condition_paiement_id;
         $cde->frais_de_port = $request->input('frais_de_port') ?? null;
         $cde->frais_divers = $request->input('frais_divers') ?? null;
         $cde->frais_divers_texte = $request->input('frais_divers_texte') ?? null;
+        $cde->total_ttc = ($cde->total_ht + $cde->frais_de_port + $cde->frais_divers) * (1 + ($cde->tva / 100));
         $cde->save();
         foreach ($cde->cdeLignes as $ligne) {
             $ligne->ddp_cde_statut_id = 2;
@@ -424,6 +467,9 @@ class CdeController extends Controller
                 }
             }
         }
+        if ($request->quick_save && $request->quick_save == 'true') {
+            return redirect()->route('cde.validation', $cde->id);
+        }
         $pdf = $this->pdf($cde->id);
         $this->pdf($cde->id, true);
         $mailtemplate = Mailtemplate::where('nom', 'cde')->first();
@@ -436,36 +482,31 @@ class CdeController extends Controller
         $cde->ddp_cde_statut_id = 1;
         $cde->changement_livraison = null;
         $cde->save();
-        return redirect()->route('cde.show', $cde->id);
+        return redirect()->route('cde.validation', $cde->id);
     }
     public function pdf($cde_id, $sans_prix = false)
     {
         $cde = Cde::findOrFail($cde_id)->load('cdeLignes', 'cdeLignes.matiere');
-        $contacts = $cde->societeContact;
+        $contact = $cde->societeContacts->first();
         $lignes = $cde->cdeLignes;
-        $etablissement = $contacts->etablissement;
+        $etablissement = $cde->etablissement;
         $afficher_destinataire = $cde->afficher_destinataire;
         $fileName = $cde->code . '.pdf';
         $entite = $cde->entite;
         $showRefFournisseur = $cde->show_ref_fournisseur;
-        $total_ht = $cde->total_ht + $cde->frais_de_port + $cde->frais_divers;
-        $total_ttc = $total_ht * (1 + ($cde->tva / 100));
         $cde_notes = $cde->cdeNotes;
-        $cde->total_ttc = $total_ttc;
         $cde->save();
         $pdf = app('dompdf.wrapper');
         $pdf->loadView(
             'ddp_cde.cde.pdf',
             [
                 'etablissement' => $etablissement,
-                'contact' => $contacts,
+                'contact' => $contact,
                 'cde' => $cde,
                 'lignes' => $lignes,
                 'afficher_destinataire' => $afficher_destinataire,
                 'entite' => $entite,
                 'showRefFournisseur' => $showRefFournisseur,
-                'total_ttc' => $total_ttc,
-                'total_ht' => $total_ht,
                 'sans_prix' => $sans_prix,
                 'cde_notes' => $cde_notes,
             ]
@@ -703,6 +744,7 @@ class CdeController extends Controller
         }
         // dd($total_ht_table);
         $cde->total_ht = $total_ht + $cde->frais_de_port + $cde->frais_divers;
+        $cde->total_ttc = $total_ht * (1 + ($cde->tva / 100));
         $cde->save();
         return redirect()->route('cde.show', $cde->id);
     }
@@ -718,7 +760,7 @@ class CdeController extends Controller
 
         $cde = Cde::findOrFail($id);
         $cde->ddp_cde_statut_id = 5;
-        $societe = $cde->societeContact->etablissement->societe;
+        $societe = $cde->societe;
         foreach ($cde->cdeLignes as $ligne) {
             $matiere = $ligne->matiere;
             if ($ligne->date_livraison_reelle && $ligne->ddp_cde_statut_id != 4 && $ligne->ligne_autre_id == null) {

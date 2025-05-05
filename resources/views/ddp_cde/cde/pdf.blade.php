@@ -205,6 +205,21 @@
         .whitespace-nowrap {
             white-space: nowrap;
         }
+
+        .text-xs {
+            font-size: 0.60rem;
+            line-height: 0.75rem;
+            margin: 0
+        }
+        .notes {
+            border-collapse: collapse;
+            position: absolute;
+            bottom: 200px;
+            left: 20px;
+            right: 20px;
+            width: calc(100% - 40px);
+        }
+
     </style>
 </head>
 
@@ -292,8 +307,8 @@
                         <th>Désignation</th>
                         <th>Qté</th>
                         @if (!$sans_prix)
-                        <th>PU HT</th>
-                        <th>Total HT</th>
+                            <th>PU HT</th>
+                            <th>Total HT</th>
                         @endif
                         <th>Pour le</th>
                     </tr>
@@ -311,7 +326,8 @@
                                     </div>
                                     @if ($ligne->ref_fournisseur != null && $ligne->ref_fournisseur != '')
                                         <div class="reference-item">
-                                            <span class="reference-label">Réf. Fournisseur</span><br><span class="reference-value">{{ $ligne->ref_fournisseur ?? '' }}</span>
+                                            <span class="reference-label">Réf. Fournisseur</span><br><span
+                                                class="reference-value">{{ $ligne->ref_fournisseur ?? '' }}</span>
                                         </div>
                                     @endif
                                 </div>
@@ -327,32 +343,38 @@
                             <td class="whitespace-nowrap">{{ formatNumber($ligne->quantite) }}
                                 {{ $ligne->matiere ? $ligne->matiere->unite->short : '' }}</td>
                             @if (!$sans_prix)
-                            <td class="whitespace-nowrap">{{ formatNumberArgent($ligne->prix_unitaire) }} </td>
-                            <td class="whitespace-nowrap">{{ formatNumberArgent($ligne->prix) }} </td>
+                                <td class="whitespace-nowrap">{{ formatNumberArgent($ligne->prix_unitaire) }} </td>
+                                <td class="whitespace-nowrap">{{ formatNumberArgent($ligne->prix) }} </td>
                             @endif
-                            <td class="whitespace-nowrap">{{ \Carbon\Carbon::parse($ligne->date_livraison)->format('d/m/Y') }}</td>
+                            <td class="whitespace-nowrap">
+                                {{ \Carbon\Carbon::parse($ligne->date_livraison)->format('d/m/Y') }}</td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
-            @if (!empty($cde_notes))
-                <div class="notes">
-                    @foreach ($cde_notes as $note)
-                        <p>{{ $note->contenu }}</p>
-                    @endforeach
-                </div>
-            @endif
-            @if ($cde->custom_note != null && $cde->custom_note != '')
-                    <p>{{ $cde->custom_note }}</p>
-            @endif
+            </div>
+
+
+
+            <div>
         </div>
         <div>
+            <div class="notes" style="">
+                @if (!empty($cde_notes))
+                @foreach ($cde_notes as $note)
+                    <p class="text-xs">{{ $note->contenu }}</p>
+                @endforeach
+                @endif
+                @if ($cde->custom_note != null && $cde->custom_note != '')
+                <p class="text-xs">{{ $cde->custom_note }}</p>
+                @endif
+            </div>
             <table class="table_recap">
                 <thead>
                     <tr>
                         <th style="border-right: 2px solid #f0f0f0 ;">{{ $cde->typeExpedition->nom }}</th>
-                        @if(!$sans_prix)
-                        <th colspan="3" style="border-left: 2px solid #f0f0f0 ;">Récapitulatif Financier</th>
+                        @if (!$sans_prix)
+                            <th colspan="3" style="border-left: 2px solid #f0f0f0 ;">Récapitulatif Financier</th>
                         @endif
                     </tr>
                 </thead>
@@ -368,40 +390,39 @@
                             <br><span>horaires : {{ $adresse->horaires }}</span>
                         @endif
                     </td>
-                    @if(!$sans_prix)
+                    @if (!$sans_prix)
 
-                    <td style=" border-right: 2px solid #f0f0f0 ;">
-                        <strong>Condition de paiement :</strong>
-                        <br>{{ $cde->conditionPaiement->nom }}
-                        @if ($cde->frais_de_port != null && $cde->frais_de_port != 0 && $cde->frais_de_port != '')
-                            <br><strong>Frais de port :</strong>
-                            <br>{{ formatNumberArgent($cde->frais_de_port) }}
-                        @endif
-                        @if ($cde->frais_divers != null && $cde->frais_divers != 0 && $cde->frais_divers != '')
-                            <br><strong>Frais divers :</strong>
-                            @if ($cde->frais_divers_texte != null && $cde->frais_divers_texte != '')
-                                <br><strong>- {{ $cde->frais_divers_texte }} :</strong>
+                        <td style=" border-right: 2px solid #f0f0f0 ;">
+                            <strong>Condition de paiement :</strong>
+                            <br>{{ $cde->conditionPaiement->nom }}
+                            @if ($cde->frais_de_port != null && $cde->frais_de_port != 0 && $cde->frais_de_port != '')
+                                <br><strong>Frais de port :</strong>
+                                <br>{{ formatNumberArgent($cde->frais_de_port) }}
                             @endif
-                            <br> &nbsp;{{ formatNumberArgent($cde->frais_divers) }}
-                        @endif
-                    </td>
-                    <td style="text-align: left;">
-                        <p><strong>Montant net HT :</strong></p>
-                        <p><strong>TVA ({{ $cde->tva }}%) :</strong></p>
-                        <p><strong>Montant Total TTC :</strong></p>
-                    </td>
-                    <td style="text-align: right;">
-                        <p><strong>{{ formatNumberArgent($total_ht) }} </strong></p>
-                        <p><strong>{{ formatNumberArgent($cde->total_ttc - $total_ht) }} </strong></p>
-                        <p><strong>{{ formatNumberArgent($cde->total_ttc) }} </strong></p>
-                    </td>
+                            @if ($cde->frais_divers != null && $cde->frais_divers != 0 && $cde->frais_divers != '')
+                                <br><strong>Frais divers :</strong>
+                                @if ($cde->frais_divers_texte != null && $cde->frais_divers_texte != '')
+                                    <br><strong>- {{ $cde->frais_divers_texte }} :</strong>
+                                @endif
+                                <br> &nbsp;{{ formatNumberArgent($cde->frais_divers) }}
+                            @endif
+                        </td>
+                        <td style="text-align: left;">
+                            <p><strong>Montant net HT :</strong></p>
+                            <p><strong>TVA ({{ $cde->tva }}%) :</strong></p>
+                            <p><strong>Montant Total TTC :</strong></p>
+                        </td>
+                        <td style="text-align: right;">
+                            <p><strong>{{ formatNumberArgent($cde->total_ht + $cde->frais_de_port + $cde->frais_divers) }} </strong></p>
+                            <p><strong>{{ formatNumberArgent($cde->total_ttc - $cde->total_ht + $cde->frais_de_port + $cde->frais_divers) }} </strong></p>
+                            <p><strong>{{ formatNumberArgent($cde->total_ttc) }} </strong></p>
+                        </td>
                     @endif
                 </tbody>
             </table>
         </div>
     </div>
 
-    <!-- Footer -->
 
 </body>
 

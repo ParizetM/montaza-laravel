@@ -40,11 +40,23 @@
         <form action="{{ route('cde.validate', $cde->id) }}" method="POST">
             @csrf
             <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-6 rounded-md shadow-md">
-                <div class="flex items-center mb-6">
-                    <h1 class="text-3xl font-bold  text-left mr-2">{{ $cde->code }} - {{ $cde->nom }}</h1>
-                    <div class="text-center w-fit px-2 text-xs leading-5 flex rounded-full font-bold items-center justify-center"
-                        style="background-color: {{ $cde->statut->couleur }}; color: {{ $cde->statut->couleur_texte }}">
-                        {{ $cde->statut->nom }}</div>
+                <div class="flex justify-between mb-6">
+
+                    <div class="flex items-center mb-6">
+                        <h1 class="text-3xl font-bold text-left mr-2">
+                            {{ $cde->code }}{{ $cde->code !== $cde->nom ? ' - ' . $cde->nom : '' }}</h1>
+                        <div class="text-center w-fit px-2 text-xs leading-5 flex rounded-full font-bold items-center justify-center"
+                            style="background-color: {{ $cde->statut->couleur }}; color: {{ $cde->statut->couleur_texte }}">
+                            {{ $cde->statut->nom }}</div>
+                    </div>
+                    <button type="submit" class="btn h-fit w-fit" onclick="document.getElementById('quick_save').value = 'true';">
+                        <span class="">Enregistrer</span>
+                    </button>
+                    <input type="hidden" name="quick_save" id="quick_save" value="false">
+                    @error('quick_save')
+                        <span class="text-red-500">{{ $message }}</span>
+
+                    @enderror
                 </div>
 
 
@@ -136,8 +148,21 @@
                             @enderror
                         </div>
                         <div class="flex gap-4">
-                            <x-toggle :checked="old('afficher_destinataire', true)" :label="'Afficher le destinataire dans le PDF ?'" id="afficher_destinataire"
-                                name="afficher_destinataire" class="toggle-class" />
+                            <div class="flex gap-2">
+                                <x-toggle :checked="old('afficher_destinataire', true)" :label="'Afficher le destinataire dans le PDF ?'" id="afficher_destinataire"
+                                    name="afficher_destinataire" class="toggle-class" />
+                                <x-tooltip position="top" class="w-full">
+                                    <x-slot name="slot_item">
+                                        <x-icons.question class="icons" size="1" />
+                                    </x-slot>
+                                    <x-slot name="slot_tooltip">
+                                        <p class="text-sm font-bold">Affiche:</p>
+                                        <p class="text-sm">À l'attention de : {{ $cde->societeContacts->first()->nom }}
+                                        </p>
+                                        <p class="text-sm">{{ $cde->societeContacts->first()->email }}.</p>
+                                    </x-slot>
+                                </x-tooltip>
+                            </div>
                             @error('afficher_destinataire')
                                 <span class="text-red-500">{{ $message }}</span>
                             @enderror
@@ -495,7 +520,7 @@
                                                     ? ($cde->condition_paiement_id == $conditionPaiement->id
                                                         ? 'selected'
                                                         : '')
-                                                    : ($cde->societeContact->etablissement->societe->condition_paiement_id == $conditionPaiement->id
+                                                    : ($cde->societe->condition_paiement_id == $conditionPaiement->id
                                                         ? 'selected'
                                                         : ''),
                                             ) }}>
@@ -530,7 +555,12 @@
                 </div>
                 <div class="flex justify-between mt-4">
                     <a href="{{ route('cde.show', $cde->id) }}" class="btn">{{ __('Retour') }}</a>
-                    <button type="submit" class="btn">{{ __('Valider') }}</button>
+                    <div class="flex gap-2">
+                    <button type="submit" class="btn h-fit w-fit" onclick="document.getElementById('quick_save').value = 'true';">
+                        <span class="">Enregistrer</span>
+                    </button>
+                    <button type="submit" class="btn" title="enregistrer et valider">{{ __('Valider') }}</button>
+                </div>
                 </div>
             </div>
             {{--
