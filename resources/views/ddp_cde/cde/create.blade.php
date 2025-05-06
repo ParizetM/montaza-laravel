@@ -1,13 +1,15 @@
 <x-app-layout>
     @section('title', 'Créer commande ' . $cde->code)
     <x-slot name="header">
-        <div>
+        <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 <a href="{{ route('cde.index') }}"
                     class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">Commandes</a>
                 >>
                 {!! __('Créer une commande') !!}
             </h2>
+            <a href="{{ route('cde.annuler', $cde->id) }}" class="btn">Annuler la commande</a>
+
         </div>
     </x-slot>
     <style>

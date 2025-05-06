@@ -31,6 +31,7 @@ return new class extends Migration
             $table->string('code');
             $table->string('nom');
             $table->foreignId('ddp_cde_statut_id')->constrained(table: 'ddp_cde_statuts');
+            $table->integer('old_statut')->nullable();
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('entite_id')->constrained('entites'); // entité pour qui on fait la commande
             $table->foreignId('ddp_id')->nullable()->constrained('ddps');
@@ -55,7 +56,6 @@ return new class extends Migration
             $table->foreignId('commentaire_id')->constrained('commentaires')->nullable();
             $table->string('custom_note')->nullable();
             $table->json('changement_livraison')->nullable();
-            $table->boolean('IS_STOCKE')->nullable()->default(null);
             $table->timestamps();
         });
         Schema::create('cde_cde_notes', function (Blueprint $table) {
@@ -81,6 +81,7 @@ return new class extends Migration
             $table->date('date_livraison')->nullable();
             $table->date('date_livraison_reelle')->nullable();
             $table->string('ligne_autre_id')->nullable();
+            $table->boolean('is_stocke')->nullable()->default(null);
             $table->timestamps();
         });
         Schema::table('societe_matiere_prixs', function (Blueprint $table) {

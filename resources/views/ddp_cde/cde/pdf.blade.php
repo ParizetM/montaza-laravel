@@ -413,9 +413,9 @@
                             <p><strong>Montant Total TTC :</strong></p>
                         </td>
                         <td style="text-align: right;">
-                            <p><strong>{{ formatNumberArgent($cde->total_ht + $cde->frais_de_port + $cde->frais_divers) }} </strong></p>
-                            <p><strong>{{ formatNumberArgent($cde->total_ttc - $cde->total_ht + $cde->frais_de_port + $cde->frais_divers) }} </strong></p>
-                            <p><strong>{{ formatNumberArgent($cde->total_ttc) }} </strong></p>
+                            <p><strong>{{ formatNumberArgent((float)$cde->total_ht + (float)$cde->frais_de_port + (float)$cde->frais_divers) }} </strong></p>
+                            <p><strong>{{ formatNumberArgent((float)$cde->total_ttc - ((float)$cde->total_ht + (float)$cde->frais_de_port + (float)$cde->frais_divers)) }} </strong></p>
+                            <p><strong>{{ formatNumberArgent((float)$cde->total_ttc) }} </strong></p>
                         </td>
                     @endif
                 </tbody>

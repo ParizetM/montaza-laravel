@@ -120,7 +120,7 @@
                     class="flex px-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 items-center">
                     <x-icon size="1" type="arrow_back" class="fill-gray-500 dark:fill-gray-300" />
                 </a>
-                <div class="w-5/6 ml-0 py-6 px-4 sm:px-6 lg:px-8">
+                <div class="w-19/20 ml-0 py-4 px-4 sm:px-6 lg:px-8">
                     {{ $header }}
                 </div>
             </header>
@@ -131,7 +131,7 @@
                     class="flex p-4 sm:p-6 lg:p-8 px-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 items-center">
                     <x-icon size="1" type="arrow_back" class="fill-gray-500 dark:fill-gray-300" />
                 </a>
-                <div class="w-5/6 ml-0 mt-10 px-4 sm:px-6 lg:px-8">
+                <div class="w-19/20 ml-0 mt-10 px-4 sm:px-6 lg:px-8">
                     {{ $header_nav }}
                 </div>
             </header>

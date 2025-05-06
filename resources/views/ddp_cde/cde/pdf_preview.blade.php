@@ -28,6 +28,7 @@
                     <a href="{{ route('cde.pdfs.download', $cde) }}" class="btn">Télécharger le PDF</a>
                     <a href="{{ route('cde.pdfs.pdfdownload_sans_prix', $cde) }}" class="btn">Télécharger le PDF sans
                         prix</a>
+                        <a href="{{ route('cde.annuler', $cde->id) }}" class="btn">Annuler la commande</a>
                 </div>
 
             </div>

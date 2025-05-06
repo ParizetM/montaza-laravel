@@ -1,13 +1,14 @@
 <x-app-layout>
     @section('title', 'Créer ' . $ddp->code)
     <x-slot name="header">
-        <div>
+        <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 <a href="{{ route('ddp.index') }}"
                     class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">Demandes de prix</a>
                 >>
                 {!! __('Créer une demande de prix') !!}
             </h2>
+            <a href="{{ route('ddp.annuler', $ddp->id) }}" class="btn">Annuler la ddp</a>
         </div>
     </x-slot>
     <style>

@@ -147,6 +147,79 @@ class StockService
             return response()->json(['error' => 'Une erreur est survenue.'], 500);
         }
     }
+    /**
+     * Delete stock movement and adjust inventory
+     *
+     * @param MouvementStock $mouvement The stock movement to delete
+     * @return array|JsonResponse Success response or error
+     */
+    public function deleteStockFromMouvement(MouvementStock $mouvement): array|JsonResponse
+    {
+        try {
+            $matiere = $mouvement->matiere;
 
+            // Determine if this is a tracked value material
+            if ($matiere->typeAffichageStock() == 2) {
+                // Find the corresponding stock entry
+                $stock = Stock::where('matiere_id', $matiere->id)
+                    ->where('valeur_unitaire', $mouvement->valeur_unitaire)
+                    ->first();
+
+                if (!$stock) {
+                    return response()->json(['error' => 'Entrée de stock non trouvée.'], 404);
+                }
+
+                // Reverse the movement effect
+                if ($mouvement->type == 'entree') {
+                    // If it was an entry, we need to remove that quantity
+                    if ($stock->quantite < $mouvement->quantite) {
+                        return response()->json(['error' => 'Impossible d\'annuler le mouvement: stock insuffisant.'], 400);
+                    }
+                    $stock->quantite -= $mouvement->quantite;
+                } else if ($mouvement->type == 'sortie') {
+                    // If it was an exit, we need to add that quantity back
+                    $stock->quantite += $mouvement->quantite;
+                }
+
+                $stock->save();
+            } else {
+                // Simple stock handling
+                $stock = Stock::where('matiere_id', $matiere->id)->first();
+
+                if (!$stock) {
+                    return response()->json(['error' => 'Entrée de stock non trouvée.'], 404);
+                }
+
+                // Reverse the movement effect
+                if ($mouvement->type == 'entree') {
+                    // If it was an entry, we need to remove that quantity
+                    if ($stock->quantite < $mouvement->quantite) {
+                        return response()->json(['error' => 'Impossible d\'annuler le mouvement: stock insuffisant.'], 400);
+                    }
+                    $stock->quantite -= $mouvement->quantite;
+                } else if ($mouvement->type == 'sortie') {
+                    // If it was an exit, we need to add that quantity back
+                    $stock->quantite += $mouvement->quantite;
+                }
+
+                $stock->save();
+            }
+
+            // Delete the movement record
+            $mouvement->delete();
+
+            return [
+                'success' => true,
+                'message' => 'Mouvement de stock annulé avec succès',
+                'stock' => $stock
+            ];
+        } catch (\Exception $e) {
+            \Log::error('Erreur lors de l\'annulation du mouvement de stock', [
+                'exception' => $e->getMessage(),
+                'mouvement_id' => $mouvement->id
+            ]);
+            return response()->json(['error' => 'Une erreur est survenue lors de l\'annulation.'], 500);
+        }
+    }
 
 }

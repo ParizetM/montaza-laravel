@@ -2,7 +2,7 @@
     @section('title', 'Validation - ' . $ddp->code)
 
     <x-slot name="header">
-        <div>
+        <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 <a href="{{ route('ddp.index') }}"
                     class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">Demandes de prix</a>
@@ -12,6 +12,7 @@
                 >> Validation
             </h2>
         </div>
+        <a href="{{ route('ddp.annuler', $ddp->id) }}" class="btn">Annuler la ddp</a>
     </x-slot>
     <div class="max-w-8xl py-4 mx-auto sm:px-4 lg:px-6">
         <form action="{{ route('ddp.validate', $ddp->id) }}" method="POST">

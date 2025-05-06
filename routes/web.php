@@ -160,6 +160,8 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::post('/ddp/save', [DdpController::class, 'save'])->name('ddp.save');
         Route::post('/ddp/get-last-code/{entite}', [DdpController::class, 'getLastCode'])->name('ddp.get_last_code');
         Route::patch('/ddp/{id}/commentaire/save', [DdpController::class, 'updateCommentaire'])->name('ddp.commentaire');
+        Route::get('/ddp/{ddp}/annuler', [DdpController::class, 'annuler'])->name('ddp.annuler');
+        Route::get('/ddp/{ddp}/reprendre', [DdpController::class, 'reprendre'])->name('ddp.reprendre');
         Route::delete('/ddp/{ddp}/destroy', [DdpController::class, 'destroy'])->name('ddp.destroy');
         Route::get('/ddp/{ddp}/validate', [DdpController::class, 'validation'])->name('ddp.validation');
         Route::post('/ddp/{ddp}/validate', [DdpController::class, 'validate'])->name('ddp.validate');
@@ -186,6 +188,8 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::post('/cde/save', [CdeController::class, 'save'])->name('cde.save');
         Route::post('/cde/get-last-code/{entite}', [CdeController::class, 'getLastCode'])->name('cde.get_last_code');
         Route::get('/cde/{cde}', [CdeController::class, 'show'])->name('cde.show');
+        Route::get('/cde/{cde}/annuler', [CdeController::class, 'annuler'])->name('cde.annuler');
+        Route::get('/cde/{cde}/reprendre', [CdeController::class, 'reprendre'])->name('cde.reprendre');
         Route::patch('/cde/{id}/commentaire/save', [CdeController::class, 'updateCommentaire'])->name('cde.commentaire');
         Route::delete('/cde/{cde}/destroy', [CdeController::class, 'destroy'])->name('cde.destroy');
         Route::get('/cde/{cde}/validate', [CdeController::class, 'validation'])->name('cde.validation');
@@ -202,7 +206,9 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::post('/cde/{cde}/upload-ar', [CdeController::class, 'uploadAr'])->name('cde.upload_ar');
         Route::get('/cde/{cde}/annuler_terminer', [CdeController::class, 'annulerTerminer'])->name('cde.annuler_terminer');
         Route::get('/cde/{cde}/terminer_controler', [CdeController::class, 'terminerControler'])->name('cde.terminer_controler');
+        Route::get('/cde/{cde}/annuler_terminer_controler', [CdeController::class, 'annulerTerminerControler'])->name('cde.annuler_terminer_controler');
         Route::post('/cde/{cde}/stock/store', [CdeController::class, 'storeStock'])->name('cde.stock.store');
+        Route::delete('/cde/{cde}/stock/ligne/{ligne}/destroy', [CdeController::class, 'destroyMouvements'])->name('cde.stock.mouvement.destroy');
         Route::get('/cde/{cde}/stock/no', [CdeController::class, 'noStock'])->name('cde.stock.no');
     });
 });

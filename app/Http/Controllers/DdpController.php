@@ -245,6 +245,36 @@ class DdpController extends Controller
             $data[] = $row;
             $ddplignes = $ddp->ddpLigne->where('ligne_autre_id', null)->values();
             return view('ddp_cde.ddp.show', compact('ddp', ['ddp_societes', 'data', 'ddplignes', 'ddp_societe_contacts']));
+        } elseif ($ddp->ddp_cde_statut_id == 4) {
+            $ddp->load('ddpLigne.matiere', 'ddpLigne.ddpLigneFournisseur.societe');
+            $ddpid =  $ddp->id;
+            $familles = Famille::all();
+            $unites = Unite::all();
+            $entites = Entite::all();
+            $ddp_societes = $ddp->ddpLigne->map(function ($ligne) {
+                return $ligne->ddpLigneFournisseur->map(function ($fournisseur) {
+                    return $fournisseur->societe;
+                });
+            })->flatten()->unique('id');
+            $data = [];
+            $row = [];
+            // Lignes des données
+            $table_data = $this->getRetours($id);
+            foreach ($table_data as $index => $row) {
+                $row = array_map(function ($value) {
+                    return $value;
+                }, $row);
+                $data[] = $row;
+            }
+            return view('ddp_cde.ddp.show_annule', [
+                'ddp' => $ddp,
+                'ddpid' => $ddpid,
+                'familles' => $familles,
+                'unites' => $unites,
+                'entites' => $entites,
+                'ddp_societes' => $ddp_societes,
+                'data' => $data
+            ]);
         }
     }
     public function create()
@@ -264,13 +294,13 @@ class DdpController extends Controller
         $ddpid =  $ddp->id;
         return redirect()->route('ddp.show', $ddpid);
     }
- ######     ###    ##     ## ########
-##    ##   ## ##   ##     ## ##
-##        ##   ##  ##     ## ##
- ######  ##     ## ##     ## ######
-      ## #########  ##   ##  ##
-##    ## ##     ##   ## ##   ##
- ######  ##     ##    ###    ########
+    ######     ###    ##     ## ########
+    ##    ##   ## ##   ##     ## ##
+    ##        ##   ##  ##     ## ##
+    ######  ##     ## ##     ## ######
+    ## #########  ##   ##  ##
+    ##    ## ##     ##   ## ##   ##
+    ######  ##     ##    ###    ########
 
 
     public function save(Request $request)
@@ -318,8 +348,10 @@ class DdpController extends Controller
             foreach ($request->matieres as $matiere) {
                 if (isset($matiere['ligne_autre_id'])) {
                     $ddpLigne = $ddp->ddpLigne()->updateOrCreate(
-                        ['ligne_autre_id' => $matiere['ligne_autre_id'],
-                        'ddp_id' => $ddp->id],
+                        [
+                            'ligne_autre_id' => $matiere['ligne_autre_id'],
+                            'ddp_id' => $ddp->id
+                        ],
                         [
                             'case_ref' => $matiere['case_ref'],
                             'case_designation' => $matiere['case_designation'],
@@ -479,7 +511,7 @@ class DdpController extends Controller
             $fileName = $ddp->code . '_' . $etablissement->societe->raison_sociale . '.pdf';
             $entite = $ddp->entite;
             $pdf = app('dompdf.wrapper');
-            $pdf->loadView('ddp_cde.ddp.pdf', ['etablissement' => $etablissement, 'ddp' => $ddp, 'lignes' => $lignes, 'afficher_destinataire' => $afficher_destinataire, 'destinataire' => $destinataire, 'entite' => $entite,'ligne_autres' => $ligne_autres]);
+            $pdf->loadView('ddp_cde.ddp.pdf', ['etablissement' => $etablissement, 'ddp' => $ddp, 'lignes' => $lignes, 'afficher_destinataire' => $afficher_destinataire, 'destinataire' => $destinataire, 'entite' => $entite, 'ligne_autres' => $ligne_autres]);
             $pdf->setOption(['isRemoteEnabled' => true, 'isHtml5ParserEnabled' => true, 'isPhpEnabled' => true]);
             $pdf->output();
             $domPdf = $pdf->getDomPDF();
@@ -660,7 +692,7 @@ class DdpController extends Controller
 
                 // Traitement de la date
                 $date = (!empty($dateString) && $dateString != 'UNDEFINED') ? Carbon::createFromFormat('d/m/Y', $dateString)->format('Y-m-d') : null;
-                                // Vérification et mise à jour ou insertion
+                // Vérification et mise à jour ou insertion
 
                 if ($newPrix != 'UNDEFINED') {
                     $SocieteMatiere = SocieteMatiere::updateOrCreate(
@@ -674,18 +706,18 @@ class DdpController extends Controller
                     );
                     if ($newPrix && $newPrix != 'UNDEFINED' && $last_prix != $newPrix) {
 
-                    SocieteMatierePrix::updateOrCreate(
-                        [
-                            'societe_matiere_id' => $SocieteMatiere->id,
-                            'ddp_ligne_fournisseur_id' => $ddpLigne->ddpLigneFournisseur->where('societe_id', $societeid)->first()->id ?? '2444',
-                        ],
-                        [
-                            'prix_unitaire' => $newPrix ?? 'null',
-                            'date' => now(),
-                        ]
-                    );
+                        SocieteMatierePrix::updateOrCreate(
+                            [
+                                'societe_matiere_id' => $SocieteMatiere->id,
+                                'ddp_ligne_fournisseur_id' => $ddpLigne->ddpLigneFournisseur->where('societe_id', $societeid)->first()->id ?? '2444',
+                            ],
+                            [
+                                'prix_unitaire' => $newPrix ?? 'null',
+                                'date' => now(),
+                            ]
+                        );
+                    }
                 }
-            }
 
 
 
@@ -828,7 +860,7 @@ class DdpController extends Controller
                 $data[] = $row;
             }
         }
-        return $data;
+        return $data ?? [];
     }
     public function terminer($id)
     {
@@ -886,7 +918,6 @@ class DdpController extends Controller
                         'prix_unitaire' => $ddpLigne->matiere->getLastPrice($societe->id) ? $ddpLigne->matiere->getLastPrice($societe->id)->prix_unitaire : null,
                         'date_livraison' => $ddpLigneFournisseur->date_livraison,
                     ]);
-
                 }
             }
         }
@@ -939,5 +970,27 @@ class DdpController extends Controller
             }
         }
         return response()->json(['message' => 'Demande de prix introuvable'], 404);
+    }
+
+    public function annuler($id)
+    {
+        $ddp = Ddp::findOrFail($id);
+        // Store the previous status but don't save status 4 (cancelled) as the old_statut
+        if ($ddp->ddp_cde_statut_id != 4) {
+            $ddp->old_statut = $ddp->ddp_cde_statut_id;
+        }
+        $ddp->ddp_cde_statut_id = 4; // 4 is the status for cancelled DDPs
+        $ddp->save();
+
+        return redirect()->route('ddp.show', $ddp->id)->with('success', 'Demande de prix annulée avec succès');
+    }
+
+    public function reprendre($id)
+    {
+        $ddp = Ddp::findOrFail($id);
+        $ddp->ddp_cde_statut_id = $ddp->old_statut;
+        $ddp->save();
+
+        return redirect()->route('ddp.show', $ddp->id)->with('success', 'Demande de prix reprise avec succès');
     }
 }

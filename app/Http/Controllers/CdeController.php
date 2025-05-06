@@ -52,10 +52,10 @@ class CdeController extends Controller
         if ($cdes->count() < 5) {
             $existingIds = $cdes->pluck('id')->toArray();
             $additionalCdes = Cde::where('nom', '!=', 'undefined')
-            ->whereNotIn('id', $existingIds)
-            ->orderBy('created_at', 'desc')
-            ->take(5 - $cdes->count())
-            ->get();
+                ->whereNotIn('id', $existingIds)
+                ->orderBy('created_at', 'desc')
+                ->take(5 - $cdes->count())
+                ->get();
 
             $cdes = $cdes->concat($additionalCdes);
         }
@@ -129,7 +129,7 @@ class CdeController extends Controller
         $cdeid =  $cde->id;
         return redirect()->route('cde.show', $cdeid);
     }
-    public function show($id)
+    public function show($id, $show_stock = false)
     {
         $cde = Cde::findOrFail($id);
         if ($cde->ddpCdeStatut->id == 1) {
@@ -138,7 +138,7 @@ class CdeController extends Controller
             $unites = Unite::all();
             $entites = Entite::all();
             $societes = Societe::whereIn('societe_type_id', [2, 3])->get();
-            $showRefFournisseur = $cde->show_ref_fournisseur ;
+            $showRefFournisseur = $cde->show_ref_fournisseur;
             $entite_code = Entite::findOrFail($cde->entite_id)->id;
             $lastcode = CDE::where('code', 'LIKE', 'CDE-' . date('y') . '%')
                 ->where('entite_id', $cde->entite_id)
@@ -176,25 +176,37 @@ class CdeController extends Controller
             $typeExpedition = TypeExpedition::all()->pluck('short');
             $data = $this->getRetours($cdeid);
             return view('ddp_cde.cde.retours', compact('cde', ['data', 'showRefFournisseur', 'typeExpedition']));
-        } elseif ($cde->ddpCdeStatut->id == 3 || $cde->ddpCdeStatut->id == 4 || $cde->ddpCdeStatut->id == 5) {
+        } elseif ($cde->ddpCdeStatut->id == 3 || $cde->ddpCdeStatut->id == 5) {
             $cdeid =  $cde->id;
             $showRefFournisseur = $cde->show_ref_fournisseur;
             $pdfcommande = $this->pdf($cdeid);
-            $changements_stock = $cde->mouvementsStock()->get();
-
-
+            // Récupérer les mouvements de stock et les grouper par matière
+            $changements_stock = $cde->cdeLignes()
+                ->where('is_stocke', '!=', null)
+                ->with(['mouvementsStock' => function ($query) {
+                    $query->orderBy('created_at', 'desc');
+                }])
+                ->get();
             return view('ddp_cde.cde.show', [
                 'cde' => $cde,
                 'showRefFournisseur' => $showRefFournisseur,
                 'pdfcommande' => $pdfcommande,
                 'changements_stock' => $changements_stock,
+                'show_stock' => $show_stock,
+            ]);
+        } elseif ($cde->ddpCdeStatut->id == 4) {
+            $cdeid =  $cde->id;
+            $showRefFournisseur = $cde->show_ref_fournisseur;
+            return view('ddp_cde.cde.show_annule', [
+                'cde' => $cde,
+                'showRefFournisseur' => $showRefFournisseur,
             ]);
         }
     }
 
+
     public function save(Request $request)
     {
-
         $validator = \Validator::make($request->all(), [
             'cde_id' => 'required|integer|exists:cdes,id',
             'entite_id' => 'required|integer|exists:entites,id',
@@ -241,17 +253,16 @@ class CdeController extends Controller
 
             // Attach each contact
             foreach ($contactIds as $contactId) {
-            DB::table('cde_societe_contacts')->insert([
-                'cde_id' => $cde->id,
-                'societe_contact_id' => $contactId,
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
+                DB::table('cde_societe_contacts')->insert([
+                    'cde_id' => $cde->id,
+                    'societe_contact_id' => $contactId,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
             }
         } else {
             DB::rollBack();
             return response()->json(['error' => 'il n\'y a pas de destinataire sélectionné'], 422);
-
         }
         $cde->entite_id = $request->input('entite_id');
         $cde->show_ref_fournisseur = $request->input('show_ref_fournisseur');
@@ -299,6 +310,7 @@ class CdeController extends Controller
         DB::commit();
         return response()->json(['success' => true]);
     }
+
     public function destroy($id): RedirectResponse
     {
 
@@ -330,7 +342,7 @@ class CdeController extends Controller
         $cde_notes = CdeNote::where('entite_id', $cde->entite_id)->get();
         $total_ht = 0;
         foreach ($cde->cdeLignes as $ligne) {
-            $total_ht += $ligne->prix * $ligne->quantite;
+            $total_ht += $ligne->prix_unitaire * $ligne->quantite;
         }
         $cde->total_ht = $total_ht;
         //verifier si
@@ -439,8 +451,12 @@ class CdeController extends Controller
         $cde->affaire_suivi_par_id = $request->input('affaire_suivi_par') ?? null;
         $cde->acheteur_id = $request->input('acheteur_id') ?? null;
         $cde->afficher_destinataire = $request->input('afficher_destinataire') ? true : false;
+        $total_ht = 0;
+        foreach ($cde->cdeLignes as $ligne) {
+            $total_ht += $ligne->prix_unitaire * $ligne->quantite;
+        }
+        $cde->total_ht = $total_ht;
         $cde->tva = $request->input('tva');
-
         $cde->adresse_livraison = $adresse;
         $cde->type_expedition_id = $request->input('type_expedition_id');
         $cde->condition_paiement_id = $condition_paiement_id;
@@ -744,7 +760,7 @@ class CdeController extends Controller
         }
         // dd($total_ht_table);
         $cde->total_ht = $total_ht + $cde->frais_de_port + $cde->frais_divers;
-        $cde->total_ttc = $total_ht * (1 + ($cde->tva / 100));
+        $cde->total_ttc = $cde->total_ht * (1 + ($cde->tva / 100));
         $cde->save();
         return redirect()->route('cde.show', $cde->id);
     }
@@ -798,6 +814,14 @@ class CdeController extends Controller
             'cde' => $cde->id,
         ])->with('success', 'Commande terminée avec succès');
     }
+    public function annulerTerminerControler($id)
+    {
+        $cde = Cde::findOrFail($id);
+        $cde->ddp_cde_statut_id = 3;
+        $cde->save();
+
+        return redirect()->route('cde.show', $cde->id);
+    }
     public function storeStock(Request $request, $cdeId)
     {
         $cde = Cde::findOrFail($cdeId);
@@ -823,6 +847,8 @@ class CdeController extends Controller
                                 'Livraison commande - ' . $cde->code,
                                 $ligne->id
                             );
+                            $ligne->is_stocke = true;
+                            $ligne->save();
                         }
                     }
                 } elseif (isset($data['entree'])) {
@@ -837,13 +863,13 @@ class CdeController extends Controller
                             'Livraison commande - ' . $cde->code,
                             $ligne->id
                         );
+                        $ligne->is_stocke = true;
+                        $ligne->save();
                     }
                 }
             }
 
             DB::commit();
-            $cde->IS_STOCKE = true;
-            $cde->save();
             return redirect()->route('cde.show', $cdeId)->with('success', 'Mouvements de stock enregistrés avec succès.');
         } catch (Exception $e) {
             DB::rollBack();
@@ -857,10 +883,24 @@ class CdeController extends Controller
     public function noStock($id)
     {
         $cde = Cde::findOrFail($id);
-        $cde->IS_STOCKE = false;
-        $cde->save();
+        $cde_lignes = $cde->cdeLignes()
+            ->with('ddpCdeStatut')
+            ->whereHas('ddpCdeStatut', function ($query) {
+                $query->where('nom', '!=', 'Annulée');
+            })
+            ->whereNotNull('date_livraison_reelle')
+            ->whereNull('is_stocke')
+            ->get();
+        if ($cde_lignes->isEmpty()) {
+            return redirect()->route('cde.show', $cde->id)->with('error', 'Aucun mouvement de stock à valider');
+        }
+        foreach ($cde_lignes as $ligne) {
+            $ligne->is_stocke = false;
+            $ligne->save();
+        }
         return redirect()->route('cde.show', $cde->id)->with('success', 'Commande validée sans mouvement de stock');
     }
+
     /**
      * Retourne le prochain code de CDE
      * @param mixed $entite_id
@@ -909,4 +949,53 @@ class CdeController extends Controller
         }
     }
 
+    public function destroyMouvements($cdeId, $ligneid)
+    {
+        try {
+            $cde = Cde::findOrFail($cdeId);
+            $cdeLigne = $cde->cdeLignes()->findOrFail($ligneid);
+            $mouvements = $cdeLigne->mouvementsStock()->get();
+
+            if (!$mouvements) {
+                return response()->json(['error' => 'Mouvement introuvable'], 404);
+            }
+
+
+            // Supprimer le mouvement et ajuste le stock
+            foreach ($mouvements as $mouvement) {
+                $this->stockService->deleteStockFromMouvement($mouvement);
+            }
+            // mettre à jour le statut is_stocke
+            if ($cdeLigne) {
+                $cdeLigne->is_stocke = null;
+                $cdeLigne->save();
+            }
+            return response()->json(['success' => 'Mouvement supprimé avec succès']);
+        } catch (Exception $e) {
+            Log::error('Erreur lors de la suppression des mouvements de stock', [
+                'exception' => $e->getMessage(),
+                'cde_ligne_id' => $ligneid,
+            ]);
+            return response()->json(['error' => 'Une erreur est survenue lors de la suppression des mouvements de stock'], 500);
+        }
+    }
+
+    public function annuler($id) {
+        $cde = Cde::findOrFail($id);
+        // Save the current status as old_statut, but only if it's not the cancellation status (4)
+        if ($cde->ddp_cde_statut_id != 4) {
+            $cde->old_statut = $cde->ddp_cde_statut_id;
+        }
+        $cde->ddp_cde_statut_id = 4;
+        $cde->save();
+
+        return redirect()->route('cde.show', $cde->id)->with('success', 'Commande annulée avec succès');
+    }
+    public function reprendre($id) {
+        $cde = Cde::findOrFail($id);
+        $cde->ddp_cde_statut_id = $cde->old_statut;
+        $cde->save();
+
+        return redirect()->route('cde.show', $cde->id)->with('success', 'Commande reprise avec succès');
+    }
 }

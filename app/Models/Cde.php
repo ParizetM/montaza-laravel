@@ -16,9 +16,11 @@ class Cde extends Model
 
 
     protected $fillable = [
+        'id',
         'code',
         'nom',
         'ddp_cde_statut_id',
+        'old_statut',
         'user_id',
         'entite_id',
         'ddp_id',
@@ -27,18 +29,24 @@ class Cde extends Model
         'devis_numero',
         'affaire_suivi_par_id',
         'acheteur_id',
+        'frais_de_port',
+        'frais_divers',
+        'frais_divers_texte',
+        'total_ht',
         'tva',
+        'total_ttc',
         'type_expedition_id',
         'adresse_livraison',
         'adresse_facturation',
         'condition_paiement_id',
-        'afficher_destinataire',
         'accuse_reception',
-        'commentaire_id',
-        'cde_note_id',
-        'changement_livraison',
         'show_ref_fournisseur',
-        'IS_STOCKE',
+        'afficher_destinataire',
+        'commentaire_id',
+        'custom_note',
+        'changement_livraison',
+        'created_at',
+        'updated_at',
     ];
     public function cdeLignes()
     {

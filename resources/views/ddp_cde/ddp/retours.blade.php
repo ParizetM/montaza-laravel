@@ -14,6 +14,7 @@
 
             </div>
             <a href="{{ route('ddp.pdfs.download', $ddp) }}" class="btn">Télécharger tous les PDF</a>
+            <a href="{{ route('ddp.annuler', $ddp->id) }}" class="btn">Annuler la ddp</a>
         </div>
     </x-slot>
     <div class="max-w-8xl py-4 mx-auto sm:px-4 lg:px-6">

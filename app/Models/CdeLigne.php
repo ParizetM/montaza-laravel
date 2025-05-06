@@ -25,7 +25,8 @@ class CdeLigne extends Model
         'date_livraison',
         'ddp_cde_statut_id',
         'type_expedition_id',
-        'date_livraison_reele',
+        'date_livraison_reelle',
+        'is_stocke',
         'ligne_autre_id',
     ];
     public function unite()
