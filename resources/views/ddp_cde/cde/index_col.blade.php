@@ -1,13 +1,18 @@
 <div class="bg-white dark:bg-gray-800 flex flex-col p-4 text-gray-800 dark:text-gray-200">
-    <h1 class="text-3xl font-bold mb-1">
-        {{ __('Commandes') }}
-    </h1>
     <div class="flex justify-between items-center">
+
+    <h1 class="text-3xl font-bold mb-1">
+        <a href="{{ route('cde.index') }}" class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">
+            {{ __('Commandes') }}
+        </a>
+    </h1>
+    <a href="{{ route('cde.index') }}" class="btn mb-2">Voir tout</a>
+
+</div>
+
         <p class="text-lg mb-2">
             Commandes en cours
         </p>
-        <a href="{{ route('cde.index') }}" class="btn mb-2">Voir tout</a>
-    </div>
     <table>
         <thead>
             <tr>
@@ -17,8 +22,8 @@
                     <th class="px-4 py-2"></th>
                 @endif
                 <th class="px-4 py-2">Nom</th>
-                @if(!$isSmall)
-                <th class="px-4 py-2">Créer par</th>
+                @if (!$isSmall)
+                    <th class="px-4 py-2">Créer par</th>
                 @endif
                 <th class="px-4 py-2">Statut</th>
             </tr>
@@ -37,21 +42,21 @@
                     <td class="pl-2 text-xs leading-5 {{ $isSmall ? 'text-center' : 'text-right' }}">
                         <span class="text-nowrap"><span class="pr-1 leading-5">{{ $cde->created_at->format('d/m/Y') }}</span>
                     </td>
-                    @if (!$isSmall)
+                       @if (!$isSmall)
                     <td class="pr-2 text-xs leading-5">
                         <small>{{ $cde->updated_at->format('H:i') }}</small></span>
                     </td>
-                    @endif
+            @endif
 
 
             <!-- Nom -->
             <td>
                 {{ $cde->nom }}
             </td>
-            @if(!$isSmall)
-            <td>
-                {{ $cde->user->first_name }} {{ $cde->user->last_name }}
-            </td>
+            @if (!$isSmall)
+                <td>
+                    {{ $cde->user->first_name }} {{ $cde->user->last_name }}
+                </td>
             @endif
 
             <!-- Statut avec couleur dynamique -->

@@ -127,7 +127,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::get('/matieres/standards', [StandardController::class, 'index'])->name('standards.index');
         Route::get('/matieres/{matiere}', [MatiereController::class, 'show'])->name('matieres.show');
         Route::get('/matieres/{matiere}/prix/{fournisseur}', [MatiereController::class, 'showPrix'])->name('matieres.show_prix');
-        Route::post('/matieres/{matiere}/mouvement', [MatiereController::class, 'retirerMouvement'])->name('matieres.mouvement');
+        Route::post('/matieres/{matiere}/retirer', [MatiereController::class, 'retirerMatiere'])->name('matieres.retirer');
 
 
         Route::delete('/matieres/standards/delete', [StandardController::class, 'destroy'])->name('standards.destroy');

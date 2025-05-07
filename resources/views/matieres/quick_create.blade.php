@@ -7,6 +7,24 @@
         <form method="POST" action="{{ route('matieres.quickStore', $modal_id) }}" onsubmit="handleFormSubmit(event)"
             class="w-full text-gray-900 dark:text-gray-100" id="quick-create-form">
             @csrf
+            <div class="mb-4 flex">
+                <div class="mb-4">
+                    <x-input-label for="ref_interne" :value="__('référence interne')" />
+                    <x-text-input type="text" name="ref_interne" id="ref_interne" class="mt-1 block w-full" required
+                        value="{{ $last_ref }}" />
+                </div>
+                <div class="mb-4 ml-2 flex-grow">
+                    <x-input-label for="societe_id" :value="__('référence externe')" />
+                    <div class="flex w-full">
+                        <select name="societe_id" id="societe_id-{{ $modal_id }}" class="mt-1 py-3 select-left rounded-r-none" required>
+                            @foreach ($societes as $societe)
+                                <option value="{{ $societe->id }}">{{ $societe->raison_sociale }}</option>
+                            @endforeach
+                        </select>
+                        <x-text-input type="text" name="ref_externe" id="ref_externe" class="mt-1 block w-full rounded-l-none" placeholder="Référence" />
+                    </div>
+                </div>
+            </div>
             <div class="mb-4">
                 <x-input-label for="designation" :value="__('Désignation')" />
                 <x-text-input type="text" name="designation" id="designation" class="mt-1 block w-full" required />
@@ -30,8 +48,7 @@
                             class="select-left w-full" required>
                             <option value="" disabled selected>Sélectionner d'abord une famille</option>
                         </select>
-                        {{-- <a href="{{ route('matieres.create_sous_famille') }}" target="_blank"
-                            class="btn-select-right"><x-icons.add /></a> --}}
+
                         <button class="btn-select-right" x-data id="addSousFamille-{{ $modal_id }}" disabled
                             x-on:click.prevent="$dispatch('open-modal', 'addSousFamille-{{ $modal_id }}')"><x-icons.add /></button>
 
@@ -72,16 +89,17 @@
                         required />
                 </div>
                 <div class=" mr-2">
-                    <div class="w-full flex justify-between">
-                    <x-input-label for="ref_valeur_unitaire-{{ $modal_id }}"
-                        value="{{ __('Valeur Réf Unitaire') }}" />
+                    <div class="w-full flex">
+                        <x-input-label for="ref_valeur_unitaire-{{ $modal_id }}"
+                            value="{{ __('Valeur Réf Unitaire') }}" />
                         <x-tooltip position="top">
                             <x-slot name="slot_item">
                                 <x-icons.question class="icons" size="1" />
                             </x-slot>
                             <x-slot name="slot_tooltip">
                                 <p class="text-sm font-bold">Valeur de référence unitaire de la matière</p>
-                                <p class="text-sm">Exemple: Longueur standard de stockage, comme 6m ou 12m pour un tuyau.</p>
+                                <p class="text-sm">Exemple: Longueur standard de stockage, comme 6m ou 12m pour un
+                                    tuyau.</p>
                             </x-slot>
                         </x-tooltip>
                     </div>
@@ -290,6 +308,7 @@
 
                         // Simulate typing the designation letter by letter
                         var i = 0;
+
                         function typeDesignation() {
                             if (i < designation.length) {
                                 // Create and dispatch keyboard event
@@ -302,7 +321,9 @@
                                 // Also update the value
                                 searchbar.value += designation.charAt(i);
                                 // Trigger input event to ensure search functionality activates
-                                searchbar.dispatchEvent(new Event('input', { bubbles: true }));
+                                searchbar.dispatchEvent(new Event('input', {
+                                    bubbles: true
+                                }));
                                 i++;
                                 setTimeout(typeDesignation, 50); // 50ms delay between each character
                             }

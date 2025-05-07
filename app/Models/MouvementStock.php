@@ -58,5 +58,9 @@ class MouvementStock extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function cdeLigne()
+    {
+        return $this->belongsTo(CdeLigne::class, 'cde_ligne_id');
+    }
 }
 

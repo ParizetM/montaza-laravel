@@ -595,7 +595,6 @@
                         societeContactContainer.dataset.newOptions = JSON.stringify(formattedOptions);
                     }
 
-                    document.getElementById('searchbar').focus();
                     liveSearch();
                 })
                 .catch(error => {
@@ -619,12 +618,13 @@
                 const societe_select = document.getElementById('societe_select');
 
                 // Vérifie que le destinataire est bien sélectionné
-                if (societeContactSelect.value === "") {
+                if (societeContactSelect.value === "[]") {
                     searchbar.classList.add('border-red-500', 'dark:border-red-600', 'border-2',
                         'focus:border-red-500', 'dark:focus:border-red-600');
                     showFlashMessageFromJs('Veuillez d\'abord sélectionner un destinataire', 2000, 'error');
                     searchbar.blur();
                     societe_select.focus();
+                    matiereTable.innerHTML ='';
                     return;
                 }
 
@@ -684,8 +684,7 @@
 
                                 tr.setAttribute('data-matiere-id', matiere.id || '');
                                 tr.setAttribute('data-matiere-ref', matiere.refInterne || '');
-                                tr.setAttribute('data-matiere-ref-fournisseur', matiere
-                                    .lastPriceRefFournisseur || '');
+                                tr.setAttribute('data-matiere-ref-fournisseur', matiere.refexterne || '');
                                 tr.setAttribute('data-matiere-designation', matiere.designation || '');
                                 tr.setAttribute('data-prix', matiere.lastPrice || '');
                                 tr.setAttribute('data-matiere-unite', matiere.lastPriceUnite || matiere

@@ -1,4 +1,4 @@
-<x-volet-modal name="changements-stock" direction="right" x-init="$dispatch('open-volet', 'changements-stock')" :show="($cde->cdeLignes->where('ddpCdeStatut.nom', '!=', 'Annulée')->where('date_livraison_reelle', '!=', null)->whereNull('is_stocke')->count() > 0) || $show_stock ? 1 : 0"
+<x-volet-modal name="changements-stock" direction="right" x-init="$dispatch('open-volet', 'changements-stock')" :show="($cde->cdeLignes->where('ddpCdeStatut.nom', '!=', 'Annulée')->where('date_livraison_reelle', '!=', null)->whereNull('is_stocke')->whereNull('ligne_autre_id')->count() > 0) || $show_stock ? 1 : 0"
     x-on:close="$dispatch('close-volet', 'changements-stock')">
     <div class="p-6 text-gray-900 dark:text-gray-100">
         <div class="flex justify-between items-center mb-4">
@@ -21,23 +21,17 @@
                 <x-icons.close class="icons" size="1.5" unfocus />
             </button>
         </div>
-        @if ($cde->cdeLignes->where('ddpCdeStatut.nom', '!=', 'Annulée')->where('date_livraison_reelle', '!=', null)->whereNull('is_stocke')->count() > 0)
+        @if ($cde->cdeLignes->where('ddpCdeStatut.nom', '!=', 'Annulée')->where('date_livraison_reelle', '!=', null)->whereNull('is_stocke')->whereNull('ligne_autre_id')->count() > 0)
 
+            <h2 class="text-md font-semibold">À ajouter au stock</h2>
 
 
             <form id="stock-form" method="POST" action="{{ route('cde.stock.store', $cde->id) }}">
                 @csrf
                 <table class="w-full border-collapse border-0 rounded-md">
-                    <thead>
-                        <tr>
-                            {{-- <th style="width: 5px; padding: 0%;padding-top:5px;">
-                            <div class="poste">Poste</div>
-                        </th>
-                        <th class="p-2">Mouvements</th> --}}
-                        </tr>
-                    </thead>
+
                     <tbody>
-                        @foreach ($cde->cdeLignes->where('ddpCdeStatut.nom', '!=', 'Annulée')->where('date_livraison_reelle', '!=', null)->whereNull('is_stocke') as $ligne)
+                        @foreach ($cde->cdeLignes->where('ddpCdeStatut.nom', '!=', 'Annulée')->where('date_livraison_reelle', '!=', null)->whereNull('is_stocke')->whereNull('ligne_autre_id') as $ligne)
                             @php
                                 $ligne->load('matiere.unite');
                             @endphp
@@ -54,11 +48,22 @@
                                                 {{ $ligne->poste }}
                                             </span>
                                             <div class="flex gap-2">
-                                                <div class="flex flex-col">
-                                                    <span class="font-medium text-sm">{{ $ligne->ref_interne }}</span>
-                                                    <span
-                                                        class="font-medium text-sm">{{ $ligne->ref_fournisseur }}</span>
-                                                </div>
+                                                <x-tooltip position="top">
+                                                    <x-slot name="slot_tooltip">
+                                                        <a href="{{ route('matieres.show', $ligne->matiere->id) }}"
+                                                            target="_blank"
+                                                            class="lien">{{ $ligne->matiere->designation }}</a>
+                                                    </x-slot>
+                                                    <x-slot name="slot_item">
+                                                        <div class="flex flex-col">
+                                                            <span
+                                                                class="font-medium text-sm">{{ $ligne->ref_interne }}</span>
+                                                            <span
+                                                                class="font-medium text-sm">{{ $ligne->ref_fournisseur }}</span>
+                                                        </div>
+                                                    </x-slot>
+                                                </x-tooltip>
+
                                                 <span
                                                     class="text-gray-700 dark:text-gray-400 text-sm line-clamp-1">{{ $ligne->matiere->designation }}</span>
                                             </div>
@@ -82,6 +87,7 @@
                                                 $ligne->matiere->typeAffichageStock() == '2' &&
                                                     $ligne->matiere->ref_valeur_unitaire != null &&
                                                     $ligne->matiere->ref_valeur_unitaire != 0)
+
                                                 @php
                                                     $unites = floor(
                                                         $ligne->quantite / $ligne->matiere->ref_valeur_unitaire,
@@ -91,7 +97,7 @@
                                                         $unites * $ligne->matiere->ref_valeur_unitaire;
                                                 @endphp
                                                 <div class="flex w-full justify-end">
-                                                    <p class="text-sm text-gray-800 -mt-9 md:-mt-5">Valeur unitaire :
+                                                    <p class="text-sm text-gray-800 dark:text-gray-200 -mt-9 md:-mt-5">Valeur unitaire :
                                                         {{ $ligne->matiere->ref_valeur_unitaire }}
                                                         {{ $ligne->matiere->unite->short }}</p>
                                                 </div>
@@ -203,7 +209,7 @@
                                                                 </td>
                                                             </tr>
                                                         @endif
-                                                        <tr class="border-b border-gray-400 dark:border-gray-700"
+                                                        <tr class="relative"
                                                             id="add-row-container-{{ $ligne->poste }}">
                                                             <td class="p-1 text-center" colspan="4">
                                                                 <button type="button"
@@ -213,6 +219,9 @@
                                                                         Ajouter une ligne
                                                                     </span>
                                                                 </button>
+                                                                <div class="absolute right-0 top-0 mr-2 mt-1">
+                                                                Total : <span id="total-{{ $ligne->poste }}">{{ formatNumber($ligne->quantite) }}</span>{{ $ligne->matiere->unite->short }}
+                                                            </div>
                                                             </td>
                                                         </tr>
                                                         <script>
@@ -301,6 +310,7 @@
                                                                 });
                                                             });
                                                         </script>
+
                                                     </tbody>
                                                 </table>
                                             @else
@@ -371,6 +381,85 @@
                     </div>
                 </div>
             </x-modal>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Get all the postes from the page
+                    const postes = Array.from(document.querySelectorAll('[id^="button-"]')).map(el => el.id.split('-')[1]);
+
+                    // Initialize total calculation for each poste
+                    postes.forEach(poste => {
+                        calculateTotal(poste);
+
+                        // Add event listeners to existing inputs
+                        const inputs = document.querySelectorAll(`input[id^="stock-${poste}-row-"][id$="-quantity"], input[id^="stock-${poste}-row-"][id$="-unit-value"]`);
+                        inputs.forEach(input => {
+                            input.addEventListener('input', () => calculateTotal(poste));
+                        });
+                    });
+
+                    // Add mutation observer to detect when new rows are added
+                    const observer = new MutationObserver(mutations => {
+                        mutations.forEach(mutation => {
+                            if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                                mutation.addedNodes.forEach(node => {
+                                    if (node.nodeType === 1 && node.id && node.id.startsWith('stock-') && node.id.includes('-row-')) {
+                                        const poste = node.id.split('-')[1];
+
+                                        // Add event listeners to new inputs
+                                        const newInputs = node.querySelectorAll('input[id$="-quantity"], input[id$="-unit-value"]');
+                                        newInputs.forEach(input => {
+                                            input.addEventListener('input', () => calculateTotal(poste));
+                                        });
+
+                                        // Calculate the new total
+                                        calculateTotal(poste);
+                                    }
+                                });
+                            }
+                        });
+                    });
+
+                    // Observe the entire document for changes
+                    observer.observe(document.body, { childList: true, subtree: true });
+
+                    // Override the deleteStockRow function to recalculate totals
+                    window.deleteStockRowOriginal = window.deleteStockRow;
+                    window.deleteStockRow = function(rowId) {
+                        const poste = rowId.split('-')[1];
+                        window.deleteStockRowOriginal(rowId);
+                        calculateTotal(poste);
+                    };
+                });
+
+                function calculateTotal(poste) {
+                    // Find all rows for this poste
+                    const rows = document.querySelectorAll(`tr[id^="stock-${poste}-row-"]`);
+                    let total = 0;
+
+                    // Calculate sum of quantity × unit value for each row
+                    rows.forEach(row => {
+                        const quantityInput = row.querySelector(`input[id$="-quantity"]`);
+                        const unitValueInput = row.querySelector(`input[id$="-unit-value"]`);
+
+                        if (quantityInput && unitValueInput) {
+                            const quantity = parseFloat(quantityInput.value) || 0;
+                            const unitValue = parseFloat(unitValueInput.value) || 0;
+                            total += quantity * unitValue;
+                        }
+                    });
+
+                    // Format total to 2 decimal places
+                    total = parseFloat(total.toFixed(2));
+
+                    // Update the total display
+                    const totalDisplay = document.getElementById(`total-${poste}`);
+                    if (totalDisplay) {
+                        totalDisplay.textContent = total.toString().replace('.', ',');
+                    }
+
+                    return total;
+                }
+            </script>
         @endif
         {{--
 ##     ##  #######  ##     ## ##     ## ######## ##     ## ######## ##    ## ########      ######## #### ##    ## ####

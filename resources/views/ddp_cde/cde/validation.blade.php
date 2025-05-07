@@ -197,7 +197,7 @@
                             <small>(Optionnel)</small>
                         </div>
                         <div class="price-input-container">
-                            <x-text-input name="frais_de_port" type="number" step="0.01" :value="old('frais_de_port', $cde->frais_de_port)"
+                            <x-text-input name="frais_de_port" type="number" step="0.01" :value="old('frais_de_port', formatNumber($cde->frais_de_port,true))"
                                 onblur="recalculateTotal()" class=" price-input" />
                         </div>
                         @error('frais_de_port')
@@ -211,7 +211,7 @@
                                 <small>(Optionnel)</small>
                             </div>
                             <div class="price-input-container">
-                                <x-text-input name="frais_divers" type="number" step="0.01" :value="old('frais_divers', $cde->frais_divers)"
+                                <x-text-input name="frais_divers" type="number" step="0.01" :value="old('frais_divers', formatNumber($cde->frais_divers,true))"
                                     onblur="fraisDiversChange();recalculateTotal()" class="price-input" />
                             </div>
                             @error('frais_divers')

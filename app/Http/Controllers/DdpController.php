@@ -321,8 +321,9 @@ class DdpController extends Controller
             'matieres.*.case_designation' => 'nullable|string|max:255',
             'matieres.*.case_quantite' => 'nullable|string|max:255',
         ]);
-
+        DB::beginTransaction();
         if ($validator->fails()) {
+            DB::rollBack();
             return response()->json(['errors' => $validator->errors()], 400);
         }
         $entite_code = Entite::findOrFail($request->entite_id)->id;
@@ -336,7 +337,8 @@ class DdpController extends Controller
         if ($request->code && ctype_digit($request->code)) {
             $code = str_pad($request->code, 4, '0', STR_PAD_LEFT);
         } else {
-            response()->json(['error' => 'Invalid code format'], 400);
+            DB::rollBack();
+           return response()->json(['error' => 'Invalid code format'], 400);
         }
         try {
             $ddp = Ddp::findOrFail($request->ddp_id);
@@ -380,9 +382,10 @@ class DdpController extends Controller
                     }
                 }
             }
-
+            DB::commit();
             return response()->json(['message' => 'Demande de prix sauvegardée avec succès']);
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json(['error' => 'erreur de sauvegarde', 'message' => $e->getMessage()], 500);
         }
     }

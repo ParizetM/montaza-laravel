@@ -9,9 +9,10 @@ if (!function_exists('formatNumber')) {
      * a fixed number of decimal places.
      *
      * @param mixed $number The number to be formatted. It can be an integer, float, or a string representing a number.
+     * @param bool $without_space Optional. If true, the formatted number will not include spaces as thousand separators.
      * @return string The formatted number as a string.
      */
-     function formatNumber($number): string {
+     function formatNumber($number,$without_space = false): string {
         // Vérifier si le nombre est numérique
         if (!is_numeric($number)) {
             return (string)$number;
@@ -29,7 +30,11 @@ if (!function_exists('formatNumber')) {
         $partie_decimale = rtrim($partie_decimale, '0');
 
         // Formater la partie entière avec des espaces entre les milliers
-        $partie_entiere_formattee = number_format((float)$partie_entiere, 0, '.', ' ');
+        if ($without_space) {
+            $partie_entiere_formattee = number_format((float)$partie_entiere, 0, '.', '');
+        } else {
+            $partie_entiere_formattee = number_format((float)$partie_entiere, 0, '.', ' ');
+        }
 
         // Si la partie décimale n'est pas vide, on l'ajoute au résultat final
         if ($partie_decimale !== '') {

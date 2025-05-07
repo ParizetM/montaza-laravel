@@ -8,11 +8,13 @@ use App\Models\Famille;
 use App\Models\Matiere;
 use App\Models\MouvementStock;
 use App\Models\Societe;
+use App\Models\SocieteMatiere;
 use App\Models\SousFamille;
 use App\Models\Standard;
 use App\Models\StandardVersion;
 use App\Models\Stock;
 use App\Models\Unite;
+use App\Services\StockService;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -98,7 +100,6 @@ class MatiereController extends Controller
         // }
         return $query;
     }
-
     /**
      * Méthode searchResult avec pagination.
      */
@@ -174,8 +175,6 @@ class MatiereController extends Controller
             'familles' => $familles,
         ]);
     }
-
-
     public function sousFamillesJson(Famille $famille)
     {
         $sousFamilles = $famille->sousFamilles->map(function ($sousFamille) {
@@ -219,24 +218,83 @@ class MatiereController extends Controller
             $fournisseur->ref_externe = $matiere->societeMatiere($fournisseur->id)->ref_externe;
         }
 
-        $dates = $matiere->mouvementStocks ? null : $matiere->mouvementStocks->pluck('created_at');
-        $quantites = $matiere->mouvementStocks->pluck('quantite');
+        // Get historical movement data for charts
+        $mouvements = $matiere->mouvementStocks()->orderBy('date', 'asc')->get();
+        $dates = $mouvements->pluck('date');
 
-        $quantitemouvement = 0;
-        foreach ($matiere->mouvementStocks as $mouvement) {
-            $quantitemouvement += $mouvement->quantite  * ($mouvement->type_mouvement ? 1 : -1);
+        // Initialize tracking variables
+        $stockHistory = [];
+        $currentStock = [];
+
+        // For type 2 materials (tracked by unit value)
+        if ($matiere->typeAffichageStock() == 2) {
+            // Group stocks by valeur_unitaire
+            $stocksByValue = $matiere->stock->groupBy('valeur_unitaire');
+
+            // Initialize current stock for each value
+            foreach ($stocksByValue as $valeur => $stocks) {
+            $currentStock[$valeur] = 0;
+            }
+
+            // Calculate running total for each movement
+            foreach ($mouvements as $mouvement) {
+            $valeur = $mouvement->valeur_unitaire;
+
+            // Initialize if this unit value wasn't seen before
+            if (!isset($currentStock[$valeur])) {
+                $currentStock[$valeur] = 0;
+            }
+
+            // Update the stock based on movement type
+            if ($mouvement->type == 'entree') {
+                $currentStock[$valeur] += $mouvement->quantite;
+            } else {
+                $currentStock[$valeur] -= $mouvement->quantite;
+            }
+
+            // Store the point in time snapshot
+            $stockHistory[] = [
+                'date' => $mouvement->date,
+                'valeur_unitaire' => $valeur,
+                'quantite' => $currentStock[$valeur],
+                'total' => array_sum($currentStock)
+            ];
+            }
+
+            // Get total quantity for chart
+            $quantites = collect($stockHistory)->pluck('total');
         }
-        $quantiteActuelle = $matiere->quantite() - $quantitemouvement;
-        $quantites = $matiere->mouvementStocks->sortBy('created_at')->map(function ($mouvement) use (&$quantiteActuelle, $matiere) {
+        // For type 1 materials (simple quantity tracking)
+        else {
+            $currentQuantity = 0;
 
-            $quantiteActuelle += $mouvement->quantite  * ($mouvement->type_mouvement ? 1 : -1);
-            return $quantiteActuelle;
-        });
+            // Calculate running total for each movement
+            foreach ($mouvements as $mouvement) {
+            if ($mouvement->type == 'entree') {
+                $currentQuantity += $mouvement->quantite;
+            } else {
+                $currentQuantity -= $mouvement->quantite;
+            }
+
+            $stockHistory[] = [
+                'date' => $mouvement->date,
+                'quantite' => $currentQuantity
+            ];
+            }
+
+            // Get total quantity for chart
+            $quantites = collect($stockHistory)->pluck('quantite');
+        }
+
+        // Convert to collections for the view
+        $stockHistory = collect($stockHistory);
+        $mouvements = $matiere->mouvementStocks->sortByDesc('created_at');
 
         return view('matieres.show', [
             'matiere' => $matiere,
             'fournisseurs' => $fournisseurs,
             'dates' => $dates,
+            'mouvements' => $mouvements,
             'quantites' => $quantites,
         ]);
     }
@@ -257,78 +315,74 @@ class MatiereController extends Controller
             'prix' => $prix,
         ]);
     }
-    public function mouvement(Request $request, $matiereId)
+
+    public function retirerMatiere($matiere_id, Request $request)
     {
+        // Validate the request
         $request->validate([
-            'type' => 'required|in:entree,sortie',
-            'quantite' => 'required|integer|min:1',
+            'quantite' => 'required|numeric|min:0.01',
             'valeur_unitaire' => 'nullable|numeric|min:0',
-            'raison' => 'nullable|string|max:255',
+            'motif' => 'required|string|max:50',
         ]);
 
-        $matiere = Matiere::findOrFail($matiereId);
-        $valeurUnitaire = $request->valeur_unitaire ?? $matiere->ref_valeur_unitaire;
+        try {
+            // Get the matiere
+            $matiere = Matiere::findOrFail($matiere_id);
 
-        if (!$valeurUnitaire) {
-            return response()->json(['error' => 'Aucune valeur unitaire définie.'], 400);
-        }
+            // Initialize StockService
+            $stockService = new StockService();
 
-        $stock = Stock::firstOrCreate(
-            ['matiere_id' => $matiere->id, 'valeur_unitaire' => $valeurUnitaire]
-        );
+            // Process stock exit
+            $result = $stockService->stock(
+                $matiere_id,
+                'sortie',
+                $request->quantite,
+                $request->valeur_unitaire,
+                $request->motif,
+                null
+            );
 
-        if ($request->type == 'entree') {
-            $stock->quantite += $request->quantite;
-        } elseif ($request->type == 'sortie') {
-            if ($stock->quantite < $request->quantite) {
-                return response()->json(['error' => 'Stock insuffisant.'], 400);
+            // Check if the result is an error response
+            if (is_a($result, \Illuminate\Http\JsonResponse::class)) {
+                return redirect()
+                    ->back()
+                    ->withInput()  // Ajout de cette ligne pour préserver les données du formulaire
+                    ->with('error', $result->getData()->error);
             }
-            $stock->quantite -= $request->quantite;
+
+            // Success
+            return redirect()
+                ->route('matieres.show', $matiere_id)
+                ->with('success', 'Matière retirée avec succès');
+        } catch (\Exception $e) {
+            Log::error('Erreur lors du retrait de matière', [
+                'matiere_id' => $matiere_id,
+                'quantite' => $request->quantite,
+                'exception' => $e->getMessage()
+            ]);
+
+            return redirect()
+                ->back()
+                ->withInput()  // Ajout de cette ligne pour préserver les données du formulaire
+                ->with('error', 'Une erreur est survenue lors du retrait.');
         }
-
-        $stock->save();
-
-        MouvementStock::create([
-            'matiere_id' => $matiere->id,
-            'user_id' => Auth::id(),
-            'type' => $request->type,
-            'quantite' => $request->quantite,
-            'valeur_unitaire' => $valeurUnitaire,
-            'raison' => $request->raison,
-            'date' => now(),
-        ]);
-
-        return response()->json([
-            'message' => 'Mouvement enregistré avec succès.',
-            'stock' => $stock
-        ]);
     }
 
-
-
-    public function retirerMouvement($matiere_id, Request $request)
-    {
-        $matiere = Matiere::findOrFail($matiere_id);
-        $request->validate([
-            'quantite' => 'required|numeric',
-            'type' => 'required|boolean',
-        ]);
-        $test = $this->mouvement($matiere_id, $request->input('quantite'), type: $request->input('type'));
-        if (!$test) {
-            return back()->with('error', "Impossible de retirer {$request->input('quantite')} {$matiere->unite->short} à {$matiere->designation}");
-        }
-        return back()->with('success', "{$request->input('quantite')} {$matiere->unite->short} {$matiere->designation} a été retiré avec succès");
-    }
     public function quickCreate($modal_id): View
     {
         $familles = Famille::all();
         $dossier_standards = DossierStandard::all();
         $unites = Unite::all();
+        $last_ref = Matiere::max('id') + 1;
+        $last_ref = 'AA-' . str_pad($last_ref, 5, '0', STR_PAD_LEFT);
+        $societes = Societe::fournisseurs()->get();
         return view('matieres.quick_create', [
             'familles' => $familles,
             'unites' => $unites,
             'modal_id' => $modal_id,
             'dossier_standards' => $dossier_standards,
+            'last_ref' => $last_ref,
+            'societes' => $societes,
         ]);
     }
     public function quickStore(Request $request)
@@ -337,6 +391,7 @@ class MatiereController extends Controller
         $request->validate([
             'standard_id' => 'nullable|exists:standards,nom',
             'standard_version_id' => 'nullable|exists:standard_versions,version',
+            'ref_interne' => 'required|string|unique:matieres,ref_interne',
             'designation' => 'required|string|max:255',
             'unite_id' => 'required|exists:unites,id',
             'sous_famille_id' => 'required|exists:sous_familles,id',
@@ -345,6 +400,8 @@ class MatiereController extends Controller
             'quantite' => 'required|integer',
             'stock_min' => 'required|integer',
             'ref_valeur_unitaire' => 'nullable',
+            'societe_id' => 'nullable|exists:societes,id',
+            'ref_externe' => 'nullable|string|max:255',
         ]);
         $lastref = Matiere::max('id') + 1;
         $dn = $request->input('dn') ?: null;
@@ -368,14 +425,15 @@ class MatiereController extends Controller
             $standard_version_id = null;
         }
 
-        if ($request->input('ref_valeur_unitaire') === '' || $request->input('ref_valeur_unitaire') === 'non'){
+        if ($request->input('ref_valeur_unitaire') === '' || $request->input('ref_valeur_unitaire') === 'non') {
             $ref_valeur_unitaire = null;
         } else {
             $ref_valeur_unitaire = $request->input('ref_valeur_unitaire');
         }
+
         $matiere = Matiere::create(
             [
-                'ref_interne' => 'AA-' . str_pad($lastref, 5, '0', STR_PAD_LEFT),
+                'ref_interne' => $request->input('ref_interne') ?: 'AA-' . str_pad($lastref, 5, '0', STR_PAD_LEFT),
                 'designation' => $request->input('designation'),
                 'unite_id' => $request->input('unite_id'),
                 'sous_famille_id' => $request->input('sous_famille_id'),
@@ -389,7 +447,28 @@ class MatiereController extends Controller
                 'ref_valeur_unitaire' => $ref_valeur_unitaire,
             ]
         );
-
+        if ($request->input('societe_id') === '' || $request->input('societe_id') === null) {
+            $societe_id = null;
+        } else {
+            $societe_id = $request->input('societe_id');
+        }
+        if ($request->input('ref_externe') === '' || $request->input('ref_externe') === null) {
+            $ref_externe = null;
+        } else {
+            $ref_externe = $request->input('ref_externe');
+        }
+        if ($societe_id && $ref_externe !== null) {
+            $societe = Societe::findOrFail($societe_id);
+            SocieteMatiere::updateOrCreate(
+                [
+                    'societe_id' => $societe->id,
+                    'matiere_id' => $matiere->id,
+                ],
+                [
+                    'ref_externe' => $ref_externe ?? null,
+                ]
+            );
+        }
         return response()->json([
             'success' => true,
             'matiere' => $matiere,

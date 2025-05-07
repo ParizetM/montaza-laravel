@@ -17,6 +17,47 @@ class SocieteProductionSeeder extends Seeder
     public function run(): void
     {
         $societe = Societe::create([
+            'raison_sociale' => "Chantiers de l'Atlantique",
+            'siren' => '439067612',
+            'forme_juridique_id' => 5,
+            'code_ape_id' => 279,
+            'societe_type_id' => 3,
+            'telephone' => '02 51 10 91 00',
+            'email' => null,
+            'site_web' => 'chantiers-atlantique.com',
+            'numero_tva' => 'FR78439067612',
+            'condition_paiement_id' => 1,
+            'commentaire_id' => Commentaire::factory()->create()->id,
+        ]);
+        $etablissement = Etablissement::create([
+            'adresse' => 'Avenue Antoine Bourdelle - CS90180',
+            'nom' => 'CHANTIERS DE L\'ATLANTIQUE ST NAZAIRE',
+            'code_postal' => '44613',
+            'ville' => 'Saint Nazaire',
+            'region' => 'Pays de la Loire',
+            'pay_id' => 65,
+            'societe_id' => $societe->id,
+            'siret' => '43906761200036',
+            'commentaire_id' => Commentaire::factory()->create()->id,
+        ]);
+        SocieteContact::create([
+            'nom' => 'Arnaud CORBIERE',
+            'fonction' => 'Technique',
+            'email' => 'Arnaud.Corbiere@chantiers-atlantique.com',
+            'telephone_fixe' => '+33251 167012',
+            'telephone_portable' => null,
+            'etablissement_id' => $etablissement->id,
+        ]);
+        SocieteContact::create([
+            'nom' => 'M Agnes PEROUZE',
+            'fonction' => 'Achats',
+            'email' => 'Marie-agnes.Perouze-jouan@chantiers-atlantique.com',
+            'telephone_fixe' => '+33251104001',
+            'telephone_portable' => null,
+            'etablissement_id' => $etablissement->id,
+        ]);
+
+        $societe = Societe::create([
             'raison_sociale' => "PROLIANS VAMA DOCKS",
             'siren' => '856802145',
             'forme_juridique_id' => 6,
@@ -213,45 +254,6 @@ class SocieteProductionSeeder extends Seeder
             'etablissement_id' => $etablissement->id,
         ]);
 
-        $societe = Societe::create([
-            'raison_sociale' => "Chantiers de l'Atlantique",
-            'siren' => '439067612',
-            'forme_juridique_id' => 5,
-            'code_ape_id' => 279,
-            'societe_type_id' => 3,
-            'telephone' => '02 51 10 91 00',
-            'email' => null,
-            'site_web' => 'chantiers-atlantique.com',
-            'numero_tva' => 'FR78439067612',
-            'condition_paiement_id' => 1,
-            'commentaire_id' => Commentaire::factory()->create()->id,
-        ]);
-        $etablissement = Etablissement::create([
-            'adresse' => 'Avenue Antoine Bourdelle - CS90180',
-            'nom' => 'CHANTIERS DE L\'ATLANTIQUE ST NAZAIRE',
-            'code_postal' => '44613',
-            'ville' => 'Saint Nazaire',
-            'region' => 'Pays de la Loire',
-            'pay_id' => 65,
-            'societe_id' => $societe->id,
-            'siret' => '43906761200036',
-            'commentaire_id' => Commentaire::factory()->create()->id,
-        ]);
-        SocieteContact::create([
-            'nom' => 'Arnaud CORBIERE',
-            'fonction' => 'Technique',
-            'email' => 'Arnaud.Corbiere@chantiers-atlantique.com',
-            'telephone_fixe' => '+33251 167012',
-            'telephone_portable' => null,
-            'etablissement_id' => $etablissement->id,
-        ]);
-        SocieteContact::create([
-            'nom' => 'M Agnes PEROUZE',
-            'fonction' => 'Achats',
-            'email' => 'Marie-agnes.Perouze-jouan@chantiers-atlantique.com',
-            'telephone_fixe' => '+33251104001',
-            'telephone_portable' => null,
-            'etablissement_id' => $etablissement->id,
-        ]);
+
     }
 }

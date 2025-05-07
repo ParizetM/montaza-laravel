@@ -80,14 +80,44 @@ class CdeController extends Controller
         $query = Cde::query()
             ->where('nom', '!=', 'undefined')
             ->when($search, function ($query, $search) {
-                $query->where(function ($subQuery) use ($search) {
-                    $subQuery->where('nom', 'ILIKE', "%{$search}%")
-                        ->orWhere('code', 'ILIKE', "%{$search}%")
-                        ->orWhereHas('user', function ($subQuery) use ($search) {
-                            $subQuery->where('first_name', 'ILIKE', "%{$search}%")
-                                ->orWhere('last_name', 'ILIKE', "%{$search}%");
-                        });
-                });
+                // Diviser la recherche en termes individuels
+                $terms = explode(' ', $search);
+
+                if (count($terms) == 1) {
+                    // Recherche simple avec un seul terme
+                    $query->where(function ($subQuery) use ($search) {
+                        $subQuery->where('nom', 'ILIKE', "%{$search}%")
+                            ->orWhere('code', 'ILIKE', "%{$search}%")
+                            ->orWhereHas('user', function ($subQuery) use ($search) {
+                                $subQuery->where('first_name', 'ILIKE', "%{$search}%")
+                                    ->orWhere('last_name', 'ILIKE', "%{$search}%");
+                            })
+                            ->orWhereHas('cdeLignes', function ($subQuery) use ($search) {
+                                $subQuery->where('ref_interne', 'ILIKE', "%{$search}%")
+                                    ->orWhere('ref_fournisseur', 'ILIKE', "%{$search}%")
+                                    ->orWhere('designation', 'ILIKE', "%{$search}%");
+                            });
+                    });
+                } else {
+                    // Recherche avancée avec plusieurs termes
+                    $query->where(function ($mainQuery) use ($terms) {
+                        foreach ($terms as $term) {
+                            $mainQuery->where(function ($subQuery) use ($term) {
+                                $subQuery->where('nom', 'ILIKE', "%{$term}%")
+                                    ->orWhere('code', 'ILIKE', "%{$term}%")
+                                    ->orWhereHas('user', function ($subQuery) use ($term) {
+                                        $subQuery->where('first_name', 'ILIKE', "%{$term}%")
+                                            ->orWhere('last_name', 'ILIKE', "%{$term}%");
+                                    })
+                                    ->orWhereHas('cdeLignes', function ($subQuery) use ($term) {
+                                        $subQuery->where('ref_interne', 'ILIKE', "%{$term}%")
+                                            ->orWhere('ref_fournisseur', 'ILIKE', "%{$term}%")
+                                            ->orWhere('designation', 'ILIKE', "%{$term}%");
+                                    });
+                            });
+                        }
+                    });
+                }
             })
             ->when($statut, function ($query, $statut) {
                 $query->where('ddp_cde_statut_id', $statut);
@@ -844,7 +874,7 @@ class CdeController extends Controller
                                 'entree',
                                 $quantity,
                                 $unitValue,
-                                'Livraison commande - ' . $cde->code,
+                                'Livraison - ' . $cde->code,
                                 $ligne->id
                             );
                             $ligne->is_stocke = true;
@@ -890,6 +920,7 @@ class CdeController extends Controller
             })
             ->whereNotNull('date_livraison_reelle')
             ->whereNull('is_stocke')
+            ->whereNull('ligne_autre_id')
             ->get();
         if ($cde_lignes->isEmpty()) {
             return redirect()->route('cde.show', $cde->id)->with('error', 'Aucun mouvement de stock à valider');

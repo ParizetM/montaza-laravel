@@ -17,7 +17,8 @@
 
             </div>
             <a href="{{ route('cde.pdfs.download', $cde) }}" class="btn">Télécharger le PDF</a>
-            <a href="{{ route('cde.pdfs.pdfdownload_sans_prix', $cde) }}" class="btn">Télécharger le PDF sans prix</a>
+            <a href="{{ route('cde.pdfs.pdfdownload_sans_prix', $cde) }}" class="btn">Télécharger le PDF sans
+                prix</a>
             <a href="{{ route('cde.annuler', $cde->id) }}" class="btn">Annuler la commande</a>
         </div>
     </x-slot>
@@ -124,39 +125,65 @@
                                         <td class="text-center ml-1 p-2">
                                             {{ $ligne->poste }}
                                         </td>
-                                        <td class="text-left ml-1 p-2">
-                                            <x-tooltip position="top">
-                                                <x-slot name="slot_tooltip">
-                                                    <a href="{{ route('matieres.show', $ligne->matiere->id) }}"
-                                                        target="_blank"
-                                                        class="lien">{{ $ligne->matiere->designation }}</a>
-                                                </x-slot>
-                                                <x-slot name="slot_item">
-                                                    <div class="flex flex-col {{ $showRefFournisseur ? '' : 'hidden' }}"
-                                                        id="refs-{{ $ligne->matiere_id }}">
-                                                        <div class="flex flex-col">
-                                                            <span class="text-xs">Réf. Interne</span>
-                                                            <span
-                                                                class="font-bold">{{ $ligne->ref_interne ?? '-' }}</span>
-                                                        </div>
-                                                        <div class="flex flex-col">
-                                                            <span class="text-xs">Réf. Fournisseur</span>
-                                                            <span
-                                                                class="font-bold">{{ $ligne->ref_fournisseur ?? '-' }}</span>
+                                        @if ($ligne->ligne_autre_id == null)
+                                            <td class="text-left ml-1 p-2">
+                                                <x-tooltip position="top">
+                                                    <x-slot name="slot_tooltip">
+                                                        <a href="{{ route('matieres.show', $ligne->matiere->id) }}"
+                                                            target="_blank"
+                                                            class="lien">{{ $ligne->matiere->designation }}</a>
+                                                    </x-slot>
+                                                    <x-slot name="slot_item">
+                                                        <div class="flex flex-col {{ $showRefFournisseur ? '' : 'hidden' }}"
+                                                            id="refs-{{ $ligne->matiere_id }}">
+                                                            <div class="flex flex-col">
+                                                                <span class="text-xs">Réf. Interne</span>
+                                                                <span
+                                                                    class="font-bold">{{ $ligne->ref_interne ?? '-' }}</span>
+                                                            </div>
+                                                            <div class="flex flex-col">
+                                                                <span class="text-xs">Réf. Fournisseur</span>
+                                                                <span
+                                                                    class="font-bold">{{ $ligne->ref_fournisseur ?? '-' }}</span>
 
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div class="flex flex-col {{ $showRefFournisseur ? 'hidden' : '' }}"
-                                                        id="ref-{{ $ligne->matiere_id }}">
-                                                        <div class="flex flex-col">
-                                                            <span class="text-xs">Réf. Interne</span>
-                                                            <span
-                                                                class="font-bold">{{ $ligne->ref_interne ?? '-' }}</span>
+                                                        <div class="flex flex-col {{ $showRefFournisseur ? 'hidden' : '' }}"
+                                                            id="ref-{{ $ligne->matiere_id }}">
+                                                            <div class="flex flex-col">
+                                                                <span class="text-xs">Réf. Interne</span>
+                                                                <span
+                                                                    class="font-bold">{{ $ligne->ref_interne ?? '-' }}</span>
+                                                            </div>
                                                         </div>
+                                                    </x-slot>
+                                                </x-tooltip>
+                                            </td>
+                                        @else
+                                            <td class="text-left ml-1 p-2">
+                                                <div class="flex flex-col {{ $showRefFournisseur ? '' : 'hidden' }}"
+                                                    id="refs-{{ $ligne->ligne_autre_id }}">
+                                                    <div class="flex flex-col">
+                                                        <span class="text-xs">Réf. Interne</span>
+                                                        <span class="font-bold">{{ $ligne->ref_interne ?? '-' }}</span>
                                                     </div>
-                                                </x-slot>
-                                            </x-tooltip>
-                                        </td>
+                                                    <div class="flex flex-col">
+                                                        <span class="text-xs">Réf. Fournisseur</span>
+                                                        <span
+                                                            class="font-bold">{{ $ligne->ref_fournisseur ?? '-' }}</span>
+
+                                                    </div>
+                                                </div>
+                                                <div class="flex flex-col {{ $showRefFournisseur ? 'hidden' : '' }}"
+                                                    id="ref-{{ $ligne->ligne_autre_id }}">
+                                                    <div class="flex flex-col">
+                                                        <span class="text-xs">Réf. Interne</span>
+                                                        <span
+                                                            class="font-bold">{{ $ligne->ref_interne ?? '-' }}</span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        @endif
                                         <td class="p-2 text-left">{{ $ligne->designation }}</td>
                                         <td class="p-2 text-right"
                                             title="{{ formatNumber($ligne->quantite) }} {{ $ligne->matiere ? $ligne->matiere->unite->full : '' }}">
@@ -366,11 +393,12 @@
         </div>
         <div class="flex justify-between items-center mt-6">
             @if ($cde->statut->id == 3)
-                <a href="{{ route('cde.annuler_terminer', $cde->id) }}" class="btn float-right">Retour</a>
+                <a href="{{ route('cde.annuler_terminer', $cde->id) }}" class="btn float-right">annuler terminé</a>
                 <a href="{{ route('cde.terminer_controler', $cde->id) }}" class="btn float-right">Terminer et
                     controlé</a>
             @elseif ($cde->statut->id == 5)
-                <a href="{{ route('cde.annuler_terminer_controler', $cde->id) }}" class="btn float-right">Retour</a>
+                <a href="{{ route('cde.annuler_terminer_controler', $cde->id) }}" class="btn float-right">Annuler
+                    controlé</a>
             @endif
 
         </div>

@@ -34,6 +34,28 @@ class Societe extends Model
         'site_web',
         'commentaire_id'
     ];
+
+    /**
+     * Scope a query to only include suppliers (type 2 or 3).
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFournisseurs($query)
+    {
+        return $query->whereIn('societe_type_id', [2, 3]);
+    }
+    /**
+     * Scope a query to only include customers (type 1).
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeClients($query)
+    {
+        return $query->whereIn('societe_type_id', [1, 3]);
+    }
+
     public function formeJuridique(): BelongsTo
     {
         return $this->belongsTo(FormeJuridique::class);
