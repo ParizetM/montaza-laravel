@@ -98,6 +98,12 @@ class MatiereController extends Controller
         // } else {
         //     Log::warning("No explanation data was generated for the query.");
         // }
+        // Add sorting by stock quantity if requested
+        $query->addSelect(['total_stock' => function ($q) {
+            $q->selectRaw('COALESCE(SUM(CASE WHEN stocks.valeur_unitaire > 0 THEN stocks.quantite * stocks.valeur_unitaire ELSE stocks.quantite END), 0)')
+            ->from('stocks')
+            ->whereColumn('stocks.matiere_id', 'matieres.id');
+        }])->orderBy('total_stock', 'desc');
         return $query;
     }
     /**
@@ -233,32 +239,32 @@ class MatiereController extends Controller
 
             // Initialize current stock for each value
             foreach ($stocksByValue as $valeur => $stocks) {
-            $currentStock[$valeur] = 0;
+                $currentStock[$valeur] = 0;
             }
 
             // Calculate running total for each movement
             foreach ($mouvements as $mouvement) {
-            $valeur = $mouvement->valeur_unitaire;
+                $valeur = $mouvement->valeur_unitaire;
 
-            // Initialize if this unit value wasn't seen before
-            if (!isset($currentStock[$valeur])) {
-                $currentStock[$valeur] = 0;
-            }
+                // Initialize if this unit value wasn't seen before
+                if (!isset($currentStock[$valeur])) {
+                    $currentStock[$valeur] = 0;
+                }
 
-            // Update the stock based on movement type
-            if ($mouvement->type == 'entree') {
-                $currentStock[$valeur] += $mouvement->quantite;
-            } else {
-                $currentStock[$valeur] -= $mouvement->quantite;
-            }
+                // Update the stock based on movement type
+                if ($mouvement->type == 'entree') {
+                    $currentStock[$valeur] += $mouvement->quantite;
+                } else {
+                    $currentStock[$valeur] -= $mouvement->quantite;
+                }
 
-            // Store the point in time snapshot
-            $stockHistory[] = [
-                'date' => $mouvement->date,
-                'valeur_unitaire' => $valeur,
-                'quantite' => $currentStock[$valeur],
-                'total' => array_sum($currentStock)
-            ];
+                // Store the point in time snapshot
+                $stockHistory[] = [
+                    'date' => $mouvement->date,
+                    'valeur_unitaire' => $valeur,
+                    'quantite' => $currentStock[$valeur],
+                    'total' => array_sum($currentStock)
+                ];
             }
 
             // Get total quantity for chart
@@ -270,16 +276,16 @@ class MatiereController extends Controller
 
             // Calculate running total for each movement
             foreach ($mouvements as $mouvement) {
-            if ($mouvement->type == 'entree') {
-                $currentQuantity += $mouvement->quantite;
-            } else {
-                $currentQuantity -= $mouvement->quantite;
-            }
+                if ($mouvement->type == 'entree') {
+                    $currentQuantity += $mouvement->quantite;
+                } else {
+                    $currentQuantity -= $mouvement->quantite;
+                }
 
-            $stockHistory[] = [
-                'date' => $mouvement->date,
-                'quantite' => $currentQuantity
-            ];
+                $stockHistory[] = [
+                    'date' => $mouvement->date,
+                    'quantite' => $currentQuantity
+                ];
             }
 
             // Get total quantity for chart
@@ -365,6 +371,130 @@ class MatiereController extends Controller
                 ->back()
                 ->withInput()  // Ajout de cette ligne pour préserver les données du formulaire
                 ->with('error', 'Une erreur est survenue lors du retrait.');
+        }
+    }
+    public function ajouterMatiere($matiere_id, Request $request)
+    {
+        // Validate the request
+        $request->validate([
+            'quantite' => 'required|numeric|min:0.01',
+            'valeur_unitaire' => 'nullable|numeric|min:0',
+            'motif' => 'required|string|max:50',
+        ]);
+
+        try {
+            // Get the matiere
+            $matiere = Matiere::findOrFail($matiere_id);
+
+            // Initialize StockService
+            $stockService = new StockService();
+
+            // Process stock entry
+            $result = $stockService->stock(
+                $matiere_id,
+                'entree',
+                $request->quantite,
+                $request->valeur_unitaire,
+                $request->motif,
+                null
+            );
+
+            // Check if the result is an error response
+            if (is_a($result, \Illuminate\Http\JsonResponse::class)) {
+                return redirect()
+                    ->back()
+                    ->withInput()
+                    ->with('error', $result->getData()->error);
+            }
+
+            // Success
+            return redirect()
+                ->route('matieres.show', $matiere_id)
+                ->with('success', 'Matière ajoutée avec succès');
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de l\'ajout de matière', [
+                'matiere_id' => $matiere_id,
+                'quantite' => $request->quantite,
+                'exception' => $e->getMessage()
+            ]);
+
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Une erreur est survenue lors de l\'ajout.');
+        }
+    }
+
+    /**
+     * Ajuster la valeur unitaire d'une portion de stock existante
+     */
+    public function ajusterMatiere($matiere_id, Request $request)
+    {
+        // Validate the request
+        $request->validate([
+            'stock_id' => 'required|exists:stocks,id',
+            'quantite_ajuster' => 'required|numeric|min:0.01',
+            'nouvelle_valeur' => 'required|numeric|min:0',
+            'motif' => 'required|string|max:50',
+        ]);
+
+        try {
+            // Get the matiere and verify ownership
+            $matiere = Matiere::findOrFail($matiere_id);
+            $stock = Stock::findOrFail($request->stock_id);
+
+            // Make sure the stock belongs to this matiere
+            if ($stock->matiere_id != $matiere_id) {
+                return redirect()
+                    ->back()
+                    ->withInput()
+                    ->with('error', 'Cette entrée de stock n\'appartient pas à cette matière.');
+            }
+
+            // Verify the quantity to adjust
+            if ($request->quantite_ajuster > $stock->quantite) {
+                return redirect()
+                    ->back()
+                    ->withInput()
+                    ->with('error', 'La quantité à ajuster ne peut pas dépasser la quantité disponible.');
+            }
+
+            // Initialize StockService
+            $stockService = new StockService();
+
+            // Process stock adjustment
+            $result = $stockService->ajusterStock(
+                $request->stock_id,
+                $request->quantite_ajuster,
+                $request->nouvelle_valeur,
+                $request->motif
+            );
+
+            // Check if the result is an error response
+            if (is_a($result, \Illuminate\Http\JsonResponse::class)) {
+                return redirect()
+                    ->back()
+                    ->withInput()
+                    ->with('error', $result->getData()->error);
+            }
+
+            // Success
+            return redirect()
+                ->route('matieres.show', $matiere_id)
+                ->with('success', 'Valeur unitaire ajustée avec succès pour ' . $request->quantite_ajuster . ' unités');
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de l\'ajustement de la valeur unitaire', [
+                'matiere_id' => $matiere_id,
+                'stock_id' => $request->stock_id,
+                'quantite_ajuster' => $request->quantite_ajuster,
+                'nouvelle_valeur' => $request->nouvelle_valeur,
+                'exception' => $e->getMessage()
+            ]);
+
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Une erreur est survenue lors de l\'ajustement.');
         }
     }
 

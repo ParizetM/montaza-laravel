@@ -63,7 +63,7 @@
                             <div>
                                 <strong class="text-gray-800 dark:text-gray-200">{{ __('Code APE :') }}</strong>
                                 <x-copiable_text text="{{ $societe->codeApe->code ?? '' }}" />
-                                <small>{{ $societe->codeApe ? '($societe->codeApe->nom)' : '' }}</small>
+                                <small>{{ $societe->codeApe ? '('.$societe->codeApe->nom.')' : '' }}</small>
                             </div>
                             <div>
                                 <strong class="text-gray-800 dark:text-gray-200">{{ __('SIREN :') }}</strong>

@@ -211,15 +211,17 @@
             line-height: 0.75rem;
             margin: 0
         }
+
         .notes {
             border-collapse: collapse;
             position: absolute;
             bottom: 200px;
+            margin: 20px 10px;
+            text-align: center;
             left: 20px;
             right: 20px;
             width: calc(100% - 40px);
         }
-
     </style>
 </head>
 
@@ -340,8 +342,50 @@
                                 </div>
                             </td>
                             <td style="text-align: left; padding-left: 10px;">{{ $ligne->designation }}</td>
-                            <td class="whitespace-nowrap">{{ formatNumber($ligne->quantite) }}
-                                {{ $ligne->matiere ? $ligne->matiere->unite->short : '' }}</td>
+                            <td style="text-align: right;">{{ formatNumber($ligne->quantite) }} {{ $ligne->matiere->unite->short ?? '' }}</td>
+                            @if ($sans_prix)
+                                <td class="whitespace-nowrap">
+                                    @if (
+                                        $ligne->matiere &&
+                                            $ligne->matiere->typeAffichageStock() == '2' &&
+                                            $ligne->matiere->ref_valeur_unitaire != null &&
+                                            $ligne->matiere->ref_valeur_unitaire != 0)
+                                        @php
+                                            $unites = floor($ligne->quantite / $ligne->matiere->ref_valeur_unitaire);
+                                            $reste = $ligne->quantite - $unites * $ligne->matiere->ref_valeur_unitaire;
+
+                                            // First handle the case where we have units and remainder
+                                            if ($unites > 1 && $reste > 0) {
+                                                $value_reste = $ligne->matiere->ref_valeur_unitaire + $reste;
+                                                $unites = $unites - 1;
+                                            }
+                                            // Then handle the case where quantity is less than ref value
+                                            elseif ($ligne->quantite < $ligne->matiere->ref_valeur_unitaire) {
+                                                $value_reste = $ligne->quantite;
+                                                $unites = 0;
+                                            }
+                                            // Otherwise just use the remainder as is
+                                            else {
+                                                $value_reste = $reste;
+                                            }
+                                        @endphp
+
+                                        @if ($unites > 0)
+                                            {{ $unites }}x {{ $ligne->matiere->ref_valeur_unitaire }} {{ $ligne->matiere->unite->short }}
+                                            @if ($reste > 0)
+                                                +
+                                            @endif
+                                        @endif
+
+                                        @if ($reste > 0)
+                                            1x {{ formatNumber($value_reste) }} {{ $ligne->matiere->unite->short }}
+                                        @endif
+                                    @else
+                                        {{ formatNumber($ligne->quantite) }} {{ $ligne->matiere ? $ligne->matiere->unite->short : '' }}
+                                    @endif
+                                </td>
+                            @endif
+
                             @if (!$sans_prix)
                                 <td class="whitespace-nowrap">{{ formatNumberArgent($ligne->prix_unitaire) }} </td>
                                 <td class="whitespace-nowrap">{{ formatNumberArgent($ligne->prix) }} </td>
@@ -352,21 +396,21 @@
                     @endforeach
                 </tbody>
             </table>
-            </div>
+        </div>
 
 
 
-            <div>
+        <div>
         </div>
         <div>
             <div class="notes" style="">
                 @if (!empty($cde_notes))
-                @foreach ($cde_notes as $note)
-                    <p class="text-xs">{{ $note->contenu }}</p>
-                @endforeach
+                    @foreach ($cde_notes as $note)
+                        <p class="text-xs">{{ $note->contenu }}</p>
+                    @endforeach
                 @endif
                 @if ($cde->custom_note != null && $cde->custom_note != '')
-                <p class="text-xs">{{ $cde->custom_note }}</p>
+                    <p class="text-xs">{{ $cde->custom_note }}</p>
                 @endif
             </div>
             <table class="table_recap">
@@ -413,9 +457,11 @@
                             <p><strong>Montant Total TTC :</strong></p>
                         </td>
                         <td style="text-align: right;">
-                            <p><strong>{{ formatNumberArgent((float)$cde->total_ht + (float)$cde->frais_de_port + (float)$cde->frais_divers) }} </strong></p>
-                            <p><strong>{{ formatNumberArgent((float)$cde->total_ttc - ((float)$cde->total_ht + (float)$cde->frais_de_port + (float)$cde->frais_divers)) }} </strong></p>
-                            <p><strong>{{ formatNumberArgent((float)$cde->total_ttc) }} </strong></p>
+                            <p><strong>{{ formatNumberArgent((float) $cde->total_ht + (float) $cde->frais_de_port + (float) $cde->frais_divers) }}
+                                </strong></p>
+                            <p><strong>{{ formatNumberArgent((float) $cde->total_ttc - ((float) $cde->total_ht + (float) $cde->frais_de_port + (float) $cde->frais_divers)) }}
+                                </strong></p>
+                            <p><strong>{{ formatNumberArgent((float) $cde->total_ttc) }} </strong></p>
                         </td>
                     @endif
                 </tbody>

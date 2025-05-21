@@ -276,7 +276,7 @@
                             </table>
                             <div class="w-full flex justify-end gap-2 text-center">
                                 <button type="button"
-                                    class="btn w-fit rounded-none rounded-bl-xl bg-gray-800 hover:bg-gray-700 hover:shadow-lg transition-all duration-300 py-0 px-4 mt-0"
+                                    class="btn w-fit rounded-none rounded-bl-xl bg-white dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 hover:shadow-lg transition-all duration-300 py-0 px-4 mt-0"
                                     onclick="addLigneVide()" title="Ajouter une ligne vide">
                                     <span class="text-center w-full text-4xl">
                                         +

@@ -592,7 +592,7 @@
                 </script>
                 <x-modal name="listeChangement-modal" id="listeChangement-modal" title="Liste des changements"
                     maxWidth="5xl">
-                    <div class="p-2">
+                    <div class="p-2b text-gray-700 dark:text-gray-300">
                         <a x-on:click="$dispatch('close')">
                             <x-icons.close class="float-right mb-1 icons" size="1.5" unfocus />
                         </a>

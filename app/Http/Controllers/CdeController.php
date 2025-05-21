@@ -281,14 +281,21 @@ class CdeController extends Controller
             // Delete existing relations first
             DB::table('cde_societe_contacts')->where('cde_id', $cde->id)->delete();
 
-            // Attach each contact
+            // Attach each contact, skipping duplicates
             foreach ($contactIds as $contactId) {
-                DB::table('cde_societe_contacts')->insert([
-                    'cde_id' => $cde->id,
-                    'societe_contact_id' => $contactId,
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ]);
+                $exists = DB::table('cde_societe_contacts')
+                    ->where('cde_id', $cde->id)
+                    ->where('societe_contact_id', $contactId)
+                    ->exists();
+
+                if (!$exists) {
+                    DB::table('cde_societe_contacts')->insert([
+                        'cde_id' => $cde->id,
+                        'societe_contact_id' => $contactId,
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ]);
+                }
             }
         } else {
             DB::rollBack();

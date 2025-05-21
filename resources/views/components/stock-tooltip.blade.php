@@ -52,7 +52,7 @@
                     {{ $matiere->unite->full }}</h3>
             @endif
             <ul class="text-sm space-y-1">
-                @foreach ($matiere->stock as $stock)
+                @foreach ($matiere->stock->where("quantite",'!=',0) as $stock)
                     <li>- {{ formatNumber($stock->quantite) }} x {{ formatNumber($stock->valeur_unitaire) }} {{ $matiere->unite->short }}</li>
                 @endforeach
             </ul>

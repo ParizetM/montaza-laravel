@@ -16,12 +16,14 @@
                 <div class="mb-4 ml-2 flex-grow">
                     <x-input-label for="societe_id" :value="__('référence externe')" />
                     <div class="flex w-full">
-                        <select name="societe_id" id="societe_id-{{ $modal_id }}" class="mt-1 py-3 select-left rounded-r-none" required>
+                        <select name="societe_id" id="societe_id-{{ $modal_id }}"
+                            class="mt-1 py-3 select-left rounded-r-none" required>
                             @foreach ($societes as $societe)
                                 <option value="{{ $societe->id }}">{{ $societe->raison_sociale }}</option>
                             @endforeach
                         </select>
-                        <x-text-input type="text" name="ref_externe" id="ref_externe" class="mt-1 block w-full rounded-l-none" placeholder="Référence" />
+                        <x-text-input type="text" name="ref_externe" id="ref_externe"
+                            class="mt-1 block w-full rounded-l-none" placeholder="Référence" />
                     </div>
                 </div>
             </div>
@@ -84,7 +86,10 @@
             </div>
             <div class="mb-4 flex">
                 <div class=" mr-2">
-                    <x-input-label for="quantite" value="{{ __('Quantité') }}" />
+                    <div class="flex items-center">
+                        <x-input-label for="quantite" value="{{ __('Quantité') }}" />
+                        <small class="text-xs ml-1">(stock actuel)</small>
+                    </div>
                     <x-text-input type="number" name="quantite" id="quantite" class="mt-1 block" value="0"
                         required />
                 </div>
@@ -104,7 +109,7 @@
                         </x-tooltip>
                     </div>
                     <x-no-or-number name="ref_valeur_unitaire" id="ref_valeur_unitaire-{{ $modal_id }}" required
-                        class="mt-1" />
+                        value="non" class="mt-1" />
                 </div>
                 <div class="w-1/4">
                     <x-input-label for="unite_id">Unité</x-input-label>
@@ -299,7 +304,7 @@
                     // Check if a searchbar exists on the page
                     if (document.getElementById('searchbar')) {
                         // Get the designation from the form
-                        var designation = formData.get('designation');
+                        var designation = formData.get('ref_interne') + ' ' + formData.get('designation');
                         // Get the searchbar element
                         var searchbar = document.getElementById('searchbar');
 

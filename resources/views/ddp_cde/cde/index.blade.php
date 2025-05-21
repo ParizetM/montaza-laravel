@@ -86,8 +86,8 @@
                                                 <tr class="border-b dark:border-gray-600">
                                                     <td class="px-2 py-1 text-xs">{{ $ligne->poste }}</td>
                                                     <td class="px-2 py-1 text-xs">{{ $ligne->designation }}</td>
-                                                    <td class="px-2 py-1 text-xs text-right">{{ formatNumber($ligne->quantite) }} {{ $ligne->matiere ? $ligne->matiere->unite->short : '' }}</td>
-                                                    <td class="px-2 py-1 text-xs text-right">{{ formatNumberArgent($ligne->prix) }}</td>
+                                                    <td class="px-2 py-1 text-xs text-right whitespace-nowrap">{{ formatNumber($ligne->quantite) }} {{ $ligne->matiere ? $ligne->matiere->unite->short : '' }}</td>
+                                                    <td class="px-2 py-1 text-xs text-right whitespace-nowrap">{{ formatNumberArgent($ligne->prix) }}</td>
                                                 </tr>
                                                 @endforeach
                                             </tbody>

@@ -89,6 +89,9 @@ class EtablissementController extends Controller
         if (!is_numeric($siret) && $siret != '') {
             return redirect()->back()->withErrors(['siret' => 'Le siret doit contenir uniquement des chiffres']);
         }
+        if ($request->siret == '') {
+            $siret = null;
+        }
         $etablissement = new Etablissement();
         $etablissement->nom = $request->nom;
         if ($request->adresse) {

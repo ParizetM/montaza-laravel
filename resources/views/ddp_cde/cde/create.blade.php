@@ -114,14 +114,14 @@
                         <input type="hidden" name="cde_id" value="{{ $cde->id ?? '' }}">
                         <div class="flex justify-between items-center">
                             <h1 class="text-xl font-semibold">Commande</h1>
-                            <div class="flex items-center">
+                            <div class="flex items-center relative">
                                 <h1 class="text-xl font-semibold text-gray-500 dark:text-gray-400 flex items-center hidden"
                                     title="Demande de prix en cours d'enregistrement" id="save-status-0">Enregistrement
                                     en
                                     cours...<x-icons.progress-activity size="2" /></h1>
-                                <h1 class="text-xl font-semibold text-gray-500 dark:text-gray-400 {{ isset($cde) ? '' : 'hidden' }}"
+                                <h1 class="text-xl font-semibold text-gray-500 dark:text-gray-400 {{ isset($cde) ? '' : 'hidden' }} absolute right-8 top-0 bg-white dark:bg-gray-800"
                                     title="Demande de prix enregistré avec succès" id="save-status-1">Enregistré</h1>
-                                <h1 class="text-xl font-semibold text-gray-500 dark:text-gray-400 {{ isset($cde) ? 'hidden' : '' }}"
+                                <h1 class="text-xl font-semibold text-gray-500 dark:text-gray-400 {{ isset($cde) ? 'hidden' : '' }} absolute right-8 top-0 bg-white dark:bg-gray-800 whitespace-nowrap"
                                     title="Demande de prix non enregistrée" id="save-status-2">Non-enregistré</h1>
                                 <button class="" onclick="saveChanges()" type="button">
                                     <x-icons.refresh size="2" class="icons" />
@@ -624,7 +624,7 @@
                     showFlashMessageFromJs('Veuillez d\'abord sélectionner un destinataire', 2000, 'error');
                     searchbar.blur();
                     societe_select.focus();
-                    matiereTable.innerHTML ='';
+                    matiereTable.innerHTML = '';
                     return;
                 }
 
@@ -684,7 +684,8 @@
 
                                 tr.setAttribute('data-matiere-id', matiere.id || '');
                                 tr.setAttribute('data-matiere-ref', matiere.refInterne || '');
-                                tr.setAttribute('data-matiere-ref-fournisseur', matiere.refexterne || '');
+                                tr.setAttribute('data-matiere-ref-fournisseur', matiere.refexterne ||
+                                    '');
                                 tr.setAttribute('data-matiere-designation', matiere.designation || '');
                                 tr.setAttribute('data-prix', matiere.lastPrice || '');
                                 tr.setAttribute('data-matiere-unite', matiere.lastPriceUnite || matiere
@@ -1007,10 +1008,8 @@
             var Total = 0;
             document.querySelectorAll('#matiere-choisi-table tr[data-matiere-id]').forEach(row => {
                 const matiereId = row.getAttribute('data-matiere-id');
-                const quantity = row.querySelector(`
-            input[name = "quantite[${matiereId}]"] `).value;
-                const refInterne = row.querySelector(`
-            input[name = "ref_interne[${matiereId}]`).value;
+                const quantity = row.querySelector(`input[name = "quantite[${matiereId}]"] `).value;
+                const refInterne = row.querySelector(`input[name = "ref_interne[${matiereId}]`).value;
                 const refFournisseur = row.querySelector(`input[name="ref_fournisseur[${matiereId}]`).value;
                 const designation = row.querySelector(`input[name="designation[${matiereId}]`) ?
                     row.querySelector(`input[name="designation[${matiereId}]`).value :
@@ -1020,7 +1019,7 @@
                 const date = row.querySelector(`input[name="date[${matiereId}]`).value;
                 row.classList.remove(
                     'border-r-green-500', 'dark:border-r-green-600');
-                if (quantity < 1) {
+                if (quantity < 1 || isNaN(parseFloat(quantity)) || isNaN(parseFloat(prix)) || quantity.endsWith('.') || prix.endsWith('.')) {
                     saveStatus0.classList.add('hidden');
                     saveStatus2.classList.remove('hidden');
                     return;

@@ -221,5 +221,73 @@ class StockService
             return response()->json(['error' => 'Une erreur est survenue lors de l\'annulation.'], 500);
         }
     }
+    /**
+     * Adjust stock unit value for a portion of the stock
+     *
+     * @param int $stockId Stock entry ID to adjust
+     * @param float $quantiteAjuster Quantity to adjust
+     * @param float $newValue New unit value (must be lower than current)
+     * @param string|null $raison Reason for adjustment
+     * @return array|JsonResponse Success response or error
+     */
+    public function ajusterStock(int $stockId, float $quantiteAjuster, float $newValue, ?string $raison = null): array|JsonResponse
+    {
+        try {
+            $stock = Stock::findOrFail($stockId);
+            $matiere = $stock->matiere;
+            $currentValue = $stock->valeur_unitaire;
 
+            // Verify the new value is lower than current value
+            if ($newValue >= $currentValue) {
+                return response()->json(['error' => 'La nouvelle valeur doit être inférieure à la valeur actuelle.'], 400);
+            }
+
+            // Verify the quantity to adjust is valid
+            if ($quantiteAjuster <= 0 || $quantiteAjuster > $stock->quantite) {
+                return response()->json(['error' => 'Quantité à ajuster invalide.'], 400);
+            }
+
+            // Calculate the difference - this is effectively a stock reduction
+            $reduction = $currentValue - $newValue;
+            $reductionPercentage = ($reduction / $currentValue) * 100;
+
+            // Step 1: Reduce the quantity of the original stock
+            $stock->quantite -= $quantiteAjuster;
+            $stock->save();
+
+            // Step 2: Create a new stock entry with the adjusted value
+            $newStock = Stock::create([
+                'matiere_id' => $matiere->id,
+                'quantite' => $quantiteAjuster,
+                'valeur_unitaire' => $newValue,
+            ]);
+
+            // Create a movement record to track this adjustment
+            $mouvement = MouvementStock::create([
+                'matiere_id' => $matiere->id,
+                'user_id' => Auth::id(),
+                'type' => 'sortie', // This is effectively a reduction in value
+                'quantite' => $quantiteAjuster,
+                'valeur_unitaire' => $reduction, // The reduction in unit value
+                'raison' => $raison ?? "Ajustement de valeur unitaire ($reductionPercentage%)",
+                'date' => now(),
+            ]);
+
+            return [
+                'success' => true,
+                'message' => 'Valeur unitaire ajustée avec succès',
+                'stock_original' => $stock,
+                'stock_nouveau' => $newStock,
+                'mouvement' => $mouvement
+            ];
+        } catch (\Exception $e) {
+            \Log::error('Erreur lors de l\'ajustement de la valeur unitaire', [
+                'exception' => $e->getMessage(),
+                'stock_id' => $stockId,
+                'new_value' => $newValue,
+                'quantite_ajuster' => $quantiteAjuster
+            ]);
+            return response()->json(['error' => 'Une erreur est survenue.'], 500);
+        }
+    }
 }
