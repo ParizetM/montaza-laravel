@@ -20,7 +20,7 @@ class MediaSidebar extends Component
     public $modelId;
     public $files = [];
     public $mediaList = [];
-    public $qrCode = null;
+    public string|null $qrUrl = null;
 
     protected $rules = [
         'files.*' => 'file|max:10240|mimes:jpg,jpeg,png,pdf',
@@ -49,7 +49,7 @@ class MediaSidebar extends Component
         switch ($this->model) {
             case 'cde':
                 return Cde::find($this->modelId);
-            // Ajoutez d'autres cas pour différents types d'entités
+                // Ajoutez d'autres cas pour différents types d'entités
             default:
                 return null;
         }
@@ -129,11 +129,11 @@ class MediaSidebar extends Component
     public function generateQrCode()
     {
         try {
-            // Generate a unique token
+            // Génère un token unique
             $token = Str::random(32);
 
-            // Create a signed URL that expires in 10 minutes
-            $signedUrl = URL::temporarySignedRoute(
+            // Crée une URL signée temporaire (10 min)
+            $this->qrUrl = URL::temporarySignedRoute(
                 'media.upload-form',
                 now()->addMinutes(10),
                 [
@@ -142,15 +142,11 @@ class MediaSidebar extends Component
                     'token' => $token
                 ]
             );
-
-            // Generate QR code as HTML string
-            $this->qrCode = QrCode::size(200)->generate($signedUrl)->toHtml();
         } catch (\Exception $e) {
-            // Log error for debugging
-            \Log::error('QR Code generation failed: ' . $e->getMessage());
+            \Log::error('QR Code URL generation failed: ' . $e->getMessage());
+            $this->qrUrl = null;
         }
     }
-
     public function render()
     {
         return view('livewire.media-sidebar');

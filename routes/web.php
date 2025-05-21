@@ -231,47 +231,87 @@ Route::get('/media/upload/{model}/{id}/{token}', function ($model, $id, $token) 
         'model' => $model,
         'id' => $id,
         'token' => $token,
-        'entity' => $model === 'cde' ? \App\Models\Cde::findOrFail($id) : null
+        'entity' => $model === 'cde' ? \App\Models\Cde::findOrFail($id) :
+                   ($model === 'ddp' ? \App\Models\Ddp::findOrFail($id) : null)
     ]);
 })->name('media.upload-form')->middleware('signed');
 
 // Route POST pour traiter l'upload via QR code
-Route::post('/media/upload/{model}/{id}/{token}', function (Request $request, $model, $id, $token) {
-    $request->validate([
-        'files.*' => 'required|file|max:10240|mimes:jpg,jpeg,png,pdf',
-    ]);
+Route::post('/media/upload/{model}/{id}/{token}', function (\Illuminate\Http\Request $request, $model, $id, $token) {
+    try {
+        // Vérifier si l'URL est signée
+        if (!$request->hasValidSignature()) {
+            \Illuminate\Support\Facades\Log::error('Signature invalide pour upload QR code', [
+                'model' => $model,
+                'id' => $id,
+                'token' => $token
+            ]);
+            return back()->withErrors(['Le lien a expiré ou est invalide. Veuillez scanner à nouveau le QR code.']);
+        }
 
-    $entity = null;
-    if ($model === 'cde') {
-        $entity = \App\Models\Cde::findOrFail($id);
-    }
-
-    if (!$entity) {
-        return back()->withErrors(['Entité non trouvée']);
-    }
-
-    foreach ($request->file('files') as $file) {
-        $originalFilename = $file->getClientOriginalName();
-        $extension = $file->getClientOriginalExtension();
-        $filename = \Illuminate\Support\Str::uuid() . '.' . $extension;
-        $path = 'media/' . $model . '/' . date('Y/m/d');
-
-        $filePath = $file->storeAs('public/' . $path, $filename);
-
-        $media = new \App\Models\Media([
-            'filename' => $filename,
-            'original_filename' => $originalFilename,
-            'path' => str_replace('public/', '', $filePath),
-            'mime_type' => $file->getMimeType(),
-            'size' => $file->getSize(),
-            'uploaded_by' => 1, // System upload
+        $request->validate([
+            'files.*' => 'required|file|max:5120|mimes:jpg,jpeg,png,pdf',
         ]);
 
-        $entity->media()->save($media);
-    }
+        $entity = null;
+        if ($model === 'cde') {
+            $entity = \App\Models\Cde::findOrFail($id);
+        } elseif ($model === 'ddp') {
+            $entity = \App\Models\Ddp::findOrFail($id);
+        }
 
-    return back()->with('success', 'Fichiers téléchargés avec succès');
-})->name('media.upload')->middleware('signed');
+        if (!$entity) {
+            return back()->withErrors(['Entité non trouvée']);
+        }
+
+        // Vérifier que le répertoire de destination existe
+        $basePath = 'media/' . $model . '/' . date('Y/m/d');
+        $fullPath = 'public/' . $basePath;
+
+        if (!\Illuminate\Support\Facades\Storage::exists($fullPath)) {
+            \Illuminate\Support\Facades\Storage::makeDirectory($fullPath);
+        }
+
+        foreach ($request->file('files') as $file) {
+            $originalFilename = $file->getClientOriginalName();
+            $extension = $file->getClientOriginalExtension();
+            $filename = \Illuminate\Support\Str::uuid() . '.' . $extension;
+
+            // Enregistrer le fichier
+            $filePath = $file->storeAs($fullPath, $filename);
+
+            // Créer l'entrée media
+            $media = new \App\Models\Media([
+                'filename' => $filename,
+                'original_filename' => $originalFilename,
+                'path' => str_replace('public/', '', $filePath),
+                'mime_type' => $file->getMimeType(),
+                'size' => $file->getSize(),
+                'uploaded_by' => 1, // System upload
+            ]);
+
+            // Associer à l'entité
+            $entity->media()->save($media);
+        }
+
+        return back()->with('success', 'Fichiers téléchargés avec succès');
+    } catch (\Exception $e) {
+        \Illuminate\Support\Facades\Log::error('Erreur lors de l\'upload via QR code', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+        return back()->withErrors(['Une erreur est survenue lors de l\'upload: ' . $e->getMessage()]);
+    }
+})->name('media.upload')->middleware('signed')->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+
+// Ajoutez cette route pour servir des fichiers publics (pour le débogage)
+Route::get('/storage/{path}', function ($path) {
+    $path = str_replace('..', '', $path); // Sécurité de base
+    if (Storage::disk('public')->exists($path)) {
+        return response()->file(storage_path('app/public/'.$path));
+    }
+    abort(404);
+})->where('path', '.*');
 
 require __DIR__ . '/auth.php';
 require __DIR__ . '/lourd-api.php';

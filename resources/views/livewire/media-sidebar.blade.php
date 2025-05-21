@@ -215,9 +215,9 @@
                 <!-- QR Code -->
                 <div x-show="tab === 'qrcode'" class="mt-4">
                     <div class="text-center">
-                        @if(!empty($qrCode))
+                        @if($qrUrl)
                             <div class="bg-white p-4 rounded-lg inline-block mb-4">
-                                {!! $qrCode !!}
+                                {!! QrCode::size(200)->generate($qrUrl) !!}
                             </div>
                             <p class="mb-4 text-gray-600 dark:text-gray-400">Scannez ce code QR pour télécharger des documents depuis votre téléphone</p>
                             <p class="text-sm text-gray-500 dark:text-gray-400">Le lien expire dans 10 minutes</p>
