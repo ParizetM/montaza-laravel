@@ -28,11 +28,11 @@ class MediaController extends Controller
     {
         // Vérifier si l'entité existe
         $entity = $this->getEntity($model, $id);
-        
+
         if (!$entity) {
             return abort(404);
         }
-        
+
         return view('media.index', [
             'model' => $model,
             'modelId' => $id,
@@ -50,19 +50,19 @@ class MediaController extends Controller
         ]);
 
         $entity = $this->getEntity($model, $id);
-        
+
         if (!$entity) {
             return back()->withErrors(['Entité non trouvée']);
         }
-        
+
         foreach ($request->file('files') as $file) {
             $originalFilename = $file->getClientOriginalName();
             $extension = $file->getClientOriginalExtension();
             $filename = Str::uuid() . '.' . $extension;
             $path = 'media/' . $model . '/' . date('Y/m/d');
-            
+
             $filePath = $file->storeAs('public/' . $path, $filename);
-            
+
             $media = new Media([
                 'filename' => $filename,
                 'original_filename' => $originalFilename,
@@ -71,10 +71,10 @@ class MediaController extends Controller
                 'size' => $file->getSize(),
                 'uploaded_by' => auth()->id(),
             ]);
-            
+
             $entity->media()->save($media);
         }
-        
+
         return back()->with('success', 'Fichiers téléchargés avec succès');
     }
 
@@ -103,7 +103,7 @@ class MediaController extends Controller
     public function generateQrLink($model, $id)
     {
         $token = Str::random(32);
-        
+
         $signedUrl = URL::temporarySignedRoute(
             'media.upload-form',
             now()->addMinutes(10),
@@ -113,9 +113,9 @@ class MediaController extends Controller
                 'token' => $token
             ]
         );
-        
+
         $qrCode = QrCode::size(200)->generate($signedUrl);
-        
+
         return response()->json([
             'qrCode' => $qrCode->toHtml()
         ]);

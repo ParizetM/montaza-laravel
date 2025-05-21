@@ -182,7 +182,7 @@
                             x-on:drop="handleDrop"
                             x-on:livewire-upload-start="uploading = true"
                             x-on:livewire-upload-finish="uploading = false"
-                            x-on:livewire-upload-error="uploading = false"
+                            x-on:livewire-upload-error="uploading = false; alert('Erreur durant l\'upload. Veuillez réessayer avec un fichier plus petit.')"
                             x-on:livewire-upload-progress="progress = $event.detail.progress"
                             class="mt-4 cursor-pointer transition-colors duration-200 ease-in-out pb-4"
                         >
@@ -205,9 +205,13 @@
                             <div class="mt-2 text-red-500 text-sm">{{ $message }}</div>
                         @enderror
 
+                        @if(session()->has('error'))
+                            <div class="mt-2 text-red-500 text-sm">{{ session('error') }}</div>
+                        @endif
+
                         <div class="mt-4 text-sm text-gray-500 dark:text-gray-400">
                             <p>Formats acceptés: JPG, PNG, PDF</p>
-                            <p>Taille maximale: 10MB par fichier</p>
+                            <p>Taille maximale: 5MB par fichier</p>
                         </div>
                     </div>
                 </div>
