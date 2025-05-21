@@ -26,7 +26,12 @@ window.Handsontable = Handsontable;
 window.frFR = frFR;
 window.HyperFormula = HyperFormula;
 window.numbro = numbro;
-window.Alpine = Alpine;
 
-// Démarrage d'Alpine
-Alpine.start();
+// Configuration d'Alpine uniquement s'il n'est pas déjà défini
+if (!window.Alpine) {
+    window.Alpine = Alpine;
+    // Démarrage d'Alpine
+    Alpine.start();
+} else {
+    console.warn('Alpine.js est déjà chargé, utilisation de l\'instance existante.');
+}

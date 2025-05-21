@@ -7,6 +7,7 @@ use App\Http\Controllers\DdpController;
 use App\Http\Controllers\EtablissementController;
 use App\Http\Controllers\MailtemplateController;
 use App\Http\Controllers\MatiereController;
+use App\Http\Controllers\MediaController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
@@ -213,6 +214,64 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::delete('/cde/{cde}/stock/ligne/{ligne}/destroy', [CdeController::class, 'destroyMouvements'])->name('cde.stock.mouvement.destroy');
         Route::get('/cde/{cde}/stock/no', [CdeController::class, 'noStock'])->name('cde.stock.no');
     });
+
+    // Routes pour le système de médias
+    Route::get('/media/{model}/{id}', [MediaController::class, 'index'])->name('media.index');
+    Route::post('/media/{model}/{id}', [MediaController::class, 'store'])->name('media.store');
+    Route::delete('/media/{media}', [MediaController::class, 'destroy'])->name('media.destroy');
+    Route::get('/media/download/{media}', [MediaController::class, 'download'])->name('media.download');
+
+    // Route pour générer un lien signé vers la page d'upload par QR code
+    Route::get('/media/generate-qr/{model}/{id}', [MediaController::class, 'generateQrLink'])->name('media.generate-qr');
 });
+
+// Route d'upload via QR code (protégée par signature)
+Route::get('/media/upload/{model}/{id}/{token}', function ($model, $id, $token) {
+    return view('media.upload-form', [
+        'model' => $model,
+        'id' => $id,
+        'token' => $token,
+        'entity' => $model === 'cde' ? \App\Models\Cde::findOrFail($id) : null
+    ]);
+})->name('media.upload-form')->middleware('signed');
+
+// Route POST pour traiter l'upload via QR code
+Route::post('/media/upload/{model}/{id}/{token}', function (Request $request, $model, $id, $token) {
+    $request->validate([
+        'files.*' => 'required|file|max:10240|mimes:jpg,jpeg,png,pdf',
+    ]);
+
+    $entity = null;
+    if ($model === 'cde') {
+        $entity = \App\Models\Cde::findOrFail($id);
+    }
+
+    if (!$entity) {
+        return back()->withErrors(['Entité non trouvée']);
+    }
+
+    foreach ($request->file('files') as $file) {
+        $originalFilename = $file->getClientOriginalName();
+        $extension = $file->getClientOriginalExtension();
+        $filename = \Illuminate\Support\Str::uuid() . '.' . $extension;
+        $path = 'media/' . $model . '/' . date('Y/m/d');
+
+        $filePath = $file->storeAs('public/' . $path, $filename);
+
+        $media = new \App\Models\Media([
+            'filename' => $filename,
+            'original_filename' => $originalFilename,
+            'path' => str_replace('public/', '', $filePath),
+            'mime_type' => $file->getMimeType(),
+            'size' => $file->getSize(),
+            'uploaded_by' => 1, // System upload
+        ]);
+
+        $entity->media()->save($media);
+    }
+
+    return back()->with('success', 'Fichiers téléchargés avec succès');
+})->name('media.upload')->middleware('signed');
+
 require __DIR__ . '/auth.php';
 require __DIR__ . '/lourd-api.php';
