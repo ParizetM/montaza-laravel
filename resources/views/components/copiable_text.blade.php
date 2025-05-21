@@ -1,5 +1,5 @@
 @props(['text', 'titre', 'title'])
-<p class="block sm:flex text-wrap " {!! isset($title) ? 'title="' . $title . '"' : '' !!}>
+<p class="block sm:flex text-wrap text-gray-800 dark:text-gray-200" {!! isset($title) ? 'title="' . $title . '"' : '' !!}>
     {!! isset($titre) ? '<strong>' . $titre . '</strong>&nbsp;' : '' !!}
     <span class="copiable_parent w-fit flex relative" onclick="copyToClipboard('{{ $text }}')">
         {!! '<span class="copiable">' . $text . '</span>' !!}
