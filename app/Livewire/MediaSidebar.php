@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
-use Illuminate\Support\Facades\Log;
 
 class MediaSidebar extends Component
 {
@@ -23,9 +22,8 @@ class MediaSidebar extends Component
     public $mediaList = [];
     public $qrCode = null;
 
-    // Définir une taille maximale plus petite pour les fichiers
     protected $rules = [
-        'files.*' => 'file|max:5120|mimes:jpg,jpeg,png,pdf', // 5MB max
+        'files.*' => 'file|max:10240|mimes:jpg,jpeg,png,pdf',
     ];
 
     public function mount($model, $modelId)
@@ -59,70 +57,40 @@ class MediaSidebar extends Component
 
     public function updatedFiles()
     {
-        try {
-            $this->validate();
+        $this->validate();
 
-            $entity = $this->getEntity();
+        $entity = $this->getEntity();
 
-            if (!$entity) {
-                return;
-            }
-
-            foreach ($this->files as $file) {
-                // Vérifier que le fichier est valide
-                if (!$file || !$file->isValid()) {
-                    Log::error('Fichier invalide lors de l\'upload', [
-                        'filename' => $file ? $file->getClientOriginalName() : 'unknown',
-                    ]);
-                    continue;
-                }
-
-                $originalFilename = $file->getClientOriginalName();
-                $extension = $file->getClientOriginalExtension();
-                $filename = Str::uuid() . '.' . $extension;
-                $path = 'media/' . $this->model . '/' . date('Y/m/d');
-
-                // Vérifier que le répertoire de destination existe
-                $fullPath = 'public/' . $path;
-                if (!Storage::exists($fullPath)) {
-                    Storage::makeDirectory($fullPath);
-                }
-
-                // Store the file
-                $filePath = $file->storeAs($fullPath, $filename);
-
-                if (!$filePath) {
-                    Log::error('Échec du stockage du fichier', [
-                        'original' => $originalFilename,
-                        'path' => $fullPath,
-                    ]);
-                    continue;
-                }
-
-                // Create media record
-                $media = new Media([
-                    'filename' => $filename,
-                    'original_filename' => $originalFilename,
-                    'path' => str_replace('public/', '', $filePath),
-                    'mime_type' => $file->getMimeType(),
-                    'size' => $file->getSize(),
-                    'uploaded_by' => Auth::id(),
-                ]);
-
-                // Attach to entity
-                $entity->media()->save($media);
-            }
-
-            // Reset the file input and refresh the list
-            $this->files = [];
-            $this->refreshMediaList();
-        } catch (\Exception $e) {
-            Log::error('Exception lors de l\'upload de fichier', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            session()->flash('error', 'Une erreur est survenue lors de l\'upload: ' . $e->getMessage());
+        if (!$entity) {
+            return;
         }
+
+        foreach ($this->files as $file) {
+            $originalFilename = $file->getClientOriginalName();
+            $extension = $file->getClientOriginalExtension();
+            $filename = Str::uuid() . '.' . $extension;
+            $path = 'media/' . $this->model . '/' . date('Y/m/d');
+
+            // Store the file
+            $filePath = $file->storeAs('public/' . $path, $filename);
+
+            // Create media record
+            $media = new Media([
+                'filename' => $filename,
+                'original_filename' => $originalFilename,
+                'path' => str_replace('public/', '', $filePath),
+                'mime_type' => $file->getMimeType(),
+                'size' => $file->getSize(),
+                'uploaded_by' => Auth::id(),
+            ]);
+
+            // Attach to entity
+            $entity->media()->save($media);
+        }
+
+        // Reset the file input and refresh the list
+        $this->files = [];
+        $this->refreshMediaList();
     }
 
     public function downloadMedia($mediaId)
@@ -175,13 +143,11 @@ class MediaSidebar extends Component
                 ]
             );
 
-            // Generate QR code as SVG string instead of HTML
-            $this->qrCode = QrCode::size(200)->generate($signedUrl);
+            // Generate QR code as HTML string
+            $this->qrCode = QrCode::size(200)->generate($signedUrl)->toHtml();
         } catch (\Exception $e) {
-            Log::error('Erreur lors de la génération du QR code', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
+            // Log error for debugging
+            \Log::error('QR Code generation failed: ' . $e->getMessage());
         }
     }
 
