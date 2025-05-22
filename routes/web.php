@@ -18,6 +18,7 @@ use App\Http\Controllers\SocieteController;
 use App\Http\Controllers\StandardController;
 use App\Http\Controllers\UserShortcutController;
 use App\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Foundation\Http\Middleware\ValidatePostSize;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -235,7 +236,7 @@ Route::get('/media/upload/{model}/{id}/{token}', [MediaController::class, 'showU
 Route::post('/media/upload/{model}/{id}/{token}', [MediaController::class, 'uploadFromQr'])
     ->name('media.upload')
     ->middleware('signed')
-    ->withoutMiddleware([VerifyCsrfToken::class]);
+    ->withoutMiddleware([VerifyCsrfToken::class, ValidatePostSize::class]);
 
 
 
