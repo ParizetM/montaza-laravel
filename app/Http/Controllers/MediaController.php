@@ -47,7 +47,7 @@ class MediaController extends Controller
     public function store(Request $request, $model, $id)
     {
         $request->validate([
-            'files.*' => 'required|file|max:10240|mimes:jpg,jpeg,png,pdf',
+            'files.*' => 'required|file|max:20480', // Augmenté à 20Mo
         ]);
 
         $entity = $this->getEntity($model, $id);
@@ -56,24 +56,42 @@ class MediaController extends Controller
             return back()->withErrors(['Entité non trouvée']);
         }
 
+        $successCount = 0;
+        $errorFiles = [];
+
         foreach ($request->file('files') as $file) {
-            $originalFilename = $file->getClientOriginalName();
-            $extension = $file->getClientOriginalExtension();
-            $filename = Str::uuid() . '.' . $extension;
-            $path = 'media/' . $model . '/' . date('Y/m/d');
+            try {
+                $originalFilename = $file->getClientOriginalName();
+                $extension = $file->getClientOriginalExtension();
+                $filename = Str::uuid() . '.' . $extension;
+                $path = 'media/' . $model . '/' . date('Y/m/d');
 
-            $filePath = $file->storeAs('public/' . $path, $filename);
+                // Utilisation de la méthode storeAs avec gestion de disque spécifique
+                $filePath = $file->storeAs($path, $filename, 'public');
 
-            $media = new Media([
-                'filename' => $filename,
-                'original_filename' => $originalFilename,
-                'path' => str_replace('public/', '', $filePath),
-                'mime_type' => $file->getMimeType(),
-                'size' => $file->getSize(),
-                'uploaded_by' => auth()->id(),
-            ]);
+                $media = new Media([
+                    'filename' => $filename,
+                    'original_filename' => $originalFilename,
+                    'path' => $filePath,
+                    'mime_type' => $file->getMimeType(),
+                    'size' => $file->getSize(),
+                    'uploaded_by' => auth()->id(),
+                ]);
 
-            $entity->media()->save($media);
+                $entity->media()->save($media);
+                $successCount++;
+            } catch (\Exception $e) {
+                Log::error('Erreur lors du téléchargement du fichier', [
+                    'file' => $originalFilename ?? 'inconnu',
+                    'error' => $e->getMessage()
+                ]);
+                $errorFiles[] = $originalFilename ?? 'Un fichier';
+            }
+        }
+
+        if (count($errorFiles) > 0) {
+            return back()->with('warning', 'Certains fichiers n\'ont pas pu être téléchargés: ' . implode(', ', $errorFiles))
+                        ->with('success', $successCount . ' fichier(s) téléchargé(s) avec succès');
         }
 
         return back()->with('success', 'Fichiers téléchargés avec succès');
