@@ -220,7 +220,6 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
 
     // Routes pour le système de médias
     Route::get('/media/download/{mediaId}', [MediaController::class, 'download'])->name('media.download');
-    Route::get('/media/{model}/{id}', [MediaController::class, 'index'])->name('media.index');
     Route::post('/media/{model}/{id}', [MediaController::class, 'store'])->name('media.store');
     Route::delete('/media/{media}', [MediaController::class, 'destroy'])->name('media.destroy');
 
@@ -230,84 +229,15 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
 });
 
 // Route d'upload via QR code (protégée par signature)
-Route::get('/media/upload/{model}/{id}/{token}', function ($model, $id, $token) {
-    return view('media.upload-form', [
-        'model' => $model,
-        'id' => $id,
-        'token' => $token,
-        'entity' => $model === 'cde' ? \App\Models\Cde::findOrFail($id) : ($model === 'ddp' ? \App\Models\Ddp::findOrFail($id) : null)
-    ]);
-})->name('media.upload-form')->middleware('signed');
-
+Route::get('/media/upload/{model}/{id}/{token}', [MediaController::class, 'showUploadForm'])
+    ->name('media.upload-form')
+    ->middleware('signed');
 // Route POST pour traiter l'upload via QR code
-Route::post('/media/upload/{model}/{id}/{token}', function (\Illuminate\Http\Request $request, $model, $id, $token) {
-    try {
-        // Vérifier si l'URL est signée
-        if (!$request->hasValidSignature()) {
-            \Illuminate\Support\Facades\Log::error('Signature invalide pour upload QR code', [
-                'model' => $model,
-                'id' => $id,
-                'token' => $token
-            ]);
-            return back()->withErrors(['Le lien a expiré ou est invalide. Veuillez scanner à nouveau le QR code.']);
-        }
+Route::post('/media/upload/{model}/{id}/{token}', [MediaController::class, 'uploadFromQr'])
+    ->name('media.upload')
+    ->middleware('signed')
+    ->withoutMiddleware([VerifyCsrfToken::class]);
 
-        $request->validate([
-            'files.*' => 'required|file|max:5120|mimes:jpg,jpeg,png,pdf',
-        ]);
-
-        $entity = null;
-        if ($model === 'cde') {
-            $entity = \App\Models\Cde::findOrFail($id);
-        } elseif ($model === 'ddp') {
-            $entity = \App\Models\Ddp::findOrFail($id);
-        }
-
-        if (!$entity) {
-            return back()->withErrors(['Entité non trouvée']);
-        }
-
-        // Vérifier que le répertoire de destination existe
-        $basePath = 'media/' . $model . '/' . date('Y/m/d');
-        $fullPath = $basePath;
-
-        if (!\Illuminate\Support\Facades\Storage::exists($fullPath)) {
-            \Illuminate\Support\Facades\Storage::makeDirectory($fullPath);
-        }
-
-        foreach ($request->file('files') as $file) {
-            $originalFilename = $file->getClientOriginalName();
-            $extension = $file->getClientOriginalExtension();
-            $filename = \Illuminate\Support\Str::uuid() . '.' . $extension;
-
-            // Enregistrer le fichier
-            $filePath = $file->storeAs($fullPath, $filename);
-
-            // Créer l'entrée media
-            $media = new \App\Models\Media([
-                'filename' => $filename,
-                'original_filename' => $originalFilename,
-                'path' => $filePath,
-                'mime_type' => $file->getMimeType(),
-                'size' => $file->getSize(),
-                'uploaded_by' => 1, // System upload
-            ]);
-
-            // Associer à l'entité
-            $entity->media()->save($media);
-        }
-
-        return back()->with('success', 'Fichiers téléchargés avec succès');
-    } catch (\Exception $e) {
-        \Illuminate\Support\Facades\Log::error('Erreur lors de l\'upload via QR code', [
-            'error' => $e->getMessage(),
-            'trace' => $e->getTraceAsString()
-        ]);
-        return back()->withErrors(['Une erreur est survenue lors de l\'upload: ' . $e->getMessage()]);
-    }
-})->name('media.upload')->middleware('signed')->withoutMiddleware([VerifyCsrfToken::class]);
-
-// Ajoutez cette route
 
 
 require __DIR__ . '/auth.php';

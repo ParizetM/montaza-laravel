@@ -199,6 +199,97 @@ class MediaController extends Controller
     }
 
     /**
+     * Traite l'upload de fichiers via QR code.
+     */
+    public function uploadFromQr(Request $request, $model, $id, $token)
+    {
+        try {
+            // Vérifier si l'URL est signée
+            if (!$request->hasValidSignature()) {
+                \Illuminate\Support\Facades\Log::error('Signature invalide pour upload QR code', [
+                    'model' => $model,
+                    'id' => $id,
+                    'token' => $token
+                ]);
+                return back()->withErrors(['Le lien a expiré ou est invalide. Veuillez scanner à nouveau le QR code.']);
+            }
+
+            $request->validate([
+                'files.*' => 'required|file|max:5120|mimes:jpg,jpeg,png,pdf',
+            ]);
+
+            $entity = null;
+            if ($model === 'cde') {
+                $entity = \App\Models\Cde::findOrFail($id);
+            } elseif ($model === 'ddp') {
+                $entity = \App\Models\Ddp::findOrFail($id);
+            }
+
+            if (!$entity) {
+                return back()->withErrors(['Entité non trouvée']);
+            }
+
+            // Vérifier que le répertoire de destination existe
+            $basePath = 'media/' . $model . '/' . date('Y/m/d');
+            $fullPath = $basePath;
+
+            if (!\Illuminate\Support\Facades\Storage::exists($fullPath)) {
+                \Illuminate\Support\Facades\Storage::makeDirectory($fullPath);
+            }
+
+            foreach ($request->file('files') as $file) {
+                $originalFilename = $file->getClientOriginalName();
+                $extension = $file->getClientOriginalExtension();
+                $filename = \Illuminate\Support\Str::uuid() . '.' . $extension;
+
+                // Enregistrer le fichier
+                $filePath = $file->storeAs($fullPath, $filename);
+
+                // Créer l'entrée media
+                $media = new \App\Models\Media([
+                    'filename' => $filename,
+                    'original_filename' => $originalFilename,
+                    'path' => $filePath,
+                    'mime_type' => $file->getMimeType(),
+                    'size' => $file->getSize(),
+                    'uploaded_by' => 1, // System upload
+                ]);
+
+                // Associer à l'entité
+                $entity->media()->save($media);
+            }
+
+            return back()->with('success', 'Fichiers téléchargés avec succès');
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Erreur lors de l\'upload via QR code', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return back()->withErrors(['Une erreur est survenue lors de l\'upload: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Affiche le formulaire d'upload via QR code.
+     */
+    public function showUploadForm($model, $id, $token)
+    {
+        $entity = null;
+        if ($model === 'cde') {
+            $entity = Cde::findOrFail($id);
+        } elseif ($model === 'ddp') {
+            $entity = Ddp::findOrFail($id);
+        }
+
+        return view('media.upload-form', [
+            'model' => $model,
+            'id' => $id,
+            'token' => $token,
+            'entity' => $entity
+        ]);
+    }
+
+    /**
      * Récupère la classe du modèle à partir du nom fourni.
      */
     protected function getModelClass($model)
