@@ -151,8 +151,6 @@
                                 </small>
                             </span>
                     @endforeach
-
-
         </div>
         </x-slot>
         </x-tooltip>

@@ -23,7 +23,7 @@
                 @endif
                 <th class="px-4 py-2">Nom</th>
                 @if (!$isSmall)
-                    <th class="px-4 py-2">Créer par</th>
+                    <th class="px-4 py-2">Destinataire</th>
                 @endif
                 <th class="px-4 py-2">Statut</th>
             </tr>
@@ -34,7 +34,60 @@
                 onclick="window.location='{{ route('cde.show', $cde) }}'">
                     <!-- Code -->
                     <td class="min-w-2 text-sm">
-                        {{ $cde->code }}
+                        <x-tooltip position="right">
+                            <x-slot name="slot_item">
+                                <div class="flex items-center">
+                                    {{ $cde->code }}
+                                    <x-icons.cde size="1.2" class="ml-1 fill-gray-700 dark:fill-gray-300 border-b-2 border-gray-700 dark:border-gray-300" />
+                                </div>
+                            </x-slot>
+                            <x-slot name="slot_tooltip">
+                                <div class="flex flex-col max-w-md">
+                                    <h3 class="text-gray-900 dark:text-gray-100 font-bold mb-2">
+                                        Contenu de la commande
+                                    </h3>
+                                    @if($cde->cdeLignes->count() > 0)
+                                        <table class="min-w-full">
+                                            <thead>
+                                                <tr class="bg-gray-100 dark:bg-gray-700">
+                                                    <th class="px-2 py-1 text-xs">Poste</th>
+                                                    <th class="px-2 py-1 text-xs">Désignation</th>
+                                                    <th class="px-2 py-1 text-xs">Qté</th>
+                                                    <th class="px-2 py-1 text-xs">Prix</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($cde->cdeLignes as $ligne)
+
+                                                <tr class="border-b dark:border-gray-600  {{ $ligne->ddp_cde_statut_id == 4 || $ligne->date_livraison_reelle == null ? 'line-through' : 'dds' }}">
+                                                    <td class="px-2 py-1 text-xs">{{ $ligne->poste }}</td>
+                                                    <td class="px-2 py-1 text-xs">{{ $ligne->designation }}</td>
+                                                    <td class="px-2 py-1 text-xs text-right whitespace-nowrap">{{ formatNumber($ligne->quantite) }} {{ $ligne->matiere ? $ligne->matiere->unite->short : '' }}</td>
+                                                    <td class="px-2 py-1 text-xs text-right whitespace-nowrap">{{ formatNumberArgent($ligne->prix) }}</td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                            <tfoot>
+                                                <tr class="font-bold bg-gray-50 dark:bg-gray-800">
+                                                    <td colspan="3" class="px-2 py-1 text-xs text-right">Total:</td>
+                                                    <td class="px-2 py-1 text-xs text-right">
+                                                        {{ formatNumberArgent($cde->total_ht) }}
+                                                         </td>
+                                                </tr>
+                                                <tr class="font-bold bg-gray-50 dark:bg-gray-800">
+                                                    <td colspan="3" class="px-2 py-1 text-xs text-right">Total TTC:</td>
+                                                    <td class="px-2 py-1 text-xs text-right">
+                                                        {{ formatNumberArgent($cde->total_ttc) }}
+                                                         </td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    @else
+                                        <p class="text-gray-600 dark:text-gray-300">Aucune ligne dans cette commande</p>
+                                    @endif
+                                </div>
+                            </x-slot>
+                        </x-tooltip>
                     </td>
 
                     <!-- Date de création -->
@@ -54,9 +107,34 @@
                 {{ $cde->nom }}
             </td>
             @if (!$isSmall)
-                <td>
+                {{-- <td>
                     {{ $cde->user->first_name }} {{ $cde->user->last_name }}
-                </td>
+                </td> --}}
+                <td>
+                        <x-tooltip  position="top" >
+                            <x-slot name="slot_item">
+                                <span class="text-gray-900 dark:text-gray-100">
+                                    {{ $cde->societe->raison_sociale }}
+                                </span>
+
+                            </x-slot>
+                            <x-slot name="slot_tooltip">
+                                <div class="flex flex-col">
+                                    <h3 class="text-gray-900 dark:text-gray-100 font-bold">
+                                        Destinataire{{ $cde->societeContacts->count() > 1 ? 's' : '' }} :
+                                    </h3>
+                                     @foreach ($cde->societeContacts as $contact)
+                            <span class="text-gray-900 dark:text-gray-100">
+                                {{ $contact->nom }}
+                                <small class="text-gray-700 dark:text-gray-300">
+                                    {{ $contact->email }}
+                                </small>
+                            </span>
+                    @endforeach
+        </div>
+        </x-slot>
+        </x-tooltip>
+        </td>
             @endif
 
             <!-- Statut avec couleur dynamique -->

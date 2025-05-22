@@ -172,7 +172,15 @@
                     </table>
                 </div>
             </div>
-            <!-- ajouter matière -->
+{{--
+   ###          ##  #######  ##     ## ######## ######## ########
+  ## ##         ## ##     ## ##     ##    ##    ##       ##     ##
+ ##   ##        ## ##     ## ##     ##    ##    ##       ##     ##
+##     ##       ## ##     ## ##     ##    ##    ######   ########
+######### ##    ## ##     ## ##     ##    ##    ##       ##   ##
+##     ## ##    ## ##     ## ##     ##    ##    ##       ##    ##
+##     ##  ######   #######   #######     ##    ######## ##     ## --}}
+
             <div
                 class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-6 rounded-lg shadow-md border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-lg">
                 <div class="flex items-center gap-3 mb-4">
@@ -255,11 +263,6 @@
 
         </div>
 
-
-        <!-- Formulaire de retrait -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <!-- Carte des mouvements de stock -->
-
 {{--
 ##     ##  #######  ##     ## ##     ## ######## ##     ## ######## ##    ## ########  ######
 ###   ### ##     ## ##     ## ##     ## ##       ###   ### ##       ###   ##    ##    ##    ##
@@ -270,6 +273,7 @@
 ##     ##  #######   #######     ###    ######## ##     ## ######## ##    ##    ##     ######
 
  --}}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div
                 class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-6 rounded-lg shadow-md border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-lg">
                 <div class="flex items-center gap-3 mb-4">
@@ -376,7 +380,15 @@
                 </div>
             </div>
 
-            <!-- retirer matière -->
+{{--
+########  ######## ######## #### ########  ######## ########
+##     ## ##          ##     ##  ##     ## ##       ##     ##
+##     ## ##          ##     ##  ##     ## ##       ##     ##
+########  ######      ##     ##  ########  ######   ########
+##   ##   ##          ##     ##  ##   ##   ##       ##   ##
+##    ##  ##          ##     ##  ##    ##  ##       ##    ##
+##     ## ########    ##    #### ##     ## ######## ##     ##  --}}
+
             <div
                 class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-6 rounded-lg shadow-md border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-lg">
                 <div class="flex items-center gap-3 mb-4">
@@ -391,15 +403,31 @@
 
                 <!-- Sélecteur de mode -->
                 <div class="mb-6">
-                    <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-1 flex">
+                    <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-1 grid grid-cols-2 gap-1">
                         <button type="button" id="mode-standard-btn"
-                            class="mode-selector flex-1 py-2 rounded-md text-center font-medium mode-active">
+                            class="mode-selector flex-1 py-2 rounded-md text-center font-medium mode-active w-full">
                             Mode standard
                         </button>
+                        @if ($matiere->typeAffichageStock() == 2)
                         <button type="button" id="mode-adjustment-btn"
                             class="mode-selector flex-1 py-2 rounded-md text-center font-medium">
                             Mode ajustement
                         </button>
+                        @else
+                        <x-tooltip  position="top" class="w-full" >
+                            <x-slot name="slot_item"  >
+                                <div class="w-full">
+                                <button type="button" id="mode-adjustment-btn" disabled
+                            class="mode-selector flex-1 py-2 rounded-md text-center font-medium w-full">
+                            Mode ajustement
+                        </button>
+                        </div>
+                            </x-slot>
+                            <x-slot name="slot_tooltip" >
+                                Ce mode n'est pas utilisable pour les matières de ce type de stockage
+                            </x-slot>
+                        </x-tooltip>
+                        @endif
                     </div>
                 </div>
 

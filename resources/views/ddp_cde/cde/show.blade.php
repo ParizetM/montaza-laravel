@@ -55,6 +55,13 @@
                     style="background-color: {{ $cde->statut->couleur }}; color: {{ $cde->statut->couleur_texte }}">
                     {{ $cde->statut->nom }}</div>
             </div>
+            <div class="flex flex-col gap-1 mr-8 -mt-10">
+                @if ($cde->societeContacts->isNotEmpty() && $cde->societeContacts->first()->societe)
+                    <div class="text-sm font-semibold">
+                        {{ $cde->societeContacts->first()->societe->raison_sociale }}
+                    </div>
+                @endif
+            </div>
             <div class="overflow-x-auto overflow-y-visible">
                 <div class="float-left">
                     <table class="w-auto table-auto bg-white dark:bg-gray-900 min-w-0">
@@ -262,33 +269,34 @@
                                     </div>
                                 </td>
                             </tr>
-                </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
+
+
+            </div>
+            {{-- Affichage des changements de livraison --}}
+            <div class="mt-4 ml-2">
+                @include('ddp_cde.cde.partials.changement_livraison')
+            </div>
+            {{-- Affichage des commentaires --}}
+            <div class="mt-4 w-full md:w-5/6">
+                @include('ddp_cde.cde.partials.commentaire')
+            </div>
+            <div class="flex justify-between items-center mt-6">
+                @if ($cde->statut->id == 3)
+                    <a href="{{ route('cde.annuler_terminer', $cde->id) }}" class="btn float-right">annuler
+                        terminé</a>
+                    <a href="{{ route('cde.terminer_controler', $cde->id) }}" class="btn float-right">Terminer et
+                        controlé</a>
+                @elseif ($cde->statut->id == 5)
+                    <a href="{{ route('cde.annuler_terminer_controler', $cde->id) }}" class="btn float-right">Annuler
+                        controlé</a>
+                @endif
+
             </div>
 
-
         </div>
-        {{-- Affichage des changements de livraison --}}
-        <div class="mt-4 ml-2">
-        @include('ddp_cde.cde.partials.changement_livraison')
-        </div>
-        {{-- Affichage des commentaires --}}
-        <div class="mt-4 w-full md:w-5/6">
-            @include('ddp_cde.cde.partials.commentaire')
-        </div>
-        <div class="flex justify-between items-center mt-6">
-            @if ($cde->statut->id == 3)
-                <a href="{{ route('cde.annuler_terminer', $cde->id) }}" class="btn float-right">annuler terminé</a>
-                <a href="{{ route('cde.terminer_controler', $cde->id) }}" class="btn float-right">Terminer et
-                    controlé</a>
-            @elseif ($cde->statut->id == 5)
-                <a href="{{ route('cde.annuler_terminer_controler', $cde->id) }}" class="btn float-right">Annuler
-                    controlé</a>
-            @endif
-
-        </div>
-
-    </div>
     </div>
     <div class="col-md-4">
         <livewire:media-sidebar :model="'cde'" :model-id="$cde->id" />

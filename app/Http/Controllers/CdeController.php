@@ -130,9 +130,14 @@ class CdeController extends Controller
 
         // Récupérer les statuts pour le filtre
         $cde_statuts = DdpCdeStatut::all();
-
+        // Récupérer toutes les sociétés distinctes liées à toutes les CDE
+        $societes = collect();
+        foreach ($cdes as $cde) {
+            $societes = $societes->concat($cde->societe()->get());
+        }
+        $societes = $societes->unique('id')->values();
         // Retourner la vue avec les données
-        return view('ddp_cde.cde.index', compact('cdes', 'cde_statuts'));
+        return view('ddp_cde.cde.index', compact('cdes', ['cde_statuts', 'societes', ]));
     }
 
     public function create()

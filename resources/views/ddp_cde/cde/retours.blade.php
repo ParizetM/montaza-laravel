@@ -43,7 +43,14 @@
                     </button>
                 </div>
             </div>
-            <small class="text-gray-500 dark:text-gray-400 block -mt-15 mb-2">Remplissez les dates de livraison de
+            <div class="flex flex-col gap-1 mr-8 -mt-15">
+                    @if($cde->societeContacts->isNotEmpty() && $cde->societeContacts->first()->societe)
+                        <div class="text-sm font-semibold">
+                            {{ $cde->societeContacts->first()->societe->raison_sociale }}
+                        </div>
+                    @endif
+                </div>
+            <small class="text-gray-500 dark:text-gray-400 block  mb-2">Remplissez les dates de livraison de
                 chaque matière</small>
 
             <style>

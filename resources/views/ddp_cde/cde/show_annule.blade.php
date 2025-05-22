@@ -37,6 +37,13 @@
                     {{ $cde->statut->nom }}
                 </div>
             </div>
+            <div class="flex flex-col gap-1 mr-8 -mt-10">
+                @if ($cde->societeContacts->isNotEmpty() && $cde->societeContacts->first()->societe)
+                    <div class="text-sm font-semibold">
+                        {{ $cde->societeContacts->first()->societe->raison_sociale }}
+                    </div>
+                @endif
+            </div>
             <div class="overflow-x-auto overflow-y-visible">
                 <div class="float-left">
                     <table class="w-auto table-auto bg-white dark:bg-gray-900 min-w-0">

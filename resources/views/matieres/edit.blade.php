@@ -28,8 +28,8 @@
                     @if ($matiere->isLocked())
                         <x-tooltip position="right" class="mb-6">
                             <x-slot name="slot_item">
-                                <div class="flex items-center gap-2 text-yellow-700 dark:text-yellow-300">
-                                    <x-icons.lock class="w-5 h-5" />
+                                <div class="flex items-center gap-2 text-yellow-700 dark:text-yellow-300 ">
+                                    <x-icons.lock class="w-5 h-5 fill-yellow-700 dark:fill-yellow-300" />
                                     <span class="font-bold">Matière verrouillée</span>
                                 </div>
                             </x-slot>
