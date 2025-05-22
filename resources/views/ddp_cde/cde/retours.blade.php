@@ -69,49 +69,7 @@
                 </div>
                 {{-- Affichage des changements de livraison --}}
                 @include('ddp_cde.cde.partials.changement_livraison')
-                <div class="">
-                    <h1
-                        class="text-xl font-semibold text-gray-700 dark:text-gray-200 border-b border-gray-500 pb-2 mb-4">
-                        Accusé de reception</h1>
-                    @if ($cde->accuse_reception)
-                        <div class="flex flex-wrap gap-4">
-                            <div class="flex flex-col flex-wrap gap-4">
-                                {{-- @dd($pdfs) --}}
-                                @php
-                                    $pdf = $cde->accuse_reception;
-                                    $cdeannee = explode('-', $cde->code)[1];
-                                @endphp
-                                <button class="btn h-fit w-fit" onclick="changeAr(this)">
-                                    Changer
-                                </button>
-                                <div class="flex flex-col gap-2 bg-gray-100 dark:bg-gray-700 p-4 rounded-md hover:scale-105 cursor-pointer transition-all relative"
-                                    id="pdf" title="Ouvrir le PDF">
-                                    <h2
-                                        class="text-xl font-semibold text-gray-700 dark:text-gray-200  border border-gray-300 dark:border-gray-700 pb-2 hover">
-                                        {{ explode('_', $pdf)[count(explode('_', $pdf)) - 1] }}</h2>
-                                    <div style="background-color: rgba(0,0,0,0); height: 409px; width: 285px; margin-bottom: 15px;"
-                                        class="absolute bottom-4"></div>
-                                    <object
-                                        data="{{ route('cde.pdfshow', ['cde' => $cde, 'annee' => $cdeannee, 'nom' => $pdf]) }}"
-                                        type="application/pdf" height="424px" width="300px">
-                                        <p>Il semble que vous n'ayez pas de plugin PDF pour ce navigateur. Pas de
-                                            problème... vous
-                                            pouvez <a
-                                                href="{{ route('cde.pdfshow', ['cde' => $cde, 'annee' => $cdeannee, 'nom' => $pdf]) }}">cliquer
-                                                ici pour télécharger le fichier PDF.</a></p>
-                                    </object>
-                                </div>
-                            </div>
 
-                        </div>
-                        <div class="hidden m-4 h-[424px] w-[300px]" id="ar-parent">
-                            <x-dropzone-input id="ar" name="ar" />
-                        </div>
-                    @else
-                        <x-dropzone-input id="ar" name="ar" />
-                    @endif
-
-                </div>
                 <div>
                     @include('ddp_cde.cde.partials.commentaire')
                 </div>
@@ -125,70 +83,7 @@
     <script>
         const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-        function changeAr(button) {
-            const ar = document.getElementById('ar-parent');
-            ar.classList.toggle('hidden');
-            document.getElementById('pdf').classList.toggle('hidden');
-            button.textContent = ar.classList.contains('hidden') ? 'Changer' : 'Annuler';
-        }
         document.addEventListener('DOMContentLoaded', function() {
-            pdf = document.getElementById('pdf');
-            if (pdf) {
-                pdf.addEventListener('click', function() {
-                    const pdfUrl = pdf.querySelector('object').data;
-                    window.open(pdfUrl, '_blank');
-                });
-            }
-
-            const inputAR = document.getElementById('ar');
-            const url = '{{ route('cde.upload_ar', $cde) }}';
-            inputAR.addEventListener('change', function(event) {
-                const formData = new FormData();
-                formData.append('accuse_reception', event.target.files[0]);
-                document.getElementById('retour-container').innerHTML = `
-                    <div id="loading-spinner"
-                        class=" mt-8 inset-0 bg-none bg-opacity-75 flex items-center justify-center z-50 h-dvh w-full">
-                        <div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32">
-                        </div>
-                    </div>
-                    <style>
-                        .loader {
-                            border-top-color: #3498db;
-                            animation: spinner 1.5s linear infinite;
-                        }
-
-                        @keyframes spinner {
-                            0% {
-                                transform: rotate(0deg);
-                            }
-
-                            100% {
-                                transform: rotate(360deg);
-                            }
-                        }
-                    </style>
-                `;
-                fetch(url, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: formData
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            location.reload();
-                        } else {
-                            showFlashMessageFromJs('Erreur lors de l\'envoi du fichier', 2000, 'error');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        showFlashMessageFromJs('Erreur lors de l\'envoi du fichier', 2000, 'error');
-                    });
-            });
-
 
             const container = document.getElementById('handsontable-container');
             const rowHeaders = [
@@ -336,7 +231,7 @@
             }
         });
     </script>
-            <livewire:media-sidebar :model="'cde'" :model-id="$cde->id" />
+    <livewire:media-sidebar :model="'cde'" :model-id="$cde->id" />
 
 
 

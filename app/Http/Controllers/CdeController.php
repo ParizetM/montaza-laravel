@@ -770,20 +770,6 @@ class CdeController extends Controller
 
         return $data2;
     }
-    public function uploadAr($id, Request $request)
-    {
-        $cde = Cde::findOrFail($id);
-        $request->validate([
-            'accuse_reception' => 'required|file|mimes:pdf',
-        ]);
-        $cdeAnnee = explode('-', $cde->code)[1];
-        $pdfFileName = "AR-{$cde->code}.pdf";
-        $pdfPath = storage_path("private/CDE/{$cdeAnnee}/{$pdfFileName}");
-        $pdfPath = $request->file('accuse_reception')->storeAs("CDE/{$cdeAnnee}", $pdfFileName);
-        $cde->accuse_reception = $pdfFileName;
-        $cde->save();
-        return response()->json(['success' => true]);
-    }
 
     public function terminer($id)
     {

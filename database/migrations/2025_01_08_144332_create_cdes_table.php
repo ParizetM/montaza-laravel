@@ -50,7 +50,6 @@ return new class extends Migration
             $table->json('adresse_livraison')->nullable();
             $table->json('adresse_facturation')->nullable();
             $table->foreignId('condition_paiement_id')->nullable()->constrained('condition_paiements');
-            $table->string('accuse_reception')->nullable();
             $table->boolean('show_ref_fournisseur')->default(false);
             $table->boolean('afficher_destinataire')->default(false);
             $table->foreignId('commentaire_id')->constrained('commentaires')->nullable();

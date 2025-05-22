@@ -262,123 +262,6 @@
                                     </div>
                                 </td>
                             </tr>
-                            <tr>
-                                <td colspan="100">
-                                    <div class="w-full">
-                                        <div class=" flex transition-all duration-500 max-h-0 overflow-hidden border-t border-gray-200 dark:border-gray-700"
-                                            id="slide-down-AR">
-                                            <div class="flex p-4">
-                                                @if ($cde->accuse_reception)
-                                                    <div class="flex flex-wrap gap-4">
-                                                        <div class="flex flex-col flex-wrap gap-4">
-                                                            {{-- @dd($pdfs) --}}
-                                                            @php
-                                                                $pdf = $cde->accuse_reception;
-                                                                $cdeannee = explode('-', $cde->code)[1];
-                                                            @endphp
-                                                            <div class="flex flex-col gap-2 bg-gray-100 dark:bg-gray-700 p-4 rounded-md hover:scale-105 cursor-pointer transition-all relative"
-                                                                id="pdf-{{ $pdf }}" title="Ouvrir le PDF">
-                                                                <h2
-                                                                    class="text-xl font-semibold text-gray-700 dark:text-gray-200  border border-gray-300 dark:border-gray-700 pb-2 hover">
-                                                                    {{ explode('_', $pdf)[count(explode('_', $pdf)) - 1] }}
-                                                                </h2>
-                                                                <div style="background-color: rgba(0,0,0,0); height: 409px; width: 285px; margin-bottom: 15px;"
-                                                                    class="absolute bottom-4"></div>
-                                                                <object
-                                                                    data="{{ route('cde.pdfshow', ['cde' => $cde, 'annee' => $cdeannee, 'nom' => $pdf]) }}"
-                                                                    type="application/pdf" height="424px"
-                                                                    width="300px">
-                                                                    <p>Il semble que vous n'ayez pas de plugin PDF pour
-                                                                        ce navigateur. Pas de
-                                                                        problème... vous
-                                                                        pouvez <a
-                                                                            href="{{ route('cde.pdfshow', ['cde' => $cde, 'annee' => $cdeannee, 'nom' => $pdf]) }}">cliquer
-                                                                            ici pour télécharger le fichier PDF.</a></p>
-                                                                </object>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="flex flex-wrap gap-4">
-                                                        {{-- @dd($pdfs) --}}
-                                                        @php
-                                                            $cdeannee = explode('-', $cde->code)[1];
-                                                        @endphp
-                                                        <div class="flex flex-col gap-2 bg-gray-100 dark:bg-gray-700 p-4 rounded-md hover:scale-105 cursor-pointer transition-all relative"
-                                                            id="pdf-{{ $pdfcommande }}" title="Ouvrir le PDF">
-                                                            <h2
-                                                                class="text-xl font-semibold text-gray-700 dark:text-gray-200  border border-gray-300 dark:border-gray-700 pb-2 hover">
-                                                                {{ explode('_', $pdfcommande)[count(explode('_', $pdfcommande)) - 1] }}
-                                                            </h2>
-                                                            <div style="background-color: rgba(0,0,0,0); height: 409px; width: 285px; margin-bottom: 15px;"
-                                                                class="absolute bottom-4"></div>
-                                                            <object
-                                                                data="{{ route('cde.pdfshow', ['cde' => $cde, 'annee' => $cdeannee, 'nom' => $pdfcommande]) }}"
-                                                                type="application/pdf" height="424px" width="300px">
-                                                                <p>Il semble que vous n'ayez pas de plugin PDF pour ce
-                                                                    navigateur. Pas de problème... vous
-                                                                    pouvez <a
-                                                                        href="{{ route('cde.pdfshow', ['cde' => $cde, 'annee' => $cdeannee, 'nom' => $pdfcommande]) }}">cliquer
-                                                                        ici pour télécharger le fichier PDF.</a></p>
-                                                            </object>
-                                                        </div>
-                                                    </div>
-                                            </div>
-                                        </div>
-                                        <script>
-                                            document.querySelectorAll('[id^="pdf-"]').forEach(function(element) {
-                                                element.addEventListener('click', function() {
-                                                    const pdfUrl = element.querySelector('object').data;
-                                                    window.open(pdfUrl, '_blank');
-                                                });
-                                            });
-                                        </script>
-                                    @else
-                                        <div class="flex flex-col gap-4 float-right m-12">
-                                            <div class="flex flex-col gap-4">
-                                                <div
-                                                    class="flex flex-col gap-2 bg-gray-100 dark:bg-gray-700 p-4 rounded-md">
-                                                    <h2 class="text-xl font-semibold text-gray-700 dark:text-gray-200">
-                                                        Pas d'accusé de
-                                                        réception</h2>
-
-                                                </div>
-                                            </div>
-                                        </div>
-                                        @endif
-                                    </div>
-                                    <button
-                                        class="w-full  justify-center flex hover:bg-gray-100 dark:hover:bg-gray-700"
-                                        onclick="toggleSlide()">
-                                        <x-icon :size="2" type="arrow_back"
-                                            class="-rotate-90 icons-no_hover -mt-2 mb-1 transition-all duration-500"
-                                            id="arrow-slide-down-AR" />
-                                    </button>
-
-
-                                    <script>
-                                        function toggleSlide() {
-                                            const slideDown = document.getElementById('slide-down-AR');
-                                            const arrow = document.getElementById('arrow-slide-down-AR');
-                                            if (slideDown.classList.contains('max-h-0')) {
-                                                slideDown.classList.remove('max-h-0');
-                                                slideDown.classList.add('max-h-120'); // Adjust max height as needed
-                                                arrow.classList.remove('-rotate-90');
-                                                arrow.classList.add('rotate-90');
-                                                arrow.classList.remove('-mt-2');
-                                                arrow.classList.add('-mb-2');
-                                            } else {
-                                                slideDown.classList.remove('max-h-120');
-                                                slideDown.classList.add('max-h-0');
-                                                arrow.classList.remove('rotate-90');
-                                                arrow.classList.add('-rotate-90');
-                                                arrow.classList.remove('-mb-2');
-                                                arrow.classList.add('-mt-2');
-                                            }
-                                        }
-                                    </script>
-                </div>
-                </td>
-                </tr>
                 </tbody>
                 </table>
             </div>
@@ -386,7 +269,9 @@
 
         </div>
         {{-- Affichage des changements de livraison --}}
+        <div class="mt-4 ml-2">
         @include('ddp_cde.cde.partials.changement_livraison')
+        </div>
         {{-- Affichage des commentaires --}}
         <div class="mt-4 w-full md:w-5/6">
             @include('ddp_cde.cde.partials.commentaire')

@@ -209,7 +209,6 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::get('/cde/{cde}/skipmails', [CdeController::class, 'skipMails'])->name('cde.skipmails');
         Route::post('/cde/{cde}/sendmails', [CdeController::class, 'sendMails'])->name('cde.sendmails');
         Route::get('/cde/{cde}/terminer', [CdeController::class, 'terminer'])->name('cde.terminer');
-        Route::post('/cde/{cde}/upload-ar', [CdeController::class, 'uploadAr'])->name('cde.upload_ar');
         Route::get('/cde/{cde}/annuler_terminer', [CdeController::class, 'annulerTerminer'])->name('cde.annuler_terminer');
         Route::get('/cde/{cde}/terminer_controler', [CdeController::class, 'terminerControler'])->name('cde.terminer_controler');
         Route::get('/cde/{cde}/annuler_terminer_controler', [CdeController::class, 'annulerTerminerControler'])->name('cde.annuler_terminer_controler');
