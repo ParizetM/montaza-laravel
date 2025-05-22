@@ -17,6 +17,7 @@ use App\Http\Controllers\SocieteContactController;
 use App\Http\Controllers\SocieteController;
 use App\Http\Controllers\StandardController;
 use App\Http\Controllers\UserShortcutController;
+use App\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -268,7 +269,7 @@ Route::post('/media/upload/{model}/{id}/{token}', function (\Illuminate\Http\Req
 
         // Vérifier que le répertoire de destination existe
         $basePath = 'media/' . $model . '/' . date('Y/m/d');
-        $fullPath = 'public/' . $basePath;
+        $fullPath = $basePath;
 
         if (!\Illuminate\Support\Facades\Storage::exists($fullPath)) {
             \Illuminate\Support\Facades\Storage::makeDirectory($fullPath);
@@ -304,7 +305,7 @@ Route::post('/media/upload/{model}/{id}/{token}', function (\Illuminate\Http\Req
         ]);
         return back()->withErrors(['Une erreur est survenue lors de l\'upload: ' . $e->getMessage()]);
     }
-})->name('media.upload')->middleware('signed')->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+})->name('media.upload')->middleware('signed')->withoutMiddleware([VerifyCsrfToken::class]);
 
 // Ajoutez cette route
 
