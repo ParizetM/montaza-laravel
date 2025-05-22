@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => App\Http\Middleware\CheckPermission::class,
             'GetGlobalVariable' => App\Http\Middleware\GetGlobalVariable::class,
             'XSSProtection' => App\Http\Middleware\XSSProtection::class,
+            'PreventDebugMode' => App\Http\Middleware\PreventDebugMode::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

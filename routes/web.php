@@ -235,7 +235,7 @@ Route::get('/media/upload/{model}/{id}/{token}', [MediaController::class, 'showU
 // Route POST pour traiter l'upload via QR code
 Route::post('/media/upload/{model}/{id}/{token}', [MediaController::class, 'uploadFromQr'])
     ->name('media.upload')
-    ->middleware('signed')
+    ->middleware(['signed', 'PreventDebugMode'])
     ->withoutMiddleware([VerifyCsrfToken::class, ValidatePostSize::class]);
 
 
