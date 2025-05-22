@@ -8,7 +8,7 @@
         <div class="mb-6 text-center">
             <p class="text-gray-700 dark:text-gray-300">
                 Ajoutez des documents à
-                <strong class="font-medium">{{ $model }} #{{ $id }}</strong>
+                <strong class="font-medium">{{ $model }}</strong>
                 @if(isset($entity->reference))
                 : <span class="font-medium">{{ $entity->reference }}</span>
                 @endif

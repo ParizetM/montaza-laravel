@@ -77,17 +77,17 @@
             <div x-data="{ tab: 'files' }" class="mb-6">
                 <div class="border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
                     <nav class="flex space-x-4">
-                        <button @click="tab = 'files'"
+                        <button @click="tab = 'files'; $wire.refreshMediaList()"
                             :class="{ 'border-blue-500 text-blue-600 dark:text-blue-400': tab === 'files', 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300': tab !== 'files' }"
                             class="pb-3 px-1 border-b-2 font-medium text-sm">
                             Fichiers
                         </button>
-                        <button @click="tab = 'upload'"
+                        <button @click="tab = 'upload';"
                             :class="{ 'border-blue-500 text-blue-600 dark:text-blue-400': tab === 'upload', 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300': tab !== 'upload' }"
                             class="pb-3 px-1 border-b-2 font-medium text-sm">
                             Ajouter des fichiers
                         </button>
-                        <button @click="tab = 'qrcode'"
+                        <button @click="tab = 'qrcode';"
                             :class="{ 'border-blue-500 text-blue-600 dark:text-blue-400': tab === 'qrcode', 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300': tab !== 'qrcode' }"
                             class="pb-3 px-1 border-b-2 font-medium text-sm">
                             QR Code
