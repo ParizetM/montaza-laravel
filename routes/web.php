@@ -287,7 +287,7 @@ Route::post('/media/upload/{model}/{id}/{token}', function (\Illuminate\Http\Req
             $media = new \App\Models\Media([
                 'filename' => $filename,
                 'original_filename' => $originalFilename,
-                'path' => str_replace('public/', '', $filePath),
+                'path' => $filePath,
                 'mime_type' => $file->getMimeType(),
                 'size' => $file->getSize(),
                 'uploaded_by' => 1, // System upload
