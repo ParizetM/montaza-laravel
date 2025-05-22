@@ -183,6 +183,6 @@ class Matiere extends Model
     {
         // Une matière est considérée comme verrouillée si elle a des mouvements de stock
         // ou si elle est associée à des fournisseurs
-        return $this->mouvementStocks()->exists() || $this->fournisseurs()->exists();
+        return $this->mouvementStocks()->exists() || $this->fournisseurs()->exists() || $this->stock()->exists();
     }
 }
