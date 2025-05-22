@@ -219,10 +219,9 @@ class MediaController extends Controller
             ]);
 
             $entity = null;
-            if ($model === 'cde') {
-                $entity = \App\Models\Cde::findOrFail($id);
-            } elseif ($model === 'ddp') {
-                $entity = \App\Models\Ddp::findOrFail($id);
+            if (isset($this->allowedModels[$model])) {
+                $entityClass = $this->allowedModels[$model];
+                $entity = $entityClass::findOrFail($id);
             }
 
             if (!$entity) {
@@ -275,10 +274,9 @@ class MediaController extends Controller
     public function showUploadForm($model, $id, $token)
     {
         $entity = null;
-        if ($model === 'cde') {
-            $entity = Cde::findOrFail($id);
-        } elseif ($model === 'ddp') {
-            $entity = Ddp::findOrFail($id);
+        if (isset($this->allowedModels[$model])) {
+            $entityClass = $this->allowedModels[$model];
+            $entity = $entityClass::findOrFail($id);
         }
 
         return view('media.upload-form', [
@@ -303,12 +301,10 @@ class MediaController extends Controller
 
     protected function getEntity($model, $id)
     {
-        switch ($model) {
-            case 'cde':
-                return Cde::find($id);
-            // Ajoutez d'autres cas pour différents types d'entités
-            default:
-                return null;
+        if (!isset($this->allowedModels[$model])) {
+            return null;
         }
+        $entityClass = $this->allowedModels[$model];
+        return $entityClass::find($id);
     }
 }

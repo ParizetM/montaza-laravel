@@ -138,7 +138,7 @@
                                                     </path>
                                                 </svg>
                                             @endif
-                                            <span class="font-medium truncate"
+                                            <span class="font-medium truncate text-gray-700 dark:text-gray-200"
                                                 title="{{ $media->original_filename ?? $media->filename }}">
                                                 {{ Str::limit($media->original_filename ?? $media->filename, 25) }}
                                             </span>
@@ -238,23 +238,24 @@
                         @endif
                     </div>
                     <!-- PDF DE CDE -->
-                    @if (count($mediaList) > 0 && $mediaList[0]->mediaable_type == 'App\Models\Cde')
+                    @if (isset($model) && $model == 'cde' && $modelId)
+                        @php
+                            $cde = App\Models\Cde::find($modelId);
+                            $cdeannee = explode('-', $cde->code)[1];
+                            $pdf = $cde->code . '.pdf';
+                        @endphp
                         <div
                             class="flex justify-between items-center border-b border-gray-300 dark:border-gray-700 mt-6 mb-4 text-gray-700 dark:text-gray-200">
                             <h1 class="text-3xl font-bold mb-6 text-left">PDF de la commande</h1>
                             <div class="flex flex-col gap-2">
-                                <a href="{{ route('cde.pdfs.download', $mediaList[0]->mediaable) }}"
-                                    class="btn-sm">Télécharger le PDF</a>
-                                <a href="{{ route('cde.pdfs.pdfdownload_sans_prix', $mediaList[0]->mediaable) }}"
+                                <a href="{{ route('cde.pdfs.download', $cde->id) }}" class="btn-sm">Télécharger le
+                                    PDF</a>
+                                <a href="{{ route('cde.pdfs.pdfdownload_sans_prix', $cde->id) }}"
                                     class="btn-sm">Télécharger le PDF sans prix</a>
                             </div>
                         </div>
                         <div class="flex flex-wrap gap-4">
-                            @php
-                                $cde = $mediaList[0]->mediaable;
-                                $cdeannee = explode('-', $cde->code)[1];
-                                $pdf = $cde->code . '.pdf';
-                            @endphp
+
                             <div class="flex flex-col gap-2 bg-gray-100 dark:bg-gray-700 p-4 rounded-md hover:scale-105 cursor-pointer transition-all relative"
                                 id="pdf-{{ $pdf }}" title="Ouvrir le PDF">
                                 <h2
@@ -274,6 +275,66 @@
                                 </object>
                             </div>
 
+                        </div>
+                        <script>
+                            document.querySelectorAll('[id^="pdf-"]').forEach(function(element) {
+                                element.addEventListener('click', function() {
+                                    const pdfUrl = element.querySelector('object').data;
+                                    window.open(pdfUrl, '_blank');
+                                });
+                            });
+                        </script>
+                    @endif
+                    <!-- PDF DE DDP -->
+                    @if (isset($model) && $model == 'ddp' && $modelId)
+                        @php
+                            $ddp = App\Models\Ddp::find($modelId);
+                            $ddpannee = explode('-', $ddp->code)[1];
+                            $pdfs = Storage::files('DDP/' . $ddpannee);
+                            $pdfs = array_filter($pdfs, function ($file) use ($ddp) {
+                                return strpos(basename($file), $ddp->code) === 0;
+                            });
+                            $pdfs = array_map(function ($file) use ($ddpannee) {
+                                return str_replace('DDP/' . $ddpannee . '/', '', $file);
+                            }, $pdfs);
+
+                        @endphp
+                        <div
+                            class="flex justify-between items-center border-b border-gray-300 dark:border-gray-700 mt-6 mb-4 text-gray-700 dark:text-gray-200">
+                            <h1 class="text-3xl font-bold mb-6 text-left ">PDF de la Demande de prix</h1>
+                            <div class="flex flex-col gap-2">
+                                <a href="{{ route('ddp.pdfs.download', $ddp->id) }}" class="btn-sm">Télécharger tous
+                                    les PDF</a>
+
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-4">
+
+                            @foreach ($pdfs as $pdf)
+                                <div class="flex flex-col gap-2 bg-gray-100 dark:bg-gray-700 p-4 rounded-md hover:scale-105 cursor-pointer transition-all relative"
+                                    id="pdf-{{ $pdf }}" title="Ouvrir le PDF dans un autre onglet">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <h2
+                                            class="text-xl font-semibold text-gray-700 dark:text-gray-200  border border-gray-300 dark:border-gray-700 pb-2 hover">
+                                            {{ explode('_', $pdf)[count(explode('_', $pdf)) - 1] }}</h2>
+                                        <a href="{{ route('ddp.pdfdownload', ['ddp' => $ddp, 'annee' => $ddpannee, 'nom' => $pdf]) }}"
+                                            class="" title="Télécharger le PDF">
+                                            <x-icons.download size="2" class="icons" />
+                                        </a>
+                                    </div>
+                                    <div style="background-color: rgba(0,0,0,0); height: 409px; width: 285px; margin-bottom: 15px;"
+                                        class="absolute bottom-4"></div>
+                                    <object
+                                        data="{{ route('ddp.pdfshow', ['ddp' => $ddp, 'annee' => $ddpannee, 'nom' => $pdf]) }}"
+                                        type="application/pdf" height="424px" width="300px">
+                                        <p>Il semble que vous n'ayez pas de plugin PDF pour ce navigateur. Pas de
+                                            problème... vous
+                                            pouvez <a
+                                                href="{{ route('ddp.pdfshow', ['ddp' => $ddp, 'annee' => $ddpannee, 'nom' => $pdf]) }}">cliquer
+                                                ici pour télécharger le fichier PDF.</a></p>
+                                    </object>
+                                </div>
+                            @endforeach
                         </div>
                         <script>
                             document.querySelectorAll('[id^="pdf-"]').forEach(function(element) {

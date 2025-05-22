@@ -90,6 +90,9 @@
             </x-modal>
         </div>
     </div>
+    <div class="col-md-4">
+        <livewire:media-sidebar :model="'ddp'" :model-id="$ddp->id" />
+    </div>
     <script>
         const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
         document.addEventListener('DOMContentLoaded', function() {

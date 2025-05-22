@@ -188,4 +188,7 @@
             </div>
         </div>
     </div>
+    <div class="col-md-4">
+        <livewire:media-sidebar :model="'cde'" :model-id="$cde->id" />
+    </div>
 </x-app-layout>

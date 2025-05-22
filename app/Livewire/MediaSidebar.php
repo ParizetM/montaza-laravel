@@ -6,6 +6,7 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Models\Media;
 use App\Models\Cde;
+use App\Models\Ddp;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
@@ -24,6 +25,12 @@ class MediaSidebar extends Component
 
     protected $rules = [
         'files.*' => 'file|max:10240|mimes:jpg,jpeg,png,pdf,heic,heif,mp4,mov,avi,wmv',
+    ];
+
+    protected $allowedModels = [
+        'cde' => Cde::class,
+        'ddp' => Ddp::class,
+        // Ajoutez d'autres modèles selon vos besoins
     ];
 
     public function mount($model, $modelId)
@@ -46,13 +53,11 @@ class MediaSidebar extends Component
 
     protected function getEntity()
     {
-        switch ($this->model) {
-            case 'cde':
-                return Cde::find($this->modelId);
-                // Ajoutez d'autres cas pour différents types d'entités
-            default:
-                return null;
+        if (isset($this->allowedModels[$this->model])) {
+            $modelClass = $this->allowedModels[$this->model];
+            return $modelClass::find($this->modelId);
         }
+        return null;
     }
 
     public function updatedFiles()

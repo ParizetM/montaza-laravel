@@ -146,6 +146,9 @@
             </x-modal>
         </div>
     </div>
+    <div class="col-md-4">
+        <livewire:media-sidebar :model="'ddp'" :model-id="$ddp->id" />
+    </div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const rows = document.querySelectorAll('tbody tr');

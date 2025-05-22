@@ -14,6 +14,7 @@ class Ddp extends Model
 {
     /** @use HasFactory<\Database\Factories\DdpFactory> */
     use HasFactory;
+    use MediaableTrait;
 
     protected $fillable = [
         'code',
