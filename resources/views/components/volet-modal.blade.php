@@ -110,7 +110,7 @@ $positionClasses = $positions[$position] ?? $positions['right'];
     x-on:keydown.tab.prevent="$event.shiftKey || nextFocusable().focus()"
     x-on:keydown.shift.tab.prevent="prevFocusable().focus()"
     x-show="show"
-    class="fixed inset-0 overflow-hidden z-50"
+    class="fixed inset-0 overflow-hidden z-200"
     style="display: {{ $show ? 'block' : 'none' }};"
 >
     <div

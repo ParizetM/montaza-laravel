@@ -1,5 +1,13 @@
 <div>
-    <div class="media-sidebar p-4 bg-white dark:bg-gray-800 shadow rounded-lg">
+    <div class="fixed top-1/2 left-0 transform -translate-y-1/2" x-data>
+        <button @click="$dispatch('open-volet', 'media-manager')"
+            class="btn-select-right flex items-center px-2 py-8 bg-gray-200 dark:bg-gray-800 shadow-lg hover:bg-gray-300 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-700">
+            <x-icon :size="1" type="arrow_back" />
+            <span class=" whitespace-nowrap font-medium transform -rotate-90 inline-block w-1  -mb-12">Médias</span>
+        </button>
+
+    </div>
+    {{-- <div class="media-sidebar p-4 bg-white dark:bg-gray-800 shadow rounded-lg">
         <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4 flex justify-between items-center">
             <span>Documents associés</span>
             <button
@@ -19,9 +27,9 @@
                             <!-- Icône basée sur le type de fichier -->
                             <div class="flex items-center">
                                 @if(str_contains($media->mime_type ?? '', 'image'))
-                                    <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                    </svg>
+                                    <div class="w-8 h-8 mr-2 bg-gray-200 rounded overflow-hidden">
+                                        <img src="{{ route('media.show', $media->id) }}" alt="{{ $media->original_filename ?? $media->filename }}" class="w-full h-full object-cover">
+                                    </div>
                                 @elseif(str_contains($media->mime_type ?? '', 'pdf'))
                                     <svg class="w-5 h-5 mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
@@ -35,7 +43,7 @@
                                     {{ Str::limit($media->original_filename ?? $media->filename, 20) }}
                                 </span>
                             </div>
-                            <a href="#" class="text-blue-500 hover:text-blue-700">
+                            <a href="{{ route('media.show', $media->id) }}" target="_blank" class="text-blue-500 hover:text-blue-700">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                                 </svg>
@@ -49,10 +57,10 @@
                 @endif
             </ul>
         </div>
-    </div>
+    </div> --}}
 
     <!-- Volet modal pour la gestion complète des médias -->
-    <x-volet-modal name="media-manager" maxWidth="3xl" position="right">
+    <x-volet-modal name="media-manager" maxWidth="3xl" position="left">
         <div class="p-6">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Gestion des documents</h2>
@@ -105,11 +113,11 @@
                                             </span>
                                         </div>
                                         <div class="flex space-x-2">
-                                            <button wire:click="downloadMedia({{ $media->id ?? 0 }})" class="text-blue-500 hover:text-blue-600">
+                                            <a href="{{ route('media.download', $media->id) }}" target="_blank" class="text-blue-500 hover:text-blue-600">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                                                 </svg>
-                                            </button>
+                                            </a>
                                             <button wire:click="deleteMedia({{ $media->id ?? 0 }})" class="text-red-500 hover:text-red-600">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
@@ -120,19 +128,27 @@
                                     <!-- Aperçu du fichier -->
                                     <div class="p-3">
                                         @if(str_contains($media->mime_type ?? '', 'image'))
-                                            <img src="{{ $media->url ?? '#' }}" alt="{{ $media->original_filename ?? $media->filename }}" class="w-full h-32 object-cover object-center">
+                                            <a href="{{ route('media.show', $media->id) }}" target="_blank" class="block">
+                                                <img src="{{ route('media.show', $media->id) }}" alt="{{ $media->original_filename ?? $media->filename }}" class="w-full h-32 object-cover object-center">
+                                            </a>
                                         @elseif(str_contains($media->mime_type ?? '', 'pdf'))
-                                            <div class="bg-gray-100 dark:bg-gray-800 h-32 flex items-center justify-center">
-                                                <svg class="w-16 h-16 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-                                                </svg>
-                                            </div>
+                                            <a href="{{ route('media.show', $media->id) }}" target="_blank" class="block bg-gray-100 dark:bg-gray-800 h-32 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                                                <div class="text-center">
+                                                    <svg class="w-16 h-16 text-red-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                                                    </svg>
+                                                    <p class="text-sm mt-1 text-gray-600 dark:text-gray-400">Cliquez pour ouvrir</p>
+                                                </div>
+                                            </a>
                                         @else
-                                            <div class="bg-gray-100 dark:bg-gray-800 h-32 flex items-center justify-center">
-                                                <svg class="w-16 h-16 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                                </svg>
-                                            </div>
+                                            <a href="{{ route('media.show', $media->id) }}" target="_blank" class="block bg-gray-100 dark:bg-gray-800 h-32 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                                                <div class="text-center">
+                                                    <svg class="w-16 h-16 text-gray-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                    </svg>
+                                                    <p class="text-sm mt-1 text-gray-600 dark:text-gray-400">Cliquez pour ouvrir</p>
+                                                </div>
+                                            </a>
                                         @endif
                                     </div>
                                     <!-- Informations sur le fichier -->
@@ -219,10 +235,14 @@
                             <div class="bg-white p-4 rounded-lg inline-block mb-4">
                                 {!! QrCode::size(200)->generate($qrUrl) !!}
                             </div>
-                            <p class="mb-4 text-gray-600 dark:text-gray-400">Scannez ce code QR pour télécharger des documents depuis votre téléphone</p>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">Le lien expire dans 10 minutes</p>
+                            <p class="mb-4 text-gray-600 dark:text-gray-400">Scannez ce code QR pour télécharger des documents depuis un autre appareil</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                                Le lien expire dans <span x-data="{ timeLeft: 3600 }" x-init="setInterval(() => timeLeft > 0 ? timeLeft-- : clearInterval(this), 1000)">
+                                    <span x-text="`${Math.floor(timeLeft / 60)}m ${timeLeft % 60}s`"></span>
+                                </span>
+                            </p>
                         @else
-                            <p class="mb-4 text-gray-600 dark:text-gray-400">Générez un code QR pour télécharger des documents depuis votre téléphone</p>
+                            <p class="mb-4 text-gray-600 dark:text-gray-400">Générez un code QR pour télécharger des documents depuis un autre appareil</p>
                             <button wire:click="generateQrCode" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
                                 Générer un QR Code
                             </button>

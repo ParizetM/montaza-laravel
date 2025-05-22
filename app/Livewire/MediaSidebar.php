@@ -23,7 +23,7 @@ class MediaSidebar extends Component
     public string|null $qrUrl = null;
 
     protected $rules = [
-        'files.*' => 'file|max:10240|mimes:jpg,jpeg,png,pdf',
+        'files.*' => 'file|max:10240|mimes:jpg,jpeg,png,pdf,heic,heif,mp4,mov,avi,wmv',
     ];
 
     public function mount($model, $modelId)
@@ -72,7 +72,7 @@ class MediaSidebar extends Component
             $path = 'media/' . $this->model . '/' . date('Y/m/d');
 
             // Store the file
-            $filePath = $file->storeAs('public/' . $path, $filename);
+            $filePath = $file->storeAs($path, $filename);
 
             // Create media record
             $media = new Media([

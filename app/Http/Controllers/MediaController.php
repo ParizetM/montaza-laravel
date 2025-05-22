@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Media;
 use App\Models\Cde;
+use App\Models\Ddp;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
@@ -17,8 +19,8 @@ class MediaController extends Controller
      * Les classes de modèles autorisées pour l'attachement des médias
      */
     protected $allowedModels = [
-        'cde' => \App\Models\Cde::class,
-        'ddp' => \App\Models\Ddp::class,
+        'cde' => Cde::class,
+        'ddp' => Ddp::class,
         // Ajoutez d'autres modèles selon vos besoins
     ];
 
@@ -67,7 +69,7 @@ class MediaController extends Controller
                 $path = 'media/' . $model . '/' . date('Y/m/d');
 
                 // Utilisation de la méthode storeAs avec gestion de disque spécifique
-                $filePath = $file->storeAs($path, $filename, 'public');
+                $filePath = $file->storeAs($path, $filename);
 
                 $media = new Media([
                     'filename' => $filename,
@@ -75,7 +77,7 @@ class MediaController extends Controller
                     'path' => $filePath,
                     'mime_type' => $file->getMimeType(),
                     'size' => $file->getSize(),
-                    'uploaded_by' => auth()->id(),
+                    'uploaded_by' => Auth::getUser()->id,
                 ]);
 
                 $entity->media()->save($media);
@@ -98,11 +100,53 @@ class MediaController extends Controller
     }
 
     /**
+     * Affiche un média.
+     */
+    public function show($mediaid)
+    {
+        // Vérification des autorisations si nécessaire
+        // Cette partie peut être adaptée selon vos règles d'autorisation
+
+        $media = Media::find($mediaid);
+        $path = $media->path;
+        if (is_null($path)) {
+            abort(404, 'Chemin du fichier non défini');
+        }
+
+        $path = Storage::path($path);
+
+        if (!file_exists($path)) {
+            abort(404, 'Fichier non trouvé');
+        }
+        $type = $media->mime_type ?? 'application/octet-stream';
+        $fileContent = file_get_contents($path);
+
+        $response = response($fileContent, 200);
+        $response->header('Content-Type', $type);
+        // Encode the filename for Content-Disposition header
+        $encodedFilename = rawurlencode($media->original_filename);
+        $response->header('Content-Disposition', "inline; filename=\"{$media->original_filename}\"; filename*=UTF-8''{$encodedFilename}");
+
+        return $response;
+    }
+
+    /**
      * Télécharge un média.
      */
-    public function download(Media $media)
+    public function download($mediaId)
     {
-        $path = Storage::path('public/' . $media->path);
+        // Vérification des autorisations si nécessaire
+        // Cette partie peut être adaptée selon vos règles d'autorisation
+
+        $media = Media::find($mediaId);
+        if (!$media) {
+            abort(404, 'Média non trouvé');
+        }
+
+        if (is_null($media->path)) {
+            abort(404, 'Chemin du fichier non défini');
+        }
+        $path = Storage::path($media->path);
         return response()->download($path, $media->original_filename);
     }
 
@@ -111,7 +155,7 @@ class MediaController extends Controller
      */
     public function destroy(Media $media)
     {
-        Storage::delete('public/' . $media->path);
+        Storage::delete($media->path);
         $media->delete();
         return back()->with('success', 'Fichier supprimé avec succès');
     }
@@ -124,10 +168,10 @@ class MediaController extends Controller
         try {
             $token = Str::random(32);
 
-            // Augmenter la durée de validité à 24 heures pour éviter les problèmes d'expiration
+            // Augmenter la durée de validité à 1 heures pour éviter les problèmes d'expiration
             $signedUrl = URL::temporarySignedRoute(
                 'media.upload-form',
-                now()->addHours(24),
+                now()->addHours(1),
                 [
                     'model' => $model,
                     'id' => $id,

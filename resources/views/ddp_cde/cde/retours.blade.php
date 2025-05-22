@@ -336,6 +336,7 @@
             }
         });
     </script>
+            <livewire:media-sidebar :model="'cde'" :model-id="$cde->id" />
 
 
 

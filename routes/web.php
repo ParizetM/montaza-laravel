@@ -37,7 +37,9 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
 
     Route::get('/administration', [AdministrationController::class, 'index'])->name('administration.index');
     Route::get('/administration/info', [AdministrationController::class, 'info'])->name('administration.info');
-    Route::get('/icons', function () {return view('administration.icons');})->name('administration.icons');
+    Route::get('/icons', function () {
+        return view('administration.icons');
+    })->name('administration.icons');
     Route::get('/administration/info/{entite}', [AdministrationController::class, 'info'])->name('administration.info_entite');
     Route::patch('/administration/info/{entite}/update', [AdministrationController::class, 'update'])->name('administration.update');
 
@@ -216,13 +218,14 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
     });
 
     // Routes pour le système de médias
+    Route::get('/media/download/{mediaId}', [MediaController::class, 'download'])->name('media.download');
     Route::get('/media/{model}/{id}', [MediaController::class, 'index'])->name('media.index');
     Route::post('/media/{model}/{id}', [MediaController::class, 'store'])->name('media.store');
     Route::delete('/media/{media}', [MediaController::class, 'destroy'])->name('media.destroy');
-    Route::get('/media/download/{media}', [MediaController::class, 'download'])->name('media.download');
 
     // Route pour générer un lien signé vers la page d'upload par QR code
     Route::get('/media/generate-qr/{model}/{id}', [MediaController::class, 'generateQrLink'])->name('media.generate-qr');
+    Route::get('/media/{id}', [MediaController::class, 'show'])->name('media.show');
 });
 
 // Route d'upload via QR code (protégée par signature)
@@ -231,8 +234,7 @@ Route::get('/media/upload/{model}/{id}/{token}', function ($model, $id, $token) 
         'model' => $model,
         'id' => $id,
         'token' => $token,
-        'entity' => $model === 'cde' ? \App\Models\Cde::findOrFail($id) :
-                   ($model === 'ddp' ? \App\Models\Ddp::findOrFail($id) : null)
+        'entity' => $model === 'cde' ? \App\Models\Cde::findOrFail($id) : ($model === 'ddp' ? \App\Models\Ddp::findOrFail($id) : null)
     ]);
 })->name('media.upload-form')->middleware('signed');
 
@@ -304,14 +306,8 @@ Route::post('/media/upload/{model}/{id}/{token}', function (\Illuminate\Http\Req
     }
 })->name('media.upload')->middleware('signed')->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
 
-// Ajoutez cette route pour servir des fichiers publics (pour le débogage)
-Route::get('/storage/{path}', function ($path) {
-    $path = str_replace('..', '', $path); // Sécurité de base
-    if (Storage::disk('public')->exists($path)) {
-        return response()->file(storage_path('app/public/'.$path));
-    }
-    abort(404);
-})->where('path', '.*');
+// Ajoutez cette route
+
 
 require __DIR__ . '/auth.php';
 require __DIR__ . '/lourd-api.php';

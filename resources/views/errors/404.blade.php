@@ -28,6 +28,11 @@
                     Non trouvé </div>
 
             </div>
+            @if (session('message', null))
+                <div class="mt-4 text-sm text-gray-500">
+                    {{ session('message') }}
+                </div>
+            @endif
 
         </div>
         <div class="max-w-xl mx-auto sm:px-6 lg:px-8 mt-10">
