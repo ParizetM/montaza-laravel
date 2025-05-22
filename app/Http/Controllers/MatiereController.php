@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\MatiereResource;
 use App\Models\DossierStandard;
 use App\Models\Famille;
+use App\Models\Material;
 use App\Models\Matiere;
 use App\Models\MouvementStock;
 use App\Models\Societe;
@@ -617,5 +618,85 @@ class MatiereController extends Controller
             'success' => true,
             'sousFamille' => $sousFamille,
         ], 201);
+    }
+
+    /**
+     * Affiche le formulaire d'édition d'une matière
+     */
+    public function edit(Matiere $matiere)
+    {
+        // Récupérer les données nécessaires pour le formulaire
+        $familles = Famille::all();
+        $sousFamilles = SousFamille::where('famille_id', $matiere->sousFamille->famille_id)->get();
+        $unites = Unite::all();
+        $dossier_standards = DossierStandard::all();
+        $standards = [];
+        $versions = [];
+
+        if ($matiere->standardVersion) {
+            $standards = Standard::where('dossier_standard_id', $matiere->standardVersion->standard->dossier_standard_id)->get();
+            $versions = StandardVersion::where('standard_id', $matiere->standardVersion->standard_id)->get();
+        }
+
+        $materials = Material::all();
+
+        return view('matieres.edit', compact(
+            'matiere',
+            'familles',
+            'sousFamilles',
+            'unites',
+            'dossier_standards',
+            'standards',
+            'versions',
+            'materials'
+        ));
+    }
+
+    /**
+     * Met à jour les données d'une matière
+     */
+    public function update(Request $request, Matiere $matiere)
+    {
+        // Validation des données
+        if ($matiere->isLocked()) {
+            // Si la matière est verrouillée, seuls certains champs sont modifiables
+            $validated = $request->validate([
+            'sous_famille_id' => 'required|exists:sous_familles,id',
+            'ref_valeur_unitaire' => 'nullable',
+            'standard_version_id' => 'nullable|exists:standard_versions,id',
+            ]);
+        } else {
+            // Sinon, tous les champs sont modifiables
+            $validated = $request->validate([
+            'ref_interne' => 'required|string|max:255',
+            'designation' => 'required|string|max:255',
+            'sous_famille_id' => 'required|exists:sous_familles,id',
+            'unite_id' => 'required|exists:unites,id',
+            'ref_valeur_unitaire' => 'nullable',
+            'dn' => 'nullable|string|max:255',
+            'epaisseur' => 'nullable|string|max:255',
+            'standard_version_id' => 'nullable|exists:standard_versions,id',
+            'stock_min' => 'required|numeric|min:0',
+            'material_id' => 'nullable|exists:materials,id',
+            ]);
+        }
+
+        // Traiter correctement le champ ref_valeur_unitaire (comme dans quickStore)
+        if ($request->input('ref_valeur_unitaire') === '' || $request->input('ref_valeur_unitaire') === 'non') {
+            $validated['ref_valeur_unitaire'] = null;
+        }
+
+        // Si la matière est verrouillée, limiter les champs modifiables
+        if ($matiere->isLocked()) {
+            $allowedFields = Matiere::EDITABLE;
+            $updateData = array_intersect_key($validated, array_flip($allowedFields));
+        } else {
+            $updateData = $validated;
+        }
+
+        $matiere->update($updateData);
+
+        return redirect()->route('matieres.show', $matiere->id)
+            ->with('success', 'Matière mise à jour avec succès');
     }
 }

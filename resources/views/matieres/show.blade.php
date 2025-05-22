@@ -2,12 +2,18 @@
     @section('title', $matiere->designation)
 
     <x-slot name="header">
-        <div>
+        <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 <a href="{{ route('matieres.index') }}"
                     class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">Matières</a>
                 >> {{ $matiere->designation }}
             </h2>
+            <a href="{{ route('matieres.edit', $matiere->id) }}" class="btn">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                Modifier
+            </a>
         </div>
     </x-slot>
 
@@ -362,7 +368,7 @@
                             @else
                                 <tr>
                                     <td class="px-4 py-4 whitespace-nowrap text-center text-gray-500 dark:text-gray-400"
-                                        colspan="2">Aucun mouvement</td>
+                                        colspan="1000">Aucun mouvement</td>
                                 </tr>
                             @endif
                         </tbody>

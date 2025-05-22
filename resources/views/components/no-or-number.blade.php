@@ -4,6 +4,7 @@
     'value' => null,
     'disabled' => false,
     'required' => false,
+    'onlyNumber' => false,
     'class' => '',
     'placeholder' => 'Entrez un nombre'
 ])
@@ -17,8 +18,8 @@
     <button
         type="button"
         id="{{ $id }}-non-button"
-        class="{{ $isNon ? 'bg-indigo-600 text-white font-bold shadow-sm' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600' }} px-4 py-2 rounded-l-md transition-all duration-200 cursor-pointer"
-        {{ $disabled ? 'disabled' : '' }}
+        class="{{ $isNon ? 'bg-indigo-600 text-white font-bold shadow-sm' : ($onlyNumber ? 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'  ) }} px-4 py-2 rounded-l-md transition-all duration-200 {{ ($disabled || $onlyNumber) ? '' : 'cursor-pointer' }}"
+        {{ ($disabled || $onlyNumber) ? 'disabled' : '' }}
         onclick="toggleNon('{{ $id }}', '{{ $name }}', {{ $required ? 'true' : 'false' }})"
     >
         NON

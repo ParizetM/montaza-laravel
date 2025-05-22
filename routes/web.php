@@ -6,13 +6,13 @@ use App\Http\Controllers\CdeNoteController;
 use App\Http\Controllers\DdpController;
 use App\Http\Controllers\EtablissementController;
 use App\Http\Controllers\MailtemplateController;
-use App\Http\Controllers\MatiereController;
 use App\Http\Controllers\MediaController;
+use App\Http\Controllers\MatiereController;
+use App\Http\Controllers\ModelChangeController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
-use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\ModelChangeController;
 use App\Http\Controllers\SocieteContactController;
 use App\Http\Controllers\SocieteController;
 use App\Http\Controllers\StandardController;
@@ -135,7 +135,8 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::post('/matieres/{matiere}/retirer', [MatiereController::class, 'retirerMatiere'])->name('matieres.retirer');
         Route::post('/matieres/{matiere}/ajouter', [MatiereController::class, 'ajouterMatiere'])->name('matieres.ajouter');
         Route::post('/matieres/{matiere}/ajuster', [MatiereController::class, 'ajusterMatiere'])->name('matieres.ajuster');
-
+        Route::get('/matieres/{matiere}/edit', [MatiereController::class, 'edit'])->name('matieres.edit');
+        Route::patch('/matieres/{matiere}/update', [MatiereController::class, 'update'])->name('matieres.update');
 
         Route::delete('/matieres/standards/delete', [StandardController::class, 'destroy'])->name('standards.destroy');
         Route::delete('/matieres/standards/deleteDossier', [StandardController::class, 'destroyDossier'])->name('standards.destroy_dossier');

@@ -11,6 +11,13 @@ class Matiere extends Model
 {
     use HasFactory;
 
+    // Ces champs resteront modifiables même si la matière est verrouillée
+    public const EDITABLE = [
+        'sous_famille_id',
+        'ref_valeur_unitaire',
+        'standard_version_id'
+    ];
+
     protected $fillable = [
         'ref_interne',
         'designation',
@@ -169,5 +176,13 @@ class Matiere extends Model
     public function getLastMouvementStock()
     {
         return $this->mouvementStocks()->latest()->first();
+    }
+
+    // Vérifie si la matière est utilisée (et donc partiellement verrouillée)
+    public function isLocked(): bool
+    {
+        // Une matière est considérée comme verrouillée si elle a des mouvements de stock
+        // ou si elle est associée à des fournisseurs
+        return $this->mouvementStocks()->exists() || $this->fournisseurs()->exists();
     }
 }
