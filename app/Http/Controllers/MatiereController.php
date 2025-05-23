@@ -102,8 +102,8 @@ class MatiereController extends Controller
         // Add sorting by stock quantity if requested
         $query->addSelect(['total_stock' => function ($q) {
             $q->selectRaw('COALESCE(SUM(CASE WHEN stocks.valeur_unitaire > 0 THEN stocks.quantite * stocks.valeur_unitaire ELSE stocks.quantite END), 0)')
-            ->from('stocks')
-            ->whereColumn('stocks.matiere_id', 'matieres.id');
+                ->from('stocks')
+                ->whereColumn('stocks.matiere_id', 'matieres.id');
         }])->orderBy('total_stock', 'desc');
         return $query;
     }
@@ -658,29 +658,50 @@ class MatiereController extends Controller
     public function update(Request $request, Matiere $matiere)
     {
         // Validation des données
+        dd($request->all());
         if ($matiere->isLocked()) {
             // Si la matière est verrouillée, seuls certains champs sont modifiables
             $validated = $request->validate([
-            'sous_famille_id' => 'required|exists:sous_familles,id',
-            'ref_valeur_unitaire' => 'nullable',
-            'standard_version_id' => 'nullable|exists:standard_versions,id',
+                'sous_famille_id' => 'required|exists:sous_familles,id',
+                'ref_valeur_unitaire' => 'nullable',
+                'standard_id' => 'nullable|exists:standards,nom',
+                'standard_version' => 'nullable|exists:standard_versions,version',
             ]);
         } else {
             // Sinon, tous les champs sont modifiables
             $validated = $request->validate([
-            'ref_interne' => 'required|string|max:255',
-            'designation' => 'required|string|max:255',
-            'sous_famille_id' => 'required|exists:sous_familles,id',
-            'unite_id' => 'required|exists:unites,id',
-            'ref_valeur_unitaire' => 'nullable',
-            'dn' => 'nullable|string|max:255',
-            'epaisseur' => 'nullable|string|max:255',
-            'standard_version_id' => 'nullable|exists:standard_versions,id',
-            'stock_min' => 'required|numeric|min:0',
-            'material_id' => 'nullable|exists:materials,id',
+                'ref_interne' => 'required|string|max:255',
+                'designation' => 'required|string|max:255',
+                'sous_famille_id' => 'required|exists:sous_familles,id',
+                'unite_id' => 'required|exists:unites,id',
+                'ref_valeur_unitaire' => 'nullable',
+                'dn' => 'nullable|string|max:255',
+                'epaisseur' => 'nullable|string|max:255',
+                'standard_id' => 'nullable|exists:standards,nom',
+                'standard_version' => 'nullable|exists:standard_versions,version',
+                'stock_min' => 'required|numeric|min:0',
+                'material_id' => 'nullable|exists:materials,id',
             ]);
         }
-
+        if ($request->input('standard_version')) {
+            if ($request->input('standard_version') === '' || $request->input('standard_id') === '') {
+                $standard_version_id = null;
+            } else {
+                $standard_id = Standard::where('nom', 'ILIKE', $request->input('standard_id'))->first()->id;
+                if ($standard_id === null) {
+                    return response()->json(['error' => 'Le standard n\'existe pas'], 422);
+                }
+                $standard_version_id = StandardVersion::where('version', 'ILIKE', $request->input('standard_version_id'))
+                    ->where('standard_id', $standard_id)
+                    ->first()->id;
+                if ($standard_version_id === null) {
+                    return response()->json(['error' => 'La version du standard n\'existe pas'], 422);
+                }
+            }
+        } else {
+            $standard_version_id = null;
+        }
+        $validated['standard_version_id'] = $standard_version_id;
         // Traiter correctement le champ ref_valeur_unitaire (comme dans quickStore)
         if ($request->input('ref_valeur_unitaire') === '' || $request->input('ref_valeur_unitaire') === 'non') {
             $validated['ref_valeur_unitaire'] = null;
@@ -698,5 +719,81 @@ class MatiereController extends Controller
 
         return redirect()->route('matieres.show', $matiere->id)
             ->with('success', 'Matière mise à jour avec succès');
+    }
+
+    public function mouvements($id, Request $request)
+    {
+        $matiere = Matiere::with('mouvementStocks')->findOrFail($id);
+        // Validation des filtres
+        $request->validate([
+            'periode' => 'nullable|in:today,week,month,3months,6months,year,custom',
+            'user_id' => 'nullable|exists:users,id',
+            'type' => 'nullable|in:entree,sortie',
+            'date_debut' => 'nullable|date',
+            'date_fin' => 'nullable|date|after_or_equal:date_debut',
+        ]);
+
+        // Construction de la requête avec filtres
+        $query = $matiere->mouvementStocks();
+
+        // Filtre par période
+        if ($request->filled('periode')) {
+            $periode = $request->input('periode');
+
+            switch ($periode) {
+                case 'today':
+                    $query->whereDate('created_at', today());
+                    break;
+                case 'week':
+                    $query->where('created_at', '>=', now()->startOfWeek());
+                    break;
+                case 'month':
+                    $query->where('created_at', '>=', now()->startOfMonth());
+                    break;
+                case '3months':
+                    $query->where('created_at', '>=', now()->subMonths(3));
+                    break;
+                case '6months':
+                    $query->where('created_at', '>=', now()->subMonths(6));
+                    break;
+                case 'year':
+                    $query->where('created_at', '>=', now()->startOfYear());
+                    break;
+                case 'custom':
+                    if ($request->filled('date_debut')) {
+                        $query->whereDate('created_at', '>=', $request->input('date_debut'));
+                    }
+                    if ($request->filled('date_fin')) {
+                        $query->whereDate('created_at', '<=', $request->input('date_fin'));
+                    }
+                    break;
+            }
+        }
+
+        // Filtre par utilisateur
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->input('user_id'));
+        }
+
+        // Filtre par type
+        if ($request->filled('type')) {
+            $query->where('type', $request->input('type'));
+        }
+
+        // Récupérer les mouvements paginés
+        $mouvements = $query->orderBy('created_at', 'desc')->paginate(20);
+
+        // Récupérer la liste des utilisateurs qui ont fait des mouvements sur cette matière
+        $utilisateurs = \App\Models\User::whereIn('id', function ($query) use ($matiere) {
+            $query->select('user_id')
+                ->from('mouvement_stocks')
+                ->where('matiere_id', $matiere->id)
+                ->distinct();
+        })->orderBy('first_name')->orderBy('last_name')->get();
+
+        // Conserver les paramètres de filtrage dans la pagination
+        $mouvements->appends($request->query());
+
+        return view('matieres.mouvements', compact('matiere', 'mouvements', 'utilisateurs'));
     }
 }

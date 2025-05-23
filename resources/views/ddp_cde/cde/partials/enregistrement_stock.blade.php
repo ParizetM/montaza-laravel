@@ -1,4 +1,15 @@
-<x-volet-modal name="changements-stock" direction="right" x-init="$dispatch('open-volet', 'changements-stock')" :show="($cde->cdeLignes->where('ddpCdeStatut.nom', '!=', 'Annulée')->where('date_livraison_reelle', '!=', null)->whereNull('is_stocke')->whereNull('ligne_autre_id')->count() > 0) || $show_stock ? 1 : 0"
+<div class="fixed top-1/2 right-0 transform -translate-y-1/2" x-data>
+        <button @click="$dispatch('open-volet', 'changements-stock')"
+        id="btn-open-enregistrement_stock"
+            class="btn-select-left flex items-center px-2 py-8 bg-gray-200 dark:bg-gray-800 shadow-lg hover:bg-gray-300 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-700">
+            <x-icon :size="1" type="arrow_back" />
+            <span class=" whitespace-nowrap font-medium transform -rotate-90 inline-block w-1 mt-30 -mb-7">Changements
+                stock</span>
+        </button>
+
+    </div>
+
+<x-volet-modal name="changements-stock" direction="right" x-init="$dispatch('open-volet', 'changements-stock')"
     x-on:close="$dispatch('close-volet', 'changements-stock')">
     <div class="p-6 text-gray-900 dark:text-gray-100">
         <div class="flex justify-between items-center mb-4">
@@ -17,7 +28,7 @@
                     </x-slot>
                 </x-tooltip>
             </div>
-            <button @click="$dispatch('close')">
+            <button @click="$dispatch('close')" id="btn-close-enregistrement_stock">
                 <x-icons.close class="icons" size="1.5" unfocus />
             </button>
         </div>
@@ -26,7 +37,7 @@
             <h2 class="text-md font-semibold">À ajouter au stock</h2>
 
 
-            <form id="stock-form" method="POST" action="{{ route('cde.stock.store', $cde->id) }}">
+            <form id="stock-form" method="POST" action="{{ route('cde.stock.store', $cde->id) }}" onsubmit="document.getElementById('btn-close-enregistrement_stock').click();">
                 @csrf
                 <table class="w-full border-collapse border-0 rounded-md">
 
@@ -654,4 +665,14 @@
                 showFlashMessageFromJs('Erreur lors de la suppression du mouvement de stock.', 3000, 'error');
             });
     }
+    document.addEventListener('DOMContentLoaded', function() {
+        var show = {{ ($cde->cdeLignes->where('ddpCdeStatut.nom', '!=', 'Annulée')->where('date_livraison_reelle', '!=', null)->whereNull('is_stocke')->whereNull('ligne_autre_id')->count() > 0) || $show_stock ? 1 : 0 }} ;
+        if (show) {
+
+            setTimeout(function() {
+                document.getElementById('btn-open-enregistrement_stock').click();
+            }, 100);
+
+        }
+    });
 </script>

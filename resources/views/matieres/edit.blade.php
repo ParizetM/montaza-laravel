@@ -158,18 +158,18 @@
                                 @enderror
                             </div>
                             <div>
-                                <x-input-label for="standard_version_id" :value="__('Révision')" optionnel class="mb-1" />
-                                <select name="standard_version_id" id="standard_version_id" class="select block w-full">
+                                <x-input-label for="standard_version" :value="__('Révision')" optionnel class="mb-1" />
+                                <select name="standard_version" id="standard_version" class="select block w-full">
                                     <option value="" disabled {{ !$matiere->standardVersion ? 'selected' : '' }}>Sélectionner d'abord un standard</option>
                                     @if ($matiere->standardVersion)
                                         @foreach ($versions as $version)
-                                            <option value="{{ $version->id }}" {{ $matiere->standard_version_id == $version->id ? 'selected' : '' }}>
+                                            <option value="{{ $version->version }}" {{ $matiere->standard_version_id == $version->id ? 'selected' : '' }}>
                                                 {{ $version->version }}
                                             </option>
                                         @endforeach
                                     @endif
                                 </select>
-                                @error('standard_version_id')
+                                @error('standard_version')
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -335,7 +335,7 @@
                                     standardSelect.innerHTML = '<option value="" disabled selected>Sélectionner un standard</option>';
                                     data.forEach(standard => {
                                         var option = document.createElement('option');
-                                        option.value = standard.nom;
+                                        option.value = standard.id;
                                         option.textContent = standard.nom;
                                         standardSelect.appendChild(option);
                                     });
@@ -346,7 +346,7 @@
                         }
 
                         function updateVersionSelect(standardId) {
-                            var versionSelect = document.getElementById('standard_version_id');
+                            var versionSelect = document.getElementById('standard_version');
                             var dossierId = document.getElementById('dossier_standard_id').value;
                             versionSelect.innerHTML = '<option value="" disabled selected>Chargement...</option>';
 

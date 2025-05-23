@@ -55,12 +55,12 @@
             <table>
                 <thead>
                     <tr>
-                        <th class="px-4 py-2">Numéro</th>
-                        <th class="px-4 py-2">Date</th>
-                        <th class="px-4 py-2">Nom</th>
-                        <th class="px-4 py-2">Créé par</th>
-                        <th class="px-4 py-2">pour</th>
-                        <th class="px-4 py-2">Statut</th>
+                        <x-sortable-header column="code" route="cde.index">Numéro</x-sortable-header>
+                        <x-sortable-header column="created_at" route="cde.index">Date</x-sortable-header>
+                        <x-sortable-header column="nom" route="cde.index">Nom</x-sortable-header>
+                        <x-sortable-header column="user" route="cde.index">Créé par</x-sortable-header>
+                        <th class="px-4 py-2" route="cde.index">pour</th>
+                        <x-sortable-header column="statut" route="cde.index">Statut</x-sortable-header>
                     </tr>
                 </thead>
                 <tbody>

@@ -110,7 +110,6 @@
                                     <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Standard</th>
                                     <th class="text-left py-3 px-4 uppercase font-semibold text-sm">DN</th>
                                     <th class="text-left py-3 px-4 uppercase font-semibold text-sm">EP</th>
-                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Action</th>
                                 </tr>
                             </thead>
                             <tbody class="text-gray-700 dark:text-gray-100" id="body_table">
@@ -249,6 +248,10 @@
             }
             matieres.forEach(matiere => {
                 const row = document.createElement('tr');
+                row.onclick = function() {
+                    window.location.href = `/matieres/${matiere.id}`;
+                };
+                row.classList.add('cursor-pointer', 'hover:bg-gray-100', 'dark:hover:bg-gray-700');
                 row.innerHTML = `
             <td class="text-left py-3 px-4">${matiere.refInterne || '-'}</td>
             <td class="text-left py-3 px-4">${matiere.sousFamille || '-'}</td>
@@ -260,7 +263,6 @@
             </td>
             <td class="text-left py-3 px-4">${matiere.dn || '-'}</td>
             <td class="text-left py-3 px-4">${matiere.epaisseur || '-'}</td>
-            <td class="text-left py-3 px-4"><a href="/matieres/${matiere.id}" class="btn">Voir</a></td>
         `;
                 tbody.appendChild(row);
             });

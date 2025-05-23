@@ -137,6 +137,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::post('/matieres/{matiere}/ajuster', [MatiereController::class, 'ajusterMatiere'])->name('matieres.ajuster');
         Route::get('/matieres/{matiere}/edit', [MatiereController::class, 'edit'])->name('matieres.edit');
         Route::patch('/matieres/{matiere}/update', [MatiereController::class, 'update'])->name('matieres.update');
+        Route::get('/matieres/{id}/mouvements', [MatiereController::class, 'mouvements'])->name('matieres.mouvements');
 
         Route::delete('/matieres/standards/delete', [StandardController::class, 'destroy'])->name('standards.destroy');
         Route::delete('/matieres/standards/deleteDossier', [StandardController::class, 'destroyDossier'])->name('standards.destroy_dossier');

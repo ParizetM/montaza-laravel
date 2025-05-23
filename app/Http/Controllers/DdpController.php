@@ -484,7 +484,7 @@ class DdpController extends Controller
         $ddp->save();
         foreach ($ddp->ddpLigne as $ddpLigne) {
             foreach ($ddpLigne->ddpLigneFournisseur as $ddpLigneFournisseur) {
-                DB::table('societe_matiere')->where('ddp_ligne_fournisseur_id', $ddpLigneFournisseur->id)->delete();
+                DB::table('societe_matiere_prixs')->where('ddp_ligne_fournisseur_id', $ddpLigneFournisseur->id)->delete();
                 $ddpLigneFournisseur->date_livraison = null;
                 $ddpLigneFournisseur->save();
             }

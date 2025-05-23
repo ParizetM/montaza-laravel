@@ -33,15 +33,7 @@
 
  --}}
 
-    <div class="fixed top-1/2 right-0 transform -translate-y-1/2" x-data>
-        <button @click="$dispatch('open-volet', 'changements-stock')"
-            class="btn-select-left flex items-center px-2 py-8 bg-gray-200 dark:bg-gray-800 shadow-lg hover:bg-gray-300 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-700">
-            <x-icon :size="1" type="arrow_back" />
-            <span class=" whitespace-nowrap font-medium transform -rotate-90 inline-block w-1 mt-30 -mb-7">Changements
-                stock</span>
-        </button>
 
-    </div>
     @include('ddp_cde.cde.partials.enregistrement_stock')
 
     {{-- @else

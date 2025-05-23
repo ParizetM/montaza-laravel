@@ -71,12 +71,16 @@ class CdeController extends Controller
             'statut' => 'nullable|integer|exists:ddp_cde_statuts,id',
             'nombre' => 'nullable|integer|min:1|',
             'societe' => 'nullable|integer|exists:societes,id',
+            'sort' => 'nullable|string|in:code,created_at,nom,user,statut',
+            'direction' => 'nullable|string|in:asc,desc',
         ]);
         // Lecture des entrées avec des valeurs par défaut
         $search = $request->input('search');
         $statut = $request->input('statut');
         $quantite = $request->input('nombre', 20);
         $societe = $request->input('societe');
+        $sort = $request->input('sort', 'created_at');
+        $direction = $request->input('direction', 'desc');
 
         // Construire la requête de base
         $query = Cde::query()
@@ -123,14 +127,42 @@ class CdeController extends Controller
             })
             ->when($statut, function ($query, $statut) {
                 $query->where('ddp_cde_statut_id', $statut);
-            })
-            ->orderBy('ddp_cde_statut_id', 'asc')
-            ->orderBy('created_at', 'desc');
-            if ($societe) {
-                $query->whereHas('societeContacts.etablissement.societe', function ($q) use ($societe) {
-                    $q->where('id', $societe);
-                });
-            }
+            });
+
+        if ($societe) {
+            $query->whereHas('societeContacts.etablissement.societe', function ($q) use ($societe) {
+                $q->where('id', $societe);
+            });
+        }
+
+        // Appliquer le tri
+        switch ($sort) {
+            case 'code':
+                $query->orderBy('code', $direction);
+                break;
+            case 'nom':
+                $query->orderBy('nom', $direction);
+                break;
+            case 'user':
+                $query->join('users', 'cdes.user_id', '=', 'users.id')
+                      ->orderBy('users.first_name', $direction)
+                      ->orderBy('users.last_name', $direction)
+                      ->select('cdes.*');
+                break;
+            case 'statut':
+                $query->join('ddp_cde_statuts', 'cdes.ddp_cde_statut_id', '=', 'ddp_cde_statuts.id')
+                      ->orderBy('ddp_cde_statuts.nom', $direction)
+                      ->select('cdes.*');
+                break;
+            case 'created_at':
+                $query->orderBy('created_at', $direction);
+                break;
+            default:
+                $query->orderBy('ddp_cde_statut_id', 'asc')
+                      ->orderBy('created_at', $direction);
+                break;
+        }
+
         // Récupérer les résultats paginés
         $cdes = $query->paginate($quantite);
 
@@ -143,7 +175,7 @@ class CdeController extends Controller
         }
         $societes = $societes->unique('id')->values();
         // Retourner la vue avec les données
-        return view('ddp_cde.cde.index', compact('cdes', ['cde_statuts', 'societes', ]));
+        return view('ddp_cde.cde.index', compact('cdes', ['cde_statuts', 'societes', 'sort', 'direction']));
     }
 
     public function create()

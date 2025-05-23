@@ -345,7 +345,7 @@
                                 </div>
                             </td>
                             <td style="text-align: left; padding-left: 10px;">{{ $ligne->designation }}</td>
-                            <td style="text-align: right;">{{ formatNumber($ligne->quantite) }} {{ $ligne->matiere->unite->short ?? '' }}</td>
+                            <td style="text-align: right;" class="whitespace-nowrap">{{ formatNumber($ligne->quantite) }} {{ $ligne->matiere->unite->short ?? '' }}</td>
                             @if ($sans_prix)
                                 <td class="whitespace-nowrap">
                                     @if (

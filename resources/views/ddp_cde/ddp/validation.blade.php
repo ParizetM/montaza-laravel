@@ -51,7 +51,7 @@
                         </div>
                         <div>
                             <div class="flex gap-4">
-                                <x-input-label value="Date de rendu" />
+                                <x-input-label value="Date de besoin matière" />
                                 <small>(Optionnel)</small>
                             </div>
                             <x-date-input name="date_rendu" :value="old('date_rendu')" />
@@ -71,9 +71,9 @@
                         </h2>
 
                         <div class="grid grid-cols-2 gap-4">
-                            <div class="">
+                            <div>
                                 <div class="bg-white dark:bg-gray-900 w-fit h-full rounded-md overflow-auto mt-2">
-                                    <table class="min-w-0  ">
+                                    <table class="min-w-0">
                                         <thead>
                                             <tr>
                                                 <th class="py-2">Référence</th>
@@ -114,8 +114,8 @@
                                                             class="border border-gray-300 dark:border-gray-700 px-4 py-2">
                                                             {{ $ddpLigne->case_designation }}</td>
                                                         <td class="border border-gray-300 dark:border-gray-700 px-4 py-2"
-                                                            colspan="2">{{ $ddpLigne->case_quantite }}</td>
-
+                                                            colspan="2">
+                                                            {{ $ddpLigne->case_quantite }}</td>
                                                     </tr>
                                                 @endif
                                             @endforeach
@@ -130,15 +130,31 @@
                                     <select name="etablissement-{{ $societe->id }}" required
                                         id="etablissement-{{ $societe->id }}" class="select w-fit min-w-96"
                                         onchange="changeEtablissement({{ $societe->id }})">
+                                        @php
+                                            $selectedEtablissementId = old('etablissement-' . $societe->id);
+                                            if (!$selectedEtablissementId) {
+                                                $selectedEtablissementId = $ddp
+                                                    ->ddpLigneFournisseur()
+                                                    ->where('societe_id', $societe->id)
+                                                    ->whereNotNull('societe_contact_id')
+                                                    ->with('societeContact')
+                                                    ->get()
+                                                    ->pluck('societeContact.etablissement_id')
+                                                    ->filter()
+                                                    ->first();
+                                            }
+                                        @endphp
                                         @if ($societe->etablissements->count() == 1)
                                             <option value="{{ $societe->etablissements->first()->id }}" selected>
                                                 {{ $societe->etablissements->first()->nom }}
                                             </option>
                                         @else
-                                            <option value="" disabled selected>Choisir un établissement</option>
+                                            <option value="" disabled
+                                                {{ !$selectedEtablissementId ? 'selected' : '' }}>Choisir un
+                                                établissement</option>
                                             @foreach ($societe->etablissements as $etablissement)
                                                 <option value="{{ $etablissement->id }}"
-                                                    {{ old('etablissement-' . $societe->id) == $etablissement->id ? 'selected' : '' }}>
+                                                    {{ $selectedEtablissementId == $etablissement->id ? 'selected' : '' }}>
                                                     {{ $etablissement->nom }}
                                                 </option>
                                             @endforeach
@@ -152,32 +168,55 @@
                                     <x-input-label value="Destinataire" />
                                     <select name="contact-{{ $societe->id }}" id="contact-{{ $societe->id }}"
                                         required class="select w-fit min-w-96">
-                                        @if ($societe->etablissements->count() == 1)
-                                            @if ($societe->etablissements->first()->contacts->count() == 1)
-                                                <option
-                                                    value="{{ $societe->etablissements->first()->contacts->first()->id }}"
-                                                    selected>
-                                                    {{ $societe->etablissements->first()->contacts->first()->nom }}
-                                                    {{ $societe->etablissements->first()->contacts->first()->fonction }}
-                                                    {{ $societe->etablissements->first()->contacts->first()->email }}
+                                        @php
+                                            $selectedContactId = old('contact-' . $societe->id);
+                                            if (!$selectedContactId) {
+                                                $selectedContactId = $ddp
+                                                    ->ddpLigneFournisseur()
+                                                    ->where('societe_id', $societe->id)
+                                                    ->whereNotNull('societe_contact_id')
+                                                    ->pluck('societe_contact_id')
+                                                    ->first();
+                                            }
+                                            $etablissementContacts = null;
+                                            if ($selectedEtablissementId) {
+                                                $etablissementContacts = $societe->etablissements
+                                                    ->where('id', $selectedEtablissementId)
+                                                    ->first()?->contacts;
+                                            } elseif ($societe->etablissements->count() == 1) {
+                                                $etablissementContacts = $societe->etablissements->first()->contacts;
+                                            }
+                                        @endphp
+                                        @if ($etablissementContacts && $etablissementContacts->count() > 0)
+                                            @if ($etablissementContacts->count() == 1)
+                                                <option value="{{ $etablissementContacts->first()->id }}" selected>
+                                                    {{ $etablissementContacts->first()->nom }}
+                                                    {{ $etablissementContacts->first()->fonction }}
+                                                    {{ $etablissementContacts->first()->email }}
                                                 </option>
                                             @else
-                                                <option value="" disabled selected>Choisir un destinataire
+                                                <option value="" disabled
+                                                    {{ !$selectedContactId ? 'selected' : '' }}>Choisir un destinataire
                                                 </option>
-                                                @foreach ($societe->etablissements->first()->contacts as $contact)
+                                                @foreach ($etablissementContacts as $contact)
                                                     <option value="{{ $contact->id }}"
-                                                        {{ old('contact-' . $societe->id) == $contact->id ? 'selected' : '' }}>
+                                                        {{ $selectedContactId == $contact->id ? 'selected' : '' }}>
                                                         {{ $contact->nom }} {{ $contact->fonction }}
                                                         {{ $contact->email }}
                                                     </option>
                                                 @endforeach
                                             @endif
+                                        @else
+                                            <option value="" disabled selected>Aucun contact</option>
                                         @endif
                                     </select>
                                     @error('contact-' . $societe->id)
                                         <span class="text-red-500">{{ $message }}</span>
                                     @enderror
                                 </div>
+                                @error('contact-' . $societe->id)
+                                    <span class="text-red-500">{{ $message }}</span>
+                                @enderror
                             </div>
                         </div>
                     </div>
