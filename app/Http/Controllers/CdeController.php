@@ -69,12 +69,14 @@ class CdeController extends Controller
         $request->validate([
             'search' => 'nullable|string|max:255',
             'statut' => 'nullable|integer|exists:ddp_cde_statuts,id',
-            'nombre' => 'nullable|integer|min:1|'
+            'nombre' => 'nullable|integer|min:1|',
+            'societe' => 'nullable|integer|exists:societes,id',
         ]);
         // Lecture des entrées avec des valeurs par défaut
         $search = $request->input('search');
         $statut = $request->input('statut');
         $quantite = $request->input('nombre', 20);
+        $societe = $request->input('societe');
 
         // Construire la requête de base
         $query = Cde::query()
@@ -124,7 +126,11 @@ class CdeController extends Controller
             })
             ->orderBy('ddp_cde_statut_id', 'asc')
             ->orderBy('created_at', 'desc');
-
+            if ($societe) {
+                $query->whereHas('societeContacts.etablissement.societe', function ($q) use ($societe) {
+                    $q->where('id', $societe);
+                });
+            }
         // Récupérer les résultats paginés
         $cdes = $query->paginate($quantite);
 
@@ -132,7 +138,7 @@ class CdeController extends Controller
         $cde_statuts = DdpCdeStatut::all();
         // Récupérer toutes les sociétés distinctes liées à toutes les CDE
         $societes = collect();
-        foreach ($cdes as $cde) {
+        foreach (Cde::all() as $cde) {
             $societes = $societes->concat($cde->societe()->get());
         }
         $societes = $societes->unique('id')->values();

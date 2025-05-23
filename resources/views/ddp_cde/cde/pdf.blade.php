@@ -312,6 +312,9 @@
                             <th>PU HT</th>
                             <th>Total HT</th>
                         @endif
+                        @if ($sans_prix)
+                            <th>Qté estimée</th>
+                        @endif
                         <th>Pour le</th>
                     </tr>
                 </thead>

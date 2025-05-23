@@ -654,6 +654,7 @@
         // Function to show the list of suppliers for the selected material
         function showFournisseurs(event, isRefresh = 0) {
             let matiereId = "";
+            liveSearchFournisseurs();
             const fournisseursTable = document.getElementById('fournisseurs-table');
 
             if (isRefresh == 1) {
@@ -982,7 +983,23 @@
                 matiereId = document.getElementById('fournisseurs-table').querySelector('tr:first-child').getAttribute(
                     'data-matiere-id');
                 const existingRow = matiereChoisiTable.querySelector(`tr[data-matiere-id="${matiereId}"]`);
-                const fournisseursIds = existingRow.getAttribute('data-fournisseurs-ids');
+                var fournisseursIds = "";
+                var fournisseursIdsTemp = "";
+                if (existingRow) {
+                    fournisseursIds = existingRow.getAttribute('data-fournisseurs-ids');
+                } else {
+                    fournisseursIds = "";
+                }
+                var fournisseursChoisiAilleurs = matiereChoisiTable.querySelectorAll('tr[data-matiere-id]').forEach(row => {
+                    if (row.getAttribute('data-matiere-id') != matiereId) {
+                        var fournisseursIdsAilleurs = row.getAttribute('data-fournisseurs-ids');
+                        if (fournisseursIdsAilleurs != "") {
+                            fournisseursIdsTemp += ';' + fournisseursIdsAilleurs;
+                        }
+                    }
+                });
+                fournisseursChoisiAilleurs = fournisseursIdsTemp.split(';');
+                console.log(fournisseursChoisiAilleurs);
                 data.forEach(fournisseur => {
                     if (!matiereId || !fournisseursIds || !fournisseursIds.split(';').includes(fournisseur.id
                             .toString())) {
@@ -998,7 +1015,10 @@
                         tr.setAttribute('data-is-from-quicksearch', 'true');
                         tr.addEventListener('click', addFournisseur);
                         tr.innerHTML = `
-                        <td class="text-left px-4" colspan="2">${fournisseur.raison_sociale || '-'}</td>
+                        <td class="text-left px-4" colspan="2">
+                            ${fournisseur.raison_sociale || '-'}
+                            ${fournisseursChoisiAilleurs.includes(fournisseur.id.toString()) ? '<span class="ml-2 text-xs text-yellow-600 dark:text-yellow-400">(déjà sélectionné ailleurs)</span>' : ''}
+                        </td>
                     `;
                         fournisseursTable.appendChild(tr);
                     }

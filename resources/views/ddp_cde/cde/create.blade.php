@@ -1019,7 +1019,8 @@
                 const date = row.querySelector(`input[name="date[${matiereId}]`).value;
                 row.classList.remove(
                     'border-r-green-500', 'dark:border-r-green-600');
-                if (quantity < 1 || isNaN(parseFloat(quantity)) || isNaN(parseFloat(prix)) || quantity.endsWith('.') || prix.endsWith('.')) {
+                if (quantity < 1 || isNaN(parseFloat(quantity)) || isNaN(parseFloat(prix)) || quantity.endsWith(
+                    '.') || prix.endsWith('.')) {
                     saveStatus0.classList.add('hidden');
                     saveStatus2.classList.remove('hidden');
                     return;
@@ -1228,9 +1229,10 @@
                 }
             });
             if (matiereChoisiTable.querySelector('tr[data-matiere-id]')) {
-                saveChanges();
+                setTimeout(() => {
+                    saveChanges();
+                }, 100);
             }
         });
-        // Add CSS for euro symbol
     </script>
 </x-app-layout>

@@ -2,8 +2,8 @@
     <div class="fixed top-1/2 left-0 transform -translate-y-1/2" x-data>
         <button @click="$dispatch('open-volet', 'media-manager')"
             class="btn-select-right flex items-center px-2 py-8 bg-gray-200 dark:bg-gray-800 shadow-lg hover:bg-gray-300 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-700">
-            <x-icon :size="1" type="arrow_back" />
-            <span class=" whitespace-nowrap font-medium transform -rotate-90 inline-block w-1  -mb-12">Médias</span>
+                        <span class=" whitespace-nowrap font-medium transform rotate-90 inline-block w-1  -mt-12">Médias</span>
+            <x-icon :size="1" type="arrow_back" class="-rotate-180" />
         </button>
 
     </div>

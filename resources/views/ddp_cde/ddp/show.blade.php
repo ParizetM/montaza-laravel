@@ -133,7 +133,7 @@
                         <x-icons.close class="float-right mb-1 icons" size="1.5" unfocus />
                     </a>
                     <h2 class="text-xl font-semibold mb-4">Voulez-vous vraiment retourner en arrière ?</h2>
-                    <p class="mb-4">La date des prix</p>
+                    <p class="mb-4">La date des prix enregistrés sera mise à jour.</p>
                     <p class="mb-4">Cette action est irréversible.</p>
                     <div class="flex justify-end gap-4">
                         <button x-on:click="$dispatch('close')"

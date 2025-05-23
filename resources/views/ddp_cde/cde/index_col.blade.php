@@ -59,7 +59,7 @@
                                             <tbody>
                                                 @foreach($cde->cdeLignes as $ligne)
 
-                                                <tr class="border-b dark:border-gray-600  {{ $ligne->ddp_cde_statut_id == 4 || $ligne->date_livraison_reelle == null ? 'line-through' : 'dds' }}">
+                                                <tr class="border-b dark:border-gray-600  {{ $ligne->ddp_cde_statut_id == 4 || $ligne->date_livraison_reelle == null ? 'line-through' : '' }}">
                                                     <td class="px-2 py-1 text-xs">{{ $ligne->poste }}</td>
                                                     <td class="px-2 py-1 text-xs">{{ $ligne->designation }}</td>
                                                     <td class="px-2 py-1 text-xs text-right whitespace-nowrap">{{ formatNumber($ligne->quantite) }} {{ $ligne->matiere ? $ligne->matiere->unite->short : '' }}</td>

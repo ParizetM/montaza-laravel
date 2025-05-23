@@ -338,7 +338,7 @@ class DdpController extends Controller
             $code = str_pad($request->code, 4, '0', STR_PAD_LEFT);
         } else {
             DB::rollBack();
-           return response()->json(['error' => 'Invalid code format'], 400);
+            return response()->json(['error' => 'Invalid code format'], 400);
         }
         try {
             $ddp = Ddp::findOrFail($request->ddp_id);
@@ -897,12 +897,18 @@ class DdpController extends Controller
             'ddp_cde_statut_id' => 1,
             'ddp_id' => $ddp->id,
             'entite_id' => $ddp->entite_id,
-            'societe_contact_id' => $societe_contact_id,
             'user_id' => Auth::id(),
             'tva' => 20,
             'type_expedition_id' => 1,
             'condition_paiement_id' => 1,
+            'show_ref_fournisseur' => true,
             'commentaire_id' => $commentaire->id,
+        ]);
+        DB::table('cde_societe_contacts')->insert([
+            'cde_id' => $cde->id,
+            'societe_contact_id' => $societe_contact_id,
+            'created_at' => now(),
+            'updated_at' => now()
         ]);
         $poste = 0;
         $ddpLignes = $ddp->ddpLigne->where('ligne_autre_id', null);

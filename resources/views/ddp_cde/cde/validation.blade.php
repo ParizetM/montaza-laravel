@@ -49,13 +49,13 @@
                             style="background-color: {{ $cde->statut->couleur }}; color: {{ $cde->statut->couleur_texte }}">
                             {{ $cde->statut->nom }}</div>
                     </div>
-                    <button type="submit" class="btn h-fit w-fit" onclick="document.getElementById('quick_save').value = 'true';">
+                    <button type="submit" class="btn h-fit w-fit"
+                        onclick="document.getElementById('quick_save').value = 'true';">
                         <span class="">Enregistrer</span>
                     </button>
                     <input type="hidden" name="quick_save" id="quick_save" value="false">
                     @error('quick_save')
                         <span class="text-red-500">{{ $message }}</span>
-
                     @enderror
                 </div>
 
@@ -197,7 +197,7 @@
                             <small>(Optionnel)</small>
                         </div>
                         <div class="price-input-container">
-                            <x-text-input name="frais_de_port" type="number" step="0.01" :value="old('frais_de_port', formatNumber($cde->frais_de_port,true))"
+                            <x-text-input name="frais_de_port" type="number" step="0.01" :value="old('frais_de_port', formatNumber($cde->frais_de_port, true))"
                                 onblur="recalculateTotal()" class=" price-input" />
                         </div>
                         @error('frais_de_port')
@@ -211,7 +211,7 @@
                                 <small>(Optionnel)</small>
                             </div>
                             <div class="price-input-container">
-                                <x-text-input name="frais_divers" type="number" step="0.01" :value="old('frais_divers', formatNumber($cde->frais_divers,true))"
+                                <x-text-input name="frais_divers" type="number" step="0.01" :value="old('frais_divers', formatNumber($cde->frais_divers, true))"
                                     onblur="fraisDiversChange();recalculateTotal()" class="price-input" />
                             </div>
                             @error('frais_divers')
@@ -556,11 +556,13 @@
                 <div class="flex justify-between mt-4">
                     <a href="{{ route('cde.show', $cde->id) }}" class="btn">{{ __('Retour') }}</a>
                     <div class="flex gap-2">
-                    <button type="submit" class="btn h-fit w-fit" onclick="document.getElementById('quick_save').value = 'true';">
-                        <span class="">Enregistrer</span>
-                    </button>
-                    <button type="submit" class="btn" title="enregistrer et valider">{{ __('Valider') }}</button>
-                </div>
+                        <button type="submit" class="btn h-fit w-fit"
+                            onclick="document.getElementById('quick_save').value = 'true';">
+                            <span class="">Enregistrer</span>
+                        </button>
+                        <button type="submit" class="btn"
+                            title="enregistrer et valider">{{ __('Valider') }}</button>
+                    </div>
                 </div>
             </div>
             {{--
@@ -585,12 +587,8 @@
 --}}
 
             @if ($listeChangement != false)
-                <script>
-                    document.addEventListener('DOMContentLoaded', function() {
-                        document.getElementById('open-modal-listeChangement').click();
-                    });
-                </script>
-                <x-modal name="listeChangement-modal" id="listeChangement-modal" title="Liste des changements"
+
+                <x-modal name="listeChangement-modal" id="listeChangement-modal" title="Liste des changements" show
                     maxWidth="5xl">
                     <div class="p-2b text-gray-700 dark:text-gray-300">
                         <a x-on:click="$dispatch('close')">
