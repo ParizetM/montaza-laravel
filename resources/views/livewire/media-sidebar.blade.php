@@ -418,7 +418,7 @@
                             </div>
                             <p class="mb-4 text-gray-600 dark:text-gray-400">Scannez ce code QR pour télécharger des
                                 documents depuis un autre appareil</p>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
                                 Le lien expire dans <span x-data="{ timeLeft: 3600 }" x-init="setInterval(() => timeLeft > 0 ? timeLeft-- : clearInterval(this), 1000)">
                                     <span x-text="`${Math.floor(timeLeft / 60)}m ${timeLeft % 60}s`"></span>
                                 </span>
@@ -427,10 +427,11 @@
                             <p class="mb-4 text-gray-600 dark:text-gray-400">Générez un code QR pour télécharger des
                                 documents depuis un autre appareil</p>
                             <button wire:click="generateQrCode"
-                                class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                                class="px-4 py-2 mb-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
                                 Générer un QR Code
                             </button>
                         @endif
+                        <p class="mb-4 text-gray-600 dark:text-gray-400">L'appareil doit être connecté au réseau Wifi de l'entreprise pour fonctionner</p>
                     </div>
                 </div>
             </div>
