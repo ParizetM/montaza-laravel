@@ -277,8 +277,10 @@
             </div>
             <div class="flex justify-between items-center mt-6">
                 @if ($cde->statut->id == 3)
-                    <a href="{{ route('cde.annuler_terminer', $cde->id) }}" class="btn float-right">annuler
-                        terminé</a>
+                <x-modals.attention-modal buttonText="Annuler terminé" title="Voulez-vous vraiment annuler cette commande ?"
+                    message="Cette action retournera la commande à l'étape de livraison et retirera les Matière ajoutées au stock. Êtes-vous sûr de vouloir continuer ?"
+                    confirmText="Annuler terminé" cancelText="Annuler" confirmAction="{{ route('cde.annuler_terminer', $cde->id) }}" />
+
                     <a href="{{ route('cde.terminer_controler', $cde->id) }}" class="btn float-right">Terminer et
                         controlé</a>
                 @elseif ($cde->statut->id == 5)

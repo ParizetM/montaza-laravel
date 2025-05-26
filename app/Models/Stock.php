@@ -11,12 +11,12 @@ class Stock extends Model
         'matiere_id',
         'quantite',
         'valeur_unitaire',
-        'nombre',
+        'certificat',
     ];
 
     protected static function booted(): void
     {
-        // Enregistrer avant la création d'un modèle
+        // "éviter la création de stock avec une quantité et une valeur unitaire à 0"
         static::created(function ($model): void {
             if ($model->valeur_unitaire == 0 && $model->quantite == 0) {
                 $model->delete();

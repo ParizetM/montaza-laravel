@@ -1,13 +1,12 @@
 <div class="fixed top-1/2 right-0 transform -translate-y-1/2" x-data>
-        <button @click="$dispatch('open-volet', 'changements-stock')"
-        id="btn-open-enregistrement_stock"
-            class="btn-select-left flex items-center px-2 py-8 bg-gray-200 dark:bg-gray-800 shadow-lg hover:bg-gray-300 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-700">
-            <x-icon :size="1" type="arrow_back" />
-            <span class=" whitespace-nowrap font-medium transform -rotate-90 inline-block w-1 mt-30 -mb-7">Changements
-                stock</span>
-        </button>
+    <button @click="$dispatch('open-volet', 'changements-stock')" id="btn-open-enregistrement_stock"
+        class="btn-select-left flex items-center px-2 py-8 bg-gray-200 dark:bg-gray-800 shadow-lg hover:bg-gray-300 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-700">
+        <x-icon :size="1" type="arrow_back" />
+        <span class=" whitespace-nowrap font-medium transform -rotate-90 inline-block w-1 mt-30 -mb-7">Changements
+            stock</span>
+    </button>
 
-    </div>
+</div>
 
 <x-volet-modal name="changements-stock" direction="right" x-init="$dispatch('open-volet', 'changements-stock')"
     x-on:close="$dispatch('close-volet', 'changements-stock')">
@@ -37,7 +36,8 @@
             <h2 class="text-md font-semibold">À ajouter au stock</h2>
 
 
-            <form id="stock-form" method="POST" action="{{ route('cde.stock.store', $cde->id) }}" onsubmit="document.getElementById('btn-close-enregistrement_stock').click();">
+            <form id="stock-form" method="POST" action="{{ route('cde.stock.store', $cde->id) }}"
+                onsubmit="document.getElementById('btn-close-enregistrement_stock').click();">
                 @csrf
                 <table class="w-full border-collapse border-0 rounded-md">
 
@@ -98,7 +98,6 @@
                                                 $ligne->matiere->typeAffichageStock() == '2' &&
                                                     $ligne->matiere->ref_valeur_unitaire != null &&
                                                     $ligne->matiere->ref_valeur_unitaire != 0)
-
                                                 @php
                                                     $unites = floor(
                                                         $ligne->quantite / $ligne->matiere->ref_valeur_unitaire,
@@ -108,7 +107,8 @@
                                                         $unites * $ligne->matiere->ref_valeur_unitaire;
                                                 @endphp
                                                 <div class="flex w-full justify-end">
-                                                    <p class="text-sm text-gray-800 dark:text-gray-200 -mt-9 md:-mt-5">Valeur unitaire :
+                                                    <p class="text-sm text-gray-800 dark:text-gray-200 -mt-9 md:-mt-5">
+                                                        Valeur unitaire :
                                                         {{ $ligne->matiere->ref_valeur_unitaire }}
                                                         {{ $ligne->matiere->unite->short }}</p>
                                                 </div>
@@ -178,7 +178,8 @@
                                                                         name="stock[{{ $ligne->poste }}][rows][1][quantity]"
                                                                         id="stock-{{ $ligne->poste }}-row-1-quantity"
                                                                         class="w-full border-0 focus:ring-0 p-1"
-                                                                        min="0" step="0.01" value="1" />
+                                                                        min="0" step="0.01"
+                                                                        value="1" />
                                                                 </td>
                                                                 <td class="w-1">X</td>
                                                                 @php
@@ -231,8 +232,9 @@
                                                                     </span>
                                                                 </button>
                                                                 <div class="absolute right-0 top-0 mr-2 mt-1">
-                                                                Total : <span id="total-{{ $ligne->poste }}">{{ formatNumber($ligne->quantite) }}</span>{{ $ligne->matiere->unite->short }}
-                                                            </div>
+                                                                    Total : <span
+                                                                        id="total-{{ $ligne->poste }}">{{ formatNumber($ligne->quantite) }}</span>{{ $ligne->matiere->unite->short }}
+                                                                </div>
                                                             </td>
                                                         </tr>
                                                         <script>
@@ -402,7 +404,9 @@
                         calculateTotal(poste);
 
                         // Add event listeners to existing inputs
-                        const inputs = document.querySelectorAll(`input[id^="stock-${poste}-row-"][id$="-quantity"], input[id^="stock-${poste}-row-"][id$="-unit-value"]`);
+                        const inputs = document.querySelectorAll(
+                            `input[id^="stock-${poste}-row-"][id$="-quantity"], input[id^="stock-${poste}-row-"][id$="-unit-value"]`
+                            );
                         inputs.forEach(input => {
                             input.addEventListener('input', () => calculateTotal(poste));
                         });
@@ -413,13 +417,16 @@
                         mutations.forEach(mutation => {
                             if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
                                 mutation.addedNodes.forEach(node => {
-                                    if (node.nodeType === 1 && node.id && node.id.startsWith('stock-') && node.id.includes('-row-')) {
+                                    if (node.nodeType === 1 && node.id && node.id.startsWith(
+                                            'stock-') && node.id.includes('-row-')) {
                                         const poste = node.id.split('-')[1];
 
                                         // Add event listeners to new inputs
-                                        const newInputs = node.querySelectorAll('input[id$="-quantity"], input[id$="-unit-value"]');
+                                        const newInputs = node.querySelectorAll(
+                                            'input[id$="-quantity"], input[id$="-unit-value"]');
                                         newInputs.forEach(input => {
-                                            input.addEventListener('input', () => calculateTotal(poste));
+                                            input.addEventListener('input', () =>
+                                                calculateTotal(poste));
                                         });
 
                                         // Calculate the new total
@@ -431,7 +438,10 @@
                     });
 
                     // Observe the entire document for changes
-                    observer.observe(document.body, { childList: true, subtree: true });
+                    observer.observe(document.body, {
+                        childList: true,
+                        subtree: true
+                    });
 
                     // Override the deleteStockRow function to recalculate totals
                     window.deleteStockRowOriginal = window.deleteStockRow;
@@ -657,16 +667,25 @@
                 } else {
                     console.error('Erreur lors de la suppression');
                     // Show error flash message
-                    showFlashMessageFromJs('Erreur lors de la suppression du mouvement de stock.', 3000, 'error');
+
+                    response.json().then(json => {
+                        let message = json.error || json.message || response.statusText;
+                        showFlashMessageFromJs(message, 3000, 'error');
+                    }).catch(() => {
+                        response.text().then(text => {
+                            showFlashMessageFromJs(text || response.statusText, 3000, 'error');
+                        });
+                    });
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                showFlashMessageFromJs('Erreur lors de la suppression du mouvement de stock.', 3000, 'error');
+                showFlashMessageFromJs(error, 3000, 'error');
             });
     }
     document.addEventListener('DOMContentLoaded', function() {
-        var show = {{ ($cde->cdeLignes->where('ddpCdeStatut.nom', '!=', 'Annulée')->where('date_livraison_reelle', '!=', null)->whereNull('is_stocke')->whereNull('ligne_autre_id')->count() > 0) || $show_stock ? 1 : 0 }} ;
+        var show =
+            {{ $cde->cdeLignes->where('ddpCdeStatut.nom', '!=', 'Annulée')->where('date_livraison_reelle', '!=', null)->whereNull('is_stocke')->whereNull('ligne_autre_id')->count() > 0 || $show_stock ? 1 : 0 }};
         if (show) {
 
             setTimeout(function() {

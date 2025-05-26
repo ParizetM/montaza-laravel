@@ -145,21 +145,21 @@ class CdeController extends Controller
                 break;
             case 'user':
                 $query->join('users', 'cdes.user_id', '=', 'users.id')
-                      ->orderBy('users.first_name', $direction)
-                      ->orderBy('users.last_name', $direction)
-                      ->select('cdes.*');
+                    ->orderBy('users.first_name', $direction)
+                    ->orderBy('users.last_name', $direction)
+                    ->select('cdes.*');
                 break;
             case 'statut':
                 $query->join('ddp_cde_statuts', 'cdes.ddp_cde_statut_id', '=', 'ddp_cde_statuts.id')
-                      ->orderBy('ddp_cde_statuts.nom', $direction)
-                      ->select('cdes.*');
+                    ->orderBy('ddp_cde_statuts.nom', $direction)
+                    ->select('cdes.*');
                 break;
             case 'created_at':
                 $query->orderBy('created_at', $direction);
                 break;
             default:
                 $query->orderBy('ddp_cde_statut_id', 'asc')
-                      ->orderBy('created_at', $direction);
+                    ->orderBy('created_at', $direction);
                 break;
         }
 
@@ -832,9 +832,30 @@ class CdeController extends Controller
     }
     public function annulerTerminer($id)
     {
+        DB::beginTransaction();
         $cde = Cde::findOrFail($id);
         $cde->ddp_cde_statut_id = 2;
         $cde->save();
+        foreach ($cde->cdeLignes->whereIn('is_stocke', [true, false]) as $ligne) {
+            $went_wrong = false;
+            foreach ($ligne->mouvementsStock as $mouvement) {
+                try {
+                    $this->stockService->deleteStockFromMouvement($mouvement);
+                } catch (Exception $e) {
+                    Log::error('Erreur lors de la suppression du mouvement de stock ID: ' . $mouvement->id .
+                        ' pour la ligne de commande ID: ' . $ligne->id . ' - ' . $e->getMessage());
+                        $went_wrong = true;
+                        continue;
+                }
+            }
+            if ($went_wrong) {
+                Log::error('Erreur lors de la suppression des mouvements de stock pour la ligne de commande ID: ' . $ligne->id);
+                continue;
+            }
+            $ligne->is_stocke = null;
+            $ligne->save();
+        }
+        DB::commit();
         return redirect()->route('cde.show', $cde->id);
     }
     public function terminerControler($id)
@@ -1043,11 +1064,12 @@ class CdeController extends Controller
                 'exception' => $e->getMessage(),
                 'cde_ligne_id' => $ligneid,
             ]);
-            return response()->json(['error' => 'Une erreur est survenue lors de la suppression des mouvements de stock'], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
-    public function annuler($id) {
+    public function annuler($id)
+    {
         $cde = Cde::findOrFail($id);
         // Save the current status as old_statut, but only if it's not the cancellation status (4)
         if ($cde->ddp_cde_statut_id != 4) {
@@ -1058,7 +1080,8 @@ class CdeController extends Controller
 
         return redirect()->route('cde.show', $cde->id)->with('success', 'Commande annulée avec succès');
     }
-    public function reprendre($id) {
+    public function reprendre($id)
+    {
         $cde = Cde::findOrFail($id);
         $cde->ddp_cde_statut_id = $cde->old_statut;
         $cde->save();

@@ -242,7 +242,7 @@
                                                         </svg>
                                                     </span>
                                                     <span class="text-red-500 dark:text-red-400 font-medium">-
-                                                        {{ $mouvement->valeur_unitaire ? formatNumber($mouvement->quantite * $mouvement->valeur_unitaire) : $mouvement->quantite }}
+                                                        {{ $mouvement->valeur_unitaire ? formatNumber($mouvement->quantite * $mouvement->valeur_unitaire) : formatNumber($mouvement->quantite) }}
                                                         {{ $matiere->unite->short }}</span>
                                                     @if ($mouvement->valeur_unitaire != null)
                                                         <span class="text-gray-500 dark:text-gray-400 ml-1 text-xs">
@@ -261,7 +261,7 @@
                                                         </svg>
                                                     </span>
                                                     <span class="text-green-500 dark:text-green-400 font-medium">+
-                                                        {{ $mouvement->valeur_unitaire ? formatNumber($mouvement->quantite * $mouvement->valeur_unitaire) : $mouvement->quantite }}
+                                                        {{ $mouvement->valeur_unitaire ? formatNumber($mouvement->quantite * $mouvement->valeur_unitaire) : formatNumber($mouvement->quantite) }}
                                                         {{ $matiere->unite->short }}</span>
                                                     @if ($mouvement->valeur_unitaire != null)
                                                         <span class="text-gray-500 dark:text-gray-400 ml-1 text-xs">

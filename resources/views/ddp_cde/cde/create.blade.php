@@ -595,7 +595,6 @@
                         societeContactContainer.dataset.newOptions = JSON.stringify(formattedOptions);
                     }
 
-                    liveSearch();
                 })
                 .catch(error => {
                     console.error('Erreur lors de la récupération des contacts :', error);

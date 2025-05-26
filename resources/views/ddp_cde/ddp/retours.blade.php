@@ -59,6 +59,10 @@
                 .rowHeader {
                     text-align: left !important;
                 }
+
+                .row-header-left {
+                    text-align: left !important;
+                }
             </style>
 
             <div id="handsontable-container" class="ht-theme-main-dark-auto"></div>
@@ -217,7 +221,7 @@
                 rowHeaders: rowHeaders,
                 rowHeaderWidth: Math.min(
                     rowHeaders.reduce((maxLength, header) => Math.max(maxLength, header.length), 0) *
-                    10,
+                    3,
                     Math.min(window.innerWidth *
                     0.4) // Limite maximale de largeur ajustée selon la taille de l'écran
                 ),
@@ -226,6 +230,9 @@
                 mergeCells: mergeCells,
                 manualColumnResize: true,
                 manualRowResize: true,
+                afterGetRowHeader: function(row, th) {
+                    th.classList.add('row-header-left');
+                },
                 contextMenu: false,
                 fixedColumnsLeft: 0,
                 customBorders: borders,

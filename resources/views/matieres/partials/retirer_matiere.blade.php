@@ -27,7 +27,7 @@
                             <x-slot name="slot_item"  >
                                 <div class="w-full">
                                 <button type="button" id="mode-adjustment-btn" disabled
-                            class="mode-selector flex-1 py-2 rounded-md text-center font-medium w-full">
+                            class="mode-selector flex-1 py-2 rounded-md text-center font-medium w-full opacity-60">
                             Mode ajustement
                         </button>
                         </div>
