@@ -434,7 +434,7 @@ class CdeController extends Controller
                     $ligne->save();
                     $societe_matiere = $ligne->matiere->societeMatiere($societe_id);
                     $ref_externe = $societe_matiere->ref_externe ?? null;
-                    if ($ligne->ref_fournisseur != null && $ligne->ref_fournisseur != '' && $ref_externe != null && $ligne->ref_fournisseur != $ref_externe) {
+                    if ($ligne->ref_fournisseur != null && $ligne->ref_fournisseur != '' && $ligne->ref_fournisseur != $ref_externe) {
                         $listeChangement[] = [
                             'id' => $ligne->id,
                             'ref_interne' => $ligne->matiere->ref_interne,

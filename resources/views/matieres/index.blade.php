@@ -253,7 +253,7 @@
                 };
                 row.classList.add('cursor-pointer', 'hover:bg-gray-100', 'dark:hover:bg-gray-700');
                 row.innerHTML = `
-            <td class="text-left py-3 px-4">${matiere.refInterne || '-'}</td>
+            <td class="text-left py-3 px-4">${matiere.refTooltip || '-'}</td>
             <td class="text-left py-3 px-4">${matiere.sousFamille || '-'}</td>
             <td class="text-left py-3 px-4">${matiere.material || '-'}</td>
             <td class="text-left py-3 px-4">${matiere.designation || '-'}</td>

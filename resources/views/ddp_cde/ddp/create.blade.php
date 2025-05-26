@@ -499,7 +499,7 @@
                                 tr.addEventListener('click', addMatiere);
 
                                 tr.innerHTML = `
-                            <td class="text-left px-4">${matiere.refInterne || '-'}</td>
+                            <td class="text-left px-4">${matiere.refTooltip || '-'}</td>
                             <td class="text-left px-4">${matiere.designation || '-'}</td>
                             <td class="text-left px-4">${matiere.dn || '-'}</td>
                             <td class="text-left px-4">${matiere.epaisseur || '-'}</td>

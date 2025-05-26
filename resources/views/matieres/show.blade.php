@@ -100,7 +100,15 @@
 
         <!-- Grille avec 2 colonnes pour fournisseurs et mouvements -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <!-- Carte des fournisseurs -->
+{{--
+########  #######  ##     ## ########  ##    ## ####  ######   ######  ######## ##     ## ########   ######
+##       ##     ## ##     ## ##     ## ###   ##  ##  ##    ## ##    ## ##       ##     ## ##     ## ##    ##
+##       ##     ## ##     ## ##     ## ####  ##  ##  ##       ##       ##       ##     ## ##     ## ##
+######   ##     ## ##     ## ########  ## ## ##  ##   ######   ######  ######   ##     ## ########   ######
+##       ##     ## ##     ## ##   ##   ##  ####  ##        ##       ## ##       ##     ## ##   ##         ##
+##       ##     ## ##     ## ##    ##  ##   ###  ##  ##    ## ##    ## ##       ##     ## ##    ##  ##    ##
+##        #######   #######  ##     ## ##    ## ####  ######   ######  ########  #######  ##     ##  ######
+--}}
             <div
                 class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-6 rounded-lg shadow-md border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-lg">
                 <div class="flex items-center gap-3 mb-4">

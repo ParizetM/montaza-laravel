@@ -126,13 +126,8 @@
                                         </td>
                                         @if ($ligne->ligne_autre_id == null)
                                             <td class="text-left ml-1 p-2">
-                                                <x-tooltip position="top">
-                                                    <x-slot name="slot_tooltip">
-                                                        <a href="{{ route('matieres.show', $ligne->matiere->id) }}"
-                                                            target="_blank"
-                                                            class="lien">{{ $ligne->matiere->designation }}</a>
-                                                    </x-slot>
-                                                    <x-slot name="slot_item">
+                                                <x-ref-tooltip :matiere="$ligne->matiere" >
+                                                    <x-slot:slot_item>
                                                         <div class="flex flex-col {{ $showRefFournisseur ? '' : 'hidden' }}"
                                                             id="refs-{{ $ligne->matiere_id }}">
                                                             <div class="flex flex-col">
@@ -155,8 +150,9 @@
                                                                     class="font-bold">{{ $ligne->ref_interne ?? '-' }}</span>
                                                             </div>
                                                         </div>
-                                                    </x-slot>
-                                                </x-tooltip>
+                                                    </x-slot:slot_item>
+                                                </x-ref-tooltip>
+
                                             </td>
                                         @else
                                             <td class="text-left ml-1 p-2">

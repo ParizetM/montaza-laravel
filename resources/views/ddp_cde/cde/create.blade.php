@@ -693,7 +693,7 @@
 
                                 if (matiere.lastPrice) {
                                     tr.innerHTML = `
-                                <td class="text-left px-2">${matiere.refInterne || '-'}</td>
+                                <td class="text-left px-2">${matiere.refTooltip || '-'}</td>
                                 <td class="text-right px-2">${matiere.sousFamille || '-'}</td>
                                 <td class="text-left px-2">${matiere.material || '-'}</td>
                                 <td class="text-left px-2">${matiere.designation || '-'}</td>
@@ -705,7 +705,7 @@
                             `;
                                 } else {
                                     tr.innerHTML = `
-                                <td class="text-left px-2">${matiere.refInterne || '-'}</td>
+                                <td class="text-left px-2">${matiere.refTooltip || '-'}</td>
                                 <td class="text-right px-2">${matiere.sousFamille || '-'}</td>
                                 <td class="text-left px-2">${matiere.material || '-'}</td>
                                 <td class="text-left px-2">${matiere.designation || '-'}</td>

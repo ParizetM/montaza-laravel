@@ -34,6 +34,7 @@ class MatiereResource extends JsonResource
             'Unite_id' => $this->unite->id ?? null,
             'Unite_full' => $unite_full,
             'tooltip' => view('components.stock-tooltip', ['matiere' => $this])->render(),
+            'refTooltip' => view('components.ref-tooltip', ['matiere' => $this])->render(),
         ];
 
         if ($societe_id) {

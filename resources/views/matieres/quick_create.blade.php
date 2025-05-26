@@ -103,7 +103,7 @@
                     <div class="w-full flex">
                         <x-input-label for="ref_valeur_unitaire-{{ $modal_id }}"
                             value="{{ __('Valeur Réf Unitaire') }}" />
-                        <x-tooltip position="top">
+                        <x-tooltip position="left">
                             <x-slot name="slot_item">
                                 <x-icons.question class="icons" size="1" />
                             </x-slot>

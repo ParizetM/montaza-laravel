@@ -590,7 +590,7 @@
 
                 <x-modal name="listeChangement-modal" id="listeChangement-modal" title="Liste des changements" show
                     maxWidth="5xl">
-                    <div class="p-2b text-gray-700 dark:text-gray-300">
+                    <div class="p-2 text-gray-700 dark:text-gray-300">
                         <a x-on:click="$dispatch('close')">
                             <x-icons.close class="float-right mb-1 icons" size="1.5" unfocus />
                         </a>
@@ -616,7 +616,7 @@
                                                 <td class="p-2 text-left">{{ $changement['designation'] }}</td>
                                                 <td class="p-2 text-left flex items-center">
                                                     <span
-                                                        title="Ancienne référence">{{ $changement['ref_externe'] }}</span>
+                                                        title="Ancienne référence">{!! $changement['ref_externe'] ?? '<span class="italic text-gray-500">Non définie</span>'!!}</span>
                                                     <x-icon size="1" type="arrow_forward"
                                                         class="icons-no_hover" />
                                                     <span

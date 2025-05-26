@@ -19,7 +19,7 @@ registerLanguageDictionary(frFR);
 import 'chartjs-adapter-date-fns';
 import Chart from 'chart.js/auto';
 import './form-navigation';
-
+import './tooltip';
 // Exposition des librairies dans la fenêtre globale
 window.Chart = Chart;
 window.Handsontable = Handsontable;

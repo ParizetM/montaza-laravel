@@ -5,7 +5,7 @@
             <div>
                 <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                     <a href="{{ route('ddp.index') }}"
-                    class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">Demandes de prix</a>
+                        class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">Demandes de prix</a>
                     >>
                     <a href="{{ route('ddp.show', $ddp->id) }}"
                         class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">{!! __('Créer une demande de prix') !!}</a>
@@ -72,15 +72,11 @@
                                         class="border border-gray-300 dark:border-gray-700 pl-2
                                             {{ $index % 2 == 1 ? 'bg-gray-50 dark:bg-gray-800' : '' }}
                                     ">
-                                        <x-tooltip
-                                            position="top">
-                                            <x-slot name="slot_tooltip">
-                                                <a href="{{ route('matieres.show',$ddplignes[$index]->matiere->id) }}" target="_blank" class="lien">{{ $ddplignes[$index]->matiere->designation }}</a>
-                                            </x-slot>
-                                            <x-slot name="slot_item">
+                                        <x-ref-tooltip :matiere="$ddplignes[$index]->matiere">
+                                            <x-slot:slot_item>
                                                 {{ $ddplignes[$index]->matiere->ref_interne . ' ' . Str::limit($ddplignes[$index]->matiere->designation, 30, '...') }}
-                                            </x-slot>
-                                        </x-tooltip>
+                                            </x-slot:slot_item>
+                                        </x-ref-tooltip>
                                     </td>
                                     <td
                                         class="text-center border border-gray-300 dark:border-gray-700

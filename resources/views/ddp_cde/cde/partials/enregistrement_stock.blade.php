@@ -59,22 +59,16 @@
                                                 {{ $ligne->poste }}
                                             </span>
                                             <div class="flex gap-2">
-                                                <x-tooltip position="top">
-                                                    <x-slot name="slot_tooltip">
-                                                        <a href="{{ route('matieres.show', $ligne->matiere->id) }}"
-                                                            target="_blank"
-                                                            class="lien">{{ $ligne->matiere->designation }}</a>
-                                                    </x-slot>
-                                                    <x-slot name="slot_item">
+                                                <x-ref-tooltip :matiere="$ligne->matiere">
+                                                    <x-slot:slot_item>
                                                         <div class="flex flex-col">
                                                             <span
                                                                 class="font-medium text-sm">{{ $ligne->ref_interne }}</span>
                                                             <span
                                                                 class="font-medium text-sm">{{ $ligne->ref_fournisseur }}</span>
                                                         </div>
-                                                    </x-slot>
-                                                </x-tooltip>
-
+                                                    </x-slot:slot_item>
+                                                </x-ref-tooltip>
                                                 <span
                                                     class="text-gray-700 dark:text-gray-400 text-sm line-clamp-1">{{ $ligne->matiere->designation }}</span>
                                             </div>
@@ -178,8 +172,7 @@
                                                                         name="stock[{{ $ligne->poste }}][rows][1][quantity]"
                                                                         id="stock-{{ $ligne->poste }}-row-1-quantity"
                                                                         class="w-full border-0 focus:ring-0 p-1"
-                                                                        min="0" step="0.01"
-                                                                        value="1" />
+                                                                        min="0" step="0.01" value="1" />
                                                                 </td>
                                                                 <td class="w-1">X</td>
                                                                 @php
@@ -406,7 +399,7 @@
                         // Add event listeners to existing inputs
                         const inputs = document.querySelectorAll(
                             `input[id^="stock-${poste}-row-"][id$="-quantity"], input[id^="stock-${poste}-row-"][id$="-unit-value"]`
-                            );
+                        );
                         inputs.forEach(input => {
                             input.addEventListener('input', () => calculateTotal(poste));
                         });
@@ -483,13 +476,13 @@
             </script>
         @endif
         {{--
-##     ##  #######  ##     ## ##     ## ######## ##     ## ######## ##    ## ########      ######## #### ##    ## ####
-###   ### ##     ## ##     ## ##     ## ##       ###   ### ##       ###   ##    ##         ##        ##  ###   ##  ##
-#### #### ##     ## ##     ## ##     ## ##       #### #### ##       ####  ##    ##         ##        ##  ####  ##  ##
-## ### ## ##     ## ##     ## ##     ## ######   ## ### ## ######   ## ## ##    ##         ######    ##  ## ## ##  ##
-##     ## ##     ## ##     ##  ##   ##  ##       ##     ## ##       ##  ####    ##         ##        ##  ##  ####  ##
-##     ## ##     ## ##     ##   ## ##   ##       ##     ## ##       ##   ###    ##         ##        ##  ##   ###  ##
-##     ##  #######   #######     ###    ######## ##     ## ######## ##    ##    ##         ##       #### ##    ## ####
+##     ##  #######  ##     ## ##     ## ######## ##     ## ######## ##    ## ########  ######## #### ##    ## ####
+###   ### ##     ## ##     ## ##     ## ##       ###   ### ##       ###   ##    ##     ##        ##  ###   ##  ##
+#### #### ##     ## ##     ## ##     ## ##       #### #### ##       ####  ##    ##     ##        ##  ####  ##  ##
+## ### ## ##     ## ##     ## ##     ## ######   ## ### ## ######   ## ## ##    ##     ######    ##  ## ## ##  ##
+##     ## ##     ## ##     ##  ##   ##  ##       ##     ## ##       ##  ####    ##     ##        ##  ##  ####  ##
+##     ## ##     ## ##     ##   ## ##   ##       ##     ## ##       ##   ###    ##     ##        ##  ##   ###  ##
+##     ##  #######   #######     ###    ######## ##     ## ######## ##    ##    ##     ##       #### ##    ## ####
 --}}
         <div class="flex-1 p-4 overflow-auto">
             <table class="w-full border-collapse">
@@ -512,16 +505,13 @@
                             id="mouvement-{{ $ligne->id }}">
                             <td colspan="3" class="px-4 py-2 font-medium">
                                 <div class="flex justify-between items-center">
-                                    <x-tooltip position="top">
-                                        <x-slot name="slot_tooltip">
-                                            <a href="{{ route('matieres.show', $ligne->matiere->id) }}"
-                                                target="_blank" class="lien">{{ $ligne->matiere->designation }}</a>
-                                        </x-slot>
-                                        <x-slot name="slot_item">
+                                    <x-ref-tooltip :matiere="$ligne->matiere">
+                                        <x-slot:slot_item>
                                             <span class="font-bold text-gray-600 dark:text-gray-300">
                                                 {{ $ligne->ref_interne }}</span> {{ $ligne->matiere->designation }}
-                                        </x-slot>
-                                    </x-tooltip>
+                                        </x-slot:slot_item>
+                                    </x-ref-tooltip>
+
                                     <button type="button" class="text-red-500 hover:text-red-700" x-data
                                         title="annuler"
                                         x-on:click="$dispatch('open-modal', 'delete-stock-movement-{{ $ligne->id }}')">
