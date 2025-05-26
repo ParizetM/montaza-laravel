@@ -400,13 +400,26 @@
                                 </tbody>
                             </table>
                             <div class="w-full flex justify-end gap-2 text-center">
-                                <button type="button"
-                                    class="btn w-fit rounded-none rounded-bl-xl bg-white dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 hover:shadow-lg transition-all duration-300 py-0 px-4 mt-0"
-                                    onclick="addLigneVide()" title="Ajouter une ligne vide">
-                                    <span class="text-center w-full text-4xl">
-                                        +
-                                    </span>
-                                </button>
+                                <x-tooltip position="left">
+                                    <x-slot:slot_item>
+                                        <button type="button"
+                                            class="btn w-fit rounded-none rounded-bl-xl bg-white dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 hover:shadow-lg transition-all duration-300 py-0 px-4 mt-0"
+                                            onclick="addLigneVide()">
+                                            <span class="text-center w-full text-4xl">
+                                                +
+                                            </span>
+                                        </button>
+                                    </x-slot:slot_item>
+                                    <x-slot:slot_tooltip>
+                                        <span class="block text-sm text-gray-700 dark:text-gray-300">
+                                            Cliquez ici pour ajouter une ligne personnalisée.<br>
+                                            <span class="text-xs text-gray-500 dark:text-gray-400">
+                                                Permet de saisir une matière manuellement (hors stock).
+                                            </span>
+                                        </span>
+                                    </x-slot:slot_tooltip>
+                                </x-tooltip>
+
                             </div>
                         </div>
                         <div
@@ -1019,7 +1032,7 @@
                 row.classList.remove(
                     'border-r-green-500', 'dark:border-r-green-600');
                 if (quantity < 1 || isNaN(parseFloat(quantity)) || isNaN(parseFloat(prix)) || quantity.endsWith(
-                    '.') || prix.endsWith('.')) {
+                        '.') || prix.endsWith('.')) {
                     saveStatus0.classList.add('hidden');
                     saveStatus2.classList.remove('hidden');
                     return;

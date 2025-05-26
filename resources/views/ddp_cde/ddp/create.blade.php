@@ -275,13 +275,25 @@
                                 </tbody>
                             </table>
                             <div class="w-full flex justify-end gap-2 text-center">
-                                <button type="button"
-                                    class="btn w-fit rounded-none rounded-bl-xl bg-white dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 hover:shadow-lg transition-all duration-300 py-0 px-4 mt-0"
-                                    onclick="addLigneVide()" title="Ajouter une ligne vide">
-                                    <span class="text-center w-full text-4xl">
-                                        +
-                                    </span>
-                                </button>
+                                <x-tooltip position="left">
+                                    <x-slot:slot_item>
+                                        <button type="button"
+                                            class="btn w-fit rounded-none rounded-bl-xl bg-white dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 hover:shadow-lg transition-all duration-300 py-0 px-4 mt-0"
+                                            onclick="addLigneVide()">
+                                            <span class="text-center w-full text-4xl">
+                                                +
+                                            </span>
+                                        </button>
+                                    </x-slot:slot_item>
+                                    <x-slot:slot_tooltip>
+                                        <span class="block text-sm text-gray-700 dark:text-gray-300">
+                                            Cliquez ici pour ajouter une ligne personnalisée.<br>
+                                            <span class="text-xs text-gray-500 dark:text-gray-400">
+                                                Permet de saisir une matière manuellement (hors stock).
+                                            </span>
+                                        </span>
+                                    </x-slot:slot_tooltip>
+                                </x-tooltip>
                             </div>
                         </div>
                     </form>
@@ -559,10 +571,10 @@
                 />
                     ${unites.map(unite => `
 
-                                                        ${unite.short === matiereUnite ? '<div class="text-right bg-gray-100 dark:bg-gray-900 w-fit p-2 pl-0 border-1 border-l-0 rounded-r-sm border-gray-300 dark:border-gray-700" title="'+unite.full+'">' : ''}
+                                                            ${unite.short === matiereUnite ? '<div class="text-right bg-gray-100 dark:bg-gray-900 w-fit p-2 pl-0 border-1 border-l-0 rounded-r-sm border-gray-300 dark:border-gray-700" title="'+unite.full+'">' : ''}
 
-                                                        ${unite.short === matiereUnite ? unite.short+'</div>' : ''}
-                                                `).join('')}
+                                                            ${unite.short === matiereUnite ? unite.short+'</div>' : ''}
+                                                    `).join('')}
                 </div>
             </td>
             <td class="text-right px-4" >
@@ -990,14 +1002,15 @@
                 } else {
                     fournisseursIds = "";
                 }
-                var fournisseursChoisiAilleurs = matiereChoisiTable.querySelectorAll('tr[data-matiere-id]').forEach(row => {
-                    if (row.getAttribute('data-matiere-id') != matiereId) {
-                        var fournisseursIdsAilleurs = row.getAttribute('data-fournisseurs-ids');
-                        if (fournisseursIdsAilleurs != "") {
-                            fournisseursIdsTemp += ';' + fournisseursIdsAilleurs;
+                var fournisseursChoisiAilleurs = matiereChoisiTable.querySelectorAll('tr[data-matiere-id]').forEach(
+                    row => {
+                        if (row.getAttribute('data-matiere-id') != matiereId) {
+                            var fournisseursIdsAilleurs = row.getAttribute('data-fournisseurs-ids');
+                            if (fournisseursIdsAilleurs != "") {
+                                fournisseursIdsTemp += ';' + fournisseursIdsAilleurs;
+                            }
                         }
-                    }
-                });
+                    });
                 fournisseursChoisiAilleurs = fournisseursIdsTemp.split(';');
                 console.log(fournisseursChoisiAilleurs);
                 data.forEach(fournisseur => {
