@@ -13,7 +13,9 @@
 
 {{-- <script>
     document.addEventListener('DOMContentLoaded', function () {
-        document.getElementById('quickMatiereModalBtn-{{ $quickMatiereModalId }}').click();
+        setTimeout(function() {
+            document.getElementById('quickMatiereModalBtn-{{ $quickMatiereModalId }}').click();
+        }, 1000);
     });
 </script> --}}
 <!-- Modal -->

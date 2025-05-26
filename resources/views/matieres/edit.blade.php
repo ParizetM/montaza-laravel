@@ -335,7 +335,7 @@
                                     standardSelect.innerHTML = '<option value="" disabled selected>Sélectionner un standard</option>';
                                     data.forEach(standard => {
                                         var option = document.createElement('option');
-                                        option.value = standard.id;
+                                        option.value = standard.nom;
                                         option.textContent = standard.nom;
                                         standardSelect.appendChild(option);
                                     });
@@ -353,6 +353,18 @@
                             fetch(`/matieres/standards/${dossierId}/${standardId}/versions/json`)
                                 .then(response => response.json())
                                 .then(data => {
+                                    if (data.length === 0) {
+                                        versionSelect.innerHTML = '<option value="" disabled>Aucune version disponible</option>';
+                                        return;
+                                    }
+                                    if (data.length === 1) {
+                                        var option = document.createElement('option');
+                                        option.value = data[0];
+                                        option.textContent = data[0];
+                                        versionSelect.innerHTML = '';
+                                        versionSelect.appendChild(option);
+                                        return;
+                                    }
                                     versionSelect.innerHTML = '<option value="" disabled selected>Sélectionner une version</option>';
                                     data.forEach(version => {
                                         var option = document.createElement('option');

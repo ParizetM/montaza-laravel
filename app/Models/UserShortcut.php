@@ -10,7 +10,17 @@ class UserShortcut extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'shortcut_id'];
+    protected $fillable = ['user_id', 'shortcut_id', 'ordre'];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Ajout d'une portée globale pour trier par 'ordre'
+        static::addGlobalScope('ordre', function ($query) {
+            $query->orderBy('ordre');
+        });
+    }
 
     public function shortcut(): BelongsTo
     {

@@ -38,7 +38,7 @@ return new class extends Migration
             $table->foreignId('ddp_id')->constrained('ddps')->onDelete('cascade');
             $table->foreignId('matiere_id')->nullable()->constrained('matieres');
             // $table->foreignId('unite_id')->constrained('unites');
-            $table->decimal('quantite', 10, places: 6)->nullable();
+            $table->decimal('quantite', 16, places: 6)->nullable();
             $table->string('ligne_autre_id')->nullable();
             $table->string('case_ref')->nullable();
             $table->string('case_designation')->nullable();

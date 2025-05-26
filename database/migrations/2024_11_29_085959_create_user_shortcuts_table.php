@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('shortcut_id'); // Lien vers un raccourci prédéfini
-            $table->integer('order')->default(0); // Ajout de l'ordre
+            $table->integer('ordre')->default(0); // Ajout de l'ordre
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

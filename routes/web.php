@@ -64,7 +64,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
     Route::get('/shortcuts', [UserShortcutController::class, 'index'])->name('shortcuts.index');
     Route::post('/shortcuts', [UserShortcutController::class, 'store'])->name('shortcuts.store');
     Route::delete('/shortcuts/{id}', [UserShortcutController::class, 'destroy'])->name('shortcuts.destroy');
-    Route::patch('/shortcuts/reorder', [UserShortcutController::class, 'reorder'])->name('shortcuts.reorder');
+    Route::patch('/shortcuts/update-order', [UserShortcutController::class, 'updateOrder'])->name('shortcuts.updateOrder');
     Route::middleware('permission:gerer_les_utilisateurs')->group(function () {
         Route::get('/profiles', [ProfileController::class, 'index'])->name('profile.index');
         Route::post('/profile/create', [RoleController::class, 'store'])->name('role.store');
@@ -141,6 +141,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
 
         Route::delete('/matieres/standards/delete', [StandardController::class, 'destroy'])->name('standards.destroy');
         Route::delete('/matieres/standards/deleteDossier', [StandardController::class, 'destroyDossier'])->name('standards.destroy_dossier');
+        Route::get('/matieres/standards/create', [StandardController::class, 'create'])->name('standards.create');
         Route::post('/matieres/standards/create', [StandardController::class, 'store'])->name('standards.store');
         Route::post('/matieres/standards/createDossier', [StandardController::class, 'storeDossier'])->name('standards.store_dossier');
         Route::get('/matieres/standards/{dossier}/standards/json', [StandardController::class, 'showStandardsJson'])->name('standards.show_json');

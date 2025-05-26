@@ -70,18 +70,24 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="mb-4 w-full mr-2">
+                <div class="mb-4 w-fit mr-2">
                     <x-input-label for="standard_id-{{ $modal_id }}" optionnel>Standard</x-input-label>
-                    <select name="standard_id" id="standard_id-{{ $modal_id }}" class="select"
+                    <select name="standard_id" id="standard_id-{{ $modal_id }}" class="select w-fit"
                         onchange="updateVersionSelect(this.value)">
                         <option value="" disabled selected>Sélectionner d'abord un dossier</option>
                     </select>
                 </div>
                 <div class="mb-4 w-fit">
                     <x-input-label for="standard_version_id-{{ $modal_id }}" optionnel>Rév</x-input-label>
-                    <select name="standard_version_id" id="standard_version_id-{{ $modal_id }}" class="select">
-                        <option value="" disabled selected>Sélectionner d'abord un standard</option>
-                    </select>
+                    <div class="flex">
+                        <select name="standard_version_id" id="standard_version_id-{{ $modal_id }}"
+                            class="select w-fit">
+                        </select>
+                        <a href="{{ route('standards.create') }}" target="_blank"
+                            type="button" class="btn-select-right" title="Ajouter un Standard">
+                            <x-icons.add class="icons_no_hover" size="1"  />
+                        </a>
+                    </div>
                 </div>
             </div>
             <div class="mb-4 flex">

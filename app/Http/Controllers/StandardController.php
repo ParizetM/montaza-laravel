@@ -18,6 +18,12 @@ class StandardController extends Controller
             return view('standards.index', compact('folders', 'versions_count'))->render();
         });
     }
+    public function create() {
+        $folders = DossierStandard::with('standards')->get()->sortBy('nom');
+        $versions_count = StandardVersion::count();
+        $create = true;
+            return view('standards.index', compact('folders', ['versions_count','create']))->render();
+    }
     public function show($dossier, $standard) {
         $stockagePath = Storage::path('standards/' . $dossier);
 
@@ -62,8 +68,11 @@ class StandardController extends Controller
         return back()->with('success', 'Standard supprimé avec succès.');
     }
     public function showVersionsJson($dossier, $standard) {
-        $standard = str_replace('.pdf', '', $standard);
-        $standard = Standard::with('versions')->where('nom', $standard)->first();
+    $standard = str_replace('.pdf', '', $standard);
+    $standard = Standard::with('versions')->where('nom', $standard)->first();
+    if (!$standard) {
+        return response()->json([]);
+    }
     $versions = $standard->versions->pluck('version')->toArray();
     return response()->json($versions);
     }

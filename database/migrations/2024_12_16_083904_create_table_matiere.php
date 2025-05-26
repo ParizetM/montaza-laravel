@@ -101,7 +101,7 @@ return new class extends Migration
         Schema::create('stocks', function (Blueprint $table) {
             $table->id();
             $table->foreignId('matiere_id')->constrained('matieres')->cascadeOnDelete();
-            $table->integer('quantite')->default(0);
+            $table->decimal('quantite')->default(0);
             $table->decimal('valeur_unitaire', 8, 3)->nullable();
             $table->string('certificat')->nullable();
             $table->timestamps();

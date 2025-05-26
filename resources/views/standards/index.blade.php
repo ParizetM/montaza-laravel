@@ -21,7 +21,7 @@
                 </button>
             </div>
 
-            <x-modal name="add-standard" focusable :show="count($errors) > 0">
+            <x-modal name="add-standard" focusable :show="count($errors) > 0 || isset($create) && $create">
                 <div class="p-4">
                     @if ($errors->any())
                         <div class="mb-4">

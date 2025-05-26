@@ -7,6 +7,7 @@
             {{ __('Éditez vos raccourcis') }}
         </p>
     </x-slot>
+    @vite('resources/js/sortable.js')
 
     <div class="py-12">
         <div class="grid grid-cols-1 sm:grid-cols-6 gap-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -20,12 +21,12 @@
                             @foreach ($shortcuts as $shortcut)
                                 <li class="flex items-center py-2 " data-id="{{ $shortcut->id }}">
                                     <span class="ml-2 "><x-icons.re-order size="2"
-                                            class="icons-no_hover mr-2" /></span>
+                                            class="icons-no_hover mr-2 cursor-grab active:cursor-grabbing" /></span>
                                     <div
                                         class=" flex justify-between w-full border-b border-gray-800 dark:border-gray-200 p-2">
                                         <div class="flex items-center ">
                                             @php $iconComponent = 'icons.' . $shortcut->icon; @endphp
-                                            <div id="icon-{{ $shortcut->id }}">
+                                            <div id="icon-{{ $shortcut->id }}" data-shortcut-id="{{ $shortcut->id }}">
                                                 <div
                                                     class="mt-4 sm:mt-0 inline-flex items-center px-2 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-md font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-wides focus:ring-indigo-200 disabled:opacity-25 transition">
                                                     <x-dynamic-component :component="$iconComponent" size="2"
@@ -37,9 +38,6 @@
                                             </p>
                                         </div>
                                         <div class="flex items-center">
-
-
-                                            {{ $shortcut->is_added ? 'checked' : '' }}
                                             <label for="is_added-{{ $shortcut->id }}"
                                                 class="inline-flex items-center space-x-4 cursor-pointer dark:text-gray-100 text-gray-800 mr-4 mb-1">
                                                 <span class="relative">
@@ -89,15 +87,23 @@
     <script>
         function updateShortcuts() {
             const selectedShortcuts = [];
-            document.querySelectorAll('input[type="checkbox"]:checked').forEach(checkedBox => {
-            const iconId = checkedBox.id.replace('is_added-', 'icon-');
-            const iconElement = document.getElementById(iconId);
-            if (iconElement) {
-                selectedShortcuts.push(iconElement.innerHTML);
-            }
+
+            // Récupérer les raccourcis dans l'ordre actuel de la liste (après réorganisation)
+            const sortedShortcuts = [];
+            document.querySelectorAll('#sortable li').forEach(listItem => {
+                const shortcutId = listItem.getAttribute('data-id');
+                const checkbox = document.getElementById(`is_added-${shortcutId}`);
+                if (checkbox && checkbox.checked) {
+                    const iconId = `icon-${shortcutId}`;
+                    const iconElement = document.getElementById(iconId);
+                    if (iconElement) {
+                        sortedShortcuts.push(iconElement.outerHTML);
+                    }
+                }
             });
+
             const shortcutsResultat = document.getElementById('shortcuts-resultat');
-            shortcutsResultat.innerHTML = selectedShortcuts.join('');
+            shortcutsResultat.innerHTML = sortedShortcuts.join('');
             shortcutsResultat.classList.add('grid', 'grid-cols-3', 'gap-4');
         }
 
@@ -107,5 +113,51 @@
 
         // Execute once at the beginning
         updateShortcuts();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const shortcutsList = document.getElementById('sortable');
+
+            Sortable.create(shortcutsList, {
+                animation: 150,
+                onEnd: function() {
+                    let order = [];
+                    shortcutsList.querySelectorAll('li[data-id]').forEach(el => {
+                        order.push(el.getAttribute('data-id'));
+                    });
+
+                    if (order.length > 0) {
+                        fetch('{{ route('shortcuts.updateOrder') }}', {
+                                method: 'PATCH',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify({
+                                    order: order
+                                })
+                            })
+                            .then(response => {
+                                if (!response.ok) throw new Error('Erreur de réorganisation');
+                                return response.json();
+                            })
+                            .then(data => {
+                                if (typeof showFlashMessageFromJs === 'function') {
+                                    showFlashMessageFromJs('Ordre mis à jour avec succès', 2000, 'success');
+                                }
+                                // Mettre à jour l'affichage après réorganisation
+                                updateShortcuts();
+                            })
+                            .catch(error => {
+                                if (typeof showFlashMessageFromJs === 'function') {
+                                    showFlashMessageFromJs(
+                                        'Une erreur est survenue pendant la réorganisation', 2000,
+                                        'error');
+                                }
+                                console.error(error);
+                            });
+                    }
+                }
+            });
+        });
     </script>
 </x-app-layout>
