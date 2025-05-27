@@ -46,42 +46,52 @@ class MatiereController extends Controller
         if ($request->filled('search')) {
             $search = $request->input('search');
             $terms = explode(' ', $search);
+
             if (count($terms) == 1 && !$second_search) {
-                $query->where('ref_interne', '=', "{$search}")
-                    ->orWhereHas('societeMatieres', function ($subSubQuery) use ($search) {
-                        $subSubQuery->where('ref_externe', 'ILIKE', "{$search}");
-                    });
+                // Première tentative : recherche exacte sur ref_interne et ref_externe
+                $query->where(function ($q) use ($search) {
+                    $q->where('ref_interne', '=', $search)
+                        ->orWhereHas('societeMatieres', function ($subSubQuery) use ($search) {
+                            $subSubQuery->where('ref_externe', 'ILIKE', $search);
+                        });
+                });
+
                 $query_test = clone $query;
                 $query_test = $query_test->get();
+
                 if ($query_test->isEmpty()) {
                     Log::info("No results found for single term search: {$search}");
+                    // Deuxième tentative : recherche flexible
                     return $this->buildMatiereQuery($request, true);
                 }
             } else {
-                $query->where(function ($q) use ($terms) {
+                // Recherche multi-termes OU deuxième tentative pour terme unique
+                $query->where(function ($q) use ($terms, $second_search) {
                     $hasValidSearchTerms = false;
 
                     foreach ($terms as $term) {
-                        $q->where(function ($subQuery) use ($term, $terms, &$hasValidSearchTerms) {
+                        $q->where(function ($subQuery) use ($term, $terms, &$hasValidSearchTerms, $second_search) {
                             if (stripos($term, 'dn') === 0) {
                                 $value = substr($term, 2);
-                                $subQuery->where('dn', '=', "{$value}");
+                                $subQuery->where('dn', '=', $value);
                                 $hasValidSearchTerms = true;
                             } elseif (stripos($term, 'ep') === 0) {
                                 $value = str_replace([',', '.'], ['.', ','], substr($term, 2));
-                                $subQuery->where('epaisseur', '=', "{$value}");
+                                $subQuery->where('epaisseur', '=', $value);
                                 $hasValidSearchTerms = true;
                             } else {
-                                // Seulement si le terme fait au moins 2 caractères pour éviter les recherches trop générales
+                                // Seulement si le terme fait au moins 2 caractères
                                 if (strlen(trim($term)) >= 2) {
                                     $subQuery->whereRaw("unaccent(designation) ILIKE unaccent(?)", ["%{$term}%"])
                                         ->orWhereHas('sousFamille', function ($subSubQuery) use ($term) {
                                             $subSubQuery->where('nom', 'ILIKE', "%{$term}%");
                                         })
                                         ->orWhere('ref_interne', 'ILIKE', "%{$term}%");
+
+                                    // Pour une recherche avec un seul terme (première ou deuxième tentative)
                                     if (count($terms) == 1) {
                                         $subQuery->orWhereHas('societeMatieres', function ($subSubQuery) use ($term) {
-                                            $subSubQuery->orWhere('ref_externe', 'ILIKE', "%{$term}%");
+                                            $subSubQuery->where('ref_externe', 'ILIKE', "%{$term}%");
                                         });
                                     }
                                     $hasValidSearchTerms = true;
@@ -95,15 +105,48 @@ class MatiereController extends Controller
                         $q->whereRaw('1 = 0');
                     }
                 });
+
+                // Ajouter un score de pertinence pour ordonner les résultats
+                $relevanceScore = [];
+                foreach ($terms as $index => $term) {
+                    if (strlen(trim($term)) >= 2 && stripos($term, 'dn') !== 0 && stripos($term, 'ep') !== 0) {
+                        // Score pour sous-famille (priorité 3)
+                        $relevanceScore[] = "CASE WHEN EXISTS (
+                            SELECT 1 FROM sous_familles sf
+                            WHERE sf.id = matieres.sous_famille_id
+                            AND unaccent(sf.nom) ILIKE unaccent('%{$term}%')
+                        ) THEN 3 ELSE 0 END";
+
+                        // Score pour ref_interne (priorité 2)
+                        $relevanceScore[] = "CASE WHEN unaccent(matieres.ref_interne) ILIKE unaccent('%{$term}%') THEN 2 ELSE 0 END";
+
+                        // Score pour désignation (priorité 1)
+                        $relevanceScore[] = "CASE WHEN unaccent(matieres.designation) ILIKE unaccent('%{$term}%') THEN 1 ELSE 0 END";
+                    }
+                }
+
+                if (!empty($relevanceScore)) {
+                    $scoreExpression = implode(' + ', $relevanceScore);
+                    $query->selectRaw("*, ($scoreExpression) as relevance_score");
+                    $query->orderBy('relevance_score', 'desc');
+                }
             }
         }
 
-        // Add sorting by stock quantity if requested
+        // Add sorting by stock quantity if requested (après le tri par pertinence)
         $query->addSelect(['total_stock' => function ($q) {
             $q->selectRaw('COALESCE(SUM(CASE WHEN stocks.valeur_unitaire > 0 THEN stocks.quantite * stocks.valeur_unitaire ELSE stocks.quantite END), 0)')
                 ->from('stocks')
                 ->whereColumn('stocks.matiere_id', 'matieres.id');
-        }])->orderBy('total_stock', 'desc');
+        }]);
+
+        // Si pas de tri par pertinence, trier par stock
+        if (!$request->filled('search') || (count(explode(' ', $request->input('search'))) == 1 && !$second_search)) {
+            $query->orderBy('total_stock', 'desc');
+        } else {
+            // Trier d'abord par pertinence, puis par stock en cas d'égalité
+            $query->orderBy('total_stock', 'desc');
+        }
 
         return $query;
     }
