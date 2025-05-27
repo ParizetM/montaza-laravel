@@ -294,6 +294,7 @@ class CdeController extends Controller
             'matieres.*.refInterne' => 'nullable|string|max:255',
             'matieres.*.refFournisseur' => 'nullable|string|max:255',
             'matieres.*.designation' => 'required|string|max:255',
+            'matieres.*.conditionnement' => 'nullable|string|max:255',
             'matieres.*.prix' => 'required|numeric|min:0',
             // 'matieres.*.unite_id' => 'required|integer|exists:unites,id',
             'matieres.*.date' => 'nullable|date',
@@ -363,6 +364,11 @@ class CdeController extends Controller
             return response()->json(['success' => true]);
         }
         foreach ($request->input('matieres') as $matiere) {
+            if (isset($matiere['conditionnement']) && $matiere['conditionnement'] != '' && $matiere['conditionnement'] != null && $matiere['conditionnement'] != 'non') {
+                $conditionnement = $matiere['conditionnement'];
+            } else {
+                $conditionnement = 0;
+            }
             if (isset($matiere['ligne_autre_id'])) {
                 $cde->cdeLignes()->updateOrCreate(
                     ['ligne_autre_id' => $matiere['ligne_autre_id']],
@@ -382,6 +388,7 @@ class CdeController extends Controller
                     'poste' => $poste++,
                     'matiere_id' => $matiere['id'],
                     'quantite' => $matiere['quantite'],
+                    'conditionnement' => $conditionnement,
                     'ref_interne' => $matiere['refInterne'] ?? null,
                     'ref_fournisseur' => $matiere['refFournisseur'] ?? null,
                     'designation' => $matiere['designation'] ?? null,
@@ -880,22 +887,13 @@ class CdeController extends Controller
         foreach ($cde->cdeLignes as $ligne) {
             $matiere = $ligne->matiere;
             if ($ligne->date_livraison_reelle && $ligne->ddp_cde_statut_id != 4 && $ligne->ligne_autre_id == null) {
-                // try {
-                //     $this->stockService->stock(
-                //         $matiere->id,
-                //         'entree',
-                //         $ligne->quantite,
-                //         $matiere->ref_valeur_unitaire ?? null,
-                //         'Livraison commande - ' . $cde->code,
-                //         $ligne->id,
-                //     );
-                // } catch (Exception $e) {
-                //     Log::error('Erreur lors de la mise à jour du stock pour la matière ID: ' . $matiere->id .
-                //         ' dans la commande ' . $cde->code . ' - ' . $e->getMessage());
-                // }
                 $societe_matiere = $matiere->societeMatieres()->firstOrCreate(['societe_id' => $societe->id]);
-                $newPrix = $ligne->prix_unitaire;
-                if ($matiere->getLastPrice($societe->id) == null || $matiere->getLastPrice($societe->id)->prix_unitaire != $ligne->prix_unitaire) {
+                if ($ligne->conditionnement != 0) {
+                    $newPrix = $ligne->prix_unitaire / $ligne->conditionnement;
+                } else {
+                    $newPrix = $ligne->prix_unitaire;
+                }
+                if ($matiere->getLastPrice($societe->id) == null || $matiere->getLastPrice($societe->id)->prix_unitaire != $newPrix) {
                     SocieteMatierePrix::updateOrCreate(
                         [
                             'societe_matiere_id' => $societe_matiere->id,
@@ -912,7 +910,7 @@ class CdeController extends Controller
         $cde->save();
         return redirect()->route('cde.show', [
             'cde' => $cde->id,
-        ])->with('success', 'Commande terminée avec succès');
+        ])->with('success', 'Commande controlée avec succès');
     }
     public function annulerTerminerControler($id)
     {

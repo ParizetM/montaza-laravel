@@ -119,7 +119,11 @@
                                                             </th>
                                                             <th class="p-1 text-sm border border-gray-400 dark:border-gray-700 bg-gray-200 dark:bg-gray-750 border-r-0 text-gray-800 dark:text-gray-200"
                                                                 title="Valeur unitaire ({{ $ligne->matiere->unite->full }})">
+                                                                @if ($ligne->conditionnement != 0)
+                                                                    Conditionnement
+                                                                @else
                                                                 Valeur unitaire
+                                                                @endif
                                                                 ({{ $ligne->matiere->unite->short }})
                                                             </th>
                                                             <th
@@ -128,91 +132,128 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        @if ($unites > 1)
-                                                            @php
-                                                                if ($unites > 1 && $reste > 0) {
-                                                                    $unites = $unites - 1;
-                                                                }
-                                                            @endphp
-                                                            <tr class="border-b border-gray-300 dark:border-gray-700"
-                                                                id="stock-{{ $ligne->poste }}-row-0">
-                                                                <td class="p-1 ">
-                                                                    <x-text-input type="number"
-                                                                        name="stock[{{ $ligne->poste }}][rows][0][quantity]"
-                                                                        id="stock-{{ $ligne->poste }}-row-0-quantity"
-                                                                        class="w-full border-0 focus:ring-0 p-1"
-                                                                        min="0" step="0.01"
-                                                                        value="{{ $unites }}" />
-                                                                </td>
-                                                                <td class="w-1">X</td>
-                                                                <td class="p-1 ">
-                                                                    <x-text-input type="number"
-                                                                        name="stock[{{ $ligne->poste }}][rows][0][unit_value]"
-                                                                        id="stock-{{ $ligne->poste }}-row-0-unit-value"
-                                                                        class="w-full border-0 focus:ring-0 p-1"
-                                                                        min="0" step="0.01"
-                                                                        value="{{ $ligne->matiere->ref_valeur_unitaire }}" />
-                                                                </td>
-                                                                <td class="flex w-fit justify-center items-center pt-1">
-                                                                    <button type="button"
-                                                                        class="delete-row-button focus:outline-none"
-                                                                        title="Supprimer cette ligne"
-                                                                        data-row-id="stock-{{ $ligne->poste }}-row-0"
-                                                                        onclick="deleteStockRow('stock-{{ $ligne->poste }}-row-0')">
-                                                                        <x-icons.close size="2" class="icons" />
-                                                                    </button>
-                                                                </td>
-                                                            </tr>
-                                                        @endif
-                                                        @if ($reste > 0)
-                                                            <tr class="border-b border-gray-300 dark:border-gray-700"
-                                                                id="stock-{{ $ligne->poste }}-row-1">
-                                                                <td class="p-1 ">
-                                                                    <x-text-input type="number"
-                                                                        name="stock[{{ $ligne->poste }}][rows][1][quantity]"
-                                                                        id="stock-{{ $ligne->poste }}-row-1-quantity"
-                                                                        class="w-full border-0 focus:ring-0 p-1"
-                                                                        min="0" step="0.01" value="1" />
-                                                                </td>
-                                                                <td class="w-1">X</td>
+                                                        @if ($ligne->conditionnement != 0)
+                                                        <tr class="border-b border-gray-300 dark:border-gray-700"
+                                                                    id="stock-{{ $ligne->poste }}-row-0">
+                                                                    <td class="p-1 ">
+                                                                        <x-text-input type="number"
+                                                                            name="stock[{{ $ligne->poste }}][rows][0][quantity]"
+                                                                            id="stock-{{ $ligne->poste }}-row-0-quantity"
+                                                                            class="w-full border-0 focus:ring-0 p-1"
+                                                                            min="0" step="0.01"
+                                                                            value="{{ formatNumber($ligne->quantite) }}" />
+                                                                    </td>
+                                                                    <td class="w-1">X</td>
+                                                                    <td class="p-1 ">
+                                                                        <x-text-input type="number"
+                                                                            name="stock[{{ $ligne->poste }}][rows][0][unit_value]"
+                                                                            id="stock-{{ $ligne->poste }}-row-0-unit-value"
+                                                                            class="w-full border-0 focus:ring-0 p-1"
+                                                                            min="0" step="0.01"
+                                                                            value="{{ formatNumber($ligne->conditionnement) }}" />
+                                                                    </td>
+                                                                    <td
+                                                                        class="flex w-fit justify-center items-center pt-1">
+                                                                        <button type="button"
+                                                                            class="delete-row-button focus:outline-none"
+                                                                            title="Supprimer cette ligne"
+                                                                            data-row-id="stock-{{ $ligne->poste }}-row-0"
+                                                                            onclick="deleteStockRow('stock-{{ $ligne->poste }}-row-0')">
+                                                                            <x-icons.close size="2"
+                                                                                class="icons" />
+                                                                        </button>
+                                                                    </td>
+                                                                </tr>
+                                                        @else
+                                                            @if ($unites > 1)
                                                                 @php
-                                                                    if (
-                                                                        $ligne->quantite <
-                                                                        $ligne->matiere->ref_valeur_unitaire
-                                                                    ) {
-                                                                        $value_reste = $ligne->quantite;
-                                                                    } elseif (
-                                                                        $ligne->quantite >
-                                                                        $ligne->matiere->ref_valeur_unitaire
-                                                                    ) {
-                                                                        $value_reste =
-                                                                            $ligne->matiere->ref_valeur_unitaire +
-                                                                            $reste;
-                                                                    } else {
-                                                                        $value_reste = $reste;
+                                                                    if ($unites > 1 && $reste > 0) {
+                                                                        $unites = $unites - 1;
                                                                     }
-                                                                    $value_reste = formatNumber($value_reste);
                                                                 @endphp
-                                                                <td class="p-1 ">
-                                                                    <x-text-input type="number"
-                                                                        name="stock[{{ $ligne->poste }}][rows][1][unit_value]"
-                                                                        id="stock-{{ $ligne->poste }}-row-1-unit-value"
-                                                                        class="w-full border-0 focus:ring-0 p-1"
-                                                                        min="0" step="0.01"
-                                                                        value="{{ $value_reste }}" />
-                                                                </td>
-                                                                <td
-                                                                    class="flex w-fit justify-center items-center pt-1">
-                                                                    <button type="button"
-                                                                        class="delete-row-button focus:outline-none"
-                                                                        title="Supprimer cette ligne"
-                                                                        data-row-id="stock-{{ $ligne->poste }}-row-1"
-                                                                        onclick="deleteStockRow('stock-{{ $ligne->poste }}-row-1')">
-                                                                        <x-icons.close size="2"
-                                                                            class="icons" />
-                                                                    </button>
-                                                                </td>
-                                                            </tr>
+                                                                <tr class="border-b border-gray-300 dark:border-gray-700"
+                                                                    id="stock-{{ $ligne->poste }}-row-0">
+                                                                    <td class="p-1 ">
+                                                                        <x-text-input type="number"
+                                                                            name="stock[{{ $ligne->poste }}][rows][0][quantity]"
+                                                                            id="stock-{{ $ligne->poste }}-row-0-quantity"
+                                                                            class="w-full border-0 focus:ring-0 p-1"
+                                                                            min="0" step="0.01"
+                                                                            value="{{ $unites }}" />
+                                                                    </td>
+                                                                    <td class="w-1">X</td>
+                                                                    <td class="p-1 ">
+                                                                        <x-text-input type="number"
+                                                                            name="stock[{{ $ligne->poste }}][rows][0][unit_value]"
+                                                                            id="stock-{{ $ligne->poste }}-row-0-unit-value"
+                                                                            class="w-full border-0 focus:ring-0 p-1"
+                                                                            min="0" step="0.01"
+                                                                            value="{{ $ligne->matiere->ref_valeur_unitaire }}" />
+                                                                    </td>
+                                                                    <td
+                                                                        class="flex w-fit justify-center items-center pt-1">
+                                                                        <button type="button"
+                                                                            class="delete-row-button focus:outline-none"
+                                                                            title="Supprimer cette ligne"
+                                                                            data-row-id="stock-{{ $ligne->poste }}-row-0"
+                                                                            onclick="deleteStockRow('stock-{{ $ligne->poste }}-row-0')">
+                                                                            <x-icons.close size="2"
+                                                                                class="icons" />
+                                                                        </button>
+                                                                    </td>
+                                                                </tr>
+                                                            @endif
+                                                            @if ($reste > 0)
+                                                                <tr class="border-b border-gray-300 dark:border-gray-700"
+                                                                    id="stock-{{ $ligne->poste }}-row-1">
+                                                                    <td class="p-1 ">
+                                                                        <x-text-input type="number"
+                                                                            name="stock[{{ $ligne->poste }}][rows][1][quantity]"
+                                                                            id="stock-{{ $ligne->poste }}-row-1-quantity"
+                                                                            class="w-full border-0 focus:ring-0 p-1"
+                                                                            min="0" step="0.01"
+                                                                            value="1" />
+                                                                    </td>
+                                                                    <td class="w-1">X</td>
+                                                                    @php
+                                                                        if (
+                                                                            $ligne->quantite <
+                                                                            $ligne->matiere->ref_valeur_unitaire
+                                                                        ) {
+                                                                            $value_reste = $ligne->quantite;
+                                                                        } elseif (
+                                                                            $ligne->quantite >
+                                                                            $ligne->matiere->ref_valeur_unitaire
+                                                                        ) {
+                                                                            $value_reste =
+                                                                                $ligne->matiere->ref_valeur_unitaire +
+                                                                                $reste;
+                                                                        } else {
+                                                                            $value_reste = $reste;
+                                                                        }
+                                                                        $value_reste = formatNumber($value_reste);
+                                                                    @endphp
+                                                                    <td class="p-1 ">
+                                                                        <x-text-input type="number"
+                                                                            name="stock[{{ $ligne->poste }}][rows][1][unit_value]"
+                                                                            id="stock-{{ $ligne->poste }}-row-1-unit-value"
+                                                                            class="w-full border-0 focus:ring-0 p-1"
+                                                                            min="0" step="0.01"
+                                                                            value="{{ $value_reste }}" />
+                                                                    </td>
+                                                                    <td
+                                                                        class="flex w-fit justify-center items-center pt-1">
+                                                                        <button type="button"
+                                                                            class="delete-row-button focus:outline-none"
+                                                                            title="Supprimer cette ligne"
+                                                                            data-row-id="stock-{{ $ligne->poste }}-row-1"
+                                                                            onclick="deleteStockRow('stock-{{ $ligne->poste }}-row-1')">
+                                                                            <x-icons.close size="2"
+                                                                                class="icons" />
+                                                                        </button>
+                                                                    </td>
+                                                                </tr>
+                                                            @endif
                                                         @endif
                                                         <tr class="relative"
                                                             id="add-row-container-{{ $ligne->poste }}">

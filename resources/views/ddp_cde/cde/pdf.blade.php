@@ -344,8 +344,19 @@
                                     </div>
                                 </div>
                             </td>
-                            <td style="text-align: left; padding-left: 10px;">{{ $ligne->designation }}</td>
-                            <td style="text-align: right;" class="whitespace-nowrap">{{ formatNumber($ligne->quantite) }} {{ $ligne->matiere->unite->short ?? '' }}</td>
+                            <td style="text-align: left; padding-left: 10px;">{{ $ligne->designation }}
+                                @if ($ligne->conditionnement != 0)
+                                    <br />
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">
+
+                                        Par conditionnement de
+                                        {{ formatNumber($ligne->conditionnement) }}
+                                        {{ $ligne->matiere ? $ligne->matiere->unite->short : '' }}
+                                    </span>
+                                @endif
+                            </td>
+                            <td style="text-align: right;" class="whitespace-nowrap">
+                                {{ formatNumber($ligne->quantite) }} {{ $ligne->matiere->unite->short ?? '' }}</td>
                             @if ($sans_prix)
                                 <td class="whitespace-nowrap">
                                     @if (
@@ -374,7 +385,8 @@
                                         @endphp
 
                                         @if ($unites > 0)
-                                            {{ $unites }}x {{ $ligne->matiere->ref_valeur_unitaire }} {{ $ligne->matiere->unite->short }}
+                                            {{ $unites }}x {{ $ligne->matiere->ref_valeur_unitaire }}
+                                            {{ $ligne->matiere->unite->short }}
                                             @if ($reste > 0)
                                                 +
                                             @endif
@@ -384,7 +396,8 @@
                                             1x {{ formatNumber($value_reste) }} {{ $ligne->matiere->unite->short }}
                                         @endif
                                     @else
-                                        {{ formatNumber($ligne->quantite) }} {{ $ligne->matiere ? $ligne->matiere->unite->short : '' }}
+                                        {{ formatNumber($ligne->quantite) }}
+                                        {{ $ligne->matiere ? $ligne->matiere->unite->short : '' }}
                                     @endif
                                 </td>
                             @endif

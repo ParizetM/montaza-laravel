@@ -22,6 +22,8 @@ class MatiereResource extends JsonResource
             'refInterne' => $this->ref_interne,
             'sousFamille' => $this->sousFamille->nom ?? null,
             'quantite' => $quantite,
+            'refValeurUnitaire' => $this->ref_valeur_unitaire,
+            'typeAffichageStock' => $this->typeAffichageStock(),
             'stockMin' => $this->stock_min,
             'designation' => $this->designation,
             'material' => $this->material->nom ?? null,

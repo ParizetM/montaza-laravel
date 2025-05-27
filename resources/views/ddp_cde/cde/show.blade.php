@@ -126,7 +126,7 @@
                                         </td>
                                         @if ($ligne->ligne_autre_id == null)
                                             <td class="text-left ml-1 p-2">
-                                                <x-ref-tooltip :matiere="$ligne->matiere" >
+                                                <x-ref-tooltip :matiere="$ligne->matiere">
                                                     <x-slot:slot_item>
                                                         <div class="flex flex-col {{ $showRefFournisseur ? '' : 'hidden' }}"
                                                             id="refs-{{ $ligne->matiere_id }}">
@@ -173,13 +173,24 @@
                                                     id="ref-{{ $ligne->ligne_autre_id }}">
                                                     <div class="flex flex-col">
                                                         <span class="text-xs">Réf. Interne</span>
-                                                        <span
-                                                            class="font-bold">{{ $ligne->ref_interne ?? '-' }}</span>
+                                                        <span class="font-bold">{{ $ligne->ref_interne ?? '-' }}</span>
                                                     </div>
                                                 </div>
                                             </td>
                                         @endif
-                                        <td class="p-2 text-left">{{ $ligne->designation }}</td>
+                                        <td class="p-2 text-left">{{ $ligne->designation }}
+                                            @if ($ligne->conditionnement != 0)
+                                                <br />
+                                                <span class="text-xs text-gray-500 dark:text-gray-400">
+                                                    <x-icons.turn-left
+                                                        class="inline-block mr-2 -rotate-180 fill-gray-700 dark:fill-gray-400"
+                                                        size="1.5" />
+                                                    Par conditionnement de
+                                                    {{ formatNumber($ligne->conditionnement) }}
+                                                    {{ $ligne->matiere ? $ligne->matiere->unite->short : '' }}
+                                                </span>
+                                            @endif
+                                        </td>
                                         <td class="p-2 text-right"
                                             title="{{ formatNumber($ligne->quantite) }} {{ $ligne->matiere ? $ligne->matiere->unite->full : '' }}">
                                             {{ formatNumber($ligne->quantite) }}
@@ -273,9 +284,11 @@
             </div>
             <div class="flex justify-between items-center mt-6">
                 @if ($cde->statut->id == 3)
-                <x-modals.attention-modal buttonText="Annuler terminé" title="Voulez-vous vraiment annuler cette commande ?"
-                    message="Cette action retournera la commande à l'étape de livraison et retirera les Matière ajoutées au stock. Êtes-vous sûr de vouloir continuer ?"
-                    confirmText="Annuler terminé" cancelText="Annuler" confirmAction="{{ route('cde.annuler_terminer', $cde->id) }}" />
+                    <x-modals.attention-modal buttonText="Annuler terminé"
+                        title="Voulez-vous vraiment annuler cette commande ?"
+                        message="Cette action retournera la commande à l'étape de livraison et retirera les Matière ajoutées au stock. Êtes-vous sûr de vouloir continuer ?"
+                        confirmText="Annuler terminé" cancelText="Annuler"
+                        confirmAction="{{ route('cde.annuler_terminer', $cde->id) }}" />
 
                     <a href="{{ route('cde.terminer_controler', $cde->id) }}" class="btn float-right">Terminer et
                         controlé</a>

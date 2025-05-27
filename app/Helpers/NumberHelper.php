@@ -43,7 +43,35 @@ if (!function_exists('formatNumber')) {
 
         return $partie_entiere_formattee;
     }
-    function formatNumberArgent($number) {
-        return number_format($number, 2, '.', ' ') . ' €';
+    /**
+     * Formats a number as a currency string in euros.
+     *
+     * This function formats a given number to a string representing an amount in euros,
+     * with two decimal places and appropriate spacing.
+     *
+     * @param mixed $number The number to be formatted. It can be an integer, float, or a string representing a number.
+     * @param bool $without_dollar Optional. If true, the euro symbol will not be appended.
+     * @param bool $without_space Optional. If true, the formatted number will not include spaces as thousand separators.
+     * @return string The formatted currency string.
+     */
+    function formatNumberArgent($number,$without_dollar = false,$without_space = false): string {
+        // Vérifier si le nombre est numérique
+        if (!is_numeric($number)) {
+            return (string)$number;
+        }
+        // Convertir en chaîne pour manipuler les décimales
+        $number = (float)$number;
+        // Formater le nombre avec deux décimales
+        if ($without_space) {
+            $number = number_format($number, 2, '.', '');
+        } else {
+            $number = number_format($number, 2, '.', ' ');
+        }
+        // Ajouter le symbole de l'euro si nécessaire
+        if (!$without_dollar) {
+            $number .= ' €';
+        }
+        // Retourner le nombre formaté
+        return $number;
     }
 }

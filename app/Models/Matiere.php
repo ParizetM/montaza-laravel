@@ -105,6 +105,13 @@ class Matiere extends Model
     {
         return $this->belongsTo(Material::class);
     }
+    /**
+     * Retourne le type d'affichage du stock de la matière.
+     * 1 = Affichage par quantité et valeur unitaire
+     * 2 = Affichage par valeur unitaire
+     *
+     * @return int
+     */
     public function typeAffichageStock(): int
     {
         if (is_numeric($this->ref_valeur_unitaire) && $this->ref_valeur_unitaire > 0) {

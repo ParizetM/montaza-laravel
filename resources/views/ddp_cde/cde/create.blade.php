@@ -25,6 +25,13 @@
         }
     </style>
     <div id="new-cde" class="hidden" x-data>{{ $cdeid ? $cdeid : '' }}</div>
+
+    <!-- Template caché pour le composant conditionnement -->
+    <template id="conditionnement-template">
+        <x-no-or-number value="non" name="conditionnement[MATIERE_ID]" id="conditionnement-MATIERE_ID"
+            placeholder="REF_VALEUR_UNITAIRE" dont_delete_value oninput="saveChanges()" width="xs" />
+    </template>
+
     <div class="py-4">
         <div class="max-w-8xl mx-auto sm:px-4 lg:px-6">
             <div
@@ -154,9 +161,8 @@
                                     class="flex items-center whitespace-nowrap bg-gray-100 dark:bg-gray-900 rounded-sm focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-600  {{ isset($cde) && $cde->nom != 'undefined' ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : '' }}">
                                     <span class="ml-2"> CDE-{{ date('y') }}-</span>
                                     <x-text-input label="Code" name="cde-code" id="cde-code" placeholder="0000"
-                                        autofocus maxlength="7"
-                                        onblur="saveChanges()"
-                                        value="{{ isset($cde) && $cde->code != 'undefined' ? str_replace(['AV','AMB'], '', substr($cde->code, 7, 7)) : '' }}"
+                                        autofocus maxlength="7" onblur="saveChanges()"
+                                        value="{{ isset($cde) && $cde->code != 'undefined' ? str_replace(['AV', 'AMB'], '', substr($cde->code, 7, 7)) : '' }}"
                                         class="border-0 focus:border-0 dark:border-0 focus:ring-0 dark:focus:ring-0 w-16 px-0 mx-0" />
                                     <span class=" mr-2"
                                         id="cde-code-entite">{{ isset($entite_code) ? $entite_code : '' }}</span>
@@ -246,12 +252,26 @@
                                     <tr>
                                         <th>Réference</th>
                                         <th>Désignation</th>
+                                        <th class="p-2 pr-0">
+                                            <x-tooltip position="top" class="">
+                                                <x-slot:slot_item>
+                                                    Cond.
+                                                </x-slot:slot_item>
+                                                <x-slot:slot_tooltip>
+                                                    <span class="block text-sm text-gray-700 dark:text-gray-300">
+                                                        Conditionnement de la matière.
+                                                        <br>
+                                                        Si vide, la quantité est en unité.
+                                                    </span>
+                                                </x-slot:slot_tooltip>
+                                            </x-tooltip>
+                                        </th>
                                         <th>
                                             <div class="float-left">Quantité</div>
                                             <div class="float-right">Date de livraison</div>
                                         </th>
-                                        <th>Prix unitaire</th>
-                                        <th class="border-r-4 border-gray-50 dark:border-gray-800"></th>
+                                        <th class="border-r-4 border-gray-50 dark:border-gray-800" colspan="2">Prix
+                                            unitaire</th>
                                     </tr>
                                 </thead>
                                 <tbody id="matiere-choisi-table">
@@ -288,12 +308,25 @@
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td class="text-left py-2">
+                                                <td class="text-left py-2"
+                                                    {{ $cde_ligne->matiere->typeAffichageStock() != 2 ? 'colspan=2' : '' }}>
                                                     {{ $cde_ligne->designation ?? '-' }}
                                                     <input type="hidden"
                                                         name="designation[{{ $cde_ligne->matiere_id }}]"
                                                         value="{{ $cde_ligne->designation ?? '' }}">
                                                 </td>
+                                                @if ($cde_ligne->matiere->typeAffichageStock() == 2)
+                                                    <td class="">
+                                                        <x-no-or-number
+                                                            value="{{ $cde_ligne->conditionnement == 0 ? 'non' : formatNumber($cde_ligne->conditionnement) }}"
+                                                            name="conditionnement[{{ $cde_ligne->matiere_id }}]"
+                                                            id="conditionnement-{{ $cde_ligne->matiere_id }}"
+                                                            placeholder="{{ $cde_ligne->matiere->ref_valeur_unitaire }}"
+                                                            dont_delete_value oninput="saveChanges()"
+                                                            width="xs" />
+                                                    </td>
+                                                @endif
+
                                                 <td class="text-right py-2">
                                                     <div class="flex items-center justify-end">
                                                         <div
@@ -310,7 +343,7 @@
                                                                 {{ $cde_ligne->matiere->unite->short }}</div>
                                                         </div>
                                                         <x-date-input name="date[{{ $cde_ligne->matiere_id }}]"
-                                                            class="w-fit" value="{{ $cde_ligne->date_livraison }}"
+                                                            class="w-34" value="{{ $cde_ligne->date_livraison }}"
                                                             oninput="saveChanges()" />
                                                     </div>
                                                 </td>
@@ -319,8 +352,9 @@
                                                         <x-text-input type="number"
                                                             name="prix[{{ $cde_ligne->matiere_id }}]"
                                                             class="price-input"
-                                                            value="{{ $cde_ligne->prix_unitaire }}" min="0"
-                                                            step="0.01" oninput="saveChanges()" />
+                                                            value="{{ formatNumberArgent($cde_ligne->prix_unitaire, true) }}"
+                                                            min="0" step="0.01" oninput="saveChanges()" />
+
                                                     </div>
                                                 </td>
                                                 <td class="text-right py-2">
@@ -356,7 +390,7 @@
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td class="text-left py-2">
+                                                <td class="text-left py-2" colspan="2">
                                                     <textarea name="designation[{{ $cde_ligne->ligne_autre_id }}]"
                                                         class="w-full m-0 dark:bg-gray-900 rounded dark:border-gray-700 resize-none" oninput="saveChanges()">{{ $cde_ligne->designation ?? '' }}</textarea>
                                                 </td>
@@ -700,6 +734,10 @@
                                 tr.setAttribute('data-matiere-ref-fournisseur', matiere.refexterne ||
                                     '');
                                 tr.setAttribute('data-matiere-designation', matiere.designation || '');
+                                tr.setAttribute('data-ref_valeur_unitaire', matiere.refValeurUnitaire ||
+                                    '');
+                                tr.setAttribute('data-has-conditionnement', matiere
+                                    .typeAffichageStock || '');
                                 tr.setAttribute('data-prix', matiere.lastPrice || '');
                                 tr.setAttribute('data-matiere-unite', matiere.lastPriceUnite || matiere
                                     .Unite || '');
@@ -713,7 +751,7 @@
                                 <td class="text-left px-2">${matiere.designation || '-'}</td>
                                 <td class="text-left px-2">${matiere.dn || '-'}</td>
                                 <td class="text-left px-2">${matiere.epaisseur || '-'}</td>
-                                <td class="text-left px-2">${matiere.quantite + ' ' + matiere.Unite || '-'}</td>
+                                <td class="text-left px-2">${matiere.tooltip || '-'}</td>
                                 <td class="text-right px-2 font-bold whitespace-nowrap">${matiere.lastPrice_formated + '/' + matiere.Unite}</td>
                                 <td class="text-left px-2">${matiere.lastPriceDate || '-'}</td>
                             `;
@@ -765,12 +803,13 @@
             } else {
                 const tr = document.createElement('tr');
                 tr.classList.add('border-b', 'border-gray-200', 'dark:border-gray-700',
-                    'rounded-r-md', 'overflow-hidden', 'bg-white', 'dark:bg-gray-800', 'border-r-4', 'text-sm');
+                    'rounded-r-md', 'overflow-hidden', 'bg-white', 'dark:bg-gray-800', 'border-r-green-500',
+                    'dark:border-r-green-600', 'border-r-4', 'text-sm');
                 tr.setAttribute('data-matiere-id', matiereId);
-                if (showRefFournisseur.checked == true) {
-                    matiereRef = `
-                    <div class="flex flex-col" id="refs-${matiereId}">
 
+                // Generate the reference section
+                const refSection = `
+                    <div class="flex flex-col ${showRefFournisseur.checked ? '' : 'hidden'}" id="refs-${matiereId}">
                         <div class="flex flex-col">
                             <span class="text-xs">Réf. Interne</span>
                             <span class="font-bold">${matiereRef || '-'}</span>
@@ -778,101 +817,108 @@
                         </div>
                         <div class="flex flex-col">
                             <span class="text-xs">Réf. Fournisseur</span>
-                            <x-text-input name="ref_fournisseur[${matiereId}]" value="${matiereRefFournisseur || ''}" class="font-bold p-0 border-0 bg-gray-200 dark:bg-gray-700 max-w-24" onblur="saveChanges()" />
-                            </div>
+                            <input type="text" name="ref_fournisseur[${matiereId}]" value="${matiereRefFournisseur || ''}" class="font-bold p-0 border-0 bg-gray-200 dark:bg-gray-900 max-w-24 mb-1 rounded-md" onblur="saveChanges()" />
+                        </div>
                     </div>
-                    <div class="flex flex-col hidden" id="ref-${matiereId}">
-
+                    <div class="flex flex-col ${showRefFournisseur.checked ? 'hidden' : ''}" id="ref-${matiereId}">
                         <div class="flex flex-col">
                             <span class="text-xs">Réf. Interne</span>
                             <span class="font-bold">${matiereRef || '-'}</span>
                         </div>
                     </div>
-                    `;
-                } else {
-                    matiereRef = `
-                    <div class="flex flex-col hidden" id="refs-${matiereId}">
+                `;
 
-                        <div class="flex flex-col">
-                            <span class="text-xs">Réf. Interne</span>
-                            <span class="font-bold">${matiereRef || '-'}</span>
-                            <input type="hidden" name="ref_interne[${matiereId}]" value="${matiereRef || ''}">
-                        </div>
-                        <div class="flex flex-col">
-                            <span class="text-xs">Réf. Fournisseur</span>
-                            <x-text-input name="ref_fournisseur[${matiereId}]" value="${matiereRefFournisseur || ''}" class="font-bold p-0 border-0 bg-gray-200 dark:bg-gray-700 w-auto" onblur="saveChanges()" />
-                            </div>
-                    </div>
-                    <div class="flex flex-col " id="ref-${matiereId}">
+                // Determine if we need the conditionnement column
+                const hasConditionnement = event.currentTarget.getAttribute('data-has-conditionnement') == "2";
+                const designationColspan = hasConditionnement ? '' : 'colspan="2"';
 
-                        <div class="flex flex-col">
-                            <span class="text-xs">Réf. Interne</span>
-                            <span class="font-bold">${matiereRef || '-'}</span>
-                        </div>
-                    </div>
-                    `;
+                // Créer la cellule conditionnement si nécessaire
+                let conditionnementCell = '';
+                if (hasConditionnement) {
+                    var ref_valeur_unitaire = event.currentTarget.getAttribute('data-ref_valeur_unitaire') ?? '';
+                    conditionnementCell = document.createElement('td');
+                    conditionnementCell.classList.add('text-left', 'py-2');
+                    // Utiliser le template et remplacer les valeurs
+                    const template = document.getElementById('conditionnement-template');
+                    const templateContent = template.innerHTML;
+                    const newContent = templateContent
+                        .replace(/MATIERE_ID/g, matiereId)
+                        .replace(/REF_VALEUR_UNITAIRE/g, ref_valeur_unitaire);
+
+                    conditionnementCell.innerHTML = newContent;
+                    // Recharger les scripts de l'élément après son ajout au DOM
+                    const scriptElements = conditionnementCell.querySelectorAll('script');
+                    scriptElements.forEach(script => {
+                        const newScript = document.createElement('script');
+                        if (script.src) {
+                            newScript.src = script.src;
+                        } else {
+                            newScript.textContent = script.textContent;
+                        }
+                        document.head.appendChild(newScript);
+                        document.head.removeChild(newScript);
+                    });
                 }
-                tr.innerHTML = `
-    <td class="text-left ml-1">${matiereRef || '-'}</td>
-    <td class="text-left py-2">${matiereDesignation || '-'}
-        <input type="hidden" name="designation[${matiereId}]" value="${matiereDesignation || ''}">
-        </td>
-    <td class="text-right py-2">
-        <div class="flex items-center justify-end">
-            <!-- Boutons de quantité -->
 
-            <div
-                class="flex items-center focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-600 focus-within:focus:border-indigo-600 rounded-sm m-1">
-                <x-text-input
-                    type="number"
-                    name="quantite[${matiereId}]"
-                    class="w-20 border-r-0 rounded-r-none dark:border-r-0 focus:ring-0 focus:border-0 dark:focus:ring-0"
-                    value="1"
-                    min="0"
-                    oninput="saveChanges()"
-                />
-                <div
-                    class="text-right bg-gray-100 dark:bg-gray-900 w-fit p-2.5 pl-0 border-1 border-l-0 rounded-r-sm border-gray-300 dark:border-gray-700">
-                    ${unites.find(unite => unite.short === matiereUnite)?.short || ''}
-                </div>
-            </div>
-            <!-- Champ de date -->
-            <x-date-input
-                name="date[${matiereId}]"
-                class="w-fit"
-                value=""
-                oninput="saveChanges()"
-            />
-        </div>
-    </td>
-    <td class="text-left py-2">
-        <div class="price-input-container flex items-center">
-            <x-text-input
-                type="number"
-                name="prix[${matiereId}]"
-                class="price-input"
-                value="${matierePrix || '1'}"
-                min="0"
-                step="0.01"
-                oninput="saveChanges()"
-            />
-        </div>
-    </td>
-    <td class="text-right py-2">
-        <button
-            class="float-right"
-            data-matiere-id="${matiereId}"
-            onclick="removeMatiere(event)"
-            tabindex="-1"
-        >
-            <x-icons.close size="2" class="icons" />
-        </button>
-    </td>
-`;
+                tr.innerHTML = `
+                    <td class="text-left ml-1">${refSection}</td>
+                    <td class="text-left py-2" ${designationColspan}>
+                        ${matiereDesignation || '-'}
+                        <input type="hidden" name="designation[${matiereId}]" value="${matiereDesignation || ''}">
+                    </td>
+                    <td class="text-right py-2">
+                        <div class="flex items-center justify-end">
+                            <div class="flex items-center focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-600 focus-within:focus:border-indigo-600 rounded-sm m-1">
+                                <input type="number"
+                                    name="quantite[${matiereId}]"
+                                    oninput="saveChanges()"
+                                    class="w-20 border-r-0 rounded-r-none dark:border-r-0 focus:ring-0 focus:border-0 dark:focus:ring-0 border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
+                                    value="1"
+                                    min="0" />
+                                <div class="text-right bg-gray-100 dark:bg-gray-900 w-fit p-2.5 pl-0 border-1 border-l-0 rounded-r-sm border-gray-300 dark:border-gray-700">
+                                    ${unites.find(unite => unite.short === matiereUnite)?.short || ''}
+                                </div>
+                            </div>
+                            <input type="date" name="date[${matiereId}]"
+                                class="w-34 border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" value=""
+                                oninput="saveChanges()" />
+                        </div>
+                    </td>
+                    <td class="text-left py-2">
+                        <div class="price-input-container flex items-center">
+                            <input type="number"
+                                name="prix[${matiereId}]"
+                                class="price-input border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
+                                value="${matierePrix || '0'}" min="0"
+                                step="0.01" oninput="saveChanges()" />
+                        </div>
+                    </td>
+                    <td class="text-right py-2">
+                        <button class="float-right" type="button"
+                            data-matiere-id="${matiereId}"
+                            onclick="removeMatiere(event)">
+                            <x-icons.close size="2" class="icons"
+                                tabindex="-1" />
+                        </button>
+                    </td>
+                `;
+
+                // Insérer la cellule conditionnement si nécessaire
+                if (hasConditionnement && conditionnementCell) {
+                    const designationCell = tr.children[1];
+                    designationCell.insertAdjacentElement('afterend', conditionnementCell);
+                }
+
                 if (matiereChoisiTable.querySelector('#no-matiere')) {
                     matiereChoisiTable.innerHTML = '';
                 }
                 matiereChoisiTable.appendChild(tr);
+
+                // Initialiser Alpine.js sur les nouveaux éléments
+                if (window.Alpine && hasConditionnement) {
+                    Alpine.initTree(tr);
+                }
+
                 selectSociete.disabled = true;
                 saveChanges();
             }
@@ -890,80 +936,74 @@
                 'rounded-r-md', 'overflow-hidden', 'bg-white', 'dark:bg-gray-800', 'border-r-4');
             tr.setAttribute('data-matiere-id', id);
 
+            let showRefF = showRefFournisseur.checked;
             tr.innerHTML = `
-                    <tr class="border-b border-gray-200 dark:border-gray-700 rounded-r-md overflow-hidden bg-white dark:bg-gray-800 border-r-green-500 dark:border-r-green-600 border-r-4 text-sm"
-                        data-matiere-id="${id}">
-                        <td class="text-left ml-1">
-                            <div class="flex flex-col ${showRefFournisseur.checked ? '' : 'hidden'}"
-                                id="refs-${id}">
-                                <div class="flex flex-col">
-                                    <span class="text-xs">Réf. Interne</span>
-                                    <x-text-input
-                                        name="ref_interne[${id}]"
-                                        value=""
-                                        class="font-bold p-0 border-0 bg-gray-200 dark:bg-gray-700 max-w-24 mb-1"
-                                        onblur="saveChanges()" />
-                                </div>
-                                <div class="flex flex-col">
-                                    <span class="text-xs">Réf. Fournisseur</span>
-                                    <x-text-input
-                                        name="ref_fournisseur[${id}]"
-                                        value=""
-                                        class="font-bold p-0 border-0 bg-gray-200 dark:bg-gray-700 max-w-24 mb-1"
-                                        onblur="saveChanges()" />
-                                </div>
+                <td class="text-left ml-1">
+                    <div class="flex flex-col ${showRefF ? '' : 'hidden'}" id="refs-${id}">
+                        <div class="flex flex-col">
+                            <span class="text-xs">Réf. Interne</span>
+                            <span class="font-bold">-</span>
+                            <input type="hidden" name="ref_interne[${id}]" value="">
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-xs">Réf. Fournisseur</span>
+                            <x-text-input
+                                name="ref_fournisseur[${id}]"
+                                value=""
+                                class="font-bold p-0 border-0 bg-gray-200 dark:bg-gray-700 max-w-24 mb-1"
+                                onblur="saveChanges()" />
+                        </div>
+                    </div>
+                    <div class="flex flex-col ${showRefF ? 'hidden' : ''}" id="ref-${id}">
+                        <div class="flex flex-col">
+                            <span class="text-xs">Réf. Interne</span>
+                            <span class="font-bold">-</span>
+                        </div>
+                    </div>
+                </td>
+                <td class="text-left py-2" colspan="2">
+                    <textarea name="designation[${id}]"
+                        class="w-full m-0 dark:bg-gray-900 rounded dark:border-gray-700 resize-none" oninput="saveChanges()"></textarea>
+                    <input type="hidden" name="designation[${id}]" value="">
+                </td>
+                <td class="text-right py-2">
+                    <div class="flex items-center justify-end">
+                        <div
+                            class="flex items-center focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-600 focus-within:focus:border-indigo-600 rounded-sm m-1">
+                            <x-text-input type="number"
+                                name="quantite[${id}]"
+                                oninput="saveChanges()"
+                                class="w-20 border-r-0 rounded-r-none dark:border-r-0 focus:ring-0 focus:border-0 dark:focus:ring-0"
+                                value="1"
+                                min="0" />
+                            <div
+                                class="text-right bg-gray-100 dark:bg-gray-900 w-fit p-2.5 pl-0 border-1 border-l-0 rounded-r-sm border-gray-300 dark:border-gray-700 ">
+                                <!-- unité non définie ici -->
                             </div>
-                            <div class="flex flex-col ${showRefFournisseur.checked ? 'hidden' : ''}"
-                                id="ref-${id}">
-                                <div class="flex flex-col">
-                                    <span class="text-xs">Réf. Interne</span>
-                                    <x-text-input
-                                        name="ref_interne[${id}]"
-                                        value=""
-                                        class="font-bold p-0 border-0 bg-gray-200 dark:bg-gray-700 max-w-24 mb-1"
-                                        onblur="saveChanges()" />
-                                </div>
-                            </div>
-                        </td>
-                        <td class="text-left py-2">
-                            <textarea name="designation[${id}]"
-                                class="w-full m-0 dark:bg-gray-900 rounded dark:border-gray-700 resize-none" oninput="saveChanges()"></textarea>
-                        </td>
-                        <td class="text-right py-2">
-                            <div class="flex items-center justify-end">
-                                <div
-                                    class="flex items-center focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-600 focus-within:focus:border-indigo-600 rounded-sm m-1">
-                                    <x-text-input type="number"
-                                        name="quantite[${id}]"
-                                        oninput="saveChanges()"
-                                        class="w-20 "
-                                        value="0"
-                                        min="0" />
-                                </div>
-                                <x-date-input name="date[${id}]"
-                                    class="w-fit" value=""
-                                    oninput="saveChanges()" />
-                            </div>
-                        </td>
-                        <td class="text-left py-2">
-                            <div class="price-input-container flex items-center">
-                                <x-text-input type="number"
-                                    name="prix[${id}]"
-                                    class="price-input"
-                                    value="0"
-                                    min="0"
-                                    step="0.01" oninput="saveChanges()" />
-                            </div>
-                        </td>
-                        <td class="text-right py-2">
-                            <button class="float-right"
-                                data-matiere-id="${id}"
-                                onclick="removeMatiere(event)">
-                                <x-icons.close size="2" class="icons"
-                                    tabindex="-1" />
-                            </button>
-                        </td>
-                    </tr>
+                        </div>
+                        <x-date-input name="date[${id}]"
+                            class="w-34" value=""
+                            oninput="saveChanges()" />
+                    </div>
+                </td>
+                <td class="text-left py-2">
+                    <div class="price-input-container flex items-center">
+                        <x-text-input type="number"
+                            name="prix[${id}]"
+                            class="price-input"
+                            value="0"
+                            min="0"
+                            step="0.01" oninput="saveChanges()" />
+                    </div>
+                </td>
+                <td class="text-right py-2">
+                    <button class="float-right" type="button"
+                        data-matiere-id="${id}"
+                        onclick="removeMatiere(event)">
+                        <x-icons.close size="2" class="icons"
+                            tabindex="-1" />
+                    </button>
+                </td>
             `;
             matiereChoisiTable.appendChild(tr);
             document.getElementById('societe_select').disabled = false;
@@ -1027,6 +1067,9 @@
                 const designation = row.querySelector(`input[name="designation[${matiereId}]`) ?
                     row.querySelector(`input[name="designation[${matiereId}]`).value :
                     row.querySelector(`textarea[name="designation[${matiereId}]`).value;
+                const conditionnement = row.querySelector(`input[name="conditionnement[${matiereId}]`) ?
+                    row.querySelector(`input[name="conditionnement[${matiereId}]`).value :
+                    '';
                 const prix = row.querySelector(`input[name="prix[${matiereId}]`).value;
                 // const unite = row.querySelector(`select[name="unite[${matiereId}]`).value;
                 const date = row.querySelector(`input[name="date[${matiereId}]`).value;
@@ -1053,6 +1096,7 @@
                     matieres.push({
                         id: matiereId,
                         quantite: quantity,
+                        conditionnement: conditionnement,
                         refInterne: refInterne,
                         refFournisseur: refFournisseur,
                         designation: designation,

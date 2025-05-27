@@ -18,6 +18,7 @@
                     <div class="flex w-full">
                         <select name="societe_id" id="societe_id-{{ $modal_id }}"
                             class="mt-1 py-3 select-left rounded-r-none" required>
+                        <option value="" disabled selected>Sélectionner un fournisseur</option>
                             @foreach ($societes as $societe)
                                 <option value="{{ $societe->id }}">{{ $societe->raison_sociale }}</option>
                             @endforeach

@@ -283,7 +283,19 @@
                                     </div>
                                 </td>
                                 <td class="p-2 text-left border border-gray-200 dark:border-gray-700">
-                                    {{ $ligne->designation }}</td>
+                                    {{ $ligne->designation }}
+                                    @if ($ligne->conditionnement != 0)
+                                    <br/>
+                                        <span class="text-xs text-gray-500 dark:text-gray-400">
+                                            <x-icons.turn-left
+                                                class="inline-block mr-2 -rotate-180 fill-gray-700 dark:fill-gray-400"
+                                                size="1.5" />
+                                                Par conditionnement de
+                                            {{ formatNumber($ligne->conditionnement) }}
+                                            {{ $ligne->matiere ? $ligne->matiere->unite->short : '' }}
+                                        </span>
+                                    @endif
+                                </td>
                                 <td class="p-2 text-center border border-gray-200 dark:border-gray-700"
                                     title="{{ formatNumber($ligne->quantite) . ($ligne->matiere ? ' ' . $ligne->matiere->unite->full : '') }}">
                                     {{ formatNumber($ligne->quantite) . ($ligne->matiere ? ' ' . $ligne->matiere->unite->short : '') }}
@@ -615,8 +627,7 @@
                                                 <td class="p-2 text-left">{{ $changement['ref_interne'] }}</td>
                                                 <td class="p-2 text-left">{{ $changement['designation'] }}</td>
                                                 <td class="p-2 text-left flex items-center">
-                                                    <span
-                                                        title="Ancienne référence">{!! $changement['ref_externe'] ?? '<span class="italic text-gray-500">Non définie</span>'!!}</span>
+                                                    <span title="Ancienne référence">{!! $changement['ref_externe'] ?? '<span class="italic text-gray-500">Non définie</span>' !!}</span>
                                                     <x-icon size="1" type="arrow_forward"
                                                         class="icons-no_hover" />
                                                     <span

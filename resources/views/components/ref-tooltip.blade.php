@@ -48,7 +48,7 @@
                                 </span>
                                 <span class="text-gray-500 dark:text-gray-400">:</span>
                                 @if ($ref_externe)
-                                    <x-copiable_text text="{{ $ref_externe }}AAAAAAAAAAAAAAAAAAAAA" class="text-gray-900 dark:text-gray-100" />
+                                    <x-copiable_text text="{{ $ref_externe }}" class="text-gray-900 dark:text-gray-100" />
                                 @else
                                     <span class="text-gray-400 dark:text-gray-500 italic">N/A</span>
                                 @endif
