@@ -69,7 +69,7 @@
     </button>
     <input
         type="number"
-        name="{{ $name }}"
+        name="{{ $isNon ? '' : $name }}"
         id="{{ $id }}"
         value="{{ $value !== 'non' ? $value : '' }}"
         placeholder="{{ $placeholder }}"
@@ -110,13 +110,14 @@
 
                 input.disabled = true;
                 input.required = false;
+                input.name = ''; // Remove name to prevent form submission
                 input.classList.add('bg-gray-100', 'dark:bg-gray-800', 'opacity-50');
                 input.classList.remove('bg-white', 'dark:bg-gray-900');
 
                 button.classList.add('bg-indigo-600', 'text-white', 'font-bold', 'shadow-sm');
                 button.classList.remove('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300', 'hover:bg-gray-300', 'dark:hover:bg-gray-600');
 
-                // Set hidden value to 'non'
+                // Create hidden input with 'non' value
                 if (!hiddenInput) {
                     hiddenInput = document.createElement('input');
                     hiddenInput.type = 'hidden';
@@ -125,10 +126,13 @@
                     hiddenInput.id = id+'-hidden';
                     if (required) hiddenInput.required = true;
                     input.parentNode.appendChild(hiddenInput);
+                } else {
+                    hiddenInput.value = 'non';
                 }
             } else {
                 // Set to number input
                 input.disabled = false;
+                input.name = name; // Restore name for form submission
                 if (required) input.required = true;
 
                 // Restore preserved value if it exists
@@ -164,6 +168,7 @@
         const id = '{{ $id }}';
         const isNon = {{ $isNon ? 'true' : 'false' }};
         const required = {{ $required ? 'true' : 'false' }};
+        const dontDeleteValue = {{ $dont_delete_value ? 'true' : 'false' }};
         const input = document.getElementById(id);
 
         if (isNon) {
@@ -171,15 +176,14 @@
             input.required = false;
             input.classList.add('bg-gray-100', 'dark:bg-gray-800', 'opacity-50');
 
-            // Create hidden input for 'non' value if required
-            if (required) {
-                const hiddenInput = document.createElement('input');
-                hiddenInput.type = 'hidden';
-                hiddenInput.name = '{{ $name }}';
-                hiddenInput.value = 'non';
-                hiddenInput.id = id+'-hidden';
-                input.parentNode.appendChild(hiddenInput);
-            }
+            // Create hidden input for 'non' value - always create when isNon is true
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = '{{ $name }}';
+            hiddenInput.value = 'non';
+            hiddenInput.id = id+'-hidden';
+            if (required) hiddenInput.required = true;
+            input.parentNode.appendChild(hiddenInput);
         }
     });
 </script>
