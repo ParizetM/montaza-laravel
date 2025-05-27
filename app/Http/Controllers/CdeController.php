@@ -13,6 +13,7 @@ use App\Models\Famille;
 use App\Models\Mailtemplate;
 use App\Models\ModelChange;
 use App\Models\Societe;
+use App\Models\SocieteMatiere;
 use App\Models\SocieteMatierePrix;
 use App\Models\TypeExpedition;
 use App\Models\Unite;
@@ -283,7 +284,7 @@ class CdeController extends Controller
         $validator = \Validator::make($request->all(), [
             'cde_id' => 'required|integer|exists:cdes,id',
             'entite_id' => 'required|integer|exists:entites,id',
-            'code' => 'required|string|max:4',
+            'code' => 'required|string|max:7',
             'show_ref_fournisseur' => 'required|boolean',
             'contact_id' => 'required|string',
             'nom' => 'required|string|max:255',
@@ -311,8 +312,12 @@ class CdeController extends Controller
         } elseif ($entite_code == 3) {
             $entite_code = 'AMB';
         }
-        if ($request->code && ctype_digit($request->code)) {
-            $code = str_pad($request->code, 4, '0', STR_PAD_LEFT);
+        if ($request->code && preg_match('/^\d{1,4}[A-Za-z]{0,3}$/', $request->code)) {
+            // Sépare la partie numérique et la partie lettres
+            preg_match('/^(\d{1,4})([A-Za-z]{0,3})$/', $request->code, $matches);
+            $numericPart = str_pad($matches[1], 4, '0', STR_PAD_LEFT);
+            $lettersPart = isset($matches[2]) ? strtoupper($matches[2]) : '';
+            $code = $numericPart . $lettersPart;
         } else {
             DB::rollBack();
             return response()->json(['error' => 'Invalid code format'], 400);
@@ -441,7 +446,7 @@ class CdeController extends Controller
                             'ref_fournisseur' => $ligne->ref_fournisseur,
                             'ref_externe' => $ref_externe,
                             'designation' => $ligne->designation,
-                            'societe_matiere_id' => $societe_matiere->id
+                            'societe_matiere_id' => $societe_matiere->id ?? null,
                         ];
                     }
                 }
@@ -556,6 +561,14 @@ class CdeController extends Controller
                 $ligne->prix = $ligne->prix_unitaire * $ligne->quantite;
                 $ligne->save();
                 $societe_matiere = $ligne->matiere->societeMatiere($societe_id);
+                if (!$societe_matiere) {
+                    //on create un nouveau societe_matiere
+                    $societe_matiere = SocieteMatiere::create([
+                        'societe_id' => $societe_id,
+                        'matiere_id' => $ligne->matiere_id,
+                        'ref_externe' => null,
+                    ]);
+                }
                 $ref_externe = $societe_matiere->ref_externe ?? null;
                 if ($ligne->ref_fournisseur != null && $ligne->ref_fournisseur != '' && $ligne->ref_fournisseur != $ref_externe) {
                     $societe_matiere->ref_externe = $ligne->ref_fournisseur;
@@ -844,8 +857,8 @@ class CdeController extends Controller
                 } catch (Exception $e) {
                     Log::error('Erreur lors de la suppression du mouvement de stock ID: ' . $mouvement->id .
                         ' pour la ligne de commande ID: ' . $ligne->id . ' - ' . $e->getMessage());
-                        $went_wrong = true;
-                        continue;
+                    $went_wrong = true;
+                    continue;
                 }
             }
             if ($went_wrong) {

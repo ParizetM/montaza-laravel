@@ -154,10 +154,11 @@
                                     class="flex items-center whitespace-nowrap bg-gray-100 dark:bg-gray-900 rounded-sm focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-600  {{ isset($cde) && $cde->nom != 'undefined' ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : '' }}">
                                     <span class="ml-2"> CDE-{{ date('y') }}-</span>
                                     <x-text-input label="Code" name="cde-code" id="cde-code" placeholder="0000"
-                                        autofocus maxlength="4"
-                                        value="{{ isset($cde) && $cde->code != 'undefined' ? substr($cde->code, 7, 4) : '' }}"
-                                        class="border-0 focus:border-0 dark:border-0 focus:ring-0 dark:focus:ring-0 w-14 px-0 mx-0" />
-                                    <span class="-ml-2 mr-2"
+                                        autofocus maxlength="7"
+                                        onblur="saveChanges()"
+                                        value="{{ isset($cde) && $cde->code != 'undefined' ? str_replace(['AV','AMB'], '', substr($cde->code, 7, 7)) : '' }}"
+                                        class="border-0 focus:border-0 dark:border-0 focus:ring-0 dark:focus:ring-0 w-16 px-0 mx-0" />
+                                    <span class=" mr-2"
                                         id="cde-code-entite">{{ isset($entite_code) ? $entite_code : '' }}</span>
                                 </div>
                             </div>

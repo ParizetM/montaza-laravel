@@ -37,7 +37,7 @@
                         <x-tooltip position="right">
                             <x-slot name="slot_item">
                                 <div class="flex items-center">
-                                    {{ $cde->code }}
+                                    <span class="whitespace-nowrap">{{ $cde->code }}</span>
                                     <x-icons.cde size="1.2" class="ml-1 fill-gray-700 dark:fill-gray-300 border-b-2 border-gray-700 dark:border-gray-300" />
                                 </div>
                             </x-slot>
