@@ -42,11 +42,7 @@ class MatiereController extends Controller
         if ($request->filled('sous_famille')) {
             $query->where('sous_famille_id', $request->input('sous_famille'));
         }
-        // Filtrer par societe (optionnel, utilisé uniquement dans quickSearch)
-        // Filtrer par le champ "search"
-        // $explication = [];
-        // $explication[] = "Initial query: " . $query->toSql();
-        // $explication[] = $request->all();
+
         if ($request->filled('search')) {
             $search = $request->input('search');
             $terms = explode(' ', $search);
@@ -63,48 +59,52 @@ class MatiereController extends Controller
                 }
             } else {
                 $query->where(function ($q) use ($terms) {
-                    // Pour chaque terme, appliquer des filtres spécifiques
+                    $hasValidSearchTerms = false;
 
                     foreach ($terms as $term) {
-                        $q->where(function ($subQuery) use ($term, $terms, &$explication) {
+                        $q->where(function ($subQuery) use ($term, $terms, &$hasValidSearchTerms) {
                             if (stripos($term, 'dn') === 0) {
                                 $value = substr($term, 2);
                                 $subQuery->where('dn', '=', "{$value}");
+                                $hasValidSearchTerms = true;
                             } elseif (stripos($term, 'ep') === 0) {
                                 $value = str_replace([',', '.'], ['.', ','], substr($term, 2));
                                 $subQuery->where('epaisseur', '=', "{$value}");
+                                $hasValidSearchTerms = true;
                             } else {
-                                $explication[] = "Searching in 'designation', 'sousFamille.nom', or 'ref_interne' for term: {$term}";
-                                $subQuery->whereRaw("unaccent(designation) ILIKE unaccent(?)", ["%{$term}%"])
-                                    ->orWhereHas('sousFamille', function ($subSubQuery) use ($term, &$explication) {
-                                        $subSubQuery->where('nom', 'ILIKE', "%{$term}%");
-                                    })
-                                    ->orWhere('ref_interne', 'ILIKE', "%{$term}%");
-                                if (count($terms) == 1) {
-                                    $subQuery->orWhereHas('societeMatieres', function ($subSubQuery) use ($term) {
-                                        $subSubQuery->orWhere('ref_externe', 'ILIKE', "%{$term}%");
-                                    });
+                                // Seulement si le terme fait au moins 2 caractères pour éviter les recherches trop générales
+                                if (strlen(trim($term)) >= 2) {
+                                    $subQuery->whereRaw("unaccent(designation) ILIKE unaccent(?)", ["%{$term}%"])
+                                        ->orWhereHas('sousFamille', function ($subSubQuery) use ($term) {
+                                            $subSubQuery->where('nom', 'ILIKE', "%{$term}%");
+                                        })
+                                        ->orWhere('ref_interne', 'ILIKE', "%{$term}%");
+                                    if (count($terms) == 1) {
+                                        $subQuery->orWhereHas('societeMatieres', function ($subSubQuery) use ($term) {
+                                            $subSubQuery->orWhere('ref_externe', 'ILIKE', "%{$term}%");
+                                        });
+                                    }
+                                    $hasValidSearchTerms = true;
                                 }
                             }
                         });
                     }
+
+                    // Si aucun terme valide n'a été trouvé, forcer une condition impossible
+                    if (!$hasValidSearchTerms) {
+                        $q->whereRaw('1 = 0');
+                    }
                 });
             }
         }
-        // dd($query->toSql(), $query->getBindings());
-        // $explication[] = "Final query: " . $query->toSql();
-        // $explication[] = "Bindings: " . json_encode($query->getBindings());
-        // if (!empty($explication)) {
-        //     Log::info("Explication log:", $explication);
-        // } else {
-        //     Log::warning("No explanation data was generated for the query.");
-        // }
+
         // Add sorting by stock quantity if requested
         $query->addSelect(['total_stock' => function ($q) {
             $q->selectRaw('COALESCE(SUM(CASE WHEN stocks.valeur_unitaire > 0 THEN stocks.quantite * stocks.valeur_unitaire ELSE stocks.quantite END), 0)')
                 ->from('stocks')
                 ->whereColumn('stocks.matiere_id', 'matieres.id');
         }])->orderBy('total_stock', 'desc');
+
         return $query;
     }
     /**
