@@ -122,7 +122,7 @@
                                                                 @if ($ligne->conditionnement != 0)
                                                                     Conditionnement
                                                                 @else
-                                                                Valeur unitaire
+                                                                    Valeur unitaire
                                                                 @endif
                                                                 ({{ $ligne->matiere->unite->short }})
                                                             </th>
@@ -133,43 +133,41 @@
                                                     </thead>
                                                     <tbody>
                                                         @if ($ligne->conditionnement != 0)
-                                                        <tr class="border-b border-gray-300 dark:border-gray-700"
-                                                                    id="stock-{{ $ligne->poste }}-row-0">
-                                                                    <td class="p-1 ">
-                                                                        <x-text-input type="number"
-                                                                            name="stock[{{ $ligne->poste }}][rows][0][quantity]"
-                                                                            id="stock-{{ $ligne->poste }}-row-0-quantity"
-                                                                            class="w-full border-0 focus:ring-0 p-1"
-                                                                            min="0" step="0.01"
-                                                                            value="{{ formatNumber($ligne->quantite) }}" />
-                                                                    </td>
-                                                                    <td class="w-1">X</td>
-                                                                    <td class="p-1 ">
-                                                                        <x-text-input type="number"
-                                                                            name="stock[{{ $ligne->poste }}][rows][0][unit_value]"
-                                                                            id="stock-{{ $ligne->poste }}-row-0-unit-value"
-                                                                            class="w-full border-0 focus:ring-0 p-1"
-                                                                            min="0" step="0.01"
-                                                                            value="{{ formatNumber($ligne->conditionnement) }}" />
-                                                                    </td>
-                                                                    <td
-                                                                        class="flex w-fit justify-center items-center pt-1">
-                                                                        <button type="button"
-                                                                            class="delete-row-button focus:outline-none"
-                                                                            title="Supprimer cette ligne"
-                                                                            data-row-id="stock-{{ $ligne->poste }}-row-0"
-                                                                            onclick="deleteStockRow('stock-{{ $ligne->poste }}-row-0')">
-                                                                            <x-icons.close size="2"
-                                                                                class="icons" />
-                                                                        </button>
-                                                                    </td>
-                                                                </tr>
+                                                            <tr class="border-b border-gray-300 dark:border-gray-700"
+                                                                id="stock-{{ $ligne->poste }}-row-0">
+                                                                <td class="p-1 ">
+                                                                    <x-text-input type="number"
+                                                                        name="stock[{{ $ligne->poste }}][rows][0][quantity]"
+                                                                        id="stock-{{ $ligne->poste }}-row-0-quantity"
+                                                                        class="w-full border-0 focus:ring-0 p-1"
+                                                                        min="0" step="0.01"
+                                                                        value="{{ formatNumber($ligne->quantite) }}" />
+                                                                </td>
+                                                                <td class="w-1">X</td>
+                                                                <td class="p-1 ">
+                                                                    <x-text-input type="number"
+                                                                        name="stock[{{ $ligne->poste }}][rows][0][unit_value]"
+                                                                        id="stock-{{ $ligne->poste }}-row-0-unit-value"
+                                                                        class="w-full border-0 focus:ring-0 p-1"
+                                                                        min="0" step="0.01"
+                                                                        value="{{ formatNumber($ligne->conditionnement) }}" />
+                                                                </td>
+                                                                <td class="flex w-fit justify-center items-center pt-1">
+                                                                    <button type="button"
+                                                                        class="delete-row-button focus:outline-none"
+                                                                        title="Supprimer cette ligne"
+                                                                        data-row-id="stock-{{ $ligne->poste }}-row-0"
+                                                                        onclick="deleteStockRow('stock-{{ $ligne->poste }}-row-0')">
+                                                                        <x-icons.close size="2" class="icons" />
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
                                                         @else
                                                             @if ($unites > 1)
                                                                 @php
-                                                                    if ($unites > 1 && $reste > 0) {
-                                                                        $unites = $unites - 1;
-                                                                    }
+                                                                    // if ($unites > 1 && $reste > 0) {
+                                                                    //     $unites = $unites - 1;
+                                                                    // }
                                                                 @endphp
                                                                 <tr class="border-b border-gray-300 dark:border-gray-700"
                                                                     id="stock-{{ $ligne->poste }}-row-0">
@@ -221,13 +219,6 @@
                                                                             $ligne->matiere->ref_valeur_unitaire
                                                                         ) {
                                                                             $value_reste = $ligne->quantite;
-                                                                        } elseif (
-                                                                            $ligne->quantite >
-                                                                            $ligne->matiere->ref_valeur_unitaire
-                                                                        ) {
-                                                                            $value_reste =
-                                                                                $ligne->matiere->ref_valeur_unitaire +
-                                                                                $reste;
                                                                         } else {
                                                                             $value_reste = $reste;
                                                                         }
