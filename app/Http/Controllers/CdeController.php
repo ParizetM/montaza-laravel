@@ -590,6 +590,8 @@ class CdeController extends Controller
         $this->pdf($cde->id, true);
         $mailtemplate = Mailtemplate::where('nom', 'cde')->first();
         $mailtemplate->sujet = str_replace('{code_cde}', $cde->code, $mailtemplate->sujet);
+        $cde->ddp_cde_statut_id = 2;
+        $cde->save();
         return view('ddp_cde.cde.pdf_preview', compact('cde', ['pdf', 'mailtemplate']));
     }
     public function cancelValidate($id)

@@ -81,7 +81,6 @@
 </div>
 
 <script class="SCRIPT">
-    console.log('NoOrNumber component loaded with ID: {{ $id }}');
     if (!window.noOrNumberHandlers) {
         window.noOrNumberHandlers = {};
 

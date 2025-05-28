@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cde;
+use App\Models\CdeSocieteContact;
+use App\Models\Ddp;
+use App\Models\DdpLigneFournisseur;
 use App\Models\Etablissement;
 use App\Models\Societe;
 use App\Models\SocieteContact;
@@ -27,9 +31,18 @@ class SocieteContactController extends Controller
             'fonction' => 'nullable|string',
         ]);
         Cache::flush();
-        SocieteContact::create($request->all());
 
-        return response()->json(['success' => true]);
+        $contact = SocieteContact::create(
+            [
+                'etablissement_id' => $request->etablissement_id,
+                'nom' => $request->nom,
+                'email' => $request->email,
+                'telephone_portable' => $request->telephone_portable,
+                'telephone_fixe' => $request->telephone_fixe,
+                'fonction' => $request->fonction,
+            ]
+        );
+        return response()->json(['success' => true, 'contact' => $contact]);
     }
 
     public function quickCreate(): View
@@ -37,41 +50,50 @@ class SocieteContactController extends Controller
         $societes = Societe::select('id', 'raison_sociale')->get();
         return view('societes.contacts.quick-create', compact('societes'));
     }
-    public function showJson( $societe_id,  $etablissement_id): JsonResponse
+    public function showJson($societe_id,  $etablissement_id): JsonResponse
     {
         $etablissement = Etablissement::findOrFail($etablissement_id);
         $contacts = $etablissement->contacts;
         return response()->json($contacts);
     }
-    // /**
-    //  * Display the specified resource.
-    //  */
-    // public function show(SocieteContact $societeContact)
-    // {
-    //     //
-    // }
 
-    // /**
-    //  * Show the form for editing the specified resource.
-    //  */
-    // public function edit(SocieteContact $societeContact)
-    // {
-    //     //
-    // }
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(SocieteContact $contact): JsonResponse
+    {
+        // Vérifier si le contact est utilisé ailleurs (par exemple dans des missions, devis, etc.)
+        if ($this->isContactUsed($contact)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ce contact ne peut pas être supprimé car il est utilisé dans d\'autres enregistrements.'
+            ], 422);
+        }
 
-    // /**
-    //  * Update the specified resource in storage.
-    //  */
-    // public function update(Request $request, SocieteContact $societeContact)
-    // {
-    //     //
-    // }
+        try {
+            $contact->delete();
+            Cache::flush();
 
-    // /**
-    //  * Remove the specified resource from storage.
-    //  */
-    // public function destroy(SocieteContact $societeContact)
-    // {
-    //     //
-    // }
+            return response()->json([
+                'success' => true,
+                'message' => 'Contact supprimé avec succès.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la suppression du contact.'
+            ], 500);
+        }
+    }
+
+    /**
+     * Check if contact is used in other records
+     */
+    private function isContactUsed(SocieteContact $contact): bool
+    {
+        return
+            // Vérifie si utilisé dans une Ddp
+            DdpLigneFournisseur::where('societe_contact_id', $contact->id)->exists() ||
+            CdeSocieteContact::where('societe_contact_id', $contact->id)->exists();
+    }
 }

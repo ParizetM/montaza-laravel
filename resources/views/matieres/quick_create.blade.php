@@ -17,8 +17,8 @@
                     <x-input-label for="societe_id" :value="__('référence externe')" />
                     <div class="flex w-full">
                         <select name="societe_id" id="societe_id-{{ $modal_id }}"
-                            class="mt-1 py-3 select-left rounded-r-none" required>
-                        <option value="" disabled selected>Sélectionner un fournisseur</option>
+                            class="mt-1 py-3 select-left rounded-r-none" >
+                            <option value="" disabled selected>Sélectionner un fournisseur</option>
                             @foreach ($societes as $societe)
                                 <option value="{{ $societe->id }}">{{ $societe->raison_sociale }}</option>
                             @endforeach
@@ -63,20 +63,17 @@
                 <div class="mb-4 w-fit mr-2">
                     <x-input-label for="dossier_standard_id-{{ $modal_id }}" optionnel
                         class="whitespace-nowrap">Dossier Standard</x-input-label>
-                    <select name="dossier_standard_id" id="dossier_standard_id-{{ $modal_id }}" class="select"
-                        onchange="updateStandardSelect(this.value)">
-                        <option value="" disabled selected>Sélectionner un dossier</option>
-                        @foreach ($dossier_standards as $dossier)
-                            <option value="{{ $dossier->nom }}">{{ $dossier->nom }}</option>
-                        @endforeach
-                    </select>
+                    <x-search-select :options="$dossier_standards
+                        ->map(fn($dossier) => ['value' => $dossier->nom, 'text' => $dossier->nom])
+                        ->values()" name="dossier_standard_id"
+                        id="dossier_standard_id-{{ $modal_id }}" :placeholder="'Sélectionner un dossier...'" :searchPlaceholder="'Rechercher un dossier...'"
+                        :value="old('dossier_standard_id')" required="false" onChange="updateStandardSelect(value)" />
                 </div>
                 <div class="mb-4 w-fit mr-2">
                     <x-input-label for="standard_id-{{ $modal_id }}" optionnel>Standard</x-input-label>
-                    <select name="standard_id" id="standard_id-{{ $modal_id }}" class="select w-fit"
-                        onchange="updateVersionSelect(this.value)">
-                        <option value="" disabled selected>Sélectionner d'abord un dossier</option>
-                    </select>
+                    <x-search-select :options="null" name="standard_id" id="standard_id-{{ $modal_id }}"
+                        :placeholder="'Sélectionner un standard...'" :searchPlaceholder="'Rechercher un standard...'" :value="old('standard_id')" required="false"
+                        onChange="updateVersionSelect(value)" />
                 </div>
                 <div class="mb-4 w-fit">
                     <x-input-label for="standard_version_id-{{ $modal_id }}" optionnel>Rév</x-input-label>
@@ -84,9 +81,9 @@
                         <select name="standard_version_id" id="standard_version_id-{{ $modal_id }}"
                             class="select w-fit">
                         </select>
-                        <a href="{{ route('standards.create') }}" target="_blank"
-                            type="button" class="btn-select-right" title="Ajouter un Standard">
-                            <x-icons.add class="icons_no_hover" size="1"  />
+                        <a href="{{ route('standards.create') }}" target="_blank" type="button"
+                            class="btn-select-right" title="Ajouter un Standard">
+                            <x-icons.add class="icons_no_hover" size="1" />
                         </a>
                     </div>
                 </div>
@@ -250,43 +247,111 @@
     }
 
 
-    function updateStandardSelect(dossierId) {
-        var standardSelect = document.getElementById('standard_id-{{ $modal_id }}');
-        standardSelect.innerHTML = '<option value="" disabled selected>Sélectionner un standard</option>';
+    window.updateStandardSelect = function(dossierId) {
+        // Récupérer le composant Alpine.js du search-select standard
+        const standardSelectElement = document.getElementById('standard_id-{{ $modal_id }}').closest(
+            '[x-data]');
+        const standardSelectComponent = Alpine.$data(standardSelectElement);
+
+        // Réinitialiser les options avec un message de chargement
+        standardSelectComponent.options = [{
+            value: '',
+            text: 'Chargement...',
+            disabled: true,
+            selected: true
+        }];
+        standardSelectComponent.selected = '';
+        standardSelectComponent.selectedText = '';
+
+        if (!dossierId) {
+            // Remettre le message par défaut si pas de dossier sélectionné
+            standardSelectComponent.options = [{
+                value: '',
+                text: 'Sélectionner d\'abord un dossier',
+                disabled: true,
+                selected: true
+            }];
+            return;
+        }
 
         fetch(`/matieres/standards/${dossierId}/standards/json`)
             .then(response => response.json())
             .then(data => {
-                data.forEach(standard => {
-                    var option = document.createElement('option');
-                    option.value = standard.nom;
-                    option.textContent = standard.nom;
-                    standardSelect.appendChild(option);
+            let newOptions;
+            if (!data || data.length === 0) {
+                newOptions = [{
+                value: '',
+                text: 'Aucun standard disponible',
+                disabled: true,
+                selected: true
+                }];
+            } else {
+                newOptions = data.map(standard => ({
+                value: standard.nom,
+                text: standard.nom,
+                disabled: false,
+                selected: false
+                }));
+                // Ajouter une option par défaut
+                newOptions.unshift({
+                value: '',
+                text: 'Sélectionner un standard',
+                disabled: false,
+                selected: true
                 });
+            }
+
+            standardSelectComponent.options = newOptions;
+            standardSelectComponent.selected = '';
+            standardSelectComponent.selectedText = '';
             })
             .catch(error => {
-                console.error('Erreur lors de la récupération des standards :', error);
+            console.error('Erreur lors de la récupération des standards :', error);
+            standardSelectComponent.options = [{
+                value: '',
+                text: 'Erreur lors du chargement',
+                disabled: true,
+                selected: true
+            }];
             });
     }
 
-    function updateVersionSelect(standardId) {
+    function updateVersionSelect(standardNom) {
         var versionSelect = document.getElementById('standard_version_id-{{ $modal_id }}');
         var dossierId = document.getElementById('dossier_standard_id-{{ $modal_id }}').value;
-        var standard = document.getElementById('standard_id-{{ $modal_id }}').value;
-        versionSelect.innerHTML = '';
+        versionSelect.innerHTML = '<option value="" disabled selected>Chargement...</option>';
 
-        fetch(`/matieres/standards/${dossierId}/${standard}/versions/json`)
+        if (!dossierId || !standardNom) {
+            versionSelect.innerHTML = '<option value="" disabled selected>Sélectionner d\'abord un standard</option>';
+            return;
+        }
+
+        fetch(`/matieres/standards/${dossierId}/${standardNom}/versions/json`)
             .then(response => response.json())
             .then(data => {
-                data.forEach(version => {
+                versionSelect.innerHTML = ''; // Réinitialiser les options
+                if (data.length === 1) {
                     var option = document.createElement('option');
-                    option.value = version;
-                    option.textContent = version;
+                    option.value = data[0];
+                    option.textContent = data[0];
+                    option.selected = true;
                     versionSelect.appendChild(option);
-                });
+                    versionSelect.value = data[0];
+                } else {
+                    versionSelect.innerHTML =
+                        '<option value="" disabled selected>Sélectionner une version</option>';
+
+                    data.forEach(version => {
+                        var option = document.createElement('option');
+                        option.value = version;
+                        option.textContent = version;
+                        versionSelect.appendChild(option);
+                    });
+                }
             })
             .catch(error => {
                 console.error('Erreur lors de la récupération des versions :', error);
+                versionSelect.innerHTML = '<option value="" disabled selected>Erreur lors du chargement</option>';
             });
     }
 

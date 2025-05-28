@@ -1,5 +1,6 @@
 @props([
     'buttonText' => 'Supprimer',
+    'customButton' => false,
     'modalTitle' => 'Supprimer',
     'confirmButtonText' => 'Confirmer',
     'cancelButtonText' => 'Annuler',
@@ -7,15 +8,36 @@
     'formAction' => '',
     'errorName' => 'delete',
     'userInfo' => 'Cette action est irréversible. Êtes-vous sûr de vouloir supprimer cet élément ?',
+    'onSubmit' => null,
 ])
-
+@if ($customButton == false)
 <x-danger-button x-data=""
     x-on:click.prevent="$dispatch('open-modal', '{{ $modalName }}')">
-    {{ $buttonText }}
+    {!! $buttonText !!}
 </x-danger-button>
+@else
+<div
+    x-data=""
+    x-on:click.prevent="$dispatch('open-modal', '{{ $modalName }}')"
+    class="inline-block">
+ {!! $customButton !!}
+ </div>
+@endif
 
 <x-modal name="{{ $modalName }}" :show="$errors->has($errorName)" focusable>
-    <form method="post" action="{{ $formAction }}" class="p-6">
+    <form method="post" action="{{ $formAction }}" class="p-6"
+          @if($onSubmit || !$formAction)
+          x-on:submit.prevent="
+              @if($onSubmit)
+                  {{ $onSubmit }}
+              @endif
+              @if(!$formAction)
+                  return false;
+              @else
+                  $el.submit();
+              @endif
+          "
+          @endif>
         @csrf
         @method('delete')
 

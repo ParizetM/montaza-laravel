@@ -143,8 +143,15 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Établissements -->
+                {{--
+######## ########    ###    ########  ##       ####  ######   ######  ######## ##     ## ######## ##    ## ########  ######
+##          ##      ## ##   ##     ## ##        ##  ##    ## ##    ## ##       ###   ### ##       ###   ##    ##    ##    ##
+##          ##     ##   ##  ##     ## ##        ##  ##       ##       ##       #### #### ##       ####  ##    ##    ##
+######      ##    ##     ## ########  ##        ##   ######   ######  ######   ## ### ## ######   ## ## ##    ##     ######
+##          ##    ######### ##     ## ##        ##        ##       ## ##       ##     ## ##       ##  ####    ##          ##
+##          ##    ##     ## ##     ## ##        ##  ##    ## ##    ## ##       ##     ## ##       ##   ###    ##    ##    ##
+########    ##    ##     ## ########  ######## ####  ######   ######  ######## ##     ## ######## ##    ##    ##     ######
+--}}
                 <div class="w-full lg:w-2/5">
                     @if (isset($etablissement))
                         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden border border-gray-200 dark:border-gray-700" id="etablissements">
@@ -275,6 +282,7 @@
                                     'societes' => $societes,
                                     'selected_societe' => $societe,
                                     'selected_etablissement' => $etablissement,
+                                    'reload_after_submit' => true,
                                 ])
                             </x-modal>
                         </div>

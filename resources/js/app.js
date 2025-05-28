@@ -33,5 +33,5 @@ if (!window.Alpine) {
     // Démarrage d'Alpine
     Alpine.start();
 } else {
-    console.warn('Alpine.js est déjà chargé, utilisation de l\'instance existante.');
+    // console.warn('Alpine.js est déjà chargé, utilisation de l\'instance existante.');
 }
