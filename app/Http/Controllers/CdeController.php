@@ -171,7 +171,7 @@ class CdeController extends Controller
         $cde_statuts = DdpCdeStatut::all();
         // Récupérer toutes les sociétés distinctes liées à toutes les CDE
         $societes = collect();
-        foreach (Cde::all() as $cde) {
+        foreach (Cde::where('nom','!=','undefined') as $cde) {
             if ($cde->societe) {
                 $societes = $societes->push($cde->societe);
             }
