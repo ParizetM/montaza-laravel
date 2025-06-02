@@ -30,7 +30,7 @@
             </div>
             <div class="mb-4">
                 <x-input-label for="designation" :value="__('Désignation')" />
-                <x-text-input type="text" name="designation" id="designation" class="mt-1 block w-full" required />
+                <x-text-input type="text" name="designation" id="designation" class="mt-1 block w-full" required maxlength="255"/>
             </div>
             {{-- FAMILLE --}}
             <div class="mb-4 flex">

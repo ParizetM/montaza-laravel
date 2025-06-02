@@ -103,7 +103,15 @@
 
                                         <td class="p-2 text-left"><span
                                                 class="text-red-500 dark:text-red-400 font-bold">Annulée </span>
-                                            <span class="line-through">{{ $ligne->designation }}</span>
+                                            <span class="line-through">{{ $ligne->designation }}
+                                                @if ($ligne->sous_ligne != null)
+                                                    <br />
+                                                    <span class="text-xs text-gray-500 dark:text-gray-400">
+                                                        {{ $ligne->sous_ligne }}
+                                                    </span>
+                                                @endif
+                                            </span>
+
                                         </td>
                                         <td class="p-2 text-right line-through whitespace-nowrap"
                                             title="{{ formatNumber($ligne->quantite) }} {{ $ligne->matiere->unite->full }}">
@@ -179,15 +187,10 @@
                                             </td>
                                         @endif
                                         <td class="p-2 text-left">{{ $ligne->designation }}
-                                            @if ($ligne->conditionnement != 0)
+                                            @if ($ligne->sous_ligne != null)
                                                 <br />
                                                 <span class="text-xs text-gray-500 dark:text-gray-400">
-                                                    <x-icons.turn-left
-                                                        class="inline-block mr-2 -rotate-180 fill-gray-700 dark:fill-gray-400"
-                                                        size="1.5" />
-                                                    Par conditionnement de
-                                                    {{ formatNumber($ligne->conditionnement) }}
-                                                    {{ $ligne->matiere ? $ligne->matiere->unite->short : '' }}
+                                                    {{ $ligne->sous_ligne }}
                                                 </span>
                                             @endif
                                         </td>

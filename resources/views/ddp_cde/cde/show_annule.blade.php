@@ -19,12 +19,15 @@
 
     <div class="max-w-8xl py-4 mx-auto sm:px-4 lg:px-6">
         <!-- Bannière d'annulation -->
-        <div class="bg-red-100 dark:bg-red-900 border-l-4 border-red-500 text-red-700 dark:text-red-200 p-4 mb-6 rounded shadow-md">
+        <div
+            class="bg-red-100 dark:bg-red-900 border-l-4 border-red-500 text-red-700 dark:text-red-200 p-4 mb-6 rounded shadow-md">
             <div class="flex items-center">
                 <x-icon type="error_icon" size="6" class="text-red-500 mr-3" />
                 <div>
                     <p class="font-bold text-xl">Cette commande a été annulée</p>
-                    <p>Date d'annulation: {{ $cde->updated_at ? Carbon\Carbon::parse($cde->updated_at)->format('d/m/Y H:i') : 'Non spécifiée' }}</p>
+                    <p>Date d'annulation:
+                        {{ $cde->updated_at ? Carbon\Carbon::parse($cde->updated_at)->format('d/m/Y H:i') : 'Non spécifiée' }}
+                    </p>
                 </div>
             </div>
         </div>
@@ -48,7 +51,8 @@
                 <div class="float-left">
                     <table class="w-auto table-auto bg-white dark:bg-gray-900 min-w-0">
                         <thead class="">
-                            <tr class="bg-gray-200 dark:bg-gray-700 border-r-2 border-r-gray-200 dark:border-r-gray-700">
+                            <tr
+                                class="bg-gray-200 dark:bg-gray-700 border-r-2 border-r-gray-200 dark:border-r-gray-700">
                                 <th style="width: 5px; padding: 0%;padding-top:5px;">
                                     <div class="poste">Poste</div>
                                 </th>
@@ -61,7 +65,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @if($cde->cdeLignes->isEmpty())
+                            @if ($cde->cdeLignes->isEmpty())
                                 <tr>
                                     <td colspan="8" class="text-center p-4 text-gray-500">
                                         Aucune ligne de commande trouvée.
@@ -93,7 +97,14 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="p-2 text-left line-through">{{ $ligne->designation }}</td>
+                                    <td class="p-2 text-left line-through">{{ $ligne->designation }}
+                                        @if ($ligne->sous_ligne != null)
+                                            <br />
+                                            <span class="text-xs text-gray-500 dark:text-gray-400">
+                                                {{ $ligne->sous_ligne }}
+                                            </span>
+                                        @endif
+                                    </td>
                                     <td class="p-2 text-right line-through whitespace-nowrap"
                                         title="{{ formatNumber($ligne->quantite) }} {{ $ligne->matiere ? $ligne->matiere->unite->full : '' }}">
                                         {{ formatNumber($ligne->quantite) }}
@@ -117,7 +128,8 @@
                                     <div class="w-full">
                                         <table class="min-w-0 float-right text-right">
                                             <tbody>
-                                                <tr class="{{ $cde->frais_de_port || $cde->frais_divers ? '' : 'hidden' }}">
+                                                <tr
+                                                    class="{{ $cde->frais_de_port || $cde->frais_divers ? '' : 'hidden' }}">
                                                     <td class="pr-4 text-gray-500">
                                                         Total HT :
                                                     </td>
@@ -183,8 +195,7 @@
 
             {{-- Bouton pour reprendre la commande --}}
             <div class="flex justify-center mt-10">
-                <a href="{{ route('cde.reprendre', $cde->id) }}"
-                   class="btn">
+                <a href="{{ route('cde.reprendre', $cde->id) }}" class="btn">
                     <x-icons.refresh size="2" class="text-white" />
                     <span class="text-lg font-bold">Reprendre cette commande</span>
                 </a>

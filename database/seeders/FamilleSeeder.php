@@ -16,6 +16,8 @@ class FamilleSeeder extends Seeder
             ['nom' => 'outil'],
             ['nom' => 'matière'],
             ['nom' => 'consommable'],
+            ['nom' => 'autre'],
+
         ];
 
         foreach ($familles as $famille) {

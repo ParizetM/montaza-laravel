@@ -284,15 +284,10 @@
                                 </td>
                                 <td class="p-2 text-left border border-gray-200 dark:border-gray-700">
                                     {{ $ligne->designation }}
-                                    @if ($ligne->conditionnement != 0)
+                                    @if ($ligne->sous_ligne != null)
                                     <br/>
                                         <span class="text-xs text-gray-500 dark:text-gray-400">
-                                            <x-icons.turn-left
-                                                class="inline-block mr-2 -rotate-180 fill-gray-700 dark:fill-gray-400"
-                                                size="1.5" />
-                                                Par conditionnement de
-                                            {{ formatNumber($ligne->conditionnement) }}
-                                            {{ $ligne->matiere ? $ligne->matiere->unite->short : '' }}
+                                            {{$ligne->sous_ligne }}
                                         </span>
                                     @endif
                                 </td>

@@ -45,7 +45,7 @@ class MatiereResource extends JsonResource
                 [
                     'lastPriceDate' => $this->getLastPrice($societe_id) ? Carbon::parse($this->getLastPrice($societe_id)->date)->format('d/m/Y') : null,
                     'lastPrice_formated' => $this->getLastPrice($societe_id) ? formatNumberArgent($this->getLastPrice($societe_id)->prix_unitaire) : null,
-                    'lastPrice' => $this->getLastPrice($societe_id) ? $this->getLastPrice($societe_id)->prix_unitaire : null,
+                    'lastPrice' => $this->getLastPrice($societe_id) ? formatNumberArgent($this->getLastPrice($societe_id)->prix_unitaire,true,true) : null,
 
                     'refexterne' => $this->societeMatiere($societe_id)->ref_externe ?? null,
                 ]

@@ -40,6 +40,20 @@
                                 <h3 class="text-gray-900 dark:text-gray-100 font-bold mb-2">
                                     Contenu de la commande
                                 </h3>
+                                @if ($cde->ddp_cde_statut_id == 4)
+                                    <div
+                                        class="bg-red-100 dark:bg-red-900 border-l-4 border-red-500 text-red-700 dark:text-red-200 p-4 mb-6 rounded shadow-md">
+                                        <div class="flex items-center">
+                                            <x-icon type="error_icon" size="2" class="text-red-500 mr-3" />
+                                            <div>
+                                                <p class="font-bold text-lg">Cette commande a été annulée</p>
+                                                <p>Date d'annulation:
+                                                    {{ $cde->updated_at ? Carbon\Carbon::parse($cde->updated_at)->format('d/m/Y H:i') : 'Non spécifiée' }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
                                 @if ($cde->cdeLignes->count() > 0)
                                     <table class="min-w-full">
                                         <thead>
@@ -53,7 +67,7 @@
                                         <tbody>
                                             @foreach ($cde->cdeLignes as $ligne)
                                                 <tr
-                                                    class="border-b dark:border-gray-600 {{ $ligne->ddp_cde_statut_id == 4 || $ligne->date_livraison_reelle == null ? 'line-through' : '' }}">
+                                                    class="border-b dark:border-gray-600 {{ $cde->ddp_cde_statut_id == 4 || $ligne->ddp_cde_statut_id == 4 || $ligne->date_livraison_reelle == null ? 'line-through' : '' }}">
                                                     <td class="px-2 py-1 text-xs">{{ $ligne->poste }}</td>
                                                     <td class="px-2 py-1 text-xs">{{ $ligne->designation }}
                                                         @if ($ligne->conditionnement != 0)

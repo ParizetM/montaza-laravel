@@ -24,13 +24,9 @@
             -moz-appearance: textfield;
         }
     </style>
+    {{-- Recuperation de l'id (peut etre mis a jour par le fetch) --}}
     <div id="new-cde" class="hidden" x-data>{{ $cdeid ? $cdeid : '' }}</div>
 
-    <!-- Template caché pour le composant conditionnement -->
-    <template id="conditionnement-template">
-        <x-no-or-number value="non" name="conditionnement[MATIERE_ID]" id="conditionnement-MATIERE_ID"
-            placeholder="REF_VALEUR_UNITAIRE" dont_delete_value oninput="saveChanges()" width="xs" />
-    </template>
 
     <div class="py-4">
         <div class="max-w-8xl mx-auto sm:px-4 lg:px-6">
@@ -208,7 +204,7 @@
                             <div class="{{ $cde->hasSocieteContact() ? '' : 'hidden' }}"
                                 id="societe_contact_select_div">
 
-
+                                {{-- créer les options pour le select de contact --}}
                                 @php
                                     $options = [];
                                     if (!($cde->societeContacts->count() == 0)) {
@@ -242,6 +238,8 @@
                                 label="Afficher les références fournisseur" />
                         </div>
                         <div class="min-h-96 overflow-x-auto bg-gray-100 dark:bg-gray-900 rounded-sm">
+
+                            {{-- TABLEAU --}}
                             <table>
                                 <thead>
                                     <tr>
@@ -252,33 +250,26 @@
                                     <tr>
                                         <th>Réference</th>
                                         <th>Désignation</th>
-                                        <th class="p-2 pr-0">
-                                            <x-tooltip position="top" class="">
-                                                <x-slot:slot_item>
-                                                    Cond.
-                                                </x-slot:slot_item>
-                                                <x-slot:slot_tooltip>
-                                                    <span class="block text-sm text-gray-700 dark:text-gray-300">
-                                                        Conditionnement de la matière.
-                                                        <br>
-                                                        Si vide, la quantité est en unité.
-                                                    </span>
-                                                </x-slot:slot_tooltip>
-                                            </x-tooltip>
-                                        </th>
                                         <th>
                                             <div class="float-left">Quantité</div>
                                             <div class="float-right">Date de livraison</div>
                                         </th>
-                                        <th class="border-r-4 border-gray-50 dark:border-gray-800" colspan="2">Prix
+                                        <th>Prix
                                             unitaire</th>
+                                        <th class="text-left pl-0 border-r-4 border-gray-50 dark:border-gray-800"
+                                            colspan="2">
+                                            total
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody id="matiere-choisi-table">
                                     @foreach ($cde->cdeLignes as $cde_ligne)
+                                        {{-- Si c'est une ligne avec une matiere --}}
                                         @if ($cde_ligne->ligne_autre_id == null)
                                             <tr class="border-b border-gray-200 dark:border-gray-700 rounded-r-md overflow-hidden bg-white dark:bg-gray-800 border-r-green-500 dark:border-r-green-600 border-r-4 text-sm"
                                                 data-matiere-id="{{ $cde_ligne->matiere_id }}">
+
+                                                {{-- références --}}
                                                 <td class="text-left ml-1">
                                                     <div class="flex flex-col {{ $showRefFournisseur ? '' : 'hidden' }}"
                                                         id="refs-{{ $cde_ligne->matiere_id }}">
@@ -308,25 +299,20 @@
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td class="text-left py-2"
-                                                    {{ $cde_ligne->matiere->typeAffichageStock() != 2 ? 'colspan=2' : '' }}>
+
+                                                {{-- Désignation --}}
+                                                <td class="text-left py-2">
                                                     {{ $cde_ligne->designation ?? '-' }}
                                                     <input type="hidden"
                                                         name="designation[{{ $cde_ligne->matiere_id }}]"
                                                         value="{{ $cde_ligne->designation ?? '' }}">
+                                                    <x-text-input name="sous_ligne[{{ $cde_ligne->matiere_id }}]"
+                                                        value="{{ $cde_ligne->sous_ligne ?? '' }}"
+                                                        class="font-bold p-0 pl-1 border-0 bg-gray-200 dark:bg-gray-700 w-full"
+                                                        onblur="saveChanges()" maxlength="255" />
                                                 </td>
-                                                @if ($cde_ligne->matiere->typeAffichageStock() == 2)
-                                                    <td class="">
-                                                        <x-no-or-number
-                                                            value="{{ $cde_ligne->conditionnement == 0 ? 'non' : formatNumber($cde_ligne->conditionnement) }}"
-                                                            name="conditionnement[{{ $cde_ligne->matiere_id }}]"
-                                                            id="conditionnement-{{ $cde_ligne->matiere_id }}"
-                                                            placeholder="{{ $cde_ligne->matiere->ref_valeur_unitaire }}"
-                                                            dont_delete_value oninput="saveChanges()"
-                                                            width="xs" />
-                                                    </td>
-                                                @endif
 
+                                                {{-- quantité et date de livraison --}}
                                                 <td class="text-right py-2">
                                                     <div class="flex items-center justify-end">
                                                         <div
@@ -347,6 +333,8 @@
                                                             oninput="saveChanges()" />
                                                     </div>
                                                 </td>
+
+                                                {{-- Prix --}}
                                                 <td class="text-left py-2">
                                                     <div class="price-input-container flex items-center">
                                                         <x-text-input type="number"
@@ -357,6 +345,14 @@
 
                                                     </div>
                                                 </td>
+                                                {{-- prix total --}}
+                                                <td>
+                                                    <div id="total[{{ $cde_ligne->matiere_id }}]"
+                                                        class="whitespace-nowrap">
+                                                        {{ $cde_ligne->quantite * $cde_ligne->prix_unitaire }} €
+                                                    </div>
+                                                </td>
+                                                {{-- bouton X --}}
                                                 <td class="text-right py-2">
                                                     <button class="float-right" type="button"
                                                         data-matiere-id="{{ $cde_ligne->matiere_id }}"
@@ -366,9 +362,13 @@
                                                     </button>
                                                 </td>
                                             </tr>
+
+
+                                            {{-- Si c'est une ligne sans matiere/personnalisable --}}
                                         @else
                                             <tr class="border-b border-gray-200 dark:border-gray-700 rounded-r-md overflow-hidden bg-white dark:bg-gray-800 border-r-green-500 dark:border-r-green-600 border-r-4 text-sm"
                                                 data-matiere-id="{{ $cde_ligne->ligne_autre_id }}">
+                                                {{-- références --}}
                                                 <td class="text-left ml-1">
                                                     <div class="flex flex-col">
                                                         <span class="text-xs">Réf. Interne</span>
@@ -390,10 +390,18 @@
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td class="text-left py-2" colspan="2">
+
+                                                {{-- Désignation --}}
+                                                <td class="text-left py-2">
                                                     <textarea name="designation[{{ $cde_ligne->ligne_autre_id }}]"
                                                         class="w-full m-0 dark:bg-gray-900 rounded dark:border-gray-700 resize-none" oninput="saveChanges()">{{ $cde_ligne->designation ?? '' }}</textarea>
+                                                    <x-text-input name="sous_ligne[{{ $cde_ligne->ligne_autre_id }}]"
+                                                        value="{{ $cde_ligne->sous_ligne ?? '' }}"
+                                                        class="font-bold p-0 pl-1 border-0 bg-gray-200 dark:bg-gray-700 w-full"
+                                                        onblur="saveChanges()" maxlength="255" />
                                                 </td>
+
+                                                {{-- qté et date --}}
                                                 <td class="text-right py-2">
                                                     <div class="flex items-center justify-end">
                                                         <div
@@ -403,23 +411,38 @@
                                                                 name="quantite[{{ $cde_ligne->ligne_autre_id }}]"
                                                                 oninput="saveChanges()" class="w-20 "
                                                                 value="{{ formatNumber($cde_ligne->quantite) }}"
+                                                                class="w-20 border-r-0 rounded-r-none  dark:border-r-0 focus:ring-0 focus:border-0 dark:focus:ring-0"
                                                                 min="0" />
-
+                                                            <div
+                                                                class="text-right bg-gray-100 dark:bg-gray-900 w-fit p-2.5 pl-0 border-1 border-l-0 rounded-r-sm border-gray-300 dark:border-gray-700 ">
+                                                                &nbsp;</div>
                                                         </div>
                                                         <x-date-input name="date[{{ $cde_ligne->ligne_autre_id }}]"
-                                                            class="w-fit" value="{{ $cde_ligne->date_livraison }}"
+                                                            class="w-34" value="{{ $cde_ligne->date_livraison }}"
                                                             oninput="saveChanges()" />
                                                     </div>
                                                 </td>
+
+                                                {{-- PU --}}
                                                 <td class="text-left py-2">
                                                     <div class="price-input-container flex items-center">
                                                         <x-text-input type="number"
                                                             name="prix[{{ $cde_ligne->ligne_autre_id }}]"
                                                             class="price-input"
-                                                            value="{{ $cde_ligne->prix_unitaire }}" min="0"
-                                                            step="0.01" oninput="saveChanges()" />
+                                                            value="{{ formatNumberArgent($cde_ligne->prix_unitaire, true, true) }}"
+                                                            min="0" step="0.01" oninput="saveChanges()" />
                                                     </div>
                                                 </td>
+
+                                                {{-- prix total --}}
+                                                <td>
+                                                    <div id="total[{{ $cde_ligne->ligne_autre_id }}]"
+                                                        class="whitespace-nowrap">
+                                                        {{ $cde_ligne->quantite * $cde_ligne->prix_unitaire }} €
+                                                    </div>
+                                                </td>
+
+                                                {{-- bouton X --}}
                                                 <td class="text-right py-2">
                                                     <button class="float-right" type="button"
                                                         data-matiere-id="{{ $cde_ligne->ligne_autre_id }}"
@@ -736,7 +759,7 @@
                                 tr.setAttribute('data-matiere-designation', matiere.designation || '');
                                 tr.setAttribute('data-ref_valeur_unitaire', matiere.refValeurUnitaire ||
                                     '');
-                                tr.setAttribute('data-has-conditionnement', matiere
+                                tr.setAttribute('data-typeAffichageStock', matiere
                                     .typeAffichageStock || '');
                                 tr.setAttribute('data-prix', matiere.lastPrice || '');
                                 tr.setAttribute('data-matiere-unite', matiere.lastPriceUnite || matiere
@@ -828,43 +851,15 @@
                     </div>
                 `;
 
-                // Determine if we need the conditionnement column
-                const hasConditionnement = event.currentTarget.getAttribute('data-has-conditionnement') == "2";
-                const designationColspan = hasConditionnement ? '' : 'colspan="2"';
-
-                // Créer la cellule conditionnement si nécessaire
-                let conditionnementCell = '';
-                if (hasConditionnement) {
-                    var ref_valeur_unitaire = event.currentTarget.getAttribute('data-ref_valeur_unitaire') ?? '';
-                    conditionnementCell = document.createElement('td');
-                    conditionnementCell.classList.add('text-left', 'py-2');
-                    // Utiliser le template et remplacer les valeurs
-                    const template = document.getElementById('conditionnement-template');
-                    const templateContent = template.innerHTML;
-                    const newContent = templateContent
-                        .replace(/MATIERE_ID/g, matiereId)
-                        .replace(/REF_VALEUR_UNITAIRE/g, ref_valeur_unitaire);
-
-                    conditionnementCell.innerHTML = newContent;
-                    // Recharger les scripts de l'élément après son ajout au DOM
-                    const scriptElements = conditionnementCell.querySelectorAll('script');
-                    scriptElements.forEach(script => {
-                        const newScript = document.createElement('script');
-                        if (script.src) {
-                            newScript.src = script.src;
-                        } else {
-                            newScript.textContent = script.textContent;
-                        }
-                        document.head.appendChild(newScript);
-                        document.head.removeChild(newScript);
-                    });
-                }
-
                 tr.innerHTML = `
                     <td class="text-left ml-1">${refSection}</td>
-                    <td class="text-left py-2" ${designationColspan}>
+                    <td class="text-left py-2">
                         ${matiereDesignation || '-'}
                         <input type="hidden" name="designation[${matiereId}]" value="${matiereDesignation || ''}">
+                        <x-text-input name="sous_ligne[${matiereId}]"
+                                                        value=""
+                                                        class="font-bold p-0 pl-1 border-0 bg-gray-200 dark:bg-gray-700 w-full"
+                                                        onblur="saveChanges()" maxlength="255" />
                     </td>
                     <td class="text-right py-2">
                         <div class="flex items-center justify-end">
@@ -893,6 +888,13 @@
                                 step="0.01" oninput="saveChanges()" />
                         </div>
                     </td>
+
+                    <td>
+                        <div id="total[${matiereId}]" class="whitespace-nowrap">
+                            ${ matierePrix || '0'} €
+                        </div>
+                    </td>
+
                     <td class="text-right py-2">
                         <button class="float-right" type="button"
                             data-matiere-id="${matiereId}"
@@ -903,21 +905,11 @@
                     </td>
                 `;
 
-                // Insérer la cellule conditionnement si nécessaire
-                if (hasConditionnement && conditionnementCell) {
-                    const designationCell = tr.children[1];
-                    designationCell.insertAdjacentElement('afterend', conditionnementCell);
-                }
 
                 if (matiereChoisiTable.querySelector('#no-matiere')) {
                     matiereChoisiTable.innerHTML = '';
                 }
                 matiereChoisiTable.appendChild(tr);
-
-                // Initialiser Alpine.js sur les nouveaux éléments
-                if (window.Alpine && hasConditionnement) {
-                    Alpine.initTree(tr);
-                }
 
                 selectSociete.disabled = true;
                 saveChanges();
@@ -961,10 +953,13 @@
                         </div>
                     </div>
                 </td>
-                <td class="text-left py-2" colspan="2">
+                <td class="text-left py-2">
                     <textarea name="designation[${id}]"
                         class="w-full m-0 dark:bg-gray-900 rounded dark:border-gray-700 resize-none" oninput="saveChanges()"></textarea>
-                    <input type="hidden" name="designation[${id}]" value="">
+                        <x-text-input name="sous_ligne[${id}]"
+                            value=""
+                            class="font-bold p-0 pl-1 border-0 bg-gray-200 dark:bg-gray-700 w-full"
+                            onblur="saveChanges()" maxlength="255" />
                 </td>
                 <td class="text-right py-2">
                     <div class="flex items-center justify-end">
@@ -976,9 +971,8 @@
                                 class="w-20 border-r-0 rounded-r-none dark:border-r-0 focus:ring-0 focus:border-0 dark:focus:ring-0"
                                 value="1"
                                 min="0" />
-                            <div
-                                class="text-right bg-gray-100 dark:bg-gray-900 w-fit p-2.5 pl-0 border-1 border-l-0 rounded-r-sm border-gray-300 dark:border-gray-700 ">
-                                <!-- unité non définie ici -->
+                            <div class="text-right text-sm bg-gray-100 dark:bg-gray-900 w-fit p-2.5 pl-0 border-1 border-l-0 rounded-r-sm border-gray-300 dark:border-gray-700">
+                                &nbsp;
                             </div>
                         </div>
                         <x-date-input name="date[${id}]"
@@ -996,6 +990,11 @@
                             step="0.01" oninput="saveChanges()" />
                     </div>
                 </td>
+                <td>
+                        <div id="total[${id}]" class="whitespace-nowrap">
+                            0 €
+                        </div>
+                    </td>
                 <td class="text-right py-2">
                     <button class="float-right" type="button"
                         data-matiere-id="${id}"
@@ -1067,19 +1066,23 @@
                 const designation = row.querySelector(`input[name="designation[${matiereId}]`) ?
                     row.querySelector(`input[name="designation[${matiereId}]`).value :
                     row.querySelector(`textarea[name="designation[${matiereId}]`).value;
-                const conditionnement = row.querySelector(`input[name="conditionnement[${matiereId}]`) ?
-                    row.querySelector(`input[name="conditionnement[${matiereId}]`).value :
-                    '';
+                const sousLigne = row.querySelector(`input[name="sous_ligne[${matiereId}]`).value;
                 const prix = row.querySelector(`input[name="prix[${matiereId}]`).value;
                 // const unite = row.querySelector(`select[name="unite[${matiereId}]`).value;
                 const date = row.querySelector(`input[name="date[${matiereId}]`).value;
+                const totalLigne = document.getElementById(`total[${matiereId}]`);
                 row.classList.remove(
                     'border-r-green-500', 'dark:border-r-green-600');
+
                 if (quantity < 1 || isNaN(parseFloat(quantity)) || isNaN(parseFloat(prix)) || quantity.endsWith(
-                        '.') || prix.endsWith('.')) {
+                        '.') || prix.endsWith('.') || designation == null || designation == '') {
                     saveStatus0.classList.add('hidden');
                     saveStatus2.classList.remove('hidden');
                     return;
+                }
+                if (quantity && prix && quantity > 0 && prix > 0) {
+                    var totalLigneValue = parseFloat(quantity) * parseFloat(prix);
+                    totalLigne.innerHTML = isNaN(totalLigneValue) ? '0.00 €' : totalLigneValue.toFixed(2) + ' €';
                 }
                 if (matiereId.startsWith('ligne_autre_id')) {
                     matieres.push({
@@ -1088,6 +1091,7 @@
                         refInterne: refInterne,
                         refFournisseur: refFournisseur,
                         designation: designation,
+                        sousLigne: sousLigne,
                         prix: prix,
                         // unite_id: unite,
                         date: date
@@ -1096,10 +1100,10 @@
                     matieres.push({
                         id: matiereId,
                         quantite: quantity,
-                        conditionnement: conditionnement,
                         refInterne: refInterne,
                         refFournisseur: refFournisseur,
                         designation: designation,
+                        sousLigne: sousLigne,
                         prix: prix,
                         // unite_id: unite,
                         date: date
@@ -1130,7 +1134,7 @@
             }
             document.title =
                 `Créer - CDE-${new Date().getFullYear().toString().slice(-2)}-${cdeCode.value}${cdeCodeEntite.textContent}`;
-            montantTotal.textContent = Total.toFixed(3) + ' €';
+            montantTotal.textContent = Total.toFixed(2) + ' €';
             var showRefFournisseur = 0;
             if (showRefFournisseurToggle.checked) {
                 var showRefFournisseur = 1;

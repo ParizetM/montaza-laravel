@@ -72,6 +72,7 @@
             border-right: 1px solid #f0f0f0;
             text-align: right;
             padding-right: 10px;
+            padding-bottom: 10px;
         }
 
         .main-content table th {
@@ -345,13 +346,10 @@
                                 </div>
                             </td>
                             <td style="text-align: left; padding-left: 10px;">{{ $ligne->designation }}
-                                @if ($ligne->conditionnement != 0)
+                                @if ($ligne->sous_ligne != null && $ligne->sous_ligne != '' )
                                     <br />
-                                    <span class="text-xs text-gray-500 dark:text-gray-400">
-
-                                        Par conditionnement de
-                                        {{ formatNumber($ligne->conditionnement) }}
-                                        {{ $ligne->matiere ? $ligne->matiere->unite->short : '' }}
+                                    <span class="text-xs text-gray-600">
+                                        {{ $ligne->sous_ligne }}
                                     </span>
                                 @endif
                             </td>

@@ -294,7 +294,7 @@ class CdeController extends Controller
             'matieres.*.refInterne' => 'nullable|string|max:255',
             'matieres.*.refFournisseur' => 'nullable|string|max:255',
             'matieres.*.designation' => 'required|string|max:255',
-            'matieres.*.conditionnement' => 'nullable|string|max:255',
+            'matieres.*.sousLigne' => 'nullable|string|max:255',
             'matieres.*.prix' => 'required|numeric|min:0',
             // 'matieres.*.unite_id' => 'required|integer|exists:unites,id',
             'matieres.*.date' => 'nullable|date',
@@ -364,11 +364,7 @@ class CdeController extends Controller
             return response()->json(['success' => true]);
         }
         foreach ($request->input('matieres') as $matiere) {
-            if (isset($matiere['conditionnement']) && $matiere['conditionnement'] != '' && $matiere['conditionnement'] != null && $matiere['conditionnement'] != 'non') {
-                $conditionnement = $matiere['conditionnement'];
-            } else {
-                $conditionnement = 0;
-            }
+
             if (isset($matiere['ligne_autre_id'])) {
                 $cde->cdeLignes()->updateOrCreate(
                     ['ligne_autre_id' => $matiere['ligne_autre_id']],
@@ -378,6 +374,7 @@ class CdeController extends Controller
                         'ref_interne' => $matiere['refInterne'] ?? null,
                         'ref_fournisseur' => $matiere['refFournisseur'] ?? null,
                         'designation' => $matiere['designation'] ?? null,
+                        'sous_ligne' => $matiere['sousLigne'],
                         'prix_unitaire' => $matiere['prix'],
                         'prix' => $matiere['prix'] * $matiere['quantite'],
                         'date_livraison' => $matiere['date'] ?? null,
@@ -388,7 +385,7 @@ class CdeController extends Controller
                     'poste' => $poste++,
                     'matiere_id' => $matiere['id'],
                     'quantite' => $matiere['quantite'],
-                    'conditionnement' => $conditionnement,
+                    'sous_ligne' => $matiere['sousLigne'],
                     'ref_interne' => $matiere['refInterne'] ?? null,
                     'ref_fournisseur' => $matiere['refFournisseur'] ?? null,
                     'designation' => $matiere['designation'] ?? null,
@@ -564,10 +561,13 @@ class CdeController extends Controller
         }
         if ($request->enregistrer_changement && $cde->show_ref_fournisseur == true) {
             $societe_id = $societe->id;
-            foreach ($cde->cdeLignes as $ligne) {
+            foreach ($cde->cdeLignes->whereNull('ligne_autre_id') as $ligne) {
                 $ligne->prix = $ligne->prix_unitaire * $ligne->quantite;
                 $ligne->save();
-                $societe_matiere = $ligne->matiere->societeMatiere($societe_id);
+                $societe_matiere = null;
+                if ($ligne->matiere) {
+                    $societe_matiere = $ligne->matiere->societeMatiere($societe_id) ?? null;
+                }
                 if (!$societe_matiere) {
                     //on create un nouveau societe_matiere
                     $societe_matiere = SocieteMatiere::create([
@@ -890,11 +890,7 @@ class CdeController extends Controller
             $matiere = $ligne->matiere;
             if ($ligne->date_livraison_reelle && $ligne->ddp_cde_statut_id != 4 && $ligne->ligne_autre_id == null) {
                 $societe_matiere = $matiere->societeMatieres()->firstOrCreate(['societe_id' => $societe->id]);
-                if ($ligne->conditionnement != 0) {
-                    $newPrix = $ligne->prix_unitaire / $ligne->conditionnement;
-                } else {
                     $newPrix = $ligne->prix_unitaire;
-                }
                 if ($matiere->getLastPrice($societe->id) == null || $matiere->getLastPrice($societe->id)->prix_unitaire != $newPrix) {
                     SocieteMatierePrix::updateOrCreate(
                         [
