@@ -172,7 +172,9 @@ class CdeController extends Controller
         // Récupérer toutes les sociétés distinctes liées à toutes les CDE
         $societes = collect();
         foreach (Cde::all() as $cde) {
-            $societes = $societes->concat($cde->societe()->get());
+            if ($cde->societe) {
+                $societes = $societes->push($cde->societe);
+            }
         }
         $societes = $societes->unique('id')->values();
         // Retourner la vue avec les données
