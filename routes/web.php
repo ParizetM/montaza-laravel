@@ -12,6 +12,7 @@ use App\Http\Controllers\ModelChangeController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReferenceDataController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SocieteContactController;
 use App\Http\Controllers\SocieteController;
@@ -86,6 +87,58 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
     Route::middleware('permission:voir_historique')->group(function () {
         Route::get('/logs', [ModelChangeController::class, 'index'])->name('model_changes.index');
     });
+
+    // Routes pour les données de référence
+    Route::middleware(['permission:gerer_les_donnees_de_reference'])->group(function () {
+        Route::get('/administration/reference-data', [ReferenceDataController::class, 'index'])->name('reference-data.index');
+        Route::get('/administration/reference-data/modal', [ReferenceDataController::class, 'loadModal'])->name('reference-data.modal');
+
+        // Familles
+        Route::post('/administration/reference-data/famille', [ReferenceDataController::class, 'storeFamille'])->name('reference-data.famille.store');
+        Route::patch('/administration/reference-data/famille/{famille}', [ReferenceDataController::class, 'updateFamille'])->name('reference-data.famille.update');
+        Route::delete('/administration/reference-data/famille/{famille}', [ReferenceDataController::class, 'destroyFamille'])->name('reference-data.famille.destroy');
+
+        // Sous-familles
+        Route::post('/administration/reference-data/sous-famille', [ReferenceDataController::class, 'storeSousFamille'])->name('reference-data.sous-famille.store');
+        Route::patch('/administration/reference-data/sous-famille/{sousFamille}', [ReferenceDataController::class, 'updateSousFamille'])->name('reference-data.sous-famille.update');
+        Route::delete('/administration/reference-data/sous-famille/{sousFamille}', [ReferenceDataController::class, 'destroySousFamille'])->name('reference-data.sous-famille.destroy');
+
+        // Formes juridiques
+        Route::post('/administration/reference-data/forme-juridique', [ReferenceDataController::class, 'storeFormeJuridique'])->name('reference-data.forme-juridique.store');
+        Route::patch('/administration/reference-data/forme-juridique/{formeJuridique}', [ReferenceDataController::class, 'updateFormeJuridique'])->name('reference-data.forme-juridique.update');
+        Route::delete('/administration/reference-data/forme-juridique/{formeJuridique}', [ReferenceDataController::class, 'destroyFormeJuridique'])->name('reference-data.forme-juridique.destroy');
+
+        // Dossiers standards
+        Route::post('/administration/reference-data/dossier-standard', [ReferenceDataController::class, 'storeDossierStandard'])->name('reference-data.dossier-standard.store');
+        Route::patch('/administration/reference-data/dossier-standard/{dossierStandard}', [ReferenceDataController::class, 'updateDossierStandard'])->name('reference-data.dossier-standard.update');
+        Route::delete('/administration/reference-data/dossier-standard/{dossierStandard}', [ReferenceDataController::class, 'destroyDossierStandard'])->name('reference-data.dossier-standard.destroy');
+
+        // Pays
+        Route::post('/administration/reference-data/pays', [ReferenceDataController::class, 'storePays'])->name('reference-data.pays.store');
+        Route::patch('/administration/reference-data/pays/{pays}', [ReferenceDataController::class, 'updatePays'])->name('reference-data.pays.update');
+        Route::delete('/administration/reference-data/pays/{pays}', [ReferenceDataController::class, 'destroyPays'])->name('reference-data.pays.destroy');
+
+        // Codes APE
+        Route::post('/administration/reference-data/code-ape', [ReferenceDataController::class, 'storeCodeApe'])->name('reference-data.code-ape.store');
+        Route::patch('/administration/reference-data/code-ape/{codeApe}', [ReferenceDataController::class, 'updateCodeApe'])->name('reference-data.code-ape.update');
+        Route::delete('/administration/reference-data/code-ape/{codeApe}', [ReferenceDataController::class, 'destroyCodeApe'])->name('reference-data.code-ape.destroy');
+
+        // Conditions de paiement
+        Route::post('/administration/reference-data/condition-paiement', [ReferenceDataController::class, 'storeConditionPaiement'])->name('reference-data.condition-paiement.store');
+        Route::patch('/administration/reference-data/condition-paiement/{conditionPaiement}', [ReferenceDataController::class, 'updateConditionPaiement'])->name('reference-data.condition-paiement.update');
+        Route::delete('/administration/reference-data/condition-paiement/{conditionPaiement}', [ReferenceDataController::class, 'destroyConditionPaiement'])->name('reference-data.condition-paiement.destroy');
+
+        // Matériaux
+        Route::post('/administration/reference-data/material', [ReferenceDataController::class, 'storeMaterial'])->name('reference-data.material.store');
+        Route::patch('/administration/reference-data/material/{material}', [ReferenceDataController::class, 'updateMaterial'])->name('reference-data.material.update');
+        Route::delete('/administration/reference-data/material/{material}', [ReferenceDataController::class, 'destroyMaterial'])->name('reference-data.material.destroy');
+
+        // Unités
+        Route::post('/administration/reference-data/unite', [ReferenceDataController::class, 'storeUnite'])->name('reference-data.unite.store');
+        Route::patch('/administration/reference-data/unite/{unite}', [ReferenceDataController::class, 'updateUnite'])->name('reference-data.unite.update');
+        Route::delete('/administration/reference-data/unite/{unite}', [ReferenceDataController::class, 'destroyUnite'])->name('reference-data.unite.destroy');
+    });
+
     Route::middleware('permission:voir_les_societes')->group(function () {
         Route::get('/societes', [SocieteController::class, 'index'])->name('societes.index');
         Route::get('/societes/client', [SocieteController::class, 'indexClient'])->name('societes.index_client');
@@ -128,7 +181,8 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::get('/matieres/quickSearch', [MatiereController::class, 'quickSearch'])->name('matieres.quickSearch');
         Route::get('/matieres/famille/{famille}/sous-familles/json', [MatiereController::class, 'sousFamillesJson'])->name('matieres.sous_familles.json');
         Route::post('/matieres/sous-famille/store', [MatiereController::class, 'storeSousFamille'])->name('matieres.sous_familles.store');
-        Route::get('/matieres/{matiere}/fournisseurs/json', [MatiereController::class, 'fournisseursJson'])->name('matieres.fournisseurs.json');
+        Route::post('/matieres/familles', [MatiereController::class, 'storeFamille'])->name('matieres.familles.store');
+        Route::post('/matieres/sous-familles', [MatiereController::class, 'storeSousFamille'])->name('matieres.sous_familles.store');
         Route::get('/matieres/standards', [StandardController::class, 'index'])->name('standards.index');
         Route::get('/matieres/{matiere}', [MatiereController::class, 'show'])->name('matieres.show');
         Route::get('/matieres/{matiere}/prix/{fournisseur}', [MatiereController::class, 'showPrix'])->name('matieres.show_prix');

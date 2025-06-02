@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class CdeNote extends Model
 {
@@ -20,6 +21,32 @@ class CdeNote extends Model
         static::addGlobalScope('ordre', function ($query) {
             $query->orderBy('ordre');
         });
+    }
+
+    protected static function booted(): void
+    {
+        static::created(function ($model): void {
+            self::logChange($model, 'creating');
+        });
+
+        static::updating(function ($model): void {
+            self::logChange($model, 'updating');
+        });
+
+        static::deleting(function ($model): void {
+            self::logChange($model, 'deleting');
+        });
+    }
+
+    protected static function logChange(Model $model, string $event): void
+    {
+        ModelChange::create([
+            'user_id' => Auth::id(),
+            'model_type' => 'CdeNote',
+            'before' => $model->getOriginal(),
+            'after' => $model->getAttributes(),
+            'event' => $event,
+        ]);
     }
 
     public function cdenote()

@@ -648,6 +648,21 @@ class MatiereController extends Controller
             'matiere' => $matiere,
         ], 201);
     }
+    public function storeFamille(Request $request)
+    {
+        $request->validate([
+            'nom' => 'required|string|max:255|unique:familles,nom',
+        ]);
+
+        $famille = Famille::create($request->only('nom'));
+
+        return response()->json([
+            'success' => true,
+            'famille' => $famille,
+            'message' => 'Famille créée avec succès',
+        ], 201);
+    }
+
     public function storeSousFamille(Request $request)
     {
         $request->validate([

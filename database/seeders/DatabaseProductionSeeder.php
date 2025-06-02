@@ -25,6 +25,7 @@ class DatabaseProductionSeeder extends Seeder
         $permissions = [
             'gerer_les_utilisateurs' => 'Consulter, Créer, Modifier Et Désactiver Des Utilisateurs',
             'gerer_les_permissions' => 'Consulter, Créer, Modifier Et Supprimer Les Permissions Des Postes',
+            'gerer_les_donnees_de_reference' => 'Gérer Les Données De Référence',
             'gerer_les_postes' => 'Consulter, Créer, Modifier Et Désactiver Les Postes',
             'voir_historique' => 'Consulter L\'historique Des Modifications Des Données',
             'gerer_les_societes' => 'Créer, Modifier Et Désactiver Les Sociétés',

@@ -58,10 +58,16 @@
     <div class="w-full">
         <div class=" flex transition-all duration-500 max-h-0 overflow-hidden border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
             id="slide-down">
-            <div class="flex p-4">
+            <div class="flex p-4 space-x-2">
                 <a href="{!! route('standards.index') !!}" class="btn">
                     {!! __('Standards') !!}
                 </a>
+                <button x-data="" x-on:click.prevent="$dispatch('open-modal', 'create-famille-modal')" class="btn">
+                    {!! __('Nouvelle famille') !!}
+                </button>
+                <button x-data="" x-on:click.prevent="$dispatch('open-modal', 'create-sous-famille-modal')" class="btn">
+                    {!! __('Nouvelle sous-famille') !!}
+                </button>
             </div>
 
         </div>
@@ -125,6 +131,87 @@
             </div>
         </div>
     </div>
+        <!-- Modal pour créer une famille -->
+    <x-modal name="create-famille-modal" focusable maxWidth="md">
+        <div class="p-6">
+            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+                {{ __('Créer une nouvelle famille') }}
+            </h2>
+
+            <form id="create-famille-form" method="POST">
+                @csrf
+                <div class="mb-4">
+                    <label for="famille_nom" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        {{ __('Nom de la famille') }}
+                    </label>
+                    <x-text-input
+                        type="text"
+                        name="nom"
+                        id="famille_nom"
+                        class="mt-1 block w-full"
+                        placeholder="Nom de la famille"
+                        required
+                    />
+                </div>
+
+                <div class="flex items-center justify-end mt-6">
+                    <button type="button" x-on:click="$dispatch('close')" class="btn-secondary mr-3">
+                        {{ __('Annuler') }}
+                    </button>
+                    <button type="submit" class="btn">
+                        {{ __('Créer') }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </x-modal>
+
+    <!-- Modal pour créer une sous-famille -->
+    <x-modal name="create-sous-famille-modal" focusable maxWidth="md">
+        <div class="p-6">
+            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+                {{ __('Créer une nouvelle sous-famille') }}
+            </h2>
+
+            <form id="create-sous-famille-form" method="POST">
+                @csrf
+                <div class="mb-4">
+                    <label for="sous_famille_famille_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        {{ __('Famille') }}
+                    </label>
+                    <select name="famille_id" id="sous_famille_famille_id" class="mt-1 block w-full px-4 py-2 border select" required>
+                        <option value="">{{ __('Sélectionner une famille') }}</option>
+                        @foreach ($familles as $famille)
+                            <option value="{{ $famille->id }}">{{ $famille->nom }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label for="sous_famille_nom" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        {{ __('Nom de la sous-famille') }}
+                    </label>
+                    <x-text-input
+                        type="text"
+                        name="nom"
+                        id="sous_famille_nom"
+                        class="mt-1 block w-full"
+                        placeholder="Nom de la sous-famille"
+                        required
+                    />
+                </div>
+
+                <div class="flex items-center justify-end mt-6">
+                    <button type="button" x-on:click="$dispatch('close')" class="btn-secondary mr-3">
+                        {{ __('Annuler') }}
+                    </button>
+                    <button type="submit" class="btn">
+                        {{ __('Créer') }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </x-modal>
     <script>
         function updateSousFamilles() {
             var familleId = document.getElementById('famille_id_search').value;
@@ -281,6 +368,103 @@
                 timer = setTimeout(() => func.apply(this, args), delay);
             };
         }
+
+
+        // Gestion du formulaire de création de famille
+        document.getElementById('create-famille-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const submitButton = this.querySelector('button[type="submit"]');
+
+            submitButton.disabled = true;
+            submitButton.textContent = 'Création...';
+
+            fetch('/matieres/familles', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': formData.get('_token'),
+                    'Accept': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showFlashMessageFromJs('Famille créée avec succès', 2000, 'success');
+
+                    // Ajouter la nouvelle famille au select
+                    const familleSelect = document.getElementById('famille_id_search');
+                    const sousFamilleSelect = document.getElementById('sous_famille_famille_id');
+
+                    const option1 = new Option(data.famille.nom, data.famille.id);
+                    const option2 = new Option(data.famille.nom, data.famille.id);
+
+                    familleSelect.add(option1);
+                    sousFamilleSelect.add(option2);
+
+                    // Fermer le modal et réinitialiser le formulaire
+                    this.reset();
+                    window.dispatchEvent(new CustomEvent('close-modal', { detail: 'create-famille-modal' }));
+                } else {
+                    showFlashMessageFromJs(data.message || 'Erreur lors de la création', 2000, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                showFlashMessageFromJs('Erreur lors de la création de la famille', 2000, 'error');
+            })
+            .finally(() => {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Créer';
+            });
+        });
+
+        // Gestion du formulaire de création de sous-famille
+        document.getElementById('create-sous-famille-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const submitButton = this.querySelector('button[type="submit"]');
+
+            submitButton.disabled = true;
+            submitButton.textContent = 'Création...';
+
+            fetch('/matieres/sous-familles', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': formData.get('_token'),
+                    'Accept': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showFlashMessageFromJs('Sous-famille créée avec succès', 2000, 'success');
+
+                    // Mettre à jour les sous-familles si la famille sélectionnée correspond
+                    const familleSelectValue = document.getElementById('famille_id_search').value;
+                    if (familleSelectValue == data.sousFamille.famille_id) {
+                        updateSousFamilles();
+                    }
+
+                    // Fermer le modal et réinitialiser le formulaire
+                    this.reset();
+                    window.dispatchEvent(new CustomEvent('close-modal', { detail: 'create-sous-famille-modal' }));
+                } else {
+                    showFlashMessageFromJs(data.message || 'Erreur lors de la création', 2000, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                showFlashMessageFromJs('Erreur lors de la création de la sous-famille', 2000, 'error');
+            })
+            .finally(() => {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Créer';
+            });
+        });
     </script>
 
 
