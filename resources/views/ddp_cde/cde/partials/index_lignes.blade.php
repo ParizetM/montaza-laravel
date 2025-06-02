@@ -67,7 +67,7 @@
                                         <tbody>
                                             @foreach ($cde->cdeLignes as $ligne)
                                                 <tr
-                                                    class="border-b dark:border-gray-600 {{ $cde->ddp_cde_statut_id == 4 || $ligne->ddp_cde_statut_id == 4 || $ligne->date_livraison_reelle == null ? 'line-through' : '' }}">
+                                                    class="border-b dark:border-gray-600 {{ $cde->ddp_cde_statut_id == 4 || $ligne->ddp_cde_statut_id == 4 || ($ligne->date_livraison_reelle == null && $cde->ddp_cde_statut_id !=1) ? 'line-through' : '' }}">
                                                     <td class="px-2 py-1 text-xs">{{ $ligne->poste }}</td>
                                                     <td class="px-2 py-1 text-xs">{{ $ligne->designation }}
                                                         @if ($ligne->conditionnement != 0)
