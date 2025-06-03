@@ -298,4 +298,3 @@ Route::post('/media/upload/{model}/{id}/{token}', [MediaController::class, 'uplo
 
 
 require __DIR__ . '/auth.php';
-require __DIR__ . '/lourd-api.php';
