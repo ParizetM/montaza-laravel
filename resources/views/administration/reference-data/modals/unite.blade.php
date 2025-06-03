@@ -85,14 +85,14 @@
             </button>
         </div>
         <p class="mb-4 text-gray-900 dark:text-gray-100">Êtes-vous sûr de vouloir supprimer l'unité "{{ $unite->short }} - {{ $unite->full }}" ?</p>
-        @if($unite->matieres->count() > 0)
+        @if($unite->matieres_count > 0)
             <div class="mb-4 p-4 bg-red-50 dark:bg-red-900/50 border border-red-200 dark:border-red-800 rounded-md">
-                <p class="text-red-600 dark:text-red-400 text-sm">Cette unité est utilisée par {{ $unite->matieres->count() }} matière(s) et ne peut pas être supprimée.</p>
+                <p class="text-red-600 dark:text-red-400 text-sm">Cette unité est utilisée dans {{ $unite->matieres_count }} matière(s) et ne peut pas être supprimée.</p>
             </div>
         @endif
         <div class="flex justify-end gap-4">
             <button type="button" x-on:click="$dispatch('close')" class="btn-secondary">Annuler</button>
-            @if($unite->matieres->count() == 0)
+            @if($unite->matieres_count == 0)
                 <form action="{{ route('reference-data.unite.destroy', $unite) }}" method="POST" class="inline">
                     @csrf
                     @method('DELETE')

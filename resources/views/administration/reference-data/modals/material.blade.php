@@ -61,13 +61,20 @@
             </button>
         </div>
         <p class="mb-4 text-gray-900 dark:text-gray-100">Êtes-vous sûr de vouloir supprimer le matériau "{{ $material->nom }}" ?</p>
+        @if(($material->matieres_count ?? 0) > 0)
+            <div class="mb-4 p-4 bg-red-50 dark:bg-red-900/50 border border-red-200 dark:border-red-800 rounded-md">
+                <p class="text-red-600 dark:text-red-400 text-sm">Ce matériau est utilisé dans {{ $material->matieres_count ?? 0 }} matière(s) et ne peut pas être supprimé.</p>
+            </div>
+        @endif
         <div class="flex justify-end gap-4">
             <button type="button" x-on:click="$dispatch('close')" class="btn-secondary">Annuler</button>
-            <form action="{{ route('reference-data.material.destroy', $material) }}" method="POST" class="inline">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn bg-red-500 hover:bg-red-600 text-white">Supprimer</button>
-            </form>
+            @if(($material->matieres_count ?? 0) == 0)
+                <form action="{{ route('reference-data.material.destroy', $material) }}" method="POST" class="inline">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn bg-red-500 hover:bg-red-600 text-white">Supprimer</button>
+                </form>
+            @endif
         </div>
     </div>
 </x-modal>

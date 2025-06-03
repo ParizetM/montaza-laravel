@@ -25,6 +25,9 @@
 
 <!-- Modales Modifier/Supprimer Condition de Paiement -->
 @foreach($conditionsPaiement as $condition)
+@php
+    $condition->utilisations_count = ($condition->societes_count ?? 0) + ($condition->cdes_count ?? 0);
+@endphp
 <x-modal name="edit-condition-paiement-{{ $condition->id }}">
     <div class="p-6 bg-white dark:bg-gray-800">
         <div class="flex justify-between items-center mb-4">
@@ -61,13 +64,20 @@
             </button>
         </div>
         <p class="mb-4 text-gray-900 dark:text-gray-100">Êtes-vous sûr de vouloir supprimer la condition de paiement "{{ $condition->nom }}" ?</p>
+        @if($condition->utilisations_count > 0)
+            <div class="mb-4 p-4 bg-red-50 dark:bg-red-900/50 border border-red-200 dark:border-red-800 rounded-md">
+                <p class="text-red-600 dark:text-red-400 text-sm">Cette condition de paiement est utilisée dans {{ $condition->utilisations_count }} enregistrement(s) et ne peut pas être supprimée.</p>
+            </div>
+        @endif
         <div class="flex justify-end gap-4">
             <button type="button" x-on:click="$dispatch('close')" class="btn-secondary">Annuler</button>
-            <form action="{{ route('reference-data.condition-paiement.destroy', $condition) }}" method="POST" class="inline">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn bg-red-500 hover:bg-red-600 text-white">Supprimer</button>
-            </form>
+            @if($condition->utilisations_count == 0)
+                <form action="{{ route('reference-data.condition-paiement.destroy', $condition) }}" method="POST" class="inline">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn bg-red-500 hover:bg-red-600 text-white">Supprimer</button>
+                </form>
+            @endif
         </div>
     </div>
 </x-modal>

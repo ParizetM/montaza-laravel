@@ -53,8 +53,8 @@ class ReferenceDataController extends Controller
                 break;
 
             case 'autres':
-                $data['conditionsPaiement'] = ConditionPaiement::orderBy('nom')->paginate(50);
-                $data['materials'] = Material::orderBy('nom')->paginate(50);
+                $data['conditionsPaiement'] = ConditionPaiement::withCount(relations: ['societes','cdes'])->orderBy('nom')->paginate(50);
+                $data['materials'] = Material::withCount('matieres')->orderBy('nom')->paginate(50);
                 $data['unites'] = Unite::withCount('matieres')->orderBy('short')->paginate(50);
                 break;
         }

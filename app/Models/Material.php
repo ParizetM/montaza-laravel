@@ -11,4 +11,9 @@ class Material extends Model
     use HasFactory;
 
     protected $fillable = ['nom'];
+
+    public function matieres()
+    {
+        return $this->hasMany(Matiere::class);
+    }
 }
