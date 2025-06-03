@@ -4,7 +4,7 @@
         <div
             class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-t-2xl">
             <div>
-                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Contacts - {{ $contacts->first() ? $contacts->first()->etablissement->nom : '' }} <small class="text-gray-600 dark:text-gray-300 text-xs">{{ $contacts->first()->etablissement->societe->raison_sociale }}</small></h2>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Contacts - {{ $contacts->first() != null ? $contacts->first()->etablissement->nom : '' }} <small class="text-gray-600 dark:text-gray-300 text-xs">{{ $contacts->first()->etablissement->societe->raison_sociale }}</small></h2>
                 <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Gérez les contacts de cette société</p>
             </div>
             <button x-on:click="$dispatch('close')"
