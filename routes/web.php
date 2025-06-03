@@ -183,6 +183,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::post('/matieres/sous-famille/store', [MatiereController::class, 'storeSousFamille'])->name('matieres.sous_familles.store');
         Route::post('/matieres/familles', [MatiereController::class, 'storeFamille'])->name('matieres.familles.store');
         Route::post('/matieres/sous-familles', [MatiereController::class, 'storeSousFamille'])->name('matieres.sous_familles.store');
+        Route::get('/matieres/{matiere}/fournisseurs/json', [MatiereController::class, 'fournisseursJson'])->name('matieres.fournisseurs.json');
         Route::get('/matieres/standards', [StandardController::class, 'index'])->name('standards.index');
         Route::get('/matieres/{matiere}', [MatiereController::class, 'show'])->name('matieres.show');
         Route::get('/matieres/{matiere}/prix/{fournisseur}', [MatiereController::class, 'showPrix'])->name('matieres.show_prix');
