@@ -17,7 +17,7 @@
                     <x-input-label for="societe_id" :value="__('référence externe')" />
                     <div class="flex w-full">
                         <select name="societe_id" id="societe_id-{{ $modal_id }}"
-                            class="mt-1 py-3 select-left rounded-r-none" >
+                            class="mt-1 py-3 select-left rounded-r-none">
                             <option value="" disabled selected>Sélectionner un fournisseur</option>
                             @foreach ($societes as $societe)
                                 <option value="{{ $societe->id }}">{{ $societe->raison_sociale }}</option>
@@ -28,9 +28,22 @@
                     </div>
                 </div>
             </div>
-            <div class="mb-4">
-                <x-input-label for="designation" :value="__('Désignation')" />
-                <x-text-input type="text" name="designation" id="designation" class="mt-1 block w-full" required maxlength="255"/>
+            {{-- désognation --}}
+            <div class="mb-4 flex gap-2">
+                <div class="w-3/4">
+                    <x-input-label for="designation" :value="__('Désignation')" />
+                    <x-text-input type="text" name="designation" id="designation" class="mt-1 block w-full" required
+                        maxlength="255" />
+                </div>
+                <div class="">
+                    <x-input-label for="material_id" :value="__('matériau')" />
+                    <select name="material_id" id="material_id-{{ $modal_id }}" class="mt-1 py-3 select" required>
+                        <option value="0" selected>Aucun</option>
+                        @foreach ($materiaux as $materiau)
+                            <option value="{{ $materiau->id }}">{{ $materiau->nom }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
             {{-- FAMILLE --}}
             <div class="mb-4 flex">
@@ -226,10 +239,12 @@
     function updateSousFamilleSelect(familleId) {
         var sousFamilleSelect = document.getElementById('sous_famille_id-{{ $modal_id }}');
         sousFamilleSelect.innerHTML =
-            '<option value="" disabled selected>Sélectionner une sous famille</option>';
+            '<option value="" disabled selected>chargement...</option>';
         fetch(`/matieres/famille/${familleId}/sous-familles/json`)
             .then(response => response.json())
             .then(data => {
+                sousFamilleSelect.innerHTML =
+                    '<option value="" disabled selected>Sélectionner une sous famille</option>';
                 data.forEach(sousFamille => {
                     var option = document.createElement('option');
                     option.value = sousFamille.id;
@@ -277,42 +292,42 @@
         fetch(`/matieres/standards/${dossierId}/standards/json`)
             .then(response => response.json())
             .then(data => {
-            let newOptions;
-            if (!data || data.length === 0) {
-                newOptions = [{
-                value: '',
-                text: 'Aucun standard disponible',
-                disabled: true,
-                selected: true
-                }];
-            } else {
-                newOptions = data.map(standard => ({
-                value: standard.nom,
-                text: standard.nom,
-                disabled: false,
-                selected: false
-                }));
-                // Ajouter une option par défaut
-                newOptions.unshift({
-                value: '',
-                text: 'Sélectionner un standard',
-                disabled: false,
-                selected: true
-                });
-            }
+                let newOptions;
+                if (!data || data.length === 0) {
+                    newOptions = [{
+                        value: '',
+                        text: 'Aucun standard disponible',
+                        disabled: true,
+                        selected: true
+                    }];
+                } else {
+                    newOptions = data.map(standard => ({
+                        value: standard.nom,
+                        text: standard.nom,
+                        disabled: false,
+                        selected: false
+                    }));
+                    // Ajouter une option par défaut
+                    newOptions.unshift({
+                        value: '',
+                        text: 'Sélectionner un standard',
+                        disabled: false,
+                        selected: true
+                    });
+                }
 
-            standardSelectComponent.options = newOptions;
-            standardSelectComponent.selected = '';
-            standardSelectComponent.selectedText = '';
+                standardSelectComponent.options = newOptions;
+                standardSelectComponent.selected = '';
+                standardSelectComponent.selectedText = '';
             })
             .catch(error => {
-            console.error('Erreur lors de la récupération des standards :', error);
-            standardSelectComponent.options = [{
-                value: '',
-                text: 'Erreur lors du chargement',
-                disabled: true,
-                selected: true
-            }];
+                console.error('Erreur lors de la récupération des standards :', error);
+                standardSelectComponent.options = [{
+                    value: '',
+                    text: 'Erreur lors du chargement',
+                    disabled: true,
+                    selected: true
+                }];
             });
     }
 

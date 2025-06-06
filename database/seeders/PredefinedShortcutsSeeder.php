@@ -63,6 +63,11 @@ class PredefinedShortcutsSeeder extends Seeder
                 'title' => 'Consulter les Commandes',
                 'url' => "cde.index",
                 'icon' => 'cde',
+            ],
+            [
+                'title' => 'Consulter les Données de référence',
+                'url' => "reference-data.index",
+                'icon' => 'database',
             ]
 
         ];

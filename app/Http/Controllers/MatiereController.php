@@ -18,6 +18,7 @@ use App\Models\Unite;
 use App\Services\StockService;
 use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Log;
 
@@ -339,343 +340,61 @@ class MatiereController extends Controller
         // Convert to collections for the view
         $stockHistory = collect($stockHistory);
         $mouvements = $matiere->mouvementStocks->sortByDesc('created_at');
-
+        $societes = Societe::fournisseurs()->get();
         return view('matieres.show', [
             'matiere' => $matiere,
             'fournisseurs' => $fournisseurs,
             'dates' => $dates,
             'mouvements' => $mouvements,
             'quantites' => $quantites,
-        ]);
-    }
-    public function showPrix($matiere_id, $societe_id): View
-    {
-        $fournisseur = Societe::whereIn('societe_type_id', ['3', '2'])->findOrFail($societe_id);
-        $matiere = Matiere::with(['sousFamille', 'societe', 'standardVersion'])->findOrFail($matiere_id);
-        $fournisseurs_prix = $matiere->prixPourSociete($societe_id)
-            ->orderBy('date', 'desc')
-            ->get();
-        $dates = $fournisseurs_prix->pluck('date');
-        $prix = $fournisseurs_prix->pluck('prix_unitaire');
-        return view('matieres.show_prix', [
-            'matiere' => $matiere,
-            'fournisseur' => $fournisseur,
-            'fournisseurs_prix' => $fournisseurs_prix,
-            'dates' => $dates,
-            'prix' => $prix,
-        ]);
-    }
-
-    public function retirerMatiere($matiere_id, Request $request)
-    {
-        // Validate the request
-        $request->validate([
-            'quantite' => 'required|numeric|min:0.01',
-            'valeur_unitaire' => 'nullable|numeric|min:0',
-            'motif' => 'required|string|max:50',
-        ]);
-
-        try {
-            // Get the matiere
-            $matiere = Matiere::findOrFail($matiere_id);
-
-            // Initialize StockService
-            $stockService = new StockService();
-
-            // Process stock exit
-            $result = $stockService->stock(
-                $matiere_id,
-                'sortie',
-                $request->quantite,
-                $request->valeur_unitaire,
-                $request->motif,
-                null
-            );
-
-            // Check if the result is an error response
-            if (is_a($result, \Illuminate\Http\JsonResponse::class)) {
-                return redirect()
-                    ->back()
-                    ->withInput()  // Ajout de cette ligne pour préserver les données du formulaire
-                    ->with('error', $result->getData()->error);
-            }
-
-            // Success
-            return redirect()
-                ->route('matieres.show', $matiere_id)
-                ->with('success', 'Matière retirée avec succès');
-        } catch (\Exception $e) {
-            Log::error('Erreur lors du retrait de matière', [
-                'matiere_id' => $matiere_id,
-                'quantite' => $request->quantite,
-                'exception' => $e->getMessage()
-            ]);
-
-            return redirect()
-                ->back()
-                ->withInput()  // Ajout de cette ligne pour préserver les données du formulaire
-                ->with('error', 'Une erreur est survenue lors du retrait.');
-        }
-    }
-    public function ajouterMatiere($matiere_id, Request $request)
-    {
-        // Validate the request
-        $request->validate([
-            'quantite' => 'required|numeric|min:0.01',
-            'valeur_unitaire' => 'nullable|numeric|min:0',
-            'motif' => 'required|string|max:50',
-        ]);
-
-        try {
-            // Get the matiere
-            $matiere = Matiere::findOrFail($matiere_id);
-
-            // Initialize StockService
-            $stockService = new StockService();
-
-            // Process stock entry
-            $result = $stockService->stock(
-                $matiere_id,
-                'entree',
-                $request->quantite,
-                $request->valeur_unitaire,
-                $request->motif,
-                null
-            );
-
-            // Check if the result is an error response
-            if (is_a($result, \Illuminate\Http\JsonResponse::class)) {
-                return redirect()
-                    ->back()
-                    ->withInput()
-                    ->with('error', $result->getData()->error);
-            }
-
-            // Success
-            return redirect()
-                ->route('matieres.show', $matiere_id)
-                ->with('success', 'Matière ajoutée avec succès');
-        } catch (\Exception $e) {
-            Log::error('Erreur lors de l\'ajout de matière', [
-                'matiere_id' => $matiere_id,
-                'quantite' => $request->quantite,
-                'exception' => $e->getMessage()
-            ]);
-
-            return redirect()
-                ->back()
-                ->withInput()
-                ->with('error', 'Une erreur est survenue lors de l\'ajout.');
-        }
-    }
-
-    /**
-     * Ajuster la valeur unitaire d'une portion de stock existante
-     */
-    public function ajusterMatiere($matiere_id, Request $request)
-    {
-        // Validate the request
-        $request->validate([
-            'stock_id' => 'required|exists:stocks,id',
-            'quantite_ajuster' => 'required|numeric|min:0.01',
-            'nouvelle_valeur' => 'required|numeric|min:0',
-            'motif' => 'required|string|max:50',
-        ]);
-
-        try {
-            // Get the matiere and verify ownership
-            $matiere = Matiere::findOrFail($matiere_id);
-            $stock = Stock::findOrFail($request->stock_id);
-
-            // Make sure the stock belongs to this matiere
-            if ($stock->matiere_id != $matiere_id) {
-                return redirect()
-                    ->back()
-                    ->withInput()
-                    ->with('error', 'Cette entrée de stock n\'appartient pas à cette matière.');
-            }
-
-            // Verify the quantity to adjust
-            if ($request->quantite_ajuster > $stock->quantite) {
-                return redirect()
-                    ->back()
-                    ->withInput()
-                    ->with('error', 'La quantité à ajuster ne peut pas dépasser la quantité disponible.');
-            }
-
-            // Initialize StockService
-            $stockService = new StockService();
-
-            // Process stock adjustment
-            $result = $stockService->ajusterStock(
-                $request->stock_id,
-                $request->quantite_ajuster,
-                $request->nouvelle_valeur,
-                $request->motif
-            );
-
-            // Check if the result is an error response
-            if (is_a($result, \Illuminate\Http\JsonResponse::class)) {
-                return redirect()
-                    ->back()
-                    ->withInput()
-                    ->with('error', $result->getData()->error);
-            }
-
-            // Success
-            return redirect()
-                ->route('matieres.show', $matiere_id)
-                ->with('success', 'Valeur unitaire ajustée avec succès pour ' . $request->quantite_ajuster . ' unités');
-        } catch (\Exception $e) {
-            Log::error('Erreur lors de l\'ajustement de la valeur unitaire', [
-                'matiere_id' => $matiere_id,
-                'stock_id' => $request->stock_id,
-                'quantite_ajuster' => $request->quantite_ajuster,
-                'nouvelle_valeur' => $request->nouvelle_valeur,
-                'exception' => $e->getMessage()
-            ]);
-
-            return redirect()
-                ->back()
-                ->withInput()
-                ->with('error', 'Une erreur est survenue lors de l\'ajustement.');
-        }
-    }
-
-    public function quickCreate($modal_id): View
-    {
-        $familles = Famille::all();
-        $dossier_standards = DossierStandard::all();
-        $unites = Unite::all();
-        $last_ref = Matiere::max('id') + 1;
-        $last_ref = 'AA-' . str_pad($last_ref, 5, '0', STR_PAD_LEFT);
-        $societes = Societe::fournisseurs()->get();
-        return view('matieres.quick_create', [
-            'familles' => $familles,
-            'unites' => $unites,
-            'modal_id' => $modal_id,
-            'dossier_standards' => $dossier_standards,
-            'last_ref' => $last_ref,
             'societes' => $societes,
         ]);
     }
-    public function quickStore(Request $request)
+
+    /**
+     * Méthode privée pour construire la requête de prix pour une société donnée
+     */
+    private function buildPrixQuery(Request $request, $matiere_id, $societe_id)
     {
-        Log::info('QuickStore request data:', $request->all());
-        $request->validate([
-            'standard_id' => 'nullable|exists:standards,nom',
-            'standard_version_id' => 'nullable|exists:standard_versions,version',
-            'ref_interne' => 'required|string|unique:matieres,ref_interne',
-            'designation' => 'required|string|max:255',
-            'unite_id' => 'required|exists:unites,id',
-            'sous_famille_id' => 'required|exists:sous_familles,id',
-            'dn' => 'nullable|string|max:50',
-            'epaisseur' => 'nullable|string|max:50',
-            'quantite' => 'required|integer',
-            'stock_min' => 'required|integer',
-            'ref_valeur_unitaire' => 'nullable',
-            'societe_id' => 'nullable|exists:societes,id',
-            'ref_externe' => 'nullable|string|max:255',
-        ]);
-        $lastref = Matiere::max('id') + 1;
-        $dn = $request->input('dn') ?: null;
-        $epaisseur = $request->input('epaisseur') ?: null;
-        if ($request->input('standard_version_id')) {
-            if ($request->input('standard_version_id') === '' || $request->input('standard_id') === '') {
-                $standard_version_id = null;
-            } else {
-                $standard_id = Standard::where('nom', 'ILIKE', $request->input('standard_id'))->first()->id;
-                if ($standard_id === null) {
-                    return response()->json(['error' => 'Le standard n\'existe pas'], 422);
-                }
-                $standard_version_id = StandardVersion::where('version', 'ILIKE', $request->input('standard_version_id'))
-                    ->where('standard_id', $standard_id)
-                    ->first()->id;
-                if ($standard_version_id === null) {
-                    return response()->json(['error' => 'La version du standard n\'existe pas'], 422);
-                }
-            }
-        } else {
-            $standard_version_id = null;
+        $query = \App\Models\SocieteMatierePrix::with(['societeMatiere', 'societeMatiere.matiere'])
+            ->whereHas('societeMatiere', function ($q) use ($matiere_id, $societe_id) {
+                $q->where('matiere_id', $matiere_id)
+                    ->where('societe_id', $societe_id);
+            });
+
+        // Filtre par date
+        if ($request->filled('date_debut')) {
+            $query->where('date', '>=', $request->input('date_debut'));
+        }
+        if ($request->filled('date_fin')) {
+            $query->where('date', '<=', $request->input('date_fin'));
         }
 
-        if ($request->input('ref_valeur_unitaire') === '' || $request->input('ref_valeur_unitaire') === 'non') {
-            $ref_valeur_unitaire = null;
-        } else {
-            $ref_valeur_unitaire = $request->input('ref_valeur_unitaire');
-        }
+        return $query;
+    }
 
-        $matiere = Matiere::create(
-            [
-                'ref_interne' => $request->input('ref_interne') ?: 'AA-' . str_pad($lastref, 5, '0', STR_PAD_LEFT),
-                'designation' => $request->input('designation'),
-                'unite_id' => $request->input('unite_id'),
-                'sous_famille_id' => $request->input('sous_famille_id'),
-                'standard_version_id' => $standard_version_id,
-                'dn' => $dn,
-                'epaisseur' => $epaisseur,
-                'prix_moyen' => null,
-                'date_dernier_achat' => null,
-                'quantite' => $request->input('quantite'),
-                'stock_min' => $request->input('stock_min'),
-                'ref_valeur_unitaire' => $ref_valeur_unitaire,
-            ]
-        );
-        if ($request->input('societe_id') === '' || $request->input('societe_id') === null) {
-            $societe_id = null;
-        } else {
-            $societe_id = $request->input('societe_id');
-        }
-        if ($request->input('ref_externe') === '' || $request->input('ref_externe') === null) {
-            $ref_externe = null;
-        } else {
-            $ref_externe = $request->input('ref_externe');
-        }
-        if ($societe_id && $ref_externe !== null) {
-            $societe = Societe::findOrFail($societe_id);
-            SocieteMatiere::updateOrCreate(
-                [
-                    'societe_id' => $societe->id,
-                    'matiere_id' => $matiere->id,
-                ],
-                [
-                    'ref_externe' => $ref_externe ?? null,
-                ]
-            );
-        }
-        return response()->json([
-            'success' => true,
+    /**
+     * Affiche l'historique des prix pour une matière et un fournisseur
+     */
+    public function historiquePrix($matiere_id, $societe_id, Request $request): View
+    {
+        $matiere = Matiere::findOrFail($matiere_id);
+        $societe = Societe::whereIn('societe_type_id', ['2', '3'])->findOrFail($societe_id);
+
+        // Construction de la requête avec les filtres
+        $query = $this->buildPrixQuery($request, $matiere_id, $societe_id);
+
+        // Récupérer les prix avec pagination
+        $prixList = $query->orderBy('date', 'desc')->paginate(20);
+
+        // Conserver les paramètres de filtrage dans la pagination
+        $prixList->appends($request->query());
+
+        return view('matieres.historique_prix', [
             'matiere' => $matiere,
-        ], 201);
-    }
-    public function storeFamille(Request $request)
-    {
-        $request->validate([
-            'nom' => 'required|string|max:255|unique:familles,nom',
+            'societe' => $societe,
+            'prixList' => $prixList,
         ]);
-
-        $famille = Famille::create($request->only('nom'));
-
-        return response()->json([
-            'success' => true,
-            'famille' => $famille,
-            'message' => 'Famille créée avec succès',
-        ], 201);
-    }
-
-    public function storeSousFamille(Request $request)
-    {
-        $request->validate([
-            'nom' => 'required|string|max:255|unique:sous_familles,nom',
-            'famille_id' => 'required|exists:familles,id',
-        ]);
-
-        $sousFamille = SousFamille::create($request->all());
-
-        return response()->json([
-            'success' => true,
-            'sousFamille' => $sousFamille,
-        ], 201);
     }
 
     /**
@@ -854,4 +573,56 @@ class MatiereController extends Controller
 
         return view('matieres.mouvements', compact('matiere', 'mouvements', 'utilisateurs'));
     }
+
+    public function storeFournisseur(Request $request, $matiere_id)
+    {
+        // Validation des données
+        $request->validate([
+            'societe_id' => 'required|exists:societes,id',
+            'ref_externe' => 'nullable|string|max:255',
+        ]);
+
+        try {
+            // Vérifier que la matière existe
+            $matiere = Matiere::findOrFail($matiere_id);
+
+            // Vérifier que la société est bien un fournisseur
+            $societe = Societe::whereIn('societe_type_id', ['2', '3'])->findOrFail($request->societe_id);
+
+            // Vérifier si la relation n'existe pas déjà
+            $existingRelation = SocieteMatiere::where('societe_id', $request->societe_id)
+                ->where('matiere_id', $matiere_id)
+                ->first();
+
+            if ($existingRelation) {
+                return redirect()
+                    ->back()
+                    ->with('error', 'Ce fournisseur est déjà associé à cette matière.');
+            }
+
+            // Créer la relation société-matière
+            SocieteMatiere::create([
+                'societe_id' => $request->societe_id,
+                'matiere_id' => $matiere_id,
+                'ref_externe' => $request->ref_externe,
+            ]);
+
+            return redirect()
+                ->route('matieres.show', $matiere_id)
+                ->with('success', 'Fournisseur ajouté avec succès à la matière.');
+
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de l\'ajout du fournisseur', [
+                'matiere_id' => $matiere_id,
+                'societe_id' => $request->societe_id,
+                'exception' => $e->getMessage()
+            ]);
+
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Une erreur est survenue lors de l\'ajout du fournisseur.');
+        }
+    }
+
 }

@@ -8,6 +8,7 @@ use App\Http\Controllers\EtablissementController;
 use App\Http\Controllers\MailtemplateController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\MatiereController;
+use App\Http\Controllers\MatierePrixController;
 use App\Http\Controllers\ModelChangeController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PermissionController;
@@ -186,13 +187,22 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::get('/matieres/{matiere}/fournisseurs/json', [MatiereController::class, 'fournisseursJson'])->name('matieres.fournisseurs.json');
         Route::get('/matieres/standards', [StandardController::class, 'index'])->name('standards.index');
         Route::get('/matieres/{matiere}', [MatiereController::class, 'show'])->name('matieres.show');
-        Route::get('/matieres/{matiere}/prix/{fournisseur}', [MatiereController::class, 'showPrix'])->name('matieres.show_prix');
+
+        // Routes pour la gestion des prix (utilise le nouveau contrôleur)
+        Route::get('/matieres/{matiere}/prix/{fournisseur}', [MatierePrixController::class, 'show'])->name('matieres.show_prix');
+        Route::post('/matieres/{matiere}/prix/{fournisseur}/store', [MatierePrixController::class, 'store'])->name('matieres.show_prix.store');
+        Route::put('/matieres/{matiere}/prix/{fournisseur}/{prix}', [MatierePrixController::class, 'update'])
+            ->name('matieres.show_prix.update');
+        Route::delete('/matieres/{matiere}/prix/{fournisseur}/{prix}', [MatierePrixController::class, 'delete'])
+            ->name('matieres.show_prix.delete');
+
         Route::post('/matieres/{matiere}/retirer', [MatiereController::class, 'retirerMatiere'])->name('matieres.retirer');
         Route::post('/matieres/{matiere}/ajouter', [MatiereController::class, 'ajouterMatiere'])->name('matieres.ajouter');
         Route::post('/matieres/{matiere}/ajuster', [MatiereController::class, 'ajusterMatiere'])->name('matieres.ajuster');
         Route::get('/matieres/{matiere}/edit', [MatiereController::class, 'edit'])->name('matieres.edit');
         Route::patch('/matieres/{matiere}/update', [MatiereController::class, 'update'])->name('matieres.update');
         Route::get('/matieres/{id}/mouvements', [MatiereController::class, 'mouvements'])->name('matieres.mouvements');
+        Route::post('/matieres/{matiere}/fournisseur/store', [MatiereController::class, 'storeFournisseur'])->name('matieres.fournisseurs.store');
 
         Route::delete('/matieres/standards/delete', [StandardController::class, 'destroy'])->name('standards.destroy');
         Route::delete('/matieres/standards/deleteDossier', [StandardController::class, 'destroyDossier'])->name('standards.destroy_dossier');
