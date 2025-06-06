@@ -130,13 +130,7 @@
                 </div>
                 <div class="w-1/4">
                     <x-input-label for="unite_id">Unité</x-input-label>
-                    <select name="unite_id" id="unite_id" class="mt-1 py-3 select" required>
-                        <option value="" disabled selected>Sélectionner</option>
-                        @foreach ($unites as $unite)
-                            <option value="{{ $unite->id }}" title="{{ $unite->full }}">{{ $unite->short }}
-                            </option>
-                        @endforeach
-                    </select>
+                    <x-unite-select name="unite_id" id="unite_id" class="mt-1 py-3 select" required />
                 </div>
             </div>
             <div class="mb-4">

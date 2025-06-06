@@ -213,16 +213,13 @@
                             </div>
                             <div>
                                 <x-input-label for="unite_id" :value="__('Unité')" class="mb-1" />
-                                <select name="unite_id" id="unite_id" class="select block w-full" required
-                                    {{ $matiere->isLocked() ? 'disabled' : '' }}>
-                                    <option value="" disabled>Sélectionner</option>
-                                    @foreach ($unites as $unite)
-                                        <option value="{{ $unite->id }}" title="{{ $unite->full }}"
-                                            {{ $matiere->unite_id == $unite->id ? 'selected' : '' }}>
-                                            {{ $unite->short }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                <x-unite-select
+                                    name="unite_id"
+                                    id="unite_id"
+                                    class="block w-full"
+                                    required
+                                    :selected="$matiere->unite_id"
+                                    :disabled="$matiere->isLocked()" />
                                 @if ($matiere->isLocked())
                                     <p class="mt-1 text-xs text-yellow-600 dark:text-yellow-400">Ce champ ne peut pas être modifié</p>
                                 @endif
