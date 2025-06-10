@@ -308,4 +308,11 @@ Route::post('/media/upload/{model}/{id}/{token}', [MediaController::class, 'uplo
 
 
 
+// Routes pour les mouvements de stock
+Route::delete('/matieres/{matiere}/mouvements/{mouvement}', [MatiereController::class, 'supprimerMouvement'])
+    ->name('matieres.mouvement.supprimer');
+Route::put('/matieres/{matiere}/mouvements/{mouvement}', [MatiereController::class, 'modifierMouvement'])
+    ->name('matieres.mouvement.modifier');
+
+
 require __DIR__ . '/auth.php';

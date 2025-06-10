@@ -983,4 +983,88 @@ class MatiereController extends Controller
         }
     }
 
+    /**
+     * Supprimer un mouvement de stock
+     */
+    public function supprimerMouvement($matiere_id, $mouvement_id)
+    {
+        try {
+            $matiere = Matiere::findOrFail($matiere_id);
+            $mouvement = MouvementStock::where('matiere_id', $matiere_id)->findOrFail($mouvement_id);
+
+            // Vérifier si le mouvement peut être supprimé (pas lié à une commande)
+            if ($mouvement->cde_ligne_id) {
+                return redirect()
+                    ->back()
+                    ->with('error', 'Impossible de supprimer un mouvement lié à une commande.');
+            }
+
+            $stockService = new StockService();
+            $stockService->deleteStockFromMouvement($mouvement);
+
+            return redirect()
+                ->route('matieres.mouvements', $matiere_id)
+                ->with('success', 'Mouvement de stock supprimé avec succès.');
+
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de la suppression du mouvement', [
+                'matiere_id' => $matiere_id,
+                'mouvement_id' => $mouvement_id,
+                'exception' => $e->getMessage()
+            ]);
+
+            return redirect()
+                ->back()
+                ->with('error', 'Une erreur est survenue lors de la suppression: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Modifier un mouvement de stock
+     */
+    public function modifierMouvement(Request $request, $matiere_id, $mouvement_id)
+    {
+        $request->validate([
+            'quantite' => 'required|numeric|min:0.01',
+            'valeur_unitaire' => 'nullable|numeric|min:0',
+            'raison' => 'required|string|max:255',
+        ]);
+
+        try {
+            $matiere = Matiere::findOrFail($matiere_id);
+            $mouvement = MouvementStock::where('matiere_id', $matiere_id)->findOrFail($mouvement_id);
+
+            // Vérifier si le mouvement peut être modifié (pas lié à une commande)
+            if ($mouvement->cde_ligne_id) {
+                return redirect()
+                    ->back()
+                    ->with('error', 'Impossible de modifier un mouvement lié à une commande.');
+            }
+
+            $stockService = new StockService();
+            $stockService->modifierMouvement(
+                $mouvement,
+                $request->quantite,
+                $request->valeur_unitaire,
+                $request->raison
+            );
+
+            return redirect()
+                ->route('matieres.mouvements', $matiere_id)
+                ->with('success', 'Mouvement de stock modifié avec succès.');
+
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de la modification du mouvement', [
+                'matiere_id' => $matiere_id,
+                'mouvement_id' => $mouvement_id,
+                'exception' => $e->getMessage()
+            ]);
+
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Une erreur est survenue lors de la modification: ' . $e->getMessage());
+        }
+    }
+
 }

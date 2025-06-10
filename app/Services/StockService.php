@@ -275,4 +275,54 @@ class StockService
             'mouvement' => $mouvement
         ];
     }
+
+    /**
+     * Modify an existing stock movement
+     *
+     * @param MouvementStock $mouvement The movement to modify
+     * @param float $newQuantite New quantity
+     * @param float|null $newValeurUnitaire New unit value
+     * @param string|null $newRaison New reason
+     * @return array Success data
+     * @throws RuntimeException
+     */
+    public function modifierMouvement(MouvementStock $mouvement, float $newQuantite, ?float $newValeurUnitaire = null, ?string $newRaison = null): array
+    {
+        $matiere = $mouvement->matiere;
+        $oldQuantite = $mouvement->quantite;
+        $oldValeurUnitaire = $mouvement->valeur_unitaire;
+
+        // First, reverse the original movement
+        $this->deleteStockFromMouvement($mouvement);
+
+        // Then, create the new movement with updated values
+        try {
+            $result = $this->stock(
+                $matiere->id,
+                $mouvement->type, // Keep the same type
+                $newQuantite,
+                $newValeurUnitaire ?? $oldValeurUnitaire,
+                $newRaison ?? $mouvement->raison,
+                $mouvement->cde_ligne_id
+            );
+
+            return [
+                'message' => 'Mouvement de stock modifié avec succès',
+                'mouvement' => $result['mouvement']
+            ];
+
+        } catch (\Exception $e) {
+            // If the new movement fails, restore the original one
+            $this->stock(
+                $matiere->id,
+                $mouvement->type,
+                $oldQuantite,
+                $oldValeurUnitaire,
+                $mouvement->raison,
+                $mouvement->cde_ligne_id
+            );
+
+            throw new RuntimeException('Erreur lors de la modification: ' . $e->getMessage());
+        }
+    }
 }

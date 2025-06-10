@@ -197,6 +197,10 @@
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                     Date & Heure
                                 </th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    Actions
+                                </th>
                             </tr>
                         </thead>
                         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -217,7 +221,7 @@
                                                     </svg>
                                                 </span>
                                                 <span class="text-red-500 dark:text-red-400 font-medium">-
-                                                    {{ $mouvement->valeur_unitaire ? formatNumber($mouvement->quantite * $mouvement->valeur_unitaire) : $mouvement->quantite }}
+                                                    {{ $mouvement->valeur_unitaire ? formatNumber($mouvement->quantite * $mouvement->valeur_unitaire) : formatNumber($mouvement->quantite) }}
                                                     {{ $matiere->unite->short }}</span>
                                                 @if ($mouvement->valeur_unitaire != null)
                                                     <span class="text-gray-500 dark:text-gray-400 ml-1 text-xs">
@@ -238,7 +242,7 @@
                                                     </svg>
                                                 </span>
                                                 <span class="text-green-500 dark:text-green-400 font-medium">+
-                                                    {{ $mouvement->valeur_unitaire ? formatNumber($mouvement->quantite * $mouvement->valeur_unitaire) : $mouvement->quantite }}
+                                                    {{ $mouvement->valeur_unitaire ? formatNumber($mouvement->quantite * $mouvement->valeur_unitaire) : formatNumber($mouvement->quantite) }}
                                                     {{ $matiere->unite->short }}</span>
                                                 @if ($mouvement->valeur_unitaire != null)
                                                     <span class="text-gray-500 dark:text-gray-400 ml-1 text-xs">
@@ -327,6 +331,39 @@
                                             {{ $mouvement->created_at->format('H:i:s') }}
                                         </div>
                                     </td>
+
+                                    <!-- Actions -->
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @if (!$mouvement->cde_ligne_id)
+                                            <div class="flex items-center space-x-2">
+                                                <!-- Bouton modifier -->
+                                                <button x-data x-on:click.prevent="$dispatch('open-modal','edit-mouvement-{{ $mouvement->id }}')"
+                                                    class="inline-flex items-center px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded transition-colors duration-200"
+                                                    title="Modifier le mouvement">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none"
+                                                        viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            d="M11 5H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                    </svg>
+                                                    Modifier
+                                                </button>
+
+                                                <!-- Bouton supprimer -->
+                                                <button x-data x-on:click.prevent="$dispatch('open-modal','delete-mouvement-{{ $mouvement->id }}')"
+                                                    class="inline-flex items-center px-2 py-1 bg-red-600 hover:bg-red-700 text-white text-xs font-medium rounded transition-colors duration-200"
+                                                    title="Supprimer le mouvement">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none"
+                                                        viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                    Supprimer
+                                                </button>
+                                            </div>
+                                        @else
+                                            <span class="text-sm text-gray-500 dark:text-gray-400">Lié à commande</span>
+                                        @endif
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -371,6 +408,128 @@
         </div>
     </div>
 
+    <!-- Modales pour modifier chaque mouvement -->
+    @foreach ($mouvements as $mouvement)
+        @if (!$mouvement->cde_ligne_id)
+            <!-- Modal de modification -->
+            <x-modal name="edit-mouvement-{{ $mouvement->id }}">
+                <div class="p-6 bg-white dark:bg-gray-800">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Modifier le mouvement</h2>
+                        <button x-on:click="$dispatch('close')"
+                            class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <form action="{{ route('matieres.mouvement.modifier', [$matiere->id, $mouvement->id]) }}" method="POST">
+                        @csrf
+                        @method('PUT')
+
+                        <div class="mb-4">
+                            <x-input-label for="edit_quantite_{{ $mouvement->id }}" :value="__('Quantité')" />
+                            <x-text-input type="number" step="0.01" name="quantite" id="edit_quantite_{{ $mouvement->id }}"
+                                class="mt-1 block w-full"
+                                value="{{ $mouvement->quantite }}" required />
+                            <x-input-error :messages="$errors->get('quantite')" class="mt-2" />
+                        </div>
+
+                        @if($matiere->typeAffichageStock() == 2)
+                        <div class="mb-4">
+                            <x-input-label for="edit_valeur_unitaire_{{ $mouvement->id }}" :value="__('Valeur unitaire')" />
+                            <x-text-input type="number" step="0.01" name="valeur_unitaire" id="edit_valeur_unitaire_{{ $mouvement->id }}"
+                                class="mt-1 block w-full"
+                                value="{{ $mouvement->valeur_unitaire }}" />
+                            <x-input-error :messages="$errors->get('valeur_unitaire')" class="mt-2" />
+                        </div>
+                        @endif
+
+                        <div class="mb-4">
+                            <x-input-label for="edit_raison_{{ $mouvement->id }}" :value="__('Motif')" />
+                            <x-text-input type="text" name="raison" id="edit_raison_{{ $mouvement->id }}"
+                                class="mt-1 block w-full"
+                                value="{{ $mouvement->raison }}" required />
+                            <x-input-error :messages="$errors->get('raison')" class="mt-2" />
+                        </div>
+
+                        <div class="flex justify-between gap-4">
+                            <button type="button" x-on:click="$dispatch('close')"
+                                class="btn-secondary">Annuler</button>
+                            <button type="submit" class="btn">Modifier le mouvement</button>
+                        </div>
+                    </form>
+                </div>
+            </x-modal>
+
+            <!-- Modal de confirmation de suppression -->
+            <x-modal name="delete-mouvement-{{ $mouvement->id }}">
+                <div class="p-6 bg-white dark:bg-gray-800">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Confirmer la suppression</h2>
+                        <button x-on:click="$dispatch('close')"
+                            class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="mb-6">
+                        <div class="bg-red-50 dark:bg-red-900/30 p-4 rounded-lg mb-4 flex items-center gap-3 border border-red-100 dark:border-red-800">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.732 15.5c-.77.833.192 2.5 1.732 2.5z" />
+                            </svg>
+                            <div>
+                                <p class="text-red-800 dark:text-red-200 font-semibold">Attention</p>
+                                <p class="text-red-700 dark:text-red-300">Cette action est irréversible et ajustera le stock en conséquence.</p>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <p class="text-gray-600 dark:text-gray-400">
+                                <strong>Type:</strong>
+                                @if($mouvement->type == 'entree')
+                                    <span class="text-green-600 dark:text-green-400">Entrée</span>
+                                @else
+                                    <span class="text-red-600 dark:text-red-400">Sortie</span>
+                                @endif
+                            </p>
+                            <p class="text-gray-600 dark:text-gray-400">
+                                <strong>Quantité:</strong> {{ formatNumber($mouvement->quantite) }} {{ $matiere->unite->short }}
+                            </p>
+                            @if($mouvement->valeur_unitaire)
+                            <p class="text-gray-600 dark:text-gray-400">
+                                <strong>Valeur unitaire:</strong> {{ formatNumber($mouvement->valeur_unitaire) }}
+                            </p>
+                            @endif
+                            <p class="text-gray-600 dark:text-gray-400">
+                                <strong>Motif:</strong> {{ $mouvement->raison ?: 'Aucun motif' }}
+                            </p>
+                            <p class="text-gray-600 dark:text-gray-400">
+                                <strong>Date:</strong> {{ $mouvement->created_at->format('d/m/Y H:i:s') }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between gap-4">
+                        <button type="button" x-on:click="$dispatch('close')"
+                            class="btn-secondary">Annuler</button>
+                        <form action="{{ route('matieres.mouvement.supprimer', [$matiere->id, $mouvement->id]) }}" method="POST" class="inline">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn bg-red-600 hover:bg-red-700 text-white">
+                                Supprimer définitivement
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </x-modal>
+        @endif
+    @endforeach
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('filters-form');
@@ -414,5 +573,13 @@
                 }
             });
         });
+
+        function openEditModal(mouvementId) {
+            document.getElementById('editModal' + mouvementId).classList.remove('hidden');
+        }
+
+        function closeEditModal(mouvementId) {
+            document.getElementById('editModal' + mouvementId).classList.add('hidden');
+        }
     </script>
 </x-app-layout>

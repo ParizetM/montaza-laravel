@@ -39,7 +39,7 @@
                 <div
                     class="bg-gray-100 dark:bg-gray-700 rounded-full px-5 py-2 flex items-center gap-2 shadow-inner text-sm font-medium">
                     <span class="text-gray-500 dark:text-gray-400">Référence:</span>
-                    <span class="font-bold text-gray-900 dark:text-gray-100">{{ $matiere->ref_interne }}</span>
+                    <span class="font-bold text-gray-900 dark:text-gray-100"> <x-copiable_text text="{{ $matiere->ref_interne }}" /></span>
                 </div>
             </div>
 
@@ -285,7 +285,7 @@
                         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                             @if ($matiere->mouvementStocks && $matiere->mouvementStocks->count() > 0)
                                 @foreach ($mouvements->take(5) as $mouvement)
-                                    <tr class="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 cursor-pointer"
+                                    <tr class="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 @if ($mouvement->cde_ligne_id != null) cursor-pointer @endif"
                                         @if ($mouvement->cde_ligne_id != null) onclick="window.open('{{ route('cde.show', $mouvement->cdeLigne->cde->id) }}', '_blank');"
                                             title="Voir la commande {{ $mouvement->cdeLigne->cde->code }}" @endif>
                                         <td class="px-4 py-3 whitespace-nowrap">
@@ -360,7 +360,6 @@
                         </tbody>
                     </table>
                 </div>
-                @if ($matiere->mouvementStocks && $matiere->mouvementStocks->count() >= 5)
                     <div class="mt-4 text-center">
                         <a href="{{ route('matieres.mouvements', $matiere->id) }}"
                             class="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-700 dark:hover:bg-emerald-600 text-white rounded-md transition-colors duration-200 gap-2">
@@ -372,7 +371,6 @@
                             Voir tous les mouvements
                         </a>
                     </div>
-                @endif
             </div>
 
             {{--
