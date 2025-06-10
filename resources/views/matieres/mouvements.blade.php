@@ -274,10 +274,10 @@
                                                 @if ($mouvement->raison && $mouvement->raison !== 'Livraison')
                                                     <!-- Motif supplémentaire sous la commande -->
                                                     <div class="max-w-xs">
-                                                        @if (strlen($mouvement->raison) > 30)
+                                                        @if (strlen($mouvement->raison) > 70)
                                                             <x-tooltip>
                                                                 <x-slot name="slot_item">
-                                                                    {{ Str::limit($mouvement->raison, 30) }}
+                                                                    {{ Str::limit($mouvement->raison, 70) }}
                                                                 </x-slot>
                                                                 <x-slot name="slot_tooltip">
                                                                     {{ $mouvement->raison }}
@@ -292,12 +292,12 @@
                                         @else
                                             <!-- Motif simple -->
                                             <div class="max-w-xs">
-                                                @if (strlen($mouvement->raison) > 30)
+                                                @if (strlen($mouvement->raison) > 70)
                                                     <x-tooltip>
                                                         <x-slot name="slot_item">
                                                             <span
                                                                 class="text-sm text-gray-900 dark:text-gray-100 truncate block">
-                                                                {{ Str::limit($mouvement->raison, 30) }}
+                                                                {{ Str::limit($mouvement->raison, 70) }}
                                                             </span>
                                                         </x-slot>
                                                         <x-slot name="slot_tooltip">

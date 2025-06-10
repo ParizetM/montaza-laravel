@@ -103,11 +103,20 @@ window.tooltip = function(forcedPosition = 'auto') {
             }
 
             const tooltipRect = this.$refs.tooltip.getBoundingClientRect();
+
+            // IMPORTANT: Recalculer la position de l'élément cible maintenant, pas avant
+            this.targetRect = this.$el.getBoundingClientRect();
             const targetRect = this.targetRect;
 
             // Double vérification des dimensions
             if (tooltipRect.width === 0 || tooltipRect.height === 0) {
                 setTimeout(() => this.updatePosition(), 5);
+                return;
+            }
+
+            // Vérifier que l'élément cible est toujours visible
+            if (targetRect.width === 0 || targetRect.height === 0) {
+                this.hide();
                 return;
             }
 
@@ -134,6 +143,9 @@ window.tooltip = function(forcedPosition = 'auto') {
                 finalPosition = this.getBestMobilePosition(targetRect, tooltipRect, viewport, bounds, margin);
             } else if (this.position === 'auto') {
                 finalPosition = this.getBestDesktopPosition(targetRect, tooltipRect, viewport, bounds);
+            } else {
+                // Position forcée, vérifier qu'elle est possible
+                finalPosition = this.position;
             }
 
             const coords = this.calculateCoordinates(finalPosition, targetRect, tooltipRect);
@@ -141,7 +153,7 @@ window.tooltip = function(forcedPosition = 'auto') {
 
             this.tooltipClass = `tooltip-${finalPosition}`;
 
-            // Style final sans limitation max-width
+            // Style final avec position absolue par rapport au viewport
             this.style = `position: fixed; top: ${adjustedCoords.top}px; left: ${adjustedCoords.left}px; z-index: 9999; opacity: 1;`;
         },
 
@@ -168,16 +180,22 @@ window.tooltip = function(forcedPosition = 'auto') {
                 right: viewport.width - targetRect.right - tooltipRect.width - this.offset
             };
 
-            // Trouver la position avec le plus d'espace disponible
-            let bestPosition = 'bottom';
-            let bestSpace = spaces.bottom;
+            // Trouver la position avec le plus d'espace disponible et assez de place
+            let bestPosition = 'top';
+            let bestSpace = -Infinity;
 
             Object.entries(spaces).forEach(([pos, space]) => {
-                if (space > bestSpace) {
+                if (space >= 0 && space > bestSpace) {
                     bestSpace = space;
                     bestPosition = pos;
                 }
             });
+
+            // Si aucune position n'a assez de place, prendre celle avec le plus d'espace même si négatif
+            if (bestSpace < 0) {
+                bestSpace = Math.max(...Object.values(spaces));
+                bestPosition = Object.keys(spaces).find(key => spaces[key] === bestSpace);
+            }
 
             return bestPosition;
         },
@@ -187,20 +205,20 @@ window.tooltip = function(forcedPosition = 'auto') {
 
             switch (position) {
                 case 'top':
-                    coords.top = targetRect.top - tooltipRect.height - this.offset + window.scrollY;
-                    coords.left = targetRect.left + (targetRect.width - tooltipRect.width) / 2 + window.scrollX;
+                    coords.top = targetRect.top - tooltipRect.height - this.offset;
+                    coords.left = targetRect.left + (targetRect.width - tooltipRect.width) / 2;
                     break;
                 case 'bottom':
-                    coords.top = targetRect.bottom + this.offset + window.scrollY;
-                    coords.left = targetRect.left + (targetRect.width - tooltipRect.width) / 2 + window.scrollX;
+                    coords.top = targetRect.bottom + this.offset;
+                    coords.left = targetRect.left + (targetRect.width - tooltipRect.width) / 2;
                     break;
                 case 'left':
-                    coords.top = targetRect.top + (targetRect.height - tooltipRect.height) / 2 + window.scrollY;
-                    coords.left = targetRect.left - tooltipRect.width - this.offset + window.scrollX;
+                    coords.top = targetRect.top + (targetRect.height - tooltipRect.height) / 2;
+                    coords.left = targetRect.left - tooltipRect.width - this.offset;
                     break;
                 case 'right':
-                    coords.top = targetRect.top + (targetRect.height - tooltipRect.height) / 2 + window.scrollY;
-                    coords.left = targetRect.right + this.offset + window.scrollX;
+                    coords.top = targetRect.top + (targetRect.height - tooltipRect.height) / 2;
+                    coords.left = targetRect.right + this.offset;
                     break;
             }
 

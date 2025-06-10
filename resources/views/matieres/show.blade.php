@@ -39,7 +39,8 @@
                 <div
                     class="bg-gray-100 dark:bg-gray-700 rounded-full px-5 py-2 flex items-center gap-2 shadow-inner text-sm font-medium">
                     <span class="text-gray-500 dark:text-gray-400">Référence:</span>
-                    <span class="font-bold text-gray-900 dark:text-gray-100"> <x-copiable_text text="{{ $matiere->ref_interne }}" /></span>
+                    <span class="font-bold text-gray-900 dark:text-gray-100"> <x-copiable_text
+                            text="{{ $matiere->ref_interne }}" /></span>
                 </div>
             </div>
 
@@ -148,10 +149,12 @@
                                         <div class="flex w-full">
                                             <select name="societe_id" id="societe_id"
                                                 class="mt-1 py-3 select-left rounded-r-none w-fit">
-                                                <option value="" disabled selected>Sélectionner un fournisseur &nbsp;
+                                                <option value="" disabled selected>Sélectionner un fournisseur
+                                                    &nbsp;
                                                 </option>
                                                 @foreach ($societes as $societe)
-                                                    <option value="{{ $societe->id }}">{{ $societe->raison_sociale }}
+                                                    <option value="{{ $societe->id }}">
+                                                        {{ $societe->raison_sociale }}
                                                     </option>
                                                 @endforeach
                                             </select>
@@ -190,10 +193,8 @@
                         </thead>
                         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                             @foreach ($fournisseurs as $fournisseur)
-                                <tr
-                                    onclick="window.location.href = '{{ route('matieres.show_prix', ['matiere' => $matiere->id, 'fournisseur' => $fournisseur->id]) }}';"
-                                    class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-200"
->
+                                <tr onclick="window.location.href = '{{ route('matieres.show_prix', ['matiere' => $matiere->id, 'fournisseur' => $fournisseur->id]) }}';"
+                                    class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-200">
                                     <td class="px-4 py-3 whitespace-nowrap">
                                         {{ $fournisseur->ref_externe ?? 'Aucune référence' }}
                                     </td>
@@ -335,16 +336,43 @@
                                             {{ $mouvement->user->first_name . ' ' . $mouvement->user->last_name }}
                                         </td>
                                         <td>
-                                            <x-tooltip>
-                                                <x-slot name="slot_item">
-                                                    <span class="truncate inline-block">
-                                                        {{ Str::limit($mouvement->raison, 25, '...') }}
-                                                    </span>
-                                                </x-slot>
-                                                <x-slot name="slot_tooltip">
-                                                    {{ $mouvement->raison }}
-                                                </x-slot>
-                                            </x-tooltip>
+                                            <div class="relative">
+                                                <x-tooltip position="right" class="">
+                                                    <x-slot name="slot_item">
+                                                        @if ($mouvement->cde_ligne_id != null)
+                                                            <button
+                                                                onclick="event.stopPropagation(); window.open('{{ route('cde.show', $mouvement->cdeLigne->cde->id) }}', '_blank');"
+                                                                class="inline-flex items-center px-3 py-2 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors duration-200 cursor-pointer border border-blue-200 dark:border-blue-700 max-w-full"
+                                                                title="Voir la commande liée"
+                                                                style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
+                                                            >
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                    class="h-4 w-4 mr-1" fill="none"
+                                                                    viewBox="0 0 24 24" stroke="currentColor">
+                                                                    <path stroke-linecap="round"
+                                                                        stroke-linejoin="round" stroke-width="2"
+                                                                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2" />
+                                                                    <path stroke-linecap="round"
+                                                                        stroke-linejoin="round" stroke-width="2"
+                                                                        d="M14 4h6m0 0v6m0-6L10 14" />
+                                                                </svg>
+                                                                <span class="block truncate sm:truncate">
+                                                                    {{ Str::limit($mouvement->raison, 20, '...') }}
+                                                                </span>
+                                                            </button>
+                                                        @else
+                                                            <span class="inline-block px-2 py-1 rounded text-sm max-w-full truncate">
+                                                                {{ Str::limit($mouvement->raison, 15, '...') }}
+                                                            </span>
+                                                        @endif
+                                                    </x-slot>
+                                                    <x-slot name="slot_tooltip">
+                                                        <div class="max-w-xs break-words">
+                                                            {{ $mouvement->raison }}
+                                                        </div>
+                                                    </x-slot>
+                                                </x-tooltip>
+                                            </div>
                                         </td>
                                         <td class="px-4 py-3 whitespace-nowrap text-gray-500 dark:text-gray-400">
                                             {{ $mouvement->created_at->format('d/m/Y H:i') }}
@@ -360,17 +388,16 @@
                         </tbody>
                     </table>
                 </div>
-                    <div class="mt-4 text-center">
-                        <a href="{{ route('matieres.mouvements', $matiere->id) }}"
-                            class="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-700 dark:hover:bg-emerald-600 text-white rounded-md transition-colors duration-200 gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 5l7 7-7 7" />
-                            </svg>
-                            Voir tous les mouvements
-                        </a>
-                    </div>
+                <div class="mt-4 text-center">
+                    <a href="{{ route('matieres.mouvements', $matiere->id) }}"
+                        class="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-700 dark:hover:bg-emerald-600 text-white rounded-md transition-colors duration-200 gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                        Voir tous les mouvements
+                    </a>
+                </div>
             </div>
 
             {{--

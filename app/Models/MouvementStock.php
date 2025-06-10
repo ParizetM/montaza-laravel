@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Auth;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 class MouvementStock extends Model
 {
@@ -62,5 +63,15 @@ class MouvementStock extends Model
     {
         return $this->belongsTo(CdeLigne::class, 'cde_ligne_id');
     }
+    public function cde(): HasOneThrough
+    {
+        return $this->hasOneThrough(
+            Cde::class,
+            CdeLigne::class,
+            'id', // Foreign key on CdeLigne table
+            'id', // Foreign key on Cde table
+            'cde_ligne_id', // Local key on MouvementStock table
+            'cde_id' // Local key on CdeLigne table
+        );
+    }
 }
-
