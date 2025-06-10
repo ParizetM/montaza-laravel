@@ -58,7 +58,7 @@ class DdpController extends Controller
         // Lecture des entrées avec des valeurs par défaut
         $search = $request->input('search');
         $statut = $request->input('statut');
-        $quantite = $request->input('nombre', 20);
+        $quantite = $request->input('nombre', 100);
 
         // Construire la requête de base
         $query = Ddp::query()
@@ -97,7 +97,7 @@ class DdpController extends Controller
     {
         $ddps = Ddp::whereIn('ddp_cde_statut_id', [1, 2])->orderBy('ddp_cde_statut_id', 'asc')
             ->where('nom', '!=', 'undefined')
-            ->take(7)->get();
+            ->take($isSmall ? 7 : 30)->get();
         $ddps->load('user');
         $ddps->load('ddpCdeStatut');
 

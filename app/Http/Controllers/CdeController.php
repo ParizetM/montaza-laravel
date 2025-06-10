@@ -45,17 +45,19 @@ class CdeController extends Controller
     }
     public function indexColCde($isSmall = false)
     {
-        $cdes = Cde::where('nom', '!=', 'undefined')
+        $limit = $isSmall ? 5 : 30;
+
+        $cdes = Cde::where('cdes.nom', '!=', 'undefined') // Préfixer avec le nom de la table
             ->orderBy('ddp_cde_statut_id', 'asc')
             ->orderBy('created_at', 'desc')
-            ->take(7)->get();
+            ->take($limit)->get();
 
-        if ($cdes->count() < 5) {
+        if ($cdes->count() < ($isSmall ? 5 : 30)) {
             $existingIds = $cdes->pluck('id')->toArray();
-            $additionalCdes = Cde::where('nom', '!=', 'undefined')
+            $additionalCdes = Cde::where('cdes.nom', '!=', 'undefined') // Préfixer avec le nom de la table
                 ->whereNotIn('id', $existingIds)
                 ->orderBy('created_at', 'desc')
-                ->take(5 - $cdes->count())
+                ->take(($isSmall ? 5 : 30) - $cdes->count())
                 ->get();
 
             $cdes = $cdes->concat($additionalCdes);
@@ -78,14 +80,15 @@ class CdeController extends Controller
         // Lecture des entrées avec des valeurs par défaut
         $search = $request->input('search');
         $statut = $request->input('statut');
-        $quantite = $request->input('nombre', 20);
+        $quantite = $request->input('nombre', 100);
         $societe = $request->input('societe');
-        $sort = $request->input('sort', 'created_at');
+        $sort = $request->input('sort', 'code'); // Changé de 'created_at' à 'code'
         $direction = $request->input('direction', 'desc');
 
         // Construire la requête de base
         $query = Cde::query()
-            ->where('nom', '!=', 'undefined')
+            ->where('cdes.nom', '!=', 'undefined') // Préfixer avec le nom de la table
+            ->with(['entite', 'user', 'ddpCdeStatut']) // Charger les relations nécessaires
             ->when($search, function ($query, $search) {
                 // Diviser la recherche en termes individuels
                 $terms = explode(' ', $search);
@@ -93,8 +96,8 @@ class CdeController extends Controller
                 if (count($terms) == 1) {
                     // Recherche simple avec un seul terme
                     $query->where(function ($subQuery) use ($search) {
-                        $subQuery->where('nom', 'ILIKE', "%{$search}%")
-                            ->orWhere('code', 'ILIKE', "%{$search}%")
+                        $subQuery->where('cdes.nom', 'ILIKE', "%{$search}%")
+                            ->orWhere('cdes.code', 'ILIKE', "%{$search}%")
                             ->orWhereHas('user', function ($subQuery) use ($search) {
                                 $subQuery->where('first_name', 'ILIKE', "%{$search}%")
                                     ->orWhere('last_name', 'ILIKE', "%{$search}%");
@@ -110,8 +113,8 @@ class CdeController extends Controller
                     $query->where(function ($mainQuery) use ($terms) {
                         foreach ($terms as $term) {
                             $mainQuery->where(function ($subQuery) use ($term) {
-                                $subQuery->where('nom', 'ILIKE', "%{$term}%")
-                                    ->orWhere('code', 'ILIKE', "%{$term}%")
+                                $subQuery->where('cdes.nom', 'ILIKE', "%{$term}%")
+                                    ->orWhere('cdes.code', 'ILIKE', "%{$term}%")
                                     ->orWhereHas('user', function ($subQuery) use ($term) {
                                         $subQuery->where('first_name', 'ILIKE', "%{$term}%")
                                             ->orWhere('last_name', 'ILIKE', "%{$term}%");
@@ -136,36 +139,46 @@ class CdeController extends Controller
             });
         }
 
-        // Appliquer le tri
+        // Appliquer le tri avec groupement par entité
         switch ($sort) {
             case 'code':
-                $query->orderBy('code', $direction);
+                $query->orderBy('cdes.entite_id', 'asc')
+                      ->orderBy('cdes.code', $direction);
                 break;
             case 'nom':
-                $query->orderBy('nom', $direction);
+                $query->orderBy('cdes.entite_id', 'asc')
+                      ->orderBy('cdes.nom', $direction);
                 break;
             case 'user':
                 $query->join('users', 'cdes.user_id', '=', 'users.id')
+                    ->orderBy('cdes.entite_id', 'asc')
                     ->orderBy('users.first_name', $direction)
                     ->orderBy('users.last_name', $direction)
                     ->select('cdes.*');
                 break;
             case 'statut':
                 $query->join('ddp_cde_statuts', 'cdes.ddp_cde_statut_id', '=', 'ddp_cde_statuts.id')
+                    ->orderBy('cdes.entite_id', 'asc')
                     ->orderBy('ddp_cde_statuts.nom', $direction)
                     ->select('cdes.*');
                 break;
             case 'created_at':
-                $query->orderBy('created_at', $direction);
+                $query->orderBy('cdes.entite_id', 'asc')
+                      ->orderBy('cdes.created_at', $direction);
                 break;
             default:
-                $query->orderBy('ddp_cde_statut_id', 'asc')
-                    ->orderBy('created_at', $direction);
+                // Tri par défaut : entité puis code de commande
+                $query->orderBy('cdes.entite_id', 'asc')
+                        ->orderBy('cdes.ddp_cde_statut_id', 'asc')
+                      ->orderBy('cdes.code', 'asc');
                 break;
         }
 
         // Récupérer les résultats paginés
         $cdes = $query->paginate($quantite);
+
+        // Grouper par entité pour la vue - convertir d'abord en collection puis grouper
+        $cdesGrouped = $cdes->getCollection()->groupBy('entite.name');
 
         // Récupérer les statuts pour le filtre
         $cde_statuts = DdpCdeStatut::all();
@@ -178,7 +191,7 @@ class CdeController extends Controller
         }
         $societes = $societes->unique('id')->values();
         // Retourner la vue avec les données
-        return view('ddp_cde.cde.index', compact('cdes', ['cde_statuts', 'societes', 'sort', 'direction']));
+        return view('ddp_cde.cde.index', compact('cdes',  ['cde_statuts','cdesGrouped', 'societes', 'sort', 'direction']));
     }
 
     public function create()
@@ -470,7 +483,7 @@ class CdeController extends Controller
 
     public function validate(Request $request, $id)
     {
-        $cde = Cde::findOrFail(id: $id);
+        $cde = Cde::findOrFail($id);
         $request->validate([
             'numero_affaire' => 'nullable|string|max:255',
             'nom_affaire' => 'nullable|string|max:255',
