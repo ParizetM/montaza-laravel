@@ -1,4 +1,4 @@
-{{-- ATTENTION A BIEN METTRE LA CLASS 'SCRIPT' AUX SCRIPTS POUR QU'IL SOIT RECONNUS--}}
+{{-- ATTENTION A BIEN METTRE LA CLASS 'SCRIPT' AUX SCRIPTS POUR QU'IL SOIT RECONNUS --}}
 
 <div class="grid grid-cols-3 gap-6 ">
     @foreach ($_shortcuts as $shortcut)
@@ -10,12 +10,20 @@
                     $modal = null;
                 }
             @endphp
-            <a class="btn mx-auto p-2 hover:bg-gray-50 dark:hover:bg-gray-800 hover:cursor-pointer"
-                title="{{ $shortcut->shortcut->title }}" x-data=""
-                @click.prevent="$dispatch('open-modal', '{{ $modal->title }}')">
-                @php $iconComponent = 'icons.' . $shortcut->shortcut->icon; @endphp
-                <x-dynamic-component :component="$iconComponent" size="1.5" class="icons-no_hover" />
-            </a>
+            <x-tooltip position="top" class="">
+                <x-slot:slot_item>
+                    <a class="btn mx-auto p-2 hover:bg-gray-50 dark:hover:bg-gray-800 hover:cursor-pointer"
+                        title="{{ $shortcut->shortcut->title }}" x-data=""
+                        @click.prevent="$dispatch('open-modal', '{{ $modal->title }}')">
+                        @php $iconComponent = 'icons.' . $shortcut->shortcut->icon; @endphp
+                        <x-dynamic-component :component="$iconComponent" size="1.5" class="icons-no_hover" />
+                    </a>
+                </x-slot:slot_item>
+                <x-slot:slot_tooltip>
+                    {{ $shortcut->shortcut->title }}
+                </x-slot:slot_tooltip>
+            </x-tooltip>
+            {{-- Modal --}}
             <x-modal name="{{ $modal->title }}" maxWidth="5xl">
                 <script>
                     document.addEventListener('open-modal', event => {
@@ -63,12 +71,19 @@
                 </div>
             </x-modal>
         @else
-            <a href="{{ route($shortcut->shortcut->url) }}"
-                class="btn mx-auto p-2 hover:bg-gray-50 dark:hover:bg-gray-800"
-                title="{{ $shortcut->shortcut->title }}">
-                @php $iconComponent = 'icons.' . $shortcut->shortcut->icon; @endphp
-                <x-dynamic-component :component="$iconComponent" size="1.5" class="icons-no_hover" />
-            </a>
+            <x-tooltip position="top" class="">
+                <x-slot:slot_item>
+                    <a href="{{ route($shortcut->shortcut->url) }}"
+                        class="btn mx-auto p-2 hover:bg-gray-50 dark:hover:bg-gray-800"
+                        title="{{ $shortcut->shortcut->title }}">
+                        @php $iconComponent = 'icons.' . $shortcut->shortcut->icon; @endphp
+                        <x-dynamic-component :component="$iconComponent" size="1.5" class="icons-no_hover" />
+                    </a>
+                </x-slot:slot_item>
+                <x-slot:slot_tooltip>
+                    {{ $shortcut->shortcut->title }}
+                </x-slot:slot_tooltip>
+            </x-tooltip>
         @endif
     @endforeach
 </div>
