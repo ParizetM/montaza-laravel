@@ -330,8 +330,10 @@
                                 <div class="reference-container {{ $showRefFournisseur ? '' : 'hidden' }}"
                                     id="refs-{{ $ligne->matiere_id }}">
                                     <div class="reference-item">
-                                        <span class="reference-label">Réf. Interne</span><br>
-                                        <span class="reference-value">{{ $ligne->ref_interne ?? '' }}</span>
+                                        @if ($ligne->ref_interne != null && $ligne->ref_interne != '')
+                                            <span class="reference-label">Réf. Interne</span><br>
+                                            <span class="reference-value">{{ $ligne->ref_interne ?? '' }}</span>
+                                        @endif
                                     </div>
                                     @if ($ligne->ref_fournisseur != null && $ligne->ref_fournisseur != '')
                                         <div class="reference-item">
@@ -343,8 +345,10 @@
                                 <div class="reference-container {{ $showRefFournisseur ? 'hidden' : '' }}"
                                     id="ref-{{ $ligne->matiere_id }}">
                                     <div class="reference-item">
-                                        <span class="reference-label">Réf. Interne</span><br>
-                                        <span class="reference-value">{{ $ligne->ref_interne ?? '' }}</span>
+                                        @if ($ligne->ref_interne != null && $ligne->ref_interne != '')
+                                            <span class="reference-label">Réf. Interne</span><br>
+                                            <span class="reference-value">{{ $ligne->ref_interne ?? '' }}</span>
+                                        @endif
                                     </div>
                                 </div>
                             </td>
