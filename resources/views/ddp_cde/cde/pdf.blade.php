@@ -252,6 +252,9 @@
                 <div class="company_info">
                     <strong class="entreprise_nom">{{ $etablissement->societe->raison_sociale }}</strong><br>
                     {{ $etablissement->adresse }}<br>
+                    @if ($etablissement->complement_adresse)
+                        {{ $etablissement->complement_adresse }}<br>
+                    @endif
                     {{ $etablissement->code_postal }} &nbsp;{{ $etablissement->ville }}<br>
                     {{ $etablissement->pays->nom }}<br>
                 </div>
@@ -346,7 +349,7 @@
                                 </div>
                             </td>
                             <td style="text-align: left; padding-left: 10px;">{{ $ligne->designation }}
-                                @if ($ligne->sous_ligne != null && $ligne->sous_ligne != '' )
+                                @if ($ligne->sous_ligne != null && $ligne->sous_ligne != '')
                                     <br />
                                     <span class="text-xs text-gray-600">
                                         {{ $ligne->sous_ligne }}

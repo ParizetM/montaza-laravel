@@ -18,6 +18,7 @@ class Etablissement extends Model
     use HasFactory;
     protected $fillable = [
         'adresse',
+        'complement_adresse',
         'nom',
         'code_postal',
         'ville',

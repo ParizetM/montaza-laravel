@@ -20,7 +20,7 @@
                             @enderror
                         </div>
 
-                        <div class="col-span-2">
+                        <div class="col-span-4">
                             <x-input-label for="adresse" :value="__('Adresse')" />
                             <x-text-input id="adresse" class=" mt-1 w-full" type="text" name="adresse" placeholder=" (Optionnel) 1 Rue de la Cité Nouvelle"
                                 value="{{ old('adresse') }}" />
@@ -28,7 +28,18 @@
                                 <span class="text-red-500 text-sm">{{ $message }}</span>
                             @enderror
                         </div>
-                        <div class="col-span-1 ">
+
+                        <div class="col-span-2">
+                            <x-input-label for="complement_adresse" :value="__('Complément d\'adresse')" />
+                            <x-text-input id="complement_adresse" class="mt-1 w-full" type="text" name="complement_adresse"
+                                placeholder="(Optionnel) Bâtiment A, Étage 2"
+                                value="{{ old('complement_adresse') }}" />
+                            @error('complement_adresse')
+                                <span class="text-red-500 text-sm">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="col-span-2 ">
                             <x-input-label for="code_postal" :value="__('Code Postal')" />
                             <x-text-input id="code_postal" class="block mt-1 w-full" type="text" name="code_postal" placeholder=" (Optionnel) 44570"
                                 value="{{ old('code_postal') }}" />
@@ -36,18 +47,16 @@
                                 <span class="text-red-500 text-sm">{{ $message }}</span>
                             @enderror
                         </div>
-                        <div class="col-span-3 ">
+                        <div class="col-span-4 ">
                             <x-input-label for="ville" :value="__('Ville')" />
-                            <x-text-input id="ville" class="block mt-1 w-1/3" type="text" name="ville" placeholder="(Optionnel) Trignac"
+                            <x-text-input id="ville" class="block mt-1 w-full" type="text" name="ville" placeholder="(Optionnel) Trignac"
                                 value="{{ old('ville') }}" />
                             @error('ville')
                                 <span class="text-red-500 text-sm">{{ $message }}</span>
                             @enderror
                         </div>
 
-
-
-                        <div class="col-span-2">
+                        <div class="col-span-3">
                             <x-input-label for="region" :value="__('Région')" />
                             <x-text-input id="region" class="block mt-1 w-full" type="text" name="region" placeholder="(Optionnel) Pays de la Loire"
                                 value="{{ old('region') }}" />
@@ -56,9 +65,9 @@
                             @enderror
                         </div>
 
-                        <div class="col-span-4 ">
+                        <div class="col-span-3 ">
                             <x-input-label for="pays_id" :value="__('Pays')" />
-                            <select name="pays_id" id="pays_id" class="select mt-1 w-1/2" required>
+                            <select name="pays_id" id="pays_id" class="select mt-1 w-full" required>
                                 @foreach ($pays as $pay)
                                     @if ($pay->nom == 'France')
                                         <option value="{{ $pay->id }}" {{ old('pay_id') == $pay->id ? 'selected' : '' }}>
@@ -81,7 +90,7 @@
 
 
 
-                        <div class="col-span-2 ">
+                        <div class="col-span-3 ">
                             <x-input-label for="societe_id" :value="__('Société')" />
                             <select name="societe_id" id="societe_id" class="select mt-1 w-full" required>
                                 <option value="" disabled {{ old('societe_id') == '' ? 'selected' : '' }}>--
@@ -116,7 +125,7 @@
                             @enderror
                         </div>
 
-                        <div class="col-span-2 ">
+                        <div class="col-span-3 ">
                             <x-input-label for="siret" :value="__('SIRET')" />
                             <x-text-input id="siret" class="block mt-1 w-full" type="text" name="siret" maxlength="15" minlength="14"
                                 value="{!! old('siret',$societe_->siren.'&nbsp;') !!}" required />
@@ -135,7 +144,7 @@
                             @enderror
                         </div>
 
-                        <div class="flex items-center justify-end col-span-3 mt-4">
+                        <div class="flex items-center justify-end col-span-6 mt-4">
                             <button type="submit" class="btn ml-4">
                                 {{ __('Créer') }}
                             </button>
@@ -152,7 +161,7 @@
                 if (societeId) {
                     fetch(`/societe/${societeId}/json`)
                         .then(response => response.json())
-                        .then(data => {
+                        .then data => {
                                 if (data.societe_type_id == 2) {
                                     const siretField = document.getElementById('siret');
                                     const siretLabel = document.querySelector('label[for="siret"]');

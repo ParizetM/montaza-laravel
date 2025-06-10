@@ -306,7 +306,8 @@
                                                     @if ($mouvement->valeur_unitaire != null)
                                                         <span class="text-gray-500 dark:text-gray-400 ml-1 text-xs">
                                                             ({{ formatNumber($mouvement->quantite) }} ×
-                                                            {{ formatNumber($mouvement->valeur_unitaire) }})
+                                                            {{ formatNumber($mouvement->valeur_unitaire) }}
+                                                            {{ $matiere->unite->short }})
                                                         </span>
                                                     @endif
                                                 </div>
@@ -326,7 +327,8 @@
                                                     @if ($mouvement->valeur_unitaire != null)
                                                         <span class="text-gray-500 dark:text-gray-400 ml-1 text-xs">
                                                             ({{ formatNumber($mouvement->quantite) }} ×
-                                                            {{ formatNumber($mouvement->valeur_unitaire) }})
+                                                            {{ formatNumber($mouvement->valeur_unitaire) }}
+                                                            {{ $matiere->unite->short }})
                                                         </span>
                                                     @endif
                                                 </div>

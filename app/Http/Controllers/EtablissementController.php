@@ -54,6 +54,7 @@ class EtablissementController extends Controller
             [
                 'nom' => 'required|string',
                 'adresse' => 'nullable|string',
+                'complement_adresse' => 'nullable|string',
                 'ville' => 'nullable|string',
                 'code_postal' => 'nullable|integer|max_digits:10',
                 'region' => 'nullable|string',
@@ -96,6 +97,9 @@ class EtablissementController extends Controller
         $etablissement->nom = $request->nom;
         if ($request->adresse) {
             $etablissement->adresse = $request->adresse;
+        }
+        if ($request->complement_adresse) {
+            $etablissement->complement_adresse = $request->complement_adresse;
         }
         if ($request->ville) {
             $etablissement->ville = $request->ville;
@@ -148,6 +152,7 @@ class EtablissementController extends Controller
             [
                 'nom' => 'required|string',
                 'adresse' => 'nullable|string',
+                'complement_adresse' => 'nullable|string',
                 'ville' => 'nullable|string',
                 'code_postal' => 'nullable|integer|max_digits:10',
                 'region' => 'nullable|string',
@@ -171,22 +176,24 @@ class EtablissementController extends Controller
                 'societe_id.exists' => 'La société n\'existe pas',
             ]
         );
-
+        // Préserver les valeurs du formulaire en cas d'erreur de validation SIRET
+        $oldInput = $request->except('_token');
         if ($request->siret == null) {
             if ($societe->societe_type_id != 2) {
-                return redirect()->back()->withErrors(['siret' => 'Le siret est obligatoire pour les societe de type clients']);
+            return redirect()->back()->withErrors(['siret' => 'Le siret est obligatoire pour les societe de type clients'])->withInput($oldInput);
             }
         }
         $siret = str_replace([' ', "\u{A0}", '&nbsp;'], '', $request->siret);
         if (strlen($siret) != 14 && $siret != '') {
-            return redirect()->back()->withErrors(['siret' => 'Le siret doit contenir 14 chiffres']);
+            return redirect()->back()->withErrors(['siret' => 'Le siret doit contenir 14 chiffres'])->withInput($oldInput);
         }
         if (!is_numeric($siret) && $siret != '') {
-            return redirect()->back()->withErrors(['siret' => 'Le siret doit contenir uniquement des chiffres']);
+            return redirect()->back()->withErrors(['siret' => 'Le siret doit contenir uniquement des chiffres'])->withInput($oldInput);
         }
 
         $etablissement->nom = $request->nom;
         $etablissement->adresse = $request->adresse;
+        $etablissement->complement_adresse = $request->complement_adresse ?? null;
         $etablissement->ville = $request->ville;
         $etablissement->code_postal = $request->code_postal;
         $etablissement->region = $request->region;

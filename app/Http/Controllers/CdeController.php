@@ -405,14 +405,19 @@ class CdeController extends Controller
     public function destroy($id): RedirectResponse
     {
 
-        $cde = Cde::findOrFail($id);
-        if ($cde->ddp_id != null) {
+        try {
+            $cde = Cde::findOrFail($id);
+            if ($cde->ddp_id != null) {
             $dppid = $cde->ddp_id;
             $cde->delete();
             return redirect()->route('ddp.show', $dppid);
-        } else {
+            } else {
             $cde->delete();
             return redirect()->route('ddp_cde.index');
+            }
+        } catch (Exception $e) {
+            Log::error('Erreur lors de la suppression de la commande : ' . $e->getMessage());
+            return back()->with('error', 'Une erreur est survenue lors de la suppression de la commande.');
         }
     }
     public function reset($id): RedirectResponse

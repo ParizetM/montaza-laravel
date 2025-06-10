@@ -176,7 +176,7 @@
                                     @endif
                                     @foreach ($societes as $societe)
                                         <option value="{{ $societe->id }}"
-                                            {{ $cde->hasSocieteContact() && $cde->societe->id == $societe->id ? 'selected' : '' }}>
+                                            {{ $cde->hasSocieteContact() && $cde->societe && $cde->societe->id == $societe->id ? 'selected' : '' }}>
                                             {{ $societe->raison_sociale }}
                                         </option>
                                     @endforeach
@@ -191,7 +191,7 @@
                                 <select name="etablissement_select" id="etablissement_select"
                                     class="select w-auto {{ $cde->hasSocieteContact() ? 'border-r-green-500 dark:border-r-green-600 border-r-4' : 'hidden' }}"
                                     onchange="etablissementSelect()">
-                                    @if ($cde->hasSocieteContact())
+                                    @if ($cde->hasSocieteContact() && $cde->societe)
                                         @foreach ($cde->societe->etablissements as $etablissement)
                                             <option value="{{ $etablissement->id }}"
                                                 {{ $cde->hasSocieteContact() && $cde->etablissement->id == $etablissement->id ? 'selected' : '' }}>
@@ -207,7 +207,7 @@
                                 {{-- créer les options pour le select de contact --}}
                                 @php
                                     $options = [];
-                                    if (!($cde->societeContacts->count() == 0)) {
+                                    if (!($cde->societeContacts->count() == 0) && $cde->societe) {
                                         foreach ($cde->societe->societeContacts as $contact) {
                                             $options[$contact->id] =
                                                 $contact->nom .
@@ -216,7 +216,7 @@
                                                 '</small>';
                                         }
                                     }
-                                    if ($cde->hasSocieteContact()) {
+                                    if ($cde->hasSocieteContact() && $cde->societeContacts->count() > 0) {
                                         $selected_options = [];
                                         foreach ($cde->societeContacts as $contact) {
                                             $selected_options[] = $contact->id;
@@ -651,6 +651,10 @@
                     // Afficher le conteneur si masqué
                     societeContactSelectDiv.classList.remove('hidden');
                     if (data.length == 0) {
+                        showFlashMessageFromJs('Aucun contact trouvé pour cet établissement', 2000, 'error');
+                        let formattedOptions = {};
+                        societeContactContainer.dataset.newOptions = JSON.stringify(formattedOptions);
+                        Alpine.evaluate(societeContactContainer, '$data.updateOptions($el.dataset.newOptions)');
                         return;
                     }
                     // Formatter les données pour le select multiple
@@ -659,11 +663,10 @@
                         formattedOptions[contact.id] = contact.nom +
                             ' <small class="text-gray-500 whitespace-nowrap">' + contact.email + '</small>';
                     });
-
                     // Version alternative utilisant la méthode updateOptions
                     if (societeContactContainer && Alpine) {
-                        Alpine.evaluate(societeContactContainer, '$data.updateOptions($el.dataset.newOptions)');
                         societeContactContainer.dataset.newOptions = JSON.stringify(formattedOptions);
+                        Alpine.evaluate(societeContactContainer, '$data.updateOptions($el.dataset.newOptions)');
                     }
 
                 })
@@ -1283,7 +1286,6 @@
             });
             cdeContacts.addEventListener('change', function() {
                 // Disable fournisseur and etablissement selects if they have values
-                console.log(cdeContacts.value);
                 checkContact();
                 if (cdeContacts.value.length > 2 || cdeContacts.value != '[]') {
                     saveChanges();

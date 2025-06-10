@@ -229,8 +229,13 @@
                                     <div class="p-3 bg-gray-50 dark:bg-gray-750 rounded-md">
                                         <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">{{ __('Adresse') }}</p>
                                         <x-copiable_text text="{{ $etablissement->adresse }}" />
+                                        @if ($etablissement->complement_adresse)
+                                            <div class="mt-2">
+                                                <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">{{ __('Complément d\'adresse') }}</p>
+                                                <x-copiable_text text="{{ $etablissement->complement_adresse }}" />
+                                            </div>
+                                        @endif
                                     </div>
-
                                     <div class="grid grid-cols-2 gap-3">
                                         <div class="p-3 bg-gray-50 dark:bg-gray-750 rounded-md">
                                             <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">{{ __('Code postal') }}</p>

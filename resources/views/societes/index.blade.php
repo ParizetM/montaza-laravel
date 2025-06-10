@@ -118,6 +118,10 @@
                                                                             <div class="float-left p-4 ">
                                                                                 <x-copiable_text titre="Adresse : "
                                                                                     text="{{ $etablissement->adresse }}" />
+                                                                                    @if ($etablissement->complement_adresse)
+                                                                                    <x-copiable_text titre="Complément d'adresse : "
+                                                                                        text="{{ $etablissement->complement_adresse }}" />
+                                                                                    @endif
                                                                                 <x-copiable_text titre="Code postal : "
                                                                                     text="{{ $etablissement->code_postal }}" />
                                                                                 <x-copiable_text titre="Ville : "
