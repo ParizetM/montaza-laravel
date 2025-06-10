@@ -126,11 +126,6 @@
                 </span>
             </td>
 
-            @if (!$isSmall)
-                <td class="pr-2 text-xs leading-5">
-                    <small>{{ $cde->updated_at->format('H:i') }}</small>
-                </td>
-            @endif
 
             <!-- Nom -->
             <td>
