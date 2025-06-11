@@ -127,48 +127,67 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                             <div>
                                 <x-input-label for="dossier_standard_id" :value="__('Dossier Standard')" optionnel class="mb-1" />
-                                <select name="dossier_standard_id" id="dossier_standard_id" class="select block w-full"
-                                    onchange="updateStandardSelect(this.value)">
-                                    <option value="" disabled {{ !$matiere->standardVersion ? 'selected' : '' }}>Sélectionner un dossier</option>
-                                    @foreach ($dossier_standards as $dossier)
-                                        <option value="{{ $dossier->nom }}" {{ $matiere->standardVersion && $matiere->standardVersion->standard->dossier_standard_id == $dossier->id ? 'selected' : '' }}>
-                                            {{ $dossier->nom }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                <x-search-select :options="$dossier_standards
+                                    ->map(fn($dossier) => [
+                                        'value' => $dossier->nom,
+                                        'text' => $dossier->nom,
+                                        'selected' => $matiere->standardVersion && $matiere->standardVersion->standard->dossier_standard_id == $dossier->id
+                                    ])
+                                    ->values()"
+                                    name="dossier_standard_id"
+                                    id="dossier_standard_id"
+                                    :placeholder="'Sélectionner un dossier...'"
+                                    :searchPlaceholder="'Rechercher un dossier...'"
+                                    :value="$matiere->standardVersion ? $matiere->standardVersion->standard->dossierStandard->nom : ''"
+                                    required="false"
+                                    onChange="updateStandardSelect(value)" />
                                 @error('dossier_standard_id')
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
                             </div>
                             <div>
                                 <x-input-label for="standard_id" :value="__('Standard')" optionnel class="mb-1" />
-                                <select name="standard_id" id="standard_id" class="select block w-full"
-                                    onchange="updateVersionSelect(this.value)">
-                                    <option value="" disabled {{ !$matiere->standardVersion ? 'selected' : '' }}>Sélectionner d'abord un dossier</option>
-                                    @if ($matiere->standardVersion)
-                                        @foreach ($standards as $standard)
-                                            <option value="{{ $standard->nom }}" {{ $matiere->standardVersion->standard_id == $standard->id ? 'selected' : '' }}>
-                                                {{ $standard->nom }}
-                                            </option>
-                                        @endforeach
-                                    @endif
-                                </select>
+                                <x-search-select :options="$matiere->standardVersion ?
+                                    $standards->map(fn($standard) => [
+                                        'value' => $standard->nom,
+                                        'text' => $standard->nom,
+                                        'selected' => $matiere->standardVersion->standard_id == $standard->id
+                                    ])->values() :
+                                    [[
+                                        'value' => '',
+                                        'text' => 'Sélectionner d\'abord un dossier',
+                                        'disabled' => true,
+                                        'selected' => true
+                                    ]]"
+                                    name="standard_id"
+                                    id="standard_id"
+                                    :placeholder="'Sélectionner un standard...'"
+                                    :searchPlaceholder="'Rechercher un standard...'"
+                                    :value="$matiere->standardVersion ? $matiere->standardVersion->standard->nom : ''"
+                                    required="false"
+                                    onChange="updateVersionSelect(value)" />
                                 @error('standard_id')
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
                             </div>
                             <div>
                                 <x-input-label for="standard_version" :value="__('Révision')" optionnel class="mb-1" />
-                                <select name="standard_version" id="standard_version" class="select block w-full">
-                                    <option value="" disabled {{ !$matiere->standardVersion ? 'selected' : '' }}>Sélectionner d'abord un standard</option>
-                                    @if ($matiere->standardVersion)
-                                        @foreach ($versions as $version)
-                                            <option value="{{ $version->version }}" {{ $matiere->standard_version_id == $version->id ? 'selected' : '' }}>
-                                                {{ $version->version }}
-                                            </option>
-                                        @endforeach
-                                    @endif
-                                </select>
+                                <div class="flex">
+                                    <select name="standard_version" id="standard_version" class="select w-full">
+                                        <option value="" disabled {{ !$matiere->standardVersion ? 'selected' : '' }}>Sélectionner d'abord un standard</option>
+                                        @if ($matiere->standardVersion)
+                                            @foreach ($versions as $version)
+                                                <option value="{{ $version->version }}" {{ $matiere->standard_version_id == $version->id ? 'selected' : '' }}>
+                                                    {{ $version->version }}
+                                                </option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                    <a href="{{ route('standards.create') }}" target="_blank" type="button"
+                                        class="btn-select-right" title="Ajouter un Standard">
+                                        <x-icons.add class="icons_no_hover" size="1" />
+                                    </a>
+                                </div>
                                 @error('standard_version')
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
@@ -322,56 +341,109 @@
                                 });
                         }
 
-                        function updateStandardSelect(dossierId) {
-                            var standardSelect = document.getElementById('standard_id');
-                            standardSelect.innerHTML = '<option value="" disabled selected>Chargement...</option>';
+                        window.updateStandardSelect = function(dossierId) {
+                            // Récupérer le composant Alpine.js du search-select standard
+                            const standardSelectElement = document.getElementById('standard_id').closest('[x-data]');
+                            const standardSelectComponent = Alpine.$data(standardSelectElement);
+
+                            // Réinitialiser les options avec un message de chargement
+                            standardSelectComponent.options = [{
+                                value: '',
+                                text: 'Chargement...',
+                                disabled: true,
+                                selected: true
+                            }];
+                            standardSelectComponent.selected = '';
+                            standardSelectComponent.selectedText = '';
+
+                            if (!dossierId) {
+                                // Remettre le message par défaut si pas de dossier sélectionné
+                                standardSelectComponent.options = [{
+                                    value: '',
+                                    text: 'Sélectionner d\'abord un dossier',
+                                    disabled: true,
+                                    selected: true
+                                }];
+                                return;
+                            }
 
                             fetch(`/matieres/standards/${dossierId}/standards/json`)
                                 .then(response => response.json())
                                 .then(data => {
-                                    standardSelect.innerHTML = '<option value="" disabled selected>Sélectionner un standard</option>';
-                                    data.forEach(standard => {
-                                        var option = document.createElement('option');
-                                        option.value = standard.nom;
-                                        option.textContent = standard.nom;
-                                        standardSelect.appendChild(option);
-                                    });
+                                    let newOptions;
+                                    if (!data || data.length === 0) {
+                                        newOptions = [{
+                                            value: '',
+                                            text: 'Aucun standard disponible',
+                                            disabled: true,
+                                            selected: true
+                                        }];
+                                    } else {
+                                        newOptions = data.map(standard => ({
+                                            value: standard.nom,
+                                            text: standard.nom,
+                                            disabled: false,
+                                            selected: false
+                                        }));
+                                        // Ajouter une option par défaut
+                                        newOptions.unshift({
+                                            value: '',
+                                            text: 'Sélectionner un standard',
+                                            disabled: false,
+                                            selected: true
+                                        });
+                                    }
+
+                                    standardSelectComponent.options = newOptions;
+                                    standardSelectComponent.selected = '';
+                                    standardSelectComponent.selectedText = '';
                                 })
                                 .catch(error => {
                                     console.error('Erreur lors de la récupération des standards :', error);
+                                    standardSelectComponent.options = [{
+                                        value: '',
+                                        text: 'Erreur lors du chargement',
+                                        disabled: true,
+                                        selected: true
+                                    }];
                                 });
                         }
 
-                        function updateVersionSelect(standardId) {
+                        function updateVersionSelect(standardNom) {
                             var versionSelect = document.getElementById('standard_version');
                             var dossierId = document.getElementById('dossier_standard_id').value;
                             versionSelect.innerHTML = '<option value="" disabled selected>Chargement...</option>';
 
-                            fetch(`/matieres/standards/${dossierId}/${standardId}/versions/json`)
+                            if (!dossierId || !standardNom) {
+                                versionSelect.innerHTML = '<option value="" disabled selected>Sélectionner d\'abord un standard</option>';
+                                return;
+                            }
+
+                            fetch(`/matieres/standards/${dossierId}/${standardNom}/versions/json`)
                                 .then(response => response.json())
                                 .then(data => {
-                                    if (data.length === 0) {
-                                        versionSelect.innerHTML = '<option value="" disabled>Aucune version disponible</option>';
-                                        return;
-                                    }
+                                    versionSelect.innerHTML = ''; // Réinitialiser les options
                                     if (data.length === 1) {
                                         var option = document.createElement('option');
                                         option.value = data[0];
                                         option.textContent = data[0];
-                                        versionSelect.innerHTML = '';
+                                        option.selected = true;
                                         versionSelect.appendChild(option);
-                                        return;
+                                        versionSelect.value = data[0];
+                                    } else {
+                                        versionSelect.innerHTML = '<option value="" disabled selected>Sélectionner une version</option>';
+
+                                        data.forEach(version => {
+                                            var option = document.createElement('option');
+                                            option.value = version;
+                                            option.textContent = version;
+                                            versionSelect.appendChild(option);
+                                        });
                                     }
-                                    versionSelect.innerHTML = '<option value="" disabled selected>Sélectionner une version</option>';
-                                    data.forEach(version => {
-                                        var option = document.createElement('option');
-                                        option.value = version;
-                                        option.textContent = version;
-                                        versionSelect.appendChild(option);
-                                    });
                                 })
                                 .catch(error => {
                                     console.error('Erreur lors de la récupération des versions :', error);
+                                    versionSelect.innerHTML = '<option value="" disabled selected>Erreur lors du chargement</option>';
                                 });
                         }
                     </script>

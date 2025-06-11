@@ -801,6 +801,9 @@ class MatiereController extends Controller
 
         $materials = Material::all();
 
+        // Charger les relations nécessaires pour éviter les erreurs dans la vue
+        $matiere->load(['standardVersion.standard.dossierStandard']);
+
         return view('matieres.edit', compact(
             'matiere',
             'familles',
@@ -819,7 +822,6 @@ class MatiereController extends Controller
     public function update(Request $request, Matiere $matiere)
     {
         // Validation des données
-        dd($request->all());
         if ($matiere->isLocked()) {
             // Si la matière est verrouillée, seuls certains champs sont modifiables
             $validated = $request->validate([
