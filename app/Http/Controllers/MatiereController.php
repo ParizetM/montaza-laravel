@@ -654,7 +654,6 @@ class MatiereController extends Controller
                     'sous_famille_id' => 'required|exists:sous_familles,id',
                     'dn' => 'nullable|string|max:50',
                     'epaisseur' => 'nullable|string|max:50',
-                    'quantite' => 'required|integer',
                     'stock_min' => 'required|integer',
                     'ref_valeur_unitaire' => 'nullable',
                     'societe_id' => 'nullable|exists:societes,id',
@@ -768,7 +767,7 @@ class MatiereController extends Controller
                 'epaisseur' => $epaisseur,
                 'prix_moyen' => null,
                 'date_dernier_achat' => null,
-                'quantite' => $request->input('quantite'),
+                'quantite' => 0,
                 'stock_min' => $request->input('stock_min'),
                 'ref_valeur_unitaire' => $ref_valeur_unitaire,
             ]

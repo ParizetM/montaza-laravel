@@ -103,14 +103,6 @@
             </div>
             <div class="mb-4 flex">
                 <div class=" mr-2">
-                    <div class="flex items-center">
-                        <x-input-label for="quantite" value="{{ __('Quantité') }}" />
-                        <small class="text-xs ml-1">(stock actuel)</small>
-                    </div>
-                    <x-text-input type="number" name="quantite" id="quantite" class="mt-1 block" value="0"
-                        required />
-                </div>
-                <div class=" mr-2">
                     <div class="w-full flex">
                         <x-input-label for="ref_valeur_unitaire-{{ $modal_id }}"
                             value="{{ __('Valeur Réf Unitaire') }}" />
