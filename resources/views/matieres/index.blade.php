@@ -246,7 +246,6 @@
 
                             if (sousFamilleId) {
                                 document.getElementById('sous_famille_id_search').value = sousFamilleId;
-                                console.log(sousFamilleId);
                             }
                         });
                     })
@@ -306,7 +305,6 @@
 
                 const url =
                     `/matieres/search?search=${encodeURIComponent(searchQuery)}&societe_filter=${societeId}&famille=${familleId}&sous_famille=${sousFamilleId}&nombre=${nombre}&page=${page}`;
-                console.log(url);
 
                 fetch(url, {
                         signal
@@ -325,7 +323,6 @@
                     })
                     .catch(error => {
                         if (error.name === 'AbortError') {
-                            console.log('Requête annulée car une nouvelle a été lancée.');
                         } else {
                             console.error('Erreur lors de la recherche :', error);
                         }

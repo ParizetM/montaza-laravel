@@ -23,6 +23,13 @@
                     {{ $matiere->designation }}
                 </a>
             </div>
+            <!-- date de création -->
+            <div class="mb-3">
+                <span class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Créé le</span>
+                <div class="font-mono text-sm font-medium text-gray-900 dark:text-gray-100">
+                    {{ $matiere->created_at->format('d/m/Y H:i') }}
+                </div>
+            </div>
 
             <!-- Référence interne -->
             <div class="mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">

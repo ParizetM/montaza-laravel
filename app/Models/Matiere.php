@@ -89,6 +89,9 @@ class Matiere extends Model
     {
         return $this->belongsTo(SousFamille::class);
     }
+    public function famille() {
+        return $this->hasOneThrough(Famille::class, SousFamille::class, 'id', 'id', 'sous_famille_id', 'famille_id');
+    }
     public function societe()
     {
         return $this->belongsTo(Societe::class);

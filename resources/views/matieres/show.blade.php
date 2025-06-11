@@ -52,7 +52,8 @@
                                 <span class="font-bold">Matière verrouillée</span>
                             </div>
                             <p>Cette matière a déjà été utilisée dans un ou plusieurs mouvements de stock ou est
-                                associée à des fournisseurs. <br/> Pour préserver l'intégrité des données, vous ne pouvez pas la supprimer</p>
+                                associée à des fournisseurs. <br /> Pour préserver l'intégrité des données, vous ne
+                                pouvez pas la supprimer.</p>
 
                         </x-slot>
                     </x-tooltip>
@@ -89,9 +90,15 @@
             <!-- Infos principales en grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                 <div
-                    class="bg-gray-50 dark:bg-gray-750 p-4 rounded-lg border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-md">
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Sous Famille</p>
-                    <p class="font-semibold text-lg">{{ $matiere->sousFamille->nom }}</p>
+                    class="bg-gray-50 dark:bg-gray-750 p-4 rounded-lg border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-md flex">
+                    <div class="border-r-2 pr-4 border-gray-100 dark:border-gray-700">
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Famille</p>
+                        <p class="font-semibold text-lg">{{ $matiere->famille->nom }}</p>
+                    </div>
+                    <div class="pl-4">
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Sous Famille</p>
+                        <p class="font-semibold text-lg">{{ $matiere->sousFamille->nom }}</p>
+                    </div>
                 </div>
                 <div
                     class="bg-gray-50 dark:bg-gray-750 p-4 rounded-lg border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-md">
@@ -118,29 +125,40 @@
                     <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Épaisseur</p>
                     <p class="font-semibold text-lg">{{ $matiere->epaisseur ?? '-' }}</p>
                 </div>
-            </div>
 
-            @if ($matiere->standardVersion != null)
-                <div
-                    class="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg mb-6 flex items-center gap-3 border border-blue-100 dark:border-blue-800 transition-all duration-300 hover:shadow-md">
-                    <x-icons.pdf class="w-8 h-8 text-blue-600 dark:text-blue-400" />
-                    <div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Standard</p>
-                        <a href="{{ $matiere->standardVersion->chemin_pdf ?? '-' }}"
-                            class="font-semibold text-blue-600 dark:text-blue-400 hover:underline hover:text-blue-800 dark:hover:text-blue-300 transition-colors duration-200"
-                            target="_blank">
-                            {{ $matiere->standardVersion->standard->nom ?? '-' }} -
-                            {{ $matiere->standardVersion->version ?? '-' }}
+
+                @if ($matiere->standardVersion != null)
+                    <div
+                        class="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg mb-6 flex items-center gap-3 border border-blue-100 dark:border-blue-800 transition-all duration-300 hover:shadow-md">
+                        <x-icons.pdf class="w-8 h-8 text-blue-600 dark:text-blue-400" />
+                        <div>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Standard</p>
+                            <a href="{{ $matiere->standardVersion->chemin_pdf ?? '-' }}"
+                                class="font-semibold text-blue-600 dark:text-blue-400 hover:underline hover:text-blue-800 dark:hover:text-blue-300 transition-colors duration-200"
+                                target="_blank">
+                                {{ $matiere->standardVersion->standard->nom ?? '-' }} -
+                                {{ $matiere->standardVersion->version ?? '-' }}
+                            </a>
+                        </div>
+                    </div>
+                @else
+                    <div
+                        class="bg-gray-50 dark:bg-gray-750 p-4 rounded-lg mb-6 border border-gray-100 dark:border-gray-700 flex items-center justify-between ">
+                        <div>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Standard</p>
+                            <p class="font-semibold">Aucun standard</p>
+                        </div>
+                        <a href="{{ route('matieres.edit', $matiere->id) }}" class="btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            Ajouter un standard
                         </a>
                     </div>
-                </div>
-            @else
-                <div
-                    class="bg-gray-50 dark:bg-gray-750 p-4 rounded-lg mb-6 border border-gray-100 dark:border-gray-700">
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Standard</p>
-                    <p class="font-semibold">Aucun standard</p>
-                </div>
-            @endif
+                @endif
+            </div>
         </div>
 
         <!-- Grille avec 2 colonnes pour fournisseurs et mouvements -->
@@ -159,8 +177,9 @@
                 <div class="flex justify-between items-center">
                     <div class="flex items-center gap-3 mb-4">
                         <div class="bg-indigo-100 dark:bg-indigo-900 rounded-full p-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600 dark:text-indigo-400"
-                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="h-6 w-6 text-indigo-600 dark:text-indigo-400" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                             </svg>
@@ -241,7 +260,11 @@
                                 <tr onclick="window.location.href = '{{ route('matieres.show_prix', ['matiere' => $matiere->id, 'fournisseur' => $fournisseur->id]) }}';"
                                     class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-200">
                                     <td class="px-4 py-3 whitespace-nowrap">
-                                        {{ $fournisseur->ref_externe ?? 'Aucune référence' }}
+                                        @if ($fournisseur->ref_externe && $fournisseur->ref_externe != '')
+                                            {{ $fournisseur->ref_externe }}
+                                        @else
+                                            <span class="text-gray-400 dark:text-gray-500">Aucune référence</span>
+                                        @endif
                                     </td>
                                     <td class="px-4 py-3 whitespace-nowrap font-medium">
                                         {{ $fournisseur->raison_sociale }}</td>
