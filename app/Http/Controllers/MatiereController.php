@@ -881,6 +881,8 @@ class MatiereController extends Controller
                 'ref_valeur_unitaire' => 'nullable',
                 'standard_id' => 'nullable|exists:standards,nom',
                 'standard_version' => 'nullable|exists:standard_versions,version',
+                'stock_min' => 'required|numeric|min:0',
+
             ]);
         } else {
             // Sinon, tous les champs sont modifiables

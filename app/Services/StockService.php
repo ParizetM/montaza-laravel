@@ -4,14 +4,51 @@ namespace App\Services;
 
 use App\Models\Matiere;
 use App\Models\MouvementStock;
+use App\Models\Notification as ModelsNotification;
 use App\Models\Stock;
 use Illuminate\Support\Facades\Auth;
 use InvalidArgumentException;
 use RuntimeException;
 use Log;
+use Notification;
 
 class StockService
 {
+    /**
+     * Check if stock is below minimum threshold and send notification
+     */
+    private function checkStockMinimum(Matiere $matiere): void
+    {
+        if (!$matiere->stock_min || $matiere->stock_min <= 0) {
+            return; // Pas de stock minimum défini
+        }
+
+        $stockTotal = $matiere->quantite();
+
+        if ($stockTotal < $matiere->stock_min) {
+            // Déclencher la notification de stock minimum
+            \Log::warning('Stock en dessous du minimum', [
+                'matiere_id' => $matiere->id,
+                'matiere_designation' => $matiere->designation,
+                'stock_actuel' => $stockTotal,
+                'stock_minimum' => $matiere->stock_min,
+                'unite' => $matiere->unite->designation ?? '',
+                'user_id' => Auth::id()
+            ]);
+
+            ModelsNotification::createNotification(
+                Auth::user()->role,
+                'stock',
+                'Stock minimum atteint',
+                "Le stock de {$matiere->designation} est en dessous du minimum requis.",
+                "stock inférieur à {$matiere->stock_min} {$matiere->unite->short}",
+                'matieres.show',
+                ['matiere' => $matiere->id],
+                'Voir le stock'
+            );
+        }
+    }
+
     /**
      * Process stock movement (entry or exit)
      *
@@ -133,10 +170,15 @@ class StockService
             }
         }
 
-        return [
+        $result = [
             'mouvement' => $mouvement,
             'mouvement1' => $mouvement1,
         ];
+
+        // Vérifier le stock minimum après toute modification
+        $this->checkStockMinimum($matiere);
+
+        return $result;
     }
 
     /**
@@ -210,10 +252,15 @@ class StockService
         // Delete the movement record
         $mouvement->delete();
 
-        return [
+        $result = [
             'message' => 'Mouvement de stock annulé avec succès',
             'stock' => $stock
         ];
+
+        // Vérifier le stock minimum après l'annulation
+        $this->checkStockMinimum($matiere);
+
+        return $result;
     }
 
     /**
@@ -268,12 +315,17 @@ class StockService
             'date' => now(),
         ]);
 
-        return [
+        $result = [
             'message' => 'Valeur unitaire ajustée avec succès',
             'stock_original' => $stock,
             'stock_nouveau' => $newStock,
             'mouvement' => $mouvement
         ];
+
+        // Vérifier le stock minimum après l'ajustement
+        $this->checkStockMinimum($matiere);
+
+        return $result;
     }
 
     /**
@@ -305,6 +357,8 @@ class StockService
                 $newRaison ?? $mouvement->raison,
                 $mouvement->cde_ligne_id
             );
+
+            $this->checkStockMinimum($matiere);
 
             return [
                 'message' => 'Mouvement de stock modifié avec succès',

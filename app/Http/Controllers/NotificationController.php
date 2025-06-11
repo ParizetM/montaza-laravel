@@ -53,6 +53,7 @@ class NotificationController extends Controller
         }
         $notifications = $user->notifications()->where('read', false)->orderBy('created_at', 'desc')->paginate(20);
         $notificationsSystem = $notifications->where('type', 'system');
+        $notificationsStock = $notifications->where('type', 'stock');
         if ($request->ajax()) {
 
             if ($request->tab == 'tab1') {
@@ -60,6 +61,9 @@ class NotificationController extends Controller
                 $specifyType = true;
             } else if ($request->tab == 'tab2') {
                 $notificationsRendu = $notificationsSystem;
+                $specifyType = false;
+            } else if ($request->tab == 'tab3') {
+                $notificationsRendu = $notificationsStock;
                 $specifyType = false;
             } else {
                 $notificationsRendu = $notifications;
@@ -159,9 +163,12 @@ class NotificationController extends Controller
         }
         $notifications = $user->notifications()->where('read', false)->orderBy('created_at', 'desc')->take(20)->get();
         $notificationsSystem = $notifications->where('type', 'system');
+        $notificationsStock = $notifications->where('type', 'stock');
         return view('notifications.modal', [
             'notifications' => $notifications,
-            'notificationsSystem' => $notificationsSystem
+            'notificationsSystem' => $notificationsSystem,
+            'notificationsStock' => $notificationsStock
+
         ]);
     }
 

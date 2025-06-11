@@ -36,6 +36,11 @@
                         @endif
                     </a>
                 </li>
+                <li class="mr-1">
+                    <a @click.prevent="activeTab = 'tab3'"
+                        :class="activeTab === 'tab3' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'"
+                        class="inline-block py-2 px-4" href="#">Stock</a>
+                </li>
                 {{-- <li class="mr-1">
                         <a @click.prevent="activeTab = 'tab3'"
                             :class="activeTab === 'tab3' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'"
@@ -53,6 +58,8 @@
             <div x-show="activeTab === 'tab2'" id="notif-tab2">
                 <x-table-notifications :notifications="$notificationsSystem" :tab="'tab2'" />
             </div>
+            <div x-show="activeTab === 'tab3'" id="notif-tab3">
+                <x-table-notifications :notifications="$notificationsStock" :tab="'tab3'" />
         </div>
     </div>
 </div>

@@ -25,6 +25,8 @@ class GetGlobalVariable
             View::share('_notifications_count', $notifications_count);
             $notificationsSystem_count = $user->notifications()->where('read', false)->where('type', 'system')->count();
             View::share('_notificationsSystem_count', $notificationsSystem_count);
+            $notificationsStock_count = $user->notifications()->where('read', false)->where('type', 'stock')->count();
+            View::share('_notificationsStock_count', $notificationsStock_count);
             $entites = Entite::all();
             View::share('_entites', $entites);
             $shortcuts = $user->shortcuts;

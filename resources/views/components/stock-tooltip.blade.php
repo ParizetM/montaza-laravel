@@ -1,8 +1,11 @@
-
+@props([
+    'matiere' => null,
+    'no_underline' => false,
+])
 @if ($matiere->typeAffichageStock() == 2)
     <x-tooltip :position="'right'" :class="'group'">
         <x-slot:slot_item>
-            <span class="cursor-pointer underline">
+            <span class="cursor-pointer {{ $no_underline ? '' : 'underline' }}">
                 {{ $matiere->quantite() }} {{ $matiere->unite->short }}
             </span>
         </x-slot:slot_item>

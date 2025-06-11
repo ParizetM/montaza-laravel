@@ -271,10 +271,7 @@
                                 <x-input-label for="stock_min" :value="__('Stock Minimum')" class="mb-1" />
                                 <x-text-input type="number" name="stock_min" id="stock_min" class="block w-full"
                                     value="{{ old('stock_min', $matiere->stock_min) }}" required
-                                    disabled="{{ $matiere->isLocked() ? true : false }}" />
-                                @if ($matiere->isLocked())
-                                    <p class="mt-1 text-xs text-yellow-600 dark:text-yellow-400">Ce champ ne peut pas être modifié</p>
-                                @endif
+                                     />
                                 @error('stock_min')
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror

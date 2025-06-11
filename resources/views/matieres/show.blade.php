@@ -8,7 +8,7 @@
                     class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">Matières</a>
                 >> {{ $matiere->designation }}
             </h2>
-            <div class="flex gap-2">
+            <div class="flex gap-2 flex-wrap">
                 <a href="{{ route('matieres.edit', $matiere->id) }}" class="btn">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
@@ -108,7 +108,30 @@
                 <div
                     class="bg-gray-50 dark:bg-gray-750 p-4 rounded-lg border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-md">
                     <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Stock actuel</p>
-                    <p class="font-semibold text-lg"><x-stock-tooltip matiereId="{{ $matiere->id }}" /></p>
+                    <div class="flex items-center flex-col w-fit">
+                        <div class="border-b-2 {{ $matiere->quantite() < $matiere->stock_min ? 'border-red-500 dark:border-red-400' : 'border-gray-500 dark:border-gray-400' }}">
+                            <p class="font-semibold text-lg">
+                                <x-stock-tooltip matiereId="{{ $matiere->id }}" no_underline />
+                            </p>
+                        </div>
+
+                        <x-tooltip position="bottom" class="">
+                            <x-slot name="slot_item">
+                                <p class="{{ $matiere->quantite() < $matiere->stock_min ? 'text-red-500 dark:text-red-400' : 'text-gray-500 dark:text-gray-400' }} ">
+                                    {{ $matiere->stock_min }}
+                                </p>
+                            </x-slot>
+                            <x-slot name="slot_tooltip">
+                                @if ($matiere->quantite() < $matiere->stock_min)
+                                    <span class="text-red-500 dark:text-red-400 font-semibold">Attention !</span>
+                                    <p class="text-sm">Le stock de cette matière est inférieur au seuil minimum
+                                        défini.</p>
+                                @else
+                                Si le stock passe en dessous de ce seuil, vous serez notifié automatiquement.
+                                @endif
+                            </x-slot>
+                        </x-tooltip>
+                    </div>
                 </div>
                 @if ($matiere->typeAffichageStock() == 2)
                     <div

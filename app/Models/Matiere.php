@@ -15,7 +15,8 @@ class Matiere extends Model
     public const EDITABLE = [
         'sous_famille_id',
         'ref_valeur_unitaire',
-        'standard_version_id'
+        'standard_version_id',
+        'stock_min',
     ];
 
     protected $fillable = [
