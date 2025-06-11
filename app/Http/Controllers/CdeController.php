@@ -23,6 +23,7 @@ use Auth;
 use Carbon\Carbon;
 use DB;
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -996,6 +997,63 @@ class CdeController extends Controller
             return redirect()->back()->with('error', 'Une erreur est survenue lors de l\'enregistrement des mouvements de stock.');
         }
     }
+    public function storeStockLigne(Request $request, $cdeId, $ligneId): JsonResponse
+    {
+        $cde = Cde::findOrFail($cdeId);
+        $ligne = $cde->cdeLignes()->findOrFail($ligneId);
+        $matiere = $ligne->matiere;
+        $stockData = $request->input('stock', []);
+
+        DB::beginTransaction();
+        try {
+            if (isset($stockData['rows'])) {
+                foreach ($stockData['rows'] as $row) {
+                    $quantity = $row['quantity'] ?? 0;
+                    $unitValue = $row['unit_value'] ?? null;
+
+                    if ($quantity > 0) {
+                        $this->stockService->stock(
+                            $matiere->id,
+                            'entree',
+                            $quantity,
+                            $unitValue,
+                            'Livraison - ' . $cde->code,
+                            $ligne->id
+                        );
+                        $ligne->is_stocke = true;
+                        $ligne->save();
+                    }
+                }
+            } elseif (isset($stockData['entree'])) {
+                $quantity = $stockData['entree'] ?? 0;
+
+                if ($quantity > 0) {
+                    $this->stockService->stock(
+                        $matiere->id,
+                        'entree',
+                        $quantity,
+                        null,
+                        'Livraison commande - ' . $cde->code,
+                        $ligne->id
+                    );
+                    $ligne->is_stocke = true;
+                    $ligne->save();
+                }
+            }
+
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Mouvement de stock enregistré avec succès.']);
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('Erreur lors de l\'enregistrement du mouvement de stock', [
+                'exception' => $e->getMessage(),
+                'cde_id' => $cdeId,
+                'ligne_id' => $ligneId,
+            ]);
+            return response()->json(['success' => false, 'error' => 'Une erreur est survenue lors de l\'enregistrement du mouvement de stock.'], 500);
+        }
+    }
+
     public function noStock($id)
     {
         $cde = Cde::findOrFail($id);

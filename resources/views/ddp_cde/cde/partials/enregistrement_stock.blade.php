@@ -80,11 +80,18 @@
                                     <div id="stock-{{ $ligne->poste }}"
                                         class="hidden p-3 bg-gray-50 dark:bg-gray-850 rounded-b border border-gray-300 dark:border-gray-700">
                                         <div class="flex flex-col">
-                                            <p class="text-sm font-medium text-gray-700 dark:text-gray-400 mb-4">
-                                                Quantité
-                                                commandée :
-                                                {{ formatNumber($ligne->quantite) }}
-                                                {{ $ligne->matiere->unite->short }}</p>
+                                            <div class="flex justify-between items-center
+                                            ">
+
+                                                <p class="text-sm font-medium text-gray-700 dark:text-gray-400 mb-4">
+                                                    Quantité
+                                                    commandée :
+                                                    {{ formatNumber($ligne->quantite) }}
+                                                    {{ $ligne->matiere->unite->short }}
+                                                </p>
+                                                <button type="button" class="btn-sm -mt-1"
+                                                    onclick="storeStockLigne({{ $ligne->id }})">Enregistrer la ligne</button>
+                                            </div>
                                             <p class="text-sm text-gray-800 dark:text-gray-200">Quantité à ajouter au
                                                 stock
                                                 :</p>
@@ -251,7 +258,7 @@
                                                             <td class="p-1 text-center" colspan="4">
                                                                 <button type="button"
                                                                     id="add-row-button-{{ $ligne->poste }}"
-                                                                    class="text-blue-700 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 font-medium">
+                                                                    class="text-blue-700 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 font-medium cursor-pointer">
                                                                     <span class="flex items-center justify-center">
                                                                         Ajouter une ligne
                                                                     </span>
@@ -420,6 +427,93 @@
                 </div>
             </x-modal>
             <script>
+
+                function storeStockLigne(ligneId) {
+                    // Find the ligne to get the poste
+                    const ligneElement = document.querySelector(`[onclick="storeStockLigne(${ligneId})"]`);
+                    if (!ligneElement) {
+                        showFlashMessageFromJs('Erreur: ligne non trouvée', 3000, 'error');
+                        return;
+                    }
+
+                    // Extract poste from the closest stock container
+                    const stockContainer = ligneElement.closest('[id^="stock-"]');
+                    if (!stockContainer) {
+                        showFlashMessageFromJs('Erreur: conteneur stock non trouvé', 3000, 'error');
+                        return;
+                    }
+
+                    const poste = stockContainer.id.replace('stock-', '');
+                    const form = document.getElementById('stock-form');
+                    const inputs = form.querySelectorAll(`[name^="stock[${poste}]"]`);
+
+                    const stockData = {};
+
+                    inputs.forEach(input => {
+                        const name = input.name;
+                        const value = input.value;
+
+                        // Parse different input patterns
+                        if (name.includes('[entree]')) {
+                            // Simple entry: stock[poste][entree]
+                            stockData.entree = value;
+                        } else if (name.includes('[rows]')) {
+                            // Row-based entry: stock[poste][rows][index][field]
+                            const rowMatch = name.match(/stock\[\d+\]\[rows\]\[(\d+)\]\[(\w+)\]/);
+                            if (rowMatch) {
+                                const rowIndex = rowMatch[1];
+                                const fieldName = rowMatch[2];
+
+                                if (!stockData.rows) stockData.rows = [];
+                                if (!stockData.rows[rowIndex]) stockData.rows[rowIndex] = {};
+                                stockData.rows[rowIndex][fieldName] = value;
+                            }
+                        }
+                    });
+
+                    // Validate that we have data to send
+                    if (!stockData.entree && (!stockData.rows || stockData.rows.length === 0)) {
+                        showFlashMessageFromJs('Aucune donnée à enregistrer', 3000, 'warning');
+                        return;
+                    }
+
+                    const url = `{{ route('cde.stock.ligne.store', ['cde' => $cde->id, 'ligne' => 'LIGNE_ID']) }}`.replace('LIGNE_ID', ligneId);
+
+                    fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({ stock: stockData })
+                    })
+                    .then(response => response.json())
+                    .then(json => {
+                        if (json.success) {
+                            showFlashMessageFromJs(json.message || 'Mouvement de stock enregistré avec succès.', 3000, 'success');
+
+                            // Find and remove the ligne's row from the form
+                            const buttonElement = document.getElementById(`button-${poste}`);
+                            if (buttonElement) {
+                                const ligneRow = buttonElement.closest('tr');
+                                const spacingRow = ligneRow.nextElementSibling; // The spacing row
+
+                                if (ligneRow) {
+                                    ligneRow.remove();
+                                }
+                                if (spacingRow && spacingRow.classList.contains('h-4')) {
+                                    spacingRow.remove();
+                                }
+                            }
+                        } else {
+                            showFlashMessageFromJs(json.error || 'Erreur lors de l\'enregistrement du mouvement de stock.', 3000, 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showFlashMessageFromJs('Erreur de communication avec le serveur', 3000, 'error');
+                    });
+                }
                 document.addEventListener('DOMContentLoaded', function() {
                     // Get all the postes from the page
                     const postes = Array.from(document.querySelectorAll('[id^="button-"]')).map(el => el.id.split('-')[1]);

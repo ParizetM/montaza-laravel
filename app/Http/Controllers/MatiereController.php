@@ -43,6 +43,12 @@ class MatiereController extends Controller
         if ($request->filled('sous_famille')) {
             $query->where('sous_famille_id', $request->input('sous_famille'));
         }
+        // Filtrer par société
+        if ($request->filled('societe')) {
+            $query->whereHas('societeMatieres', function ($subQuery) use ($request) {
+                $subQuery->where('societe_id', $request->input('societe'));
+            });
+        }
 
         if ($request->filled('search')) {
             $search = $request->input('search');
@@ -163,6 +169,7 @@ class MatiereController extends Controller
             'famille'      => 'nullable|integer|exists:familles,id',
             'sous_famille' => 'nullable|integer|exists:sous_familles,id',
             'page'         => 'nullable|integer|min:1',
+            'societe'      => 'nullable|integer|exists:societes,id',
         ]);
 
         $nombre = intval($request->input('nombre', 50));
@@ -222,8 +229,17 @@ class MatiereController extends Controller
     {
 
         $familles = Famille::all();
+        $societes = Societe::fournisseurs()
+            ->withCount('matieres')
+            ->orderByDesc('matieres_count')
+            ->get()
+            ->map(function ($societe) {
+            $societe->raison_sociale .= ' (' . $societe->matieres_count . ')';
+            return $societe;
+            });
         return view('matieres.index', [
             'familles' => $familles,
+            'societes' => $societes,
         ]);
     }
     public function sousFamillesJson(Famille $famille)

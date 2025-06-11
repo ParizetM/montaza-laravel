@@ -10,6 +10,15 @@
 
                 <form method="GET" action="{!! route('matieres.index') !!}"
                     class="mr-4 mb-1 sm:mr-0 flex flex-col sm:flex-row items-start sm:items-center">
+                    <select name="societe" id="societe" class="px-4 py-2 mr-2 border select mb-2 sm:mb-0 w-fit">
+                        <option value="" selected>{!! __('Tous les fournisseurs') !!}</option>
+                        @foreach ($societes as $societe)
+                            <option value="{{ $societe->id }}"
+                                {{ request('societe') == $societe->id ? 'selected' : '' }}>
+                                {!! $societe->raison_sociale . '&nbsp;&nbsp;' !!}
+                            </option>
+                        @endforeach
+                    </select>
                     <select name="famille" id="famille_id_search" class="px-4 py-2 mr-2 border select mb-2 sm:mb-0 w-fit">
                         <option value="" selected>{!! __('Tous les types&nbsp;&nbsp;') !!}</option>
                         @foreach ($familles as $famille)
@@ -258,6 +267,7 @@
                 liveSearch();
             });
             document.getElementById('sous_famille_id_search').addEventListener('change', liveSearch);
+            document.getElementById('societe').addEventListener('change', liveSearch);
             document.getElementById('nombre').addEventListener('change', liveSearch);
 
             // Gestion de la pagination
@@ -275,6 +285,7 @@
                 const searchQuery = document.querySelector('input[name="search"]').value.trim();
                 const familleId = document.getElementById('famille_id_search').value;
                 const sousFamilleId = document.getElementById('sous_famille_id_search').value;
+                const societeId = document.getElementById('societe').value;
                 const nombre = document.getElementById('nombre').value;
                 const containerSearch = document.getElementById('body_table');
                 const page = new URLSearchParams(window.location.search).get('page') || 1;
@@ -294,7 +305,7 @@
                     '<tr><td colspan="100"><div id="loading-spinner" class="mt-8 inset-0 bg-none bg-opacity-75 flex items-center justify-center z-50 h-32 w-full"><div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32"></div></div><style>.loader {border-top-color: #3498db; animation: spinner 1.5s linear infinite;}@keyframes spinner {0% {transform: rotate(0deg);}100% {transform: rotate(360deg);}}</style></td></tr>';
 
                 const url =
-                    `/matieres/search?search=${encodeURIComponent(searchQuery)}&famille=${familleId}&sous_famille=${sousFamilleId}&nombre=${nombre}&page=${page}`;
+                    `/matieres/search?search=${encodeURIComponent(searchQuery)}&societe=${societeId}&famille=${familleId}&sous_famille=${sousFamilleId}&nombre=${nombre}&page=${page}`;
                 console.log(url);
 
                 fetch(url, {

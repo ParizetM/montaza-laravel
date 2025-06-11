@@ -282,6 +282,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::get('/cde/{cde}/terminer_controler', [CdeController::class, 'terminerControler'])->name('cde.terminer_controler');
         Route::get('/cde/{cde}/annuler_terminer_controler', [CdeController::class, 'annulerTerminerControler'])->name('cde.annuler_terminer_controler');
         Route::post('/cde/{cde}/stock/store', [CdeController::class, 'storeStock'])->name('cde.stock.store');
+        Route::post('/cde/{cde}/stock/{ligne}/store', [CdeController::class, 'storeStockLigne'])->name('cde.stock.ligne.store');
         Route::delete('/cde/{cde}/stock/ligne/{ligne}/destroy', [CdeController::class, 'destroyMouvements'])->name('cde.stock.mouvement.destroy');
         Route::get('/cde/{cde}/stock/no', [CdeController::class, 'noStock'])->name('cde.stock.no');
     });
