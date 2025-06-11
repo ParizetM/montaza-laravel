@@ -1039,10 +1039,7 @@
                 saveStatus2.classList.remove('hidden');
                 return;
             }
-            if ('' === cdeNom.value.trim()) {
-                cdeNom.value = 'CDE-' + new Date().getFullYear().toString().slice(-2) + '-' + cdeCode.value + cdeCodeEntite
-                    .textContent;
-            }
+
             if (cdeId === '') {
                 saveStatus0.classList.add('hidden');
                 saveStatus2.classList.remove('hidden');
@@ -1138,6 +1135,10 @@
             document.title =
                 `Créer - CDE-${new Date().getFullYear().toString().slice(-2)}-${cdeCode.value}${cdeCodeEntite.textContent}`;
             montantTotal.textContent = Total.toFixed(2) + ' €';
+            if ('' === cdeNom.value.trim()) {
+                cdeNom.value = 'CDE-' + new Date().getFullYear().toString().slice(-2) + '-' + cdeCode.value + cdeCodeEntite
+                    .textContent;
+            }
             var showRefFournisseur = 0;
             if (showRefFournisseurToggle.checked) {
                 var showRefFournisseur = 1;

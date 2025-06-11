@@ -571,10 +571,10 @@
                 />
                     ${unites.map(unite => `
 
-                                                            ${unite.short === matiereUnite ? '<div class="text-right bg-gray-100 dark:bg-gray-900 w-fit p-2 pl-0 border-1 border-l-0 rounded-r-sm border-gray-300 dark:border-gray-700" title="'+unite.full+'">' : ''}
+                                                                ${unite.short === matiereUnite ? '<div class="text-right bg-gray-100 dark:bg-gray-900 w-fit p-2 pl-0 border-1 border-l-0 rounded-r-sm border-gray-300 dark:border-gray-700" title="'+unite.full+'">' : ''}
 
-                                                            ${unite.short === matiereUnite ? unite.short+'</div>' : ''}
-                                                    `).join('')}
+                                                                ${unite.short === matiereUnite ? unite.short+'</div>' : ''}
+                                                        `).join('')}
                 </div>
             </td>
             <td class="text-right px-4" >
@@ -864,10 +864,7 @@
                 saveStatus2.classList.remove('hidden');
                 return;
             }
-            if ('' === ddpNom.value.trim()) {
-                ddpNom.value = 'DDP-' + new Date().getFullYear().toString().slice(-2) + '-' + ddpCode.value + ddpCodeEntite
-                    .textContent;
-            }
+
             if (ddpId === '') {
                 saveStatus0.classList.add('hidden');
                 saveStatus2.classList.remove('hidden');
@@ -941,6 +938,11 @@
                             `Créer - DDP-${new Date().getFullYear().toString().slice(-2)}-${ddpCode.value}${ddpCodeEntite.textContent}`;
 
                     }
+                    if ('' === ddpNom.value.trim()) {
+                        ddpNom.value = 'DDP-' + new Date().getFullYear().toString().slice(-2) + '-' + ddpCode
+                            .value + ddpCodeEntite
+                            .textContent;
+                    }
                 }
             });
             console.log(matieres);
@@ -1002,15 +1004,14 @@
                 } else {
                     fournisseursIds = "";
                 }
-                var fournisseursChoisiAilleurs = matiereChoisiTable.querySelectorAll('tr[data-matiere-id]').forEach(
-                    row => {
-                        if (row.getAttribute('data-matiere-id') != matiereId) {
-                            var fournisseursIdsAilleurs = row.getAttribute('data-fournisseurs-ids');
-                            if (fournisseursIdsAilleurs != "") {
-                                fournisseursIdsTemp += ';' + fournisseursIdsAilleurs;
-                            }
+                var fournisseursChoisiAilleurs = [];
+                document.querySelectorAll('input[name^="fournisseur-"]').forEach(input => {
+                    if (!input.name.endsWith(matiereId + "]") && !input.name.endsWith(matiereId)) {
+                        if (input.value !== "") {
+                            fournisseursIdsTemp += ';' + input.value;
                         }
-                    });
+                    }
+                });
                 fournisseursChoisiAilleurs = fournisseursIdsTemp.split(';');
                 console.log(fournisseursChoisiAilleurs);
                 data.forEach(fournisseur => {
