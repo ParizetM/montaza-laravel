@@ -229,6 +229,73 @@
         </x-modal>
     </div>
 </div>
+
+{{-- MODAL POUR AFFICHER LES DOUBLONS --}}
+<x-modal name="doublon-alert-{{ $modal_id }}" maxWidth="4xl" id="doublon-alert-{{ $modal_id }}">
+    <div class="p-2">
+        <a x-on:click="$dispatch('close')">
+            <x-icons.close class="float-right mb-1 icons" size="1.5" unfocus />
+        </a>
+        <div class="p-6">
+            <div class="flex items-center mb-6">
+                <div class="flex-shrink-0 mr-4">
+                    <div class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center">
+                        <x-icon type="error_icon" class="h-8 w-8 text-yellow-600 dark:text-yellow-400" />
+                    </div>
+                </div>
+                <div class="flex-1">
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                        Doublons de références détectés
+                    </h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                        Des références similaires ont été trouvées dans le système. Veuillez vérifier les informations ci-dessous.
+                    </p>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <div id="doublons-list-{{ $modal_id }}" class="space-y-4">
+                    <!-- Les doublons seront ajoutés ici par JavaScript -->
+                </div>
+            </div>
+
+            <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 mb-6">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0 mr-3">
+                        <svg class="h-5 w-5 text-blue-500 dark:text-blue-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
+                            Information importante
+                        </h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">
+                            Créer une matière avec des références similaires peut créer de la confusion dans la gestion des stocks et des commandes.
+                            Assurez-vous que c'est bien ce que vous souhaitez faire.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-3">
+                <button type="button" class="btn btn-secondary" x-on:click="$dispatch('close')" id="doublon-cancel-{{ $modal_id }}">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                    Annuler
+                </button>
+                <button type="button" class="btn btn-warning" id="doublon-confirm-{{ $modal_id }}">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Continuer malgré les doublons
+                </button>
+            </div>
+        </div>
+    </div>
+</x-modal>
+
 <script class="SCRIPT">
     function updateSousFamilleSelect(familleId) {
         var sousFamilleSelect = document.getElementById('sous_famille_id-{{ $modal_id }}');
@@ -377,9 +444,17 @@
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
             })
-            .then(response => response.json())
+            .then(response => {
+                if (response.status === 409) {
+                    // Doublon détecté
+                    return response.json().then(data => {
+                        showDoublonModal(data, form, formData, url);
+                    });
+                }
+                return response.json();
+            })
             .then(data => {
-                if (data.success) {
+                if (data && data.success) {
                     showFlashMessageFromJs('Matière ajoutée avec succès !', 2000, 'success');
                     document.getElementById('quick-create-matiere-cancel-{{ $modal_id }}').click();
                     // Check if a searchbar exists on the page
@@ -418,7 +493,7 @@
                         // Start typing after a small delay
                         setTimeout(typeDesignation, 300);
                     }
-                } else {
+                } else if (data && !data.doublon_detected) {
                     showFlashMessageFromJs('Erreur lors de l\'ajout de la matière.', 2000, 'error');
                 }
             })
@@ -426,5 +501,135 @@
                 showFlashMessageFromJs('Erreur lors de l\'ajout de la matière.', 2000, 'error');
                 console.error('Erreur lors de l\'ajout de la matière :', error);
             });
+    }
+
+    function showDoublonModal(data, form, formData, url) {
+        // Remplir la liste des doublons
+        const doublonsList = document.getElementById('doublons-list-{{ $modal_id }}');
+        doublonsList.innerHTML = '';
+
+        data.doublons.forEach((doublon, index) => {
+            const doublonDiv = document.createElement('div');
+            doublonDiv.className = 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg p-4 shadow-sm';
+
+            let iconColor = '';
+            let badgeColor = '';
+            let typeText = '';
+
+            if (doublon.type === 'ref_interne_existe_comme_ref_externe') {
+                iconColor = 'text-orange-500';
+                badgeColor = 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300';
+                typeText = 'Référence interne utilisée comme externe';
+            } else {
+                iconColor = 'text-blue-500';
+                badgeColor = 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
+                typeText = 'Référence externe utilisée comme interne';
+            }
+
+            doublonDiv.innerHTML = `
+                <div class="flex items-start space-x-4">
+                    <div class="flex-shrink-0">
+                        <div class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                            <svg class="w-5 h-5 ${iconColor}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center mb-2">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${badgeColor}">
+                                ${typeText}
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-900 dark:text-gray-100 mb-3 leading-relaxed">
+                            ${doublon.message}
+                        </p>
+                        ${doublon.matiere_id ? `
+                            <a href="/matieres/${doublon.matiere_id}" target="_blank"
+                               class="inline-flex items-center text-sm ${iconColor} hover:underline font-medium">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                </svg>
+                                Voir la matière existante
+                            </a>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+
+            doublonsList.appendChild(doublonDiv);
+        });
+
+        // Configurer le bouton de confirmation
+        const confirmButton = document.getElementById('doublon-confirm-{{ $modal_id }}');
+        confirmButton.onclick = function() {
+            // Fermer le modal
+            document.getElementById('doublon-cancel-{{ $modal_id }}').click();
+
+            // Forcer la création
+            formData.set('force_create', '1');
+
+            fetch(url, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showFlashMessageFromJs('Matière ajoutée avec succès !', 2000, 'success');
+                        document.getElementById('quick-create-matiere-cancel-{{ $modal_id }}').click();
+                        // Check if a searchbar exists on the page
+                        if (document.getElementById('searchbar')) {
+                            // Get the designation from the form
+                            var designation = formData.get('ref_interne') + ' ' + formData.get('designation');
+                            // Get the searchbar element
+                            var searchbar = document.getElementById('searchbar');
+
+                            // Clear the current value
+                            searchbar.value = '';
+
+                            // Simulate typing the designation letter by letter
+                            var i = 0;
+
+                            function typeDesignation() {
+                                if (i < designation.length) {
+                                    // Create and dispatch keyboard event
+                                    const event = new KeyboardEvent('keydown', {
+                                        key: designation.charAt(i),
+                                        code: 'Key' + designation.charAt(i).toUpperCase(),
+                                        bubbles: true
+                                    });
+                                    searchbar.dispatchEvent(event);
+                                    // Also update the value
+                                    searchbar.value += designation.charAt(i);
+                                    // Trigger input event to ensure search functionality activates
+                                    searchbar.dispatchEvent(new Event('input', {
+                                        bubbles: true
+                                    }));
+                                    i++;
+                                    setTimeout(typeDesignation, 50); // 50ms delay between each character
+                                }
+                            }
+
+                            // Start typing after a small delay
+                            setTimeout(typeDesignation, 300);
+                        }
+                    } else {
+                        showFlashMessageFromJs('Erreur lors de l\'ajout de la matière.', 2000, 'error');
+                    }
+                })
+                .catch(error => {
+                    showFlashMessageFromJs('Erreur lors de l\'ajout de la matière.', 2000, 'error');
+                    console.error('Erreur lors de l\'ajout de la matière :', error);
+                });
+        };
+
+        // Ouvrir le modal
+        window.dispatchEvent(new CustomEvent('open-modal', {
+            detail: 'doublon-alert-{{ $modal_id }}'
+        }));
     }
 </script>

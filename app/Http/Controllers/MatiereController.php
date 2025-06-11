@@ -179,7 +179,7 @@ class MatiereController extends Controller
             'famille'       => 'nullable|integer|exists:familles,id',
             'sous_famille'  => 'nullable|integer|exists:sous_familles,id',
             'page'          => 'nullable|integer|min:1',
-            'societe_filter'=> 'nullable|integer|exists:societes,id',
+            'societe_filter' => 'nullable|integer|exists:societes,id',
         ]);
 
         $nombre = intval($request->input('nombre', 50));
@@ -244,8 +244,8 @@ class MatiereController extends Controller
             ->orderByDesc('matieres_count')
             ->get()
             ->map(function ($societe) {
-            $societe->raison_sociale .= ' (' . $societe->matieres_count . ')';
-            return $societe;
+                $societe->raison_sociale .= ' (' . $societe->matieres_count . ')';
+                return $societe;
             });
         return view('matieres.index', [
             'familles' => $familles,
@@ -431,7 +431,6 @@ class MatiereController extends Controller
             return redirect()
                 ->route('matieres.show_prix', ['matiere' => $matiere_id, 'fournisseur' => $societe_id])
                 ->with('success', 'Prix ajouté avec succès.');
-
         } catch (\Exception $e) {
             Log::error('Erreur lors de l\'ajout du prix', [
                 'matiere_id' => $matiere_id,
@@ -661,6 +660,7 @@ class MatiereController extends Controller
                     'societe_id' => 'nullable|exists:societes,id',
                     'ref_externe' => 'nullable|string|max:255',
                     'material_id' => 'nullable',
+                    'force_create' => 'nullable|boolean', // Nouveau champ pour forcer la création
                 ]);
                 Log::info('Validation passée dans quickStore', ['data' => $validated]);
             } catch (ValidationException $e) {
@@ -670,9 +670,58 @@ class MatiereController extends Controller
         } else {
             return response()->json(['error' => 'Méthode non autorisée'], 405);
         }
+
+        $ref_interne = $request->input('ref_interne');
+        $ref_externe = $request->input('ref_externe');
+        $force_create = $request->input('force_create', false);
+
+        // Vérification des doublons uniquement si on ne force pas la création
+        if (!$force_create) {
+            $doublons = [];
+
+            // Vérifier si ref_interne existe en tant que ref_externe
+            if ($ref_interne) {
+                $doublon_ref_interne = SocieteMatiere::where('ref_externe', $ref_interne)
+                    ->with(['matiere', 'societe'])
+                    ->first();
+
+                if ($doublon_ref_interne) {
+                    $doublons[] = [
+                        'type' => 'ref_interne_existe_comme_ref_externe',
+                        'message' => "La référence interne '{$ref_interne}' est déjà utilisée comme référence externe pour la matière '{$doublon_ref_interne->matiere->designation}' chez {$doublon_ref_interne->societe->raison_sociale}",
+                        'matiere_id' => $doublon_ref_interne->matiere->id,
+                        'societe' => $doublon_ref_interne->societe->raison_sociale
+                    ];
+                }
+            }
+
+            // Vérifier si ref_externe existe en tant que ref_interne
+            if ($ref_externe) {
+                $doublon_ref_externe = Matiere::where('ref_interne', $ref_externe)->first();
+
+                if ($doublon_ref_externe) {
+                    $doublons[] = [
+                        'type' => 'ref_externe_existe_comme_ref_interne',
+                        'message' => "La référence externe '{$ref_externe}' est déjà utilisée comme référence interne pour la matière '{$doublon_ref_externe->designation}'",
+                        'matiere_id' => $doublon_ref_externe->id
+                    ];
+                }
+            }
+
+            // Si des doublons sont détectés, retourner une alerte
+            if (!empty($doublons)) {
+                return response()->json([
+                    'doublon_detected' => true,
+                    'doublons' => $doublons,
+                    'message' => 'Des références similaires ont été détectées. Voulez-vous continuer ?'
+                ], 409); // 409 Conflict
+            }
+        }
+
         $lastref = Matiere::max('id') + 1;
         $dn = $request->input('dn') ?: null;
         $epaisseur = $request->input('epaisseur') ?: null;
+
         if ($request->input('standard_version_id')) {
             if ($request->input('standard_version_id') === '' || $request->input('standard_id') === '') {
                 $standard_version_id = null;
@@ -724,6 +773,7 @@ class MatiereController extends Controller
                 'ref_valeur_unitaire' => $ref_valeur_unitaire,
             ]
         );
+
         if ($request->input('societe_id') === '' || $request->input('societe_id') === null) {
             $societe_id = null;
         } else {
@@ -746,6 +796,9 @@ class MatiereController extends Controller
                 ]
             );
         }
+        // Si la matière a été créée malgré des doublons détectés, plus besoin d'envoyer une notification
+        // Suppression de cette partie
+
         return response()->json([
             'success' => true,
             'matiere' => $matiere,
@@ -996,7 +1049,6 @@ class MatiereController extends Controller
             return redirect()
                 ->route('matieres.show', $matiere_id)
                 ->with('success', 'Fournisseur ajouté avec succès à la matière.');
-
         } catch (\Exception $e) {
             Log::error('Erreur lors de l\'ajout du fournisseur', [
                 'matiere_id' => $matiere_id,
@@ -1025,7 +1077,6 @@ class MatiereController extends Controller
             return redirect()
                 ->route('matieres.index')
                 ->with('success', "La matière \"{$designation}\" a été supprimée avec succès.");
-
         } catch (\Exception $e) {
             Log::error('Erreur lors de la suppression de la matière', [
                 'matiere_id' => $matiere->id,
@@ -1122,7 +1173,6 @@ class MatiereController extends Controller
             return redirect()
                 ->route('matieres.mouvements', $matiere_id)
                 ->with('success', 'Mouvement de stock modifié avec succès.');
-
         } catch (\Exception $e) {
             Log::error('Erreur lors de la modification du mouvement', [
                 'matiere_id' => $matiere_id,
@@ -1136,5 +1186,4 @@ class MatiereController extends Controller
                 ->with('error', 'Une erreur est survenue lors de la modification: ' . $e->getMessage());
         }
     }
-
 }
