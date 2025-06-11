@@ -196,4 +196,23 @@ class Matiere extends Model
             || CdeLigne::where('matiere_id', $this->id)->exists()
             || DdpLigne::where('matiere_id', $this->id)->exists();
     }
+
+    /**
+     * Override de la méthode delete pour vérifier si la suppression est autorisée
+     */
+    public function delete()
+    {
+        if ($this->isLocked()) {
+            throw new \Exception('Impossible de supprimer cette matière car elle est utilisée dans des mouvements de stock, des commandes ou est associée à des fournisseurs.');
+        }
+
+        // Supprimer les stocks (qui devraient être vides)
+        $this->stock()->delete();
+
+        // Supprimer les relations société-matière (qui devraient être vides)
+        $this->societeMatieres()->delete();
+
+        // Appeler la méthode delete du parent
+        return parent::delete();
+    }
 }

@@ -8,14 +8,45 @@
                     class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">Matières</a>
                 >> {{ $matiere->designation }}
             </h2>
-            <a href="{{ route('matieres.edit', $matiere->id) }}" class="btn">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                </svg>
-                Modifier
-            </a>
+            <div class="flex gap-2">
+                <a href="{{ route('matieres.edit', $matiere->id) }}" class="btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Modifier
+                </a>
+
+                @if (!$matiere->isLocked())
+                    <x-boutons.supprimer
+                    customButton="<button class='btn'>
+                        <svg xmlns='http://www.w3.org/2000/svg' class='h-5 w-5 mr-1' fill='none' viewBox='0 0 24
+                            24' stroke='currentColor'>
+                            <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 7l-.867
+                                12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0
+                                00-1-1h-4a1 1 0 00-1 1v3M4 7h16' />
+                        </svg>
+                        Supprimer
+                        </button>"
+                        modalTitle="Supprimer la matière"
+                        userInfo="Êtes-vous sûr de vouloir supprimer la matière {{ $matiere->designation }} ? Cette action est irréversible."
+                        formAction="{{ route('matieres.destroy', $matiere->id) }}"
+                        confirmButtonText="Supprimer définitivement"
+                        cancelButtonText="Annuler"
+                        />
+                    @else
+                        <button class="btn-secondary opacity-50 cursor-not-allowed" disabled
+                            title="Cette matière ne peut pas être supprimée car elle est utilisée">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            Supprimer
+                        </button>
+                @endif
+            </div>
         </div>
     </x-slot>
 
@@ -136,13 +167,15 @@
                                         fournisseur</h2>
                                     <button x-on:click="$dispatch('close')"
                                         class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">
-                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M6 18L18 6M6 6l12 12"></path>
                                         </svg>
                                     </button>
                                 </div>
-                                <form action="{{ route('matieres.fournisseurs.store', $matiere->id) }}" method="POST">
+                                <form action="{{ route('matieres.fournisseurs.store', $matiere->id) }}"
+                                    method="POST">
                                     @csrf
                                     <div class="mb-4 ml-2 flex-grow">
                                         <x-input-label for="societe_id" :value="__('référence externe')" />
@@ -346,8 +379,7 @@
                                                                 onclick="event.stopPropagation(); window.open('{{ route('cde.show', $mouvement->cdeLigne->cde->id) }}', '_blank');"
                                                                 class="inline-flex items-center px-3 py-2 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors duration-200 cursor-pointer border border-blue-200 dark:border-blue-700 max-w-full"
                                                                 title="Voir la commande liée"
-                                                                style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
-                                                            >
+                                                                style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                                                                 <svg xmlns="http://www.w3.org/2000/svg"
                                                                     class="h-4 w-4 mr-1" fill="none"
                                                                     viewBox="0 0 24 24" stroke="currentColor">
@@ -363,7 +395,8 @@
                                                                 </span>
                                                             </button>
                                                         @else
-                                                            <span class="inline-block px-2 py-1 rounded text-sm max-w-full truncate">
+                                                            <span
+                                                                class="inline-block px-2 py-1 rounded text-sm max-w-full truncate">
                                                                 {{ Str::limit($mouvement->raison, 15, '...') }}
                                                             </span>
                                                         @endif

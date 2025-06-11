@@ -201,6 +201,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::post('/matieres/{matiere}/ajuster', [MatiereController::class, 'ajusterMatiere'])->name('matieres.ajuster');
         Route::get('/matieres/{matiere}/edit', [MatiereController::class, 'edit'])->name('matieres.edit');
         Route::patch('/matieres/{matiere}/update', [MatiereController::class, 'update'])->name('matieres.update');
+        Route::delete('/matieres/{matiere}', [MatiereController::class, 'destroy'])->name('matieres.destroy');
         Route::get('/matieres/{id}/mouvements', [MatiereController::class, 'mouvements'])->name('matieres.mouvements');
         Route::post('/matieres/{matiere}/fournisseur/store', [MatiereController::class, 'storeFournisseur'])->name('matieres.fournisseurs.store');
 

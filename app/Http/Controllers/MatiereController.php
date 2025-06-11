@@ -1000,44 +1000,86 @@ class MatiereController extends Controller
     }
 
     /**
-     * Supprimer un mouvement de stock
+     * Supprimer une matière
      */
-    public function supprimerMouvement($matiere_id, $mouvement_id)
+    public function destroy(Matiere $matiere)
     {
         try {
-            $matiere = Matiere::findOrFail($matiere_id);
-            $mouvement = MouvementStock::where('matiere_id', $matiere_id)->findOrFail($mouvement_id);
+            $designation = $matiere->designation;
 
-            // Vérifier si le mouvement peut être supprimé (pas lié à une commande)
-            if ($mouvement->cde_ligne_id) {
-                return redirect()
-                    ->back()
-                    ->with('error', 'Impossible de supprimer un mouvement lié à une commande.');
-            }
-
-            $stockService = new StockService();
-            $stockService->deleteStockFromMouvement($mouvement);
+            // Supprimer la matière (la logique de vérification est dans le modèle)
+            $matiere->delete();
 
             return redirect()
-                ->route('matieres.mouvements', $matiere_id)
-                ->with('success', 'Mouvement de stock supprimé avec succès.');
+                ->route('matieres.index')
+                ->with('success', "La matière \"{$designation}\" a été supprimée avec succès.");
 
         } catch (\Exception $e) {
-            Log::error('Erreur lors de la suppression du mouvement', [
-                'matiere_id' => $matiere_id,
-                'mouvement_id' => $mouvement_id,
+            Log::error('Erreur lors de la suppression de la matière', [
+                'matiere_id' => $matiere->id,
                 'exception' => $e->getMessage()
             ]);
 
             return redirect()
                 ->back()
-                ->with('error', 'Une erreur est survenue lors de la suppression: ' . $e->getMessage());
+                ->with('error', $e->getMessage());
         }
     }
 
     /**
-     * Modifier un mouvement de stock
+     * Supprimer un mouvement de stock
      */
+    public function supprimerMouvement($matiere_id, $mouvement_id)
+    {
+        // Validate the request
+        $request->validate([
+            'quantite' => 'required|numeric|min:0.01',
+            'valeur_unitaire' => 'nullable|numeric|min:0',
+            'motif' => 'required|string|max:50',
+        ]);
+
+        try {
+            // Get the matiere
+            $matiere = Matiere::findOrFail($matiere_id);
+
+            // Initialize StockService
+            $stockService = new StockService();
+
+            // Process stock exit
+            $result = $stockService->stock(
+                $matiere_id,
+                'sortie',
+                $request->quantite,
+                $request->valeur_unitaire,
+                $request->motif,
+                null
+            );
+
+            // Check if the result is an error response
+            if (is_a($result, \Illuminate\Http\JsonResponse::class)) {
+                return redirect()
+                    ->back()
+                    ->withInput()  // Ajout de cette ligne pour préserver les données du formulaire
+                    ->with('error', $result->getData()->error);
+            }
+
+            // Success
+            return redirect()
+                ->route('matieres.show', $matiere_id)
+                ->with('success', 'Matière retirée avec succès');
+        } catch (\Exception $e) {
+            Log::error('Erreur lors du retrait de matière', [
+                'matiere_id' => $matiere_id,
+                'quantite' => $request->quantite,
+                'exception' => $e->getMessage()
+            ]);
+
+            return redirect()
+                ->back()
+                ->withInput()  // Ajout de cette ligne pour préserver les données du formulaire
+                ->with('error', 'Une erreur est survenue lors du retrait.');
+        }
+    }
     public function modifierMouvement(Request $request, $matiere_id, $mouvement_id)
     {
         $request->validate([
