@@ -113,53 +113,55 @@
                                 </x-dropdown-link>
                             </form>
                             <x-dropdown-link :href="route('administration.index')">
-                                    {{ __('Administration') }}
+                                {{ __('Administration') }}
                             </x-dropdown-link>
                         </x-slot>
                     </x-dropdown>
                     <div x-data="{ activeTab: 'tab1' }">
                         <!-- Your modal code -->
-                        <x-modal name="notifications-modal" :show="session()->has('notification') && Route::currentRouteName() != 'notifications.index' ? true : false">
+                        <x-modal name="notifications-modal" :show="session()->has('notification') && Route::currentRouteName() != 'notifications.index'
+                            ? true
+                            : false">
                             <script>
                                 document.addEventListener('open-modal', event => {
-                            const modalTitle = event.detail;
-                            if (modalTitle === 'notifications-modal') {
-                                const containerModal = document.getElementById('notifications-modal');
-                                containerModal.innerHTML =
-                                    '<div id="loading-spinner" class=" m-6 inset-0 bg-none bg-opacity-75 flex items-center justify-center z-50 h-32 w-full"><div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32"></div></div><style>.loader {border-top-color: #3498db;animation: spinner 1.5s linear infinite;}@keyframes spinner {0% {transform: rotate(0deg);}100% {transform: rotate(360deg);}}</style>';
+                                    const modalTitle = event.detail;
+                                    if (modalTitle === 'notifications-modal') {
+                                        const containerModal = document.getElementById('notifications-modal');
+                                        containerModal.innerHTML =
+                                            '<div id="loading-spinner" class=" m-6 inset-0 bg-none bg-opacity-75 flex items-center justify-center z-50 h-32 w-full"><div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32"></div></div><style>.loader {border-top-color: #3498db;animation: spinner 1.5s linear infinite;}@keyframes spinner {0% {transform: rotate(0deg);}100% {transform: rotate(360deg);}}</style>';
 
-                                fetch('{{ route('notifications.modal') }}')
-                                    .then(response => response.text())
-                                    .then(html => {
-                                        const modalContent = document.getElementById('notifications-modal');
-                                        if (modalContent) {
-                                            // Utilisation de DOMParser pour analyser le HTML
-                                            const parser = new DOMParser();
-                                            const doc = parser.parseFromString(html, 'text/html');
+                                        fetch('{{ route('notifications.modal') }}')
+                                            .then(response => response.text())
+                                            .then(html => {
+                                                const modalContent = document.getElementById('notifications-modal');
+                                                if (modalContent) {
+                                                    // Utilisation de DOMParser pour analyser le HTML
+                                                    const parser = new DOMParser();
+                                                    const doc = parser.parseFromString(html, 'text/html');
 
-                                            // Insérer le contenu du body
-                                            modalContent.innerHTML = doc.body.innerHTML;
+                                                    // Insérer le contenu du body
+                                                    modalContent.innerHTML = doc.body.innerHTML;
 
-                                            // Fonction pour exécuter les scripts
-                                            function executeScripts(doc) {
-                                                doc.querySelectorAll('script.SCRIPT').forEach(script => {
-                                                    const newScript = document.createElement('script');
-                                                    newScript.textContent = script.textContent;
-                                                    document.body.appendChild(newScript);
-                                                });
-                                            }
+                                                    // Fonction pour exécuter les scripts
+                                                    function executeScripts(doc) {
+                                                        doc.querySelectorAll('script.SCRIPT').forEach(script => {
+                                                            const newScript = document.createElement('script');
+                                                            newScript.textContent = script.textContent;
+                                                            document.body.appendChild(newScript);
+                                                        });
+                                                    }
 
-                                            // Exécuter les scripts après avoir rempli le modal
-                                            executeScripts(doc);
-                                        } else {
-                                            console.error('Modal notification content element not found');
-                                        }
-                                    })
-                                    .catch(error => {
-                                        console.error('Erreur de chargement:', error);
-                                    });
-                            }
-                        });
+                                                    // Exécuter les scripts après avoir rempli le modal
+                                                    executeScripts(doc);
+                                                } else {
+                                                    console.error('Modal notification content element not found');
+                                                }
+                                            })
+                                            .catch(error => {
+                                                console.error('Erreur de chargement:', error);
+                                            });
+                                    }
+                                });
                             </script>
                             <div class="modal-content" id="notifications-modal">
                                 <!-- Content will be loaded here -->
@@ -208,13 +210,11 @@
                     <x-responsive-nav-link :href="route('matieres.index')" :active="request()->routeIs('matieres.index')">
                         {{ __('Matieres') }}
                     </x-responsive-nav-link>
-
                 @endcan
                 @can('voir_les_ddp_et_cde')
                     <x-responsive-nav-link :href="route('ddp_cde.index')" :active="request()->routeIs('ddp_cde.index')">
                         {{ __('DDP/CDE') }}
                     </x-responsive-nav-link>
-
                 @endcan
             @endif
         </div>
@@ -232,6 +232,7 @@
                         </div>
                         <div>
                             <div class="float-right">
+
                                 <a href="{{ route('notifications.index') }}"
                                     class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-hidden transition ease-in-out duration-150">
 
@@ -253,7 +254,9 @@
                     <x-responsive-nav-link :href="route('profile.edit', ['id' => Auth::user()->id])">
                         {{ __('Profile') }}
                     </x-responsive-nav-link>
-
+                    <x-responsive-nav-link :href="route('administration.index')">
+                        {{ __('Administration') }}
+                    </x-responsive-nav-link>
                     <!-- Authentication -->
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
@@ -264,32 +267,6 @@
                             {{ __('Log Out') }}
                         </x-responsive-nav-link>
                     </form>
-                    @if (Auth::user()->hasPermission('gerer_les_utilisateurs'))
-                        <x-responsive-nav-link :href="route('profile.index')">
-                            {{ __('Utilisateurs') }}
-                        </x-responsive-nav-link>
-                    @endif
-                    @if (Auth::user()->hasPermission('gerer_les_permissions') && Auth::user()->hasPermission('gerer_les_postes'))
-                        <x-responsive-nav-link :href="route('permissions')">
-                            {{ __('Permissions et Postes') }}
-                        </x-responsive-nav-link>
-                    @else
-                        @if (Auth::user()->hasPermission('gerer_les_permissions'))
-                            <x-responsive-nav-link :href="route('permissions')">
-                                {{ __('Permissions') }}
-                            </x-responsive-nav-link>
-                        @endif
-                        @if (Auth::user()->hasPermission('gerer_les_postes'))
-                            <x-responsive-nav-link :href="route('postes')">
-                                {{ __('Postes') }}
-                            </x-responsive-nav-link>
-                        @endif
-                    @endif
-                    @if (Auth::user()->hasPermission('voir_historique'))
-                        <x-responsive-nav-link :href="route('model_changes.index')">
-                            {{ __('Historique') }}
-                        </x-responsive-nav-link>
-                    @endif
                 @else
                     <x-responsive-nav-link :href="route('login')">
                         {{ __('Log in') }}
