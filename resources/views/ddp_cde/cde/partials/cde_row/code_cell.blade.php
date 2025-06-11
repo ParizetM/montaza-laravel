@@ -17,7 +17,7 @@
 
 <x-tooltip position="right">
     <x-slot name="slot_item">
-        <span class="{{ $isSmall ? 'whitespace-nowrap' : '' }}">{{ $cde->code }}</span>
+        <span class="{{ $isSmall ? 'whitespace-nowrap' : '' }} font-bold">{{ $cde->code }}</span>
     </x-slot>
     <x-slot name="slot_tooltip">
         @include('ddp_cde.cde.partials.cde_row.tooltip_content', compact('cde'))

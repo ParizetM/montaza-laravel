@@ -20,13 +20,16 @@
 
     <!-- Nom -->
     <td>
-        @if (Str::length($cde->nom) > 25)
+        @php
+            $limit = $isSmall ? 25 : 75;
+        @endphp
+        @if (Str::length($cde->nom) > $limit)
             <x-tooltip position="top">
-                <x-slot name="slot_item">{{ Str::limit($cde->nom, 25) }}</x-slot>
-                <x-slot name="slot_tooltip">{{ $cde->nom }}</x-slot>
+                <x-slot name="slot_item">{{ Str::limit($cde->nom == $cde->code ? '' : $cde->nom, $limit) }}</x-slot>
+                <x-slot name="slot_tooltip">{{ $cde->nom == $cde->code ? '' : $cde->nom }}</x-slot>
             </x-tooltip>
         @else
-            {{ $cde->nom }}
+            {{ $cde->nom == $cde->code ? '' : $cde->nom }}
         @endif
     </td>
 

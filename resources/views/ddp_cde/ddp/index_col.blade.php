@@ -33,7 +33,7 @@
                 <tr " class="border-b border-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 dark:border-gray-700 cursor-pointer"
                 onclick="window.location='{{ route('ddp.show', $ddp) }}'">
                     <!-- Code -->
-                    <td class="min-w-2 text-sm">
+                    <td class="min-w-2 text-sm font-bold">
                         {{ $ddp->code }}
                     </td>
 
