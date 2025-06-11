@@ -305,7 +305,7 @@
                     '<tr><td colspan="100"><div id="loading-spinner" class="mt-8 inset-0 bg-none bg-opacity-75 flex items-center justify-center z-50 h-32 w-full"><div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32"></div></div><style>.loader {border-top-color: #3498db; animation: spinner 1.5s linear infinite;}@keyframes spinner {0% {transform: rotate(0deg);}100% {transform: rotate(360deg);}}</style></td></tr>';
 
                 const url =
-                    `/matieres/search?search=${encodeURIComponent(searchQuery)}&societe=${societeId}&famille=${familleId}&sous_famille=${sousFamilleId}&nombre=${nombre}&page=${page}`;
+                    `/matieres/search?search=${encodeURIComponent(searchQuery)}&societe_filter=${societeId}&famille=${familleId}&sous_famille=${sousFamilleId}&nombre=${nombre}&page=${page}`;
                 console.log(url);
 
                 fetch(url, {

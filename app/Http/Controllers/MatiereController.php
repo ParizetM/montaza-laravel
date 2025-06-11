@@ -44,7 +44,7 @@ class MatiereController extends Controller
             $query->where('sous_famille_id', $request->input('sous_famille'));
         }
         // Filtrer par société
-        if ($request->filled('societe')) {
+        if ($request->filled('societe_filter')) {
             $query->whereHas('societeMatieres', function ($subQuery) use ($request) {
                 $subQuery->where('societe_id', $request->input('societe'));
             });
@@ -64,9 +64,19 @@ class MatiereController extends Controller
                 });
 
                 $query_test = clone $query;
-                $query_test = $query_test->get();
+                $results = $query_test->get();
 
-                if ($query_test->isEmpty()) {
+                Log::info("Debug recherche exacte", [
+                    'search' => $search,
+                    'count_results' => $results->count(),
+                    'has_famille_filter' => $request->filled('famille'),
+                    'has_sous_famille_filter' => $request->filled('sous_famille'),
+                    'has_societe_filter' => $request->filled('societe'),
+                    'sql' => $query_test->toSql(),
+                    'bindings' => $query_test->getBindings()
+                ]);
+
+                if ($results->isEmpty()) {
                     Log::info("No results found for single term search: {$search}");
                     // Deuxième tentative : recherche flexible
                     return $this->buildMatiereQuery($request, true);
@@ -164,12 +174,12 @@ class MatiereController extends Controller
     {
         // Validation des données d'entrée
         $request->validate([
-            'search'       => 'nullable|string|max:255',
-            'nombre'       => 'nullable|integer|min:1|max:10000',
-            'famille'      => 'nullable|integer|exists:familles,id',
-            'sous_famille' => 'nullable|integer|exists:sous_familles,id',
-            'page'         => 'nullable|integer|min:1',
-            'societe'      => 'nullable|integer|exists:societes,id',
+            'search'        => 'nullable|string|max:255',
+            'nombre'        => 'nullable|integer|min:1|max:10000',
+            'famille'       => 'nullable|integer|exists:familles,id',
+            'sous_famille'  => 'nullable|integer|exists:sous_familles,id',
+            'page'          => 'nullable|integer|min:1',
+            'societe_filter'=> 'nullable|integer|exists:societes,id',
         ]);
 
         $nombre = intval($request->input('nombre', 50));
@@ -211,11 +221,11 @@ class MatiereController extends Controller
         ]);
 
         // Construction de la requête avec la logique principale
-
         $query = $this->buildMatiereQuery($request);
-        $query->orderBy('sous_famille_id')->limit(50);
+        $query->orderBy('sous_famille_id');
 
-        $matieres = $query->get();
+        // Appliquer la limite APRÈS tous les tris
+        $matieres = $query->limit(50)->get();
 
         return response()->json([
             'matieres' => MatiereResource::collection($matieres),
