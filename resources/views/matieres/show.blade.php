@@ -110,15 +110,23 @@
                     <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Stock actuel</p>
                     <p class="font-semibold text-lg"><x-stock-tooltip matiereId="{{ $matiere->id }}" /></p>
                 </div>
-                <div
-                    class="bg-gray-50 dark:bg-gray-750 p-4 rounded-lg border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-md">
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Référence unitaire</p>
-                    <p class="font-semibold text-lg">{{ $matiere->ref_valeur_unitaire }}</p>
-                </div>
+                @if ($matiere->typeAffichageStock() == 2)
+                    <div
+                        class="bg-gray-50 dark:bg-gray-750 p-4 rounded-lg border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-md">
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Référence unitaire</p>
+                        <p class="font-semibold text-lg">{{ $matiere->ref_valeur_unitaire }}</p>
+                    </div>
+                @else
+                    <div
+                        class="bg-gray-50 dark:bg-gray-750 p-4 rounded-lg border border-gray-100 dark:border-gray-700 brightness-110 dark:brightness-90">
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Référence unitaire</p>
+                        <p class="font-semibold text-lg text-gray-500 dark:text-gray-400">Aucune</p>
+                    </div>
+                @endif
                 <div
                     class="bg-gray-50 dark:bg-gray-750 p-4 rounded-lg border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-md">
                     <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">DN</p>
-                    <p class="font-semibold text-lg">{{ $matiere->dn }}</p>
+                    <p class="font-semibold text-lg">{{ $matiere->dn ?? '-' }}</p>
                 </div>
                 <div
                     class="bg-gray-50 dark:bg-gray-750 p-4 rounded-lg border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-md">
