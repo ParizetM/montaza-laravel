@@ -1,6 +1,9 @@
 <tr class="border-b border-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 dark:border-gray-700 cursor-pointer"
     onclick="window.location='{{ route('cde.show', $cde) }}'">
-
+    @php
+        $limit = $isSmall ? 25 : 75;
+        $limit = $isMid ? 35 : $limit;
+    @endphp
     <!-- Code -->
     <td class="min-w-2 text-sm">
         <div class="flex items-center">
@@ -20,9 +23,7 @@
 
     <!-- Nom -->
     <td>
-        @php
-            $limit = $isSmall ? 25 : 75;
-        @endphp
+
         @if (Str::length($cde->nom) > $limit)
             <x-tooltip position="top">
                 <x-slot name="slot_item">{{ Str::limit($cde->nom == $cde->code ? '' : $cde->nom, $limit) }}</x-slot>
@@ -41,12 +42,17 @@
     @if (!$isSmall)
         <!-- Destinataire -->
         <td>
-            <x-tooltip position="top">
+            <x-tooltip position="left">
                 <x-slot name="slot_item">
-                    <span class="text-gray-900 dark:text-gray-100">{{ $cde->societe->raison_sociale }}</span>
+                    <span class="text-gray-900 dark:text-gray-100">
+                        {{ Str::limit($cde->societe->raison_sociale, $limit - 10) }}
+                    </span>
                 </x-slot>
                 <x-slot name="slot_tooltip">
                     <div class="flex flex-col">
+                        <h3 class="text-gray-900 dark:text-gray-100 font-bold border-b border-gray-300 dark:border-gray-600 pb-2 mb-2">
+                            {{ $cde->societe->raison_sociale }}
+                        </h3>
                         <h3 class="text-gray-900 dark:text-gray-100 font-bold">
                             Destinataire{{ $cde->societeContacts->count() > 1 ? 's' : '' }} :
                         </h3>
