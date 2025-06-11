@@ -1,6 +1,7 @@
 <x-app-layout>
+    @section('title', 'Demandes de prix')
     <x-slot name="header">
-        <div class="flex justify-between ">
+        <div class="flex items-center gap-20 ">
             <div>
                 <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                     <a href="{{ route('ddp_cde.index') }}"
@@ -30,10 +31,10 @@
                 <button type="submit" class="mr-2 btn w-full sm:w-auto sm:mt-0 md:mt-0 lg:mt-0">
                     {!! __('Rechercher') !!}
                 </button>
-                    <a href="{!! route('ddp.create') !!}"
-                        class="btn whitespace-nowrap w-fit-content sm:mt-0 md:mt-0 lg:mt-0">
-                        {!! __('Créer une demande de prix') !!}
-                    </a>
+                <a href="{!! route('ddp.create') !!}"
+                    class="btn whitespace-nowrap w-fit-content sm:mt-0 md:mt-0 lg:mt-0">
+                    {!! __('Créer une demande de prix') !!}
+                </a>
             </form>
         </div>
     </x-slot>
@@ -41,55 +42,32 @@
 
         <div class="bg-white dark:bg-gray-800 flex flex-col p-4 text-gray-800 dark:text-gray-200">
 
-            <table>
-                <thead>
-                    <tr>
-                        <th class="px-4 py-2">Numéro</th>
-                        <th class="px-4 py-2">Date</th>
-                        <th class="px-4 py-2">Nom</th>
-                        <th class="px-4 py-2">Demandé par</th>
-                        <th class="px-4 py-2">Statut</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($ddps as $ddp)
-                        <tr " class="border-b border-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 dark:border-gray-700 cursor-pointer"
-                onclick="window.location='{{ route('ddp.show', $ddp) }}'">
-                    <!-- Code -->
-                    <td class="min-w-2 text-sm">
-                        {{ $ddp->code }}
-                    </td>
+            @if($ddpsGrouped->count() > 0)
+                <table class="w-full">
+                    <thead>
+                        <tr>
+                            <x-sortable-header column="code" route="ddp.index">Numéro</x-sortable-header>
+                            <x-sortable-header column="created_at" route="ddp.index">Date</x-sortable-header>
+                            <x-sortable-header column="nom" route="ddp.index">Nom</x-sortable-header>
+                            <x-sortable-header column="user" route="ddp.index">Demandé par</x-sortable-header>
+                            <x-sortable-header column="statut" route="ddp.index">Statut</x-sortable-header>
+                        </tr>
+                    </thead>
+                    @include('ddp_cde.ddp.partials.index_lignes', ['isSmall' => false, 'showCreateButton' => false, 'ddpsGrouped' => $ddpsGrouped])
+                </table>
+            @else
+                <!-- Message si aucune demande de prix -->
+                <div class="text-center py-8">
+                    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Aucune demande de prix trouvée</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4">Aucune demande de prix ne correspond à vos critères de recherche.</p>
+                        <a href="{{ route('ddp.create') }}" class="btn">
+                            Créer une nouvelle demande de prix
+                        </a>
+                    </div>
+                </div>
+            @endif
 
-                    <!-- Date de création -->
-                    <!-- Date de création -->
-                    <td class="pl-2 text-xs leading-5">
-                        <span class="text-nowrap">
-                            <span class="pr-1 leading-5">{{ $ddp->created_at->format('d/m/Y') }}</span>
-                            <small>{{ $ddp->updated_at->format('H:i') }}</small>
-                        </span>
-                    </td>
-
-
-                    <!-- Nom -->
-                    <td>
-                        {{ $ddp->nom }}
-                    </td>
-                    <td>
-                        {{ $ddp->user->first_name }} {{ $ddp->user->last_name }}
-                    </td>
-                    <!-- Statut avec couleur dynamique -->
-                    <td class="">
-                        <div class="text-center w-full px-2 text-xs leading-5 flex rounded-full font-bold items-center justify-center"
-                            style="background-color: {{ $ddp->statut->couleur }}; color: {{ $ddp->statut->couleur_texte }}">
-                            {{ $ddp->statut->nom }}</div>
-                    </td>
-
-                    <!-- Lien d'action -->
-                </tr>
- @endforeach
-                </tbody>
-
-            </table>
             <div class="mt-4 flex justify-center items-center pb-3">
                 <div>
                     {{ $ddps->appends(request()->query())->links() }}

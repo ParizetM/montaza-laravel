@@ -52,20 +52,25 @@ class DdpController extends Controller
         $request->validate([
             'search' => 'nullable|string|max:255',
             'statut' => 'nullable|integer|exists:ddp_cde_statuts,id',
-            'nombre' => 'nullable|integer|min:1|'
+            'nombre' => 'nullable|integer|min:1|',
+            'sort' => 'nullable|string|in:code,created_at,nom,user,statut',
+            'direction' => 'nullable|string|in:asc,desc',
         ]);
 
         // Lecture des entrées avec des valeurs par défaut
         $search = $request->input('search');
         $statut = $request->input('statut');
         $quantite = $request->input('nombre', 100);
+        $sort = $request->input('sort', 'code');
+        $direction = $request->input('direction', 'desc');
 
         // Construire la requête de base
         $query = Ddp::query()
-            ->where('nom', '!=', 'undefined')
+            ->where('ddps.nom', '!=', 'undefined')
+            ->with(['entite', 'user', 'ddpCdeStatut']) // Charger les relations nécessaires
             ->when($search, function ($query, $search) {
                 $query->where(function ($subQuery) use ($search) {
-                    $subQuery->where('nom', 'ILIKE', "%{$search}%")
+                    $subQuery->where('ddps.nom', 'ILIKE', "%{$search}%")
                         ->orWhere('code', 'ILIKE', "%{$search}%")
                         ->orWhereHas('user', function ($subQuery) use ($search) {
                             $subQuery->where('first_name', 'ILIKE', "%{$search}%")
@@ -75,18 +80,54 @@ class DdpController extends Controller
             })
             ->when($statut, function ($query, $statut) {
                 $query->where('ddp_cde_statut_id', $statut);
-            })
-            ->orderBy('ddp_cde_statut_id', 'asc')
-            ->orderBy('created_at', 'desc');
+            });
+
+        // Appliquer le tri avec groupement par entité
+        switch ($sort) {
+            case 'code':
+                $query->orderBy('ddps.entite_id', 'asc')
+                      ->orderBy('ddps.code', $direction);
+                break;
+            case 'nom':
+                $query->orderBy('ddps.entite_id', 'asc')
+                      ->orderBy('ddps.nom', $direction);
+                break;
+            case 'user':
+                $query->join('users', 'ddps.user_id', '=', 'users.id')
+                    ->orderBy('ddps.entite_id', 'asc')
+                    ->orderBy('users.first_name', $direction)
+                    ->orderBy('users.last_name', $direction)
+                    ->select('ddps.*');
+                break;
+            case 'statut':
+                $query->join('ddp_cde_statuts', 'ddps.ddp_cde_statut_id', '=', 'ddp_cde_statuts.id')
+                    ->orderBy('ddps.entite_id', 'asc')
+                    ->orderBy('ddp_cde_statuts.nom', $direction)
+                    ->select('ddps.*');
+                break;
+            case 'created_at':
+                $query->orderBy('ddps.entite_id', 'asc')
+                      ->orderBy('ddps.created_at', $direction);
+                break;
+            default:
+                // Tri par défaut : entité puis statut puis date de création
+                $query->orderBy('ddps.entite_id', 'asc')
+                      ->orderBy('ddps.ddp_cde_statut_id', 'asc')
+                      ->orderBy('ddps.created_at', 'desc');
+                break;
+        }
 
         // Récupérer les résultats paginés
         $ddps = $query->paginate($quantite);
+
+        // Grouper par entité pour la vue - convertir d'abord en collection puis grouper
+        $ddpsGrouped = $ddps->getCollection()->groupBy('entite.name');
 
         // Récupérer les statuts pour le filtre
         $ddp_statuts = DdpCdeStatut::all();
 
         // Retourner la vue avec les données
-        return view('ddp_cde.ddp.index', compact('ddps', 'ddp_statuts'));
+        return view('ddp_cde.ddp.index', compact('ddps', ['ddp_statuts', 'ddpsGrouped', 'sort', 'direction']));
     }
 
     public function indexColDdpSmall()
