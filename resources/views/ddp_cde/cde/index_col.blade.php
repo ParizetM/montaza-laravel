@@ -18,9 +18,7 @@
             <tr>
                 <th class="px-4 py-2">Numéro</th>
                 <th class="px-4 py-2">Date</th>
-                @if (!$isSmall)
-                    <th class="px-4 py-2"></th>
-                @endif
+
                 <th class="px-4 py-2">Nom</th>
                 @if (!$isSmall)
                     <th class="px-4 py-2">Destinataire</th>

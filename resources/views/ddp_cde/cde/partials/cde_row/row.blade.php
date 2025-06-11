@@ -1,0 +1,69 @@
+<tr class="border-b border-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 dark:border-gray-700 cursor-pointer"
+    onclick="window.location='{{ route('cde.show', $cde) }}'">
+
+    <!-- Code -->
+    <td class="min-w-2 text-sm">
+        <div class="flex items-center">
+            @include('ddp_cde.cde.partials.cde_row.code_cell', compact('cde', 'isSmall'))
+        </div>
+    </td>
+
+    <!-- Date de création -->
+    <td class="pl-2 text-xs leading-5 {{ $isSmall ? 'text-center' : '' }}">
+        <span class="text-nowrap">
+            <span class="pr-1 leading-5">{{ $cde->created_at->format('d/m/Y') }}</span>
+            @if (!$isSmall)
+                <small>{{ $cde->updated_at->format('H:i') }}</small>
+            @endif
+        </span>
+    </td>
+
+    <!-- Nom -->
+    <td>
+        @if (Str::length($cde->nom) > 25)
+            <x-tooltip position="top">
+                <x-slot name="slot_item">{{ Str::limit($cde->nom, 25) }}</x-slot>
+                <x-slot name="slot_tooltip">{{ $cde->nom }}</x-slot>
+            </x-tooltip>
+        @else
+            {{ $cde->nom }}
+        @endif
+    </td>
+
+    @if (!$isSmall && !$isMid)
+        <!-- Créé par -->
+        <td>{{ $cde->user->first_name }} {{ $cde->user->last_name }}</td>
+    @endif
+
+    @if (!$isSmall)
+        <!-- Destinataire -->
+        <td>
+            <x-tooltip position="top">
+                <x-slot name="slot_item">
+                    <span class="text-gray-900 dark:text-gray-100">{{ $cde->societe->raison_sociale }}</span>
+                </x-slot>
+                <x-slot name="slot_tooltip">
+                    <div class="flex flex-col">
+                        <h3 class="text-gray-900 dark:text-gray-100 font-bold">
+                            Destinataire{{ $cde->societeContacts->count() > 1 ? 's' : '' }} :
+                        </h3>
+                        @foreach ($cde->societeContacts as $contact)
+                            <span class="text-gray-900 dark:text-gray-100">
+                                {{ $contact->nom }}
+                                <small class="text-gray-700 dark:text-gray-300">{{ $contact->email }}</small>
+                            </span>
+                        @endforeach
+                    </div>
+                </x-slot>
+            </x-tooltip>
+        </td>
+    @endif
+
+    <!-- Statut -->
+    <td class="">
+        <div class="text-center w-full px-2 text-xs leading-5 flex rounded-full font-bold items-center justify-center"
+            style="background-color: {{ $cde->statut->couleur }}; color: {{ $cde->statut->couleur_texte }}">
+            {{ $cde->statut->nom }}
+        </div>
+    </td>
+</tr>
