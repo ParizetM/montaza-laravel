@@ -6,8 +6,12 @@
                 {{ __('Commandes') }}
             </a>
         </h1>
-        <a href="{{ route('cde.index') }}" class="btn mb-2">Voir tout</a>
-
+        <div>
+            @if (!$isSmall)
+                <a href="{{ route('cde.create') }}" class="btn btn-primary mb-2">Créer une commande</a>
+            @endif
+            <a href="{{ route('cde.index') }}" class="btn mb-2">Voir tout</a>
+        </div>
     </div>
 
     <p class="text-lg mb-2">
@@ -26,6 +30,10 @@
                 <th class="px-4 py-2">Statut</th>
             </tr>
         </thead>
-        @include('ddp_cde.cde.partials.index_lignes', ['isSmall' => $isSmall, 'showCreateButton' => true, 'isMid' => true])
+        @include('ddp_cde.cde.partials.index_lignes', [
+            'isSmall' => $isSmall,
+            'showCreateButton' => true,
+            'isMid' => true,
+        ])
     </table>
 </div>

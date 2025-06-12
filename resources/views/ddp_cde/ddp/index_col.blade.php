@@ -6,8 +6,14 @@
                 {{ __('Demandes de prix') }}
             </a>
         </h1>
-        <a href="{{ route('ddp.index') }}" class="btn mb-2">Voir tout</a>
+        <div>
+            @if (!$isSmall)
+                <a href="{{ route('ddp.create') }}" class="btn btn-primary mb-2">Créer une demande de prix</a>
 
+            @endif
+            <a href="{{ route('ddp.index') }}" class="btn mb-2">Voir tout</a>
+
+        </div>
     </div>
 
     <p class="text-lg mb-2">
@@ -42,7 +48,7 @@
                     <td class="pl-2 text-xs leading-5 {{ $isSmall ? 'text-center' : 'text-right' }}">
                         <span class="text-nowrap"><span class="pr-1 leading-5">{{ $ddp->created_at->format('d/m/Y') }}</span>
                     </td>
-                     @if (!$isSmall)
+                      @if (!$isSmall)
                     <td class="pr-2 text-xs leading-5">
                         <small>{{ $ddp->updated_at->format('H:i') }}</small></span>
                     </td>
