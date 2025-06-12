@@ -108,41 +108,60 @@
                 <div
                     class="bg-gray-50 dark:bg-gray-750 p-4 rounded-lg border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-md">
                     <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Stock actuel</p>
-                    <div class="flex items-center flex-col w-fit">
-                        <div class="border-b-2 {{ $matiere->quantite() < $matiere->stock_min ? 'border-red-500 dark:border-red-400' : 'border-gray-500 dark:border-gray-400' }}">
-                            <p class="font-semibold text-lg">
-                                <x-stock-tooltip matiereId="{{ $matiere->id }}" no_underline />
-                            </p>
-                        </div>
 
-                        <x-tooltip position="bottom" class="">
-                            <x-slot name="slot_item">
-                                <p class="{{ $matiere->quantite() < $matiere->stock_min ? 'text-red-500 dark:text-red-400' : 'text-gray-500 dark:text-gray-400' }} ">
-                                    {{ $matiere->stock_min }}
+                    <div class=" flex items-end">
+                        <div class="flex items-center flex-col w-fit">
+                            <div class="border-b-2 border-gray-500 dark:border-gray-400">
+                                <p class="font-semibold text-lg">
+                                    <x-stock-tooltip matiereId="{{ $matiere->id }}" no_underline />
                                 </p>
-                            </x-slot>
-                            <x-slot name="slot_tooltip">
-                                @if ($matiere->quantite() < $matiere->stock_min)
-                                    <span class="text-red-500 dark:text-red-400 font-semibold">Attention !</span>
-                                    <p class="text-sm">Le stock de cette matière est inférieur au seuil minimum
-                                        défini.</p>
-                                @else
-                                Si le stock passe en dessous de ce seuil, vous serez notifié automatiquement.
-                                @endif
-                            </x-slot>
-                        </x-tooltip>
+                            </div>
+
+                            <x-tooltip position="bottom" class="">
+                                <x-slot name="slot_item">
+                                    <p class="text-gray-500 dark:text-gray-400 ">
+                                        {{ $matiere->stock_min }}
+                                    </p>
+                                </x-slot>
+                                <x-slot name="slot_tooltip">
+                                    @if ($matiere->quantite() < $matiere->stock_min)
+                                        <span class="text-red-500 dark:text-red-400 font-semibold">Stock
+                                            insuffisant</span>
+                                        <p class="text-sm">Le stock de cette matière est inférieur au seuil minimum
+                                            défini.</p>
+                                    @else
+                                        Si le stock passe en dessous de ce seuil, vous serez notifié automatiquement.
+                                    @endif
+                                    <div class="flex justify-end mt-2">
+                                        <a href="{{ route('matieres.edit', $matiere->id) }}" class="btn">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                            </svg>
+                                            Modifier le stock minimum
+                                        </a>
+                                    </div>
+                                </x-slot>
+                            </x-tooltip>
+                        </div>
+                        @if ($matiere->quantite() < $matiere->stock_min)
+                            <div class="ml-2">
+                            </div>
+                        @endif
                     </div>
+
                 </div>
                 @if ($matiere->typeAffichageStock() == 2)
                     <div
                         class="bg-gray-50 dark:bg-gray-750 p-4 rounded-lg border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-md">
-                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Référence unitaire</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Valeur de référence unitaire</p>
                         <p class="font-semibold text-lg">{{ $matiere->ref_valeur_unitaire }}</p>
                     </div>
                 @else
                     <div
                         class="bg-gray-50 dark:bg-gray-750 p-4 rounded-lg border border-gray-100 dark:border-gray-700 brightness-110 dark:brightness-90">
-                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Référence unitaire</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Valeur de référence unitaire</p>
                         <p class="font-semibold text-lg text-gray-500 dark:text-gray-400">Aucune</p>
                     </div>
                 @endif

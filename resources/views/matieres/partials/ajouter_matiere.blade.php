@@ -17,7 +17,7 @@
                         <div class="w-full sm:w-auto">
                             <x-input-label value="Quantité à ajouter" class="text-sm font-medium mb-1" />
                             <div class="relative rounded-md shadow-sm">
-                                <x-text-input type="number" name="quantite"
+                                <x-text-input type="number" name="quantite" id="quantite_ajouter"
                                     class="w-full pr-12 focus:ring-green-500 focus:border-green-500"
                                     value="{{ old('quantite') }}" placeholder="Quantité" step="0.01"
                                     min="0" required />
@@ -39,7 +39,7 @@
                             <div class="w-full sm:w-auto">
                                 <x-input-label value="Valeur unitaire" class="text-sm font-medium mb-1" />
                                 <div class="relative rounded-md shadow-sm">
-                                    <x-text-input type="number" name="valeur_unitaire"
+                                    <x-text-input type="number" name="valeur_unitaire" id="valeur_unitaire_ajouter"
                                         class="w-full focus:ring-green-500 focus:border-green-500"
                                         value="{{ old('valeur_unitaire', $matiere->ref_valeur_unitaire) }}" placeholder="Valeur unitaire" step="0.01"
                                         min="0" required />
@@ -53,6 +53,34 @@
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
                             </div>
+                            <script>
+                                    document.addEventListener('DOMContentLoaded', function() {
+                                        const quantityInput = document.getElementById('quantite_ajouter');
+                                        const unitValueSelect = document.getElementById('valeur_unitaire_ajouter');
+                                        const totalValueDiv = document.getElementById('total-value-ajout');
+                                        const totalValueAmount = document.getElementById('total-value-amount-ajout');
+
+                                        function updateTotalValueAjout() {
+                                            const quantity = parseFloat(quantityInput.value) || 0;
+                                            const unitValue = parseFloat(unitValueSelect.value) || 0;
+                                            const totalValue = quantity * unitValue;
+
+                                            if (quantity > 0 && unitValue > 0) {
+                                                totalValueDiv.classList.remove('hidden');
+                                                totalValueAmount.textContent = formatNumber(totalValue) + ' {{ $matiere->unite->short }}';
+                                            } else {
+                                                totalValueDiv.classList.add('hidden');
+                                            }
+                                        }
+
+                                        function formatNumber(num) {
+                                            return new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(num);
+                                        }
+
+                                        quantityInput.addEventListener('input', updateTotalValueAjout);
+                                        unitValueSelect.addEventListener('change', updateTotalValueAjout);
+                                    });
+                                </script>
                         @endif
                         <button type="submit"
                             class="px-4 py-2 bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-600 text-white rounded-md transition-colors duration-200 flex items-center gap-2 h-10">
@@ -62,6 +90,11 @@
                             </svg>
                             Ajouter
                         </button>
+                        <div id="total-value-ajout"
+                                    class="text-sm text-gray-500 dark:text-gray-400 mt-1 hidden">
+                                    total: <span id="total-value-amount-ajout"></span>
+
+                                </div>
                     </div>
 
                     <div class="mt-3">

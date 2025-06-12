@@ -1,4 +1,4 @@
- <div
+<div
                 class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-6 rounded-lg shadow-md border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-lg">
                 <div class="flex items-center gap-3 mb-4">
                     <div class="bg-red-100 dark:bg-red-900 rounded-full p-2">
@@ -50,9 +50,9 @@
                             <div class="w-full sm:w-auto">
                                 <x-input-label value="Quantité à retirer" class="text-sm font-medium mb-1" />
                                 <div class="relative rounded-md shadow-sm">
-                                    <x-text-input type="number" name="quantite"
+                                    <x-text-input type="number" name="quantite" id="retirer_quantite_standard"
                                         class="w-full pr-12 focus:ring-red-500 focus:border-red-500"
-                                        value="{{ old('quantite') }}" placeholder="Quantité" step="0.01"
+                                        value="{{ old('quantite') }}" placeholder="Quantité" step="{{ $matiere->typeAffichageStock() == 2 ? '1' : '0.01' }}"
                                         min="0" required />
                                     @if ($matiere->typeAffichageStock() !== 2)
                                         <div
@@ -67,11 +67,11 @@
                                 @enderror
                             </div>
 
-                            @if ($matiere->typeAffichageStock() !== 1)
+                            @if ($matiere->typeAffichageStock() == 2)
                                 <p class="mb-2">X</p>
                                 <div class="w-full sm:w-auto">
                                     <x-input-label value="Valeur unitaire" class="text-sm font-medium mb-1" />
-                                    <select name="valeur_unitaire"
+                                    <select name="valeur_unitaire" id="valeur_unitaire_select_standard"
                                         class="rounded-md shadow-sm border-gray-300 dark:border-gray-700 dark:bg-gray-900 focus:ring-red-500 focus:border-red-500 block w-full">
                                         @foreach ($matiere->stock->where("quantite",'!=',0) as $stock)
                                             @if ($stock->valeur_unitaire > 0)
@@ -85,7 +85,37 @@
                                         <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                     @enderror
                                 </div>
+
+                                <script>
+                                    document.addEventListener('DOMContentLoaded', function() {
+                                        const quantityInput = document.getElementById('retirer_quantite_standard');
+                                        const unitValueSelect = document.getElementById('valeur_unitaire_select_standard');
+                                        const totalValueDiv = document.getElementById('total-value');
+                                        const totalValueAmount = document.getElementById('total-value-amount');
+
+                                        function updateTotalValue() {
+                                            const quantity = parseFloat(quantityInput.value) || 0;
+                                            const unitValue = parseFloat(unitValueSelect.value) || 0;
+                                            const totalValue = quantity * unitValue;
+
+                                            if (quantity > 0 && unitValue > 0) {
+                                                totalValueDiv.classList.remove('hidden');
+                                                totalValueAmount.textContent = formatNumber(totalValue) + ' {{ $matiere->unite->short }}';
+                                            } else {
+                                                totalValueDiv.classList.add('hidden');
+                                            }
+                                        }
+
+                                        function formatNumber(num) {
+                                            return new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(num);
+                                        }
+
+                                        quantityInput.addEventListener('input', updateTotalValue);
+                                        unitValueSelect.addEventListener('change', updateTotalValue);
+                                    });
+                                </script>
                             @endif
+
                             <button type="submit"
                                 class="px-4 py-2 bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-600 text-white rounded-md transition-colors duration-200 flex items-center gap-2 h-10">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
@@ -94,6 +124,11 @@
                                 </svg>
                                 Retirer
                             </button>
+                            <div id="total-value"
+                                    class="text-sm text-gray-500 dark:text-gray-400 mt-1 hidden">
+                                    total: <span id="total-value-amount"></span>
+
+                                </div>
                         </div>
 
                         <div class="mt-3">
