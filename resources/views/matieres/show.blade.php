@@ -303,38 +303,58 @@
                                 <th
                                     class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                     Date</th>
+                                <th
+                                    class="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    Actions</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                             @foreach ($fournisseurs as $fournisseur)
-                                <tr onclick="window.location.href = '{{ route('matieres.show_prix', ['matiere' => $matiere->id, 'fournisseur' => $fournisseur->id]) }}';"
-                                    class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-200">
-                                    <td class="px-4 py-3 whitespace-nowrap">
+                                <tr class="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
+                                    <td class="px-4 py-3 whitespace-nowrap cursor-pointer"
+                                        onclick="window.location.href = '{{ route('matieres.show_prix', ['matiere' => $matiere->id, 'fournisseur' => $fournisseur->id]) }}';">
                                         @if ($fournisseur->ref_externe && $fournisseur->ref_externe != '')
                                             {{ $fournisseur->ref_externe }}
                                         @else
                                             <span class="text-gray-400 dark:text-gray-500">Aucune référence</span>
                                         @endif
                                     </td>
-                                    <td class="px-4 py-3 whitespace-nowrap font-medium">
+                                    <td class="px-4 py-3 whitespace-nowrap font-medium cursor-pointer"
+                                        onclick="window.location.href = '{{ route('matieres.show_prix', ['matiere' => $matiere->id, 'fournisseur' => $fournisseur->id]) }}';">
                                         {{ $fournisseur->raison_sociale }}</td>
                                     @if ($fournisseur->prix != null && $fournisseur->prix->prix_unitaire != null)
                                         <td
-                                            class="px-4 py-3 whitespace-nowrap font-semibold text-green-600 dark:text-green-400">
+                                            class="px-4 py-3 whitespace-nowrap font-semibold text-green-600 dark:text-green-400 cursor-pointer"
+                                            onclick="window.location.href = '{{ route('matieres.show_prix', ['matiere' => $matiere->id, 'fournisseur' => $fournisseur->id]) }}';">
                                             {{ formatNumberArgent($fournisseur->prix->prix_unitaire) . '/' . $matiere->unite->short }}
                                         </td>
-                                        <td class="px-4 py-3 whitespace-nowrap text-gray-500 dark:text-gray-400">
+                                        <td class="px-4 py-3 whitespace-nowrap text-gray-500 dark:text-gray-400 cursor-pointer"
+                                            onclick="window.location.href = '{{ route('matieres.show_prix', ['matiere' => $matiere->id, 'fournisseur' => $fournisseur->id]) }}';">
                                             {{ formatDate(date_string: $fournisseur->prix->date) }}
                                         </td>
                                     @else
-                                        <td class="px-4 py-3 whitespace-nowrap text-gray-500 dark:text-gray-400"
-                                            colspan="2">
+                                        <td class="px-4 py-3 whitespace-nowrap text-gray-500 dark:text-gray-400 cursor-pointer"
+                                            colspan="2"
+                                            onclick="window.location.href = '{{ route('matieres.show_prix', ['matiere' => $matiere->id, 'fournisseur' => $fournisseur->id]) }}';">
                                             <span
                                                 class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
                                                 Aucun prix
                                             </span>
                                         </td>
                                     @endif
+                                    <td class="px-4 py-3 whitespace-nowrap text-center">
+                                        <x-boutons.supprimer
+                                            customButton="<button class='btn-secondary btn-sm'>
+                                                <svg xmlns='http://www.w3.org/2000/svg' class='h-4 w-4' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                                                    <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 18L18 6M6 6l12 12' />
+                                                </svg>
+                                            </button>"
+                                            modalTitle="Détacher le fournisseur"
+                                            userInfo="Êtes-vous sûr de vouloir détacher le fournisseur {{ $fournisseur->raison_sociale }} de cette matière ? <br/> Tous les prix associés seront également supprimés. Cette action est irréversible."
+                                            formAction="{{ route('matieres.fournisseurs.detacher', ['matiere' => $matiere->id, 'fournisseur' => $fournisseur->id]) }}"
+                                            confirmButtonText="Détacher définitivement"
+                                            cancelButtonText="Annuler" />
+                                    </td>
                                 </tr>
                             @endforeach
                             @if ($fournisseurs->count() == 0)

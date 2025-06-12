@@ -8,6 +8,151 @@
         'id',
         'undeletable',
     ];
+
+    // Fonction pour résoudre automatiquement les informations des IDs
+    function resolveIdInfo($key, $value) {
+        if ($value === null || !is_numeric($value)) return null;
+
+        try {
+            switch($key) {
+                case 'matiere_id':
+                case 'societe_matiere_id':
+                    $matiere = \App\Models\SocieteMatiere::find($value);
+                    if (!$matiere) return ['name' => 'Matière #' . $value, 'details' => []];
+
+                    $details = [];
+                    $fillableFields = ['name', 'ref_interne', 'designation', 'code', 'unite', 'prix_unitaire', 'stock_min', 'stock_max', 'description'];
+                    foreach ($fillableFields as $field) {
+                        if (isset($matiere->$field) && $matiere->$field !== null && $matiere->$field !== '') {
+                            $details[$field] = $matiere->$field;
+                        }
+                    }
+                    return ['name' => $matiere->name ?? 'Matière #' . $value, 'details' => $details];
+
+                case 'societe_id':
+                    $societe = \App\Models\Societe::find($value);
+                    if (!$societe) return ['name' => 'Société #' . $value, 'details' => []];
+
+                    $details = [];
+                    $fillableFields = ['name', 'raison_sociale', 'email', 'phone', 'address', 'site_web', 'siret', 'siren', 'tva'];
+                    foreach ($fillableFields as $field) {
+                        if (isset($societe->$field) && $societe->$field !== null && $societe->$field !== '') {
+                            $details[$field] = $societe->$field;
+                        }
+                    }
+                    return ['name' => $societe->name ?? 'Société #' . $value, 'details' => $details];
+
+                case 'user_id':
+                    $user = \App\Models\User::find($value);
+                    if (!$user) return ['name' => 'Utilisateur #' . $value, 'details' => []];
+
+                    $details = [];
+                    $fillableFields = ['first_name', 'last_name', 'email', 'phone', 'address'];
+                    foreach ($fillableFields as $field) {
+                        if (isset($user->$field) && $user->$field !== null && $user->$field !== '') {
+                            $details[$field] = $user->$field;
+                        }
+                    }
+                    return ['name' => ($user->first_name ?? '') . ' ' . ($user->last_name ?? ''), 'details' => $details];
+
+                case 'role_id':
+                    $role = \App\Models\Role::find($value);
+                    if (!$role) return ['name' => 'Rôle #' . $value, 'details' => []];
+
+                    $details = [];
+                    $fillableFields = ['name', 'description', 'level'];
+                    foreach ($fillableFields as $field) {
+                        if (isset($role->$field) && $role->$field !== null && $role->$field !== '') {
+                            $details[$field] = $role->$field;
+                        }
+                    }
+                    return ['name' => $role->name ?? 'Rôle #' . $value, 'details' => $details];
+
+                case 'entite_id':
+                    $entite = \App\Models\Entite::find($value);
+                    if (!$entite) return ['name' => 'Entité #' . $value, 'details' => []];
+
+                    $details = [];
+                    $fillableFields = ['name', 'code', 'description', 'address'];
+                    foreach ($fillableFields as $field) {
+                        if (isset($entite->$field) && $entite->$field !== null && $entite->$field !== '') {
+                            $details[$field] = $entite->$field;
+                        }
+                    }
+                    return ['name' => $entite->name ?? 'Entité #' . $value, 'details' => $details];
+
+                default:
+                    // Résolution automatique pour les IDs non spécifiés
+                    if (str_ends_with($key, '_id')) {
+                        $modelName = str_replace('_id', '', $key);
+                        $modelClass = 'App\\Models\\' . str_replace(' ', '', ucwords(str_replace('_', ' ', $modelName)));
+
+                        try {
+                            if (class_exists($modelClass)) {
+                                $model = $modelClass::find($value);
+                                if ($model) {
+                                    $displayName = $model->name ?? $model->title ?? $model->label ?? $model->designation ?? ucfirst($modelName) . ' #' . $value;
+                                    $details = [];
+
+                                    // Récupérer tous les attributs fillable du modèle
+                                    if (method_exists($model, 'getFillable')) {
+                                        $fillableFields = $model->getFillable();
+                                        foreach ($fillableFields as $field) {
+                                            if (isset($model->$field) && $model->$field !== null && $model->$field !== '') {
+                                                $details[$field] = $model->$field;
+                                            }
+                                        }
+                                    } else {
+                                        // Fallback avec des champs communs
+                                        $commonFields = ['name', 'title', 'label', 'designation', 'code', 'description', 'email', 'phone', 'address'];
+                                        foreach ($commonFields as $field) {
+                                            if (isset($model->$field) && $model->$field !== null && $model->$field !== '') {
+                                                $details[$field] = $model->$field;
+                                            }
+                                        }
+                                    }
+
+                                    return [
+                                        'name' => $displayName,
+                                        'details' => $details
+                                    ];
+                                }
+                            }
+                        } catch (\Exception $e) {
+                            // Si la classe n'existe pas ou erreur, on retourne un fallback
+                        }
+                    }
+                    return null;
+            }
+        } catch (\Exception $e) {
+            return ['name' => ucfirst(str_replace('_', ' ', $key)) . ' #' . $value, 'details' => []];
+        }
+    }
+
+    // Fonction pour formater une valeur avec tooltip si nécessaire
+    function formatValueWithTooltip($key, $value, $originalValue = null) {
+        if ($value === null) return ['display' => 'null', 'tooltip' => [], 'hasTooltip' => false];
+
+        // Utiliser la valeur originale si elle existe pour résoudre les IDs
+        $valueToResolve = $originalValue !== null ? $originalValue : $value;
+
+        if (is_numeric($valueToResolve)) {
+            $info = resolveIdInfo($key, $valueToResolve);
+            if ($info && !empty($info['details'])) {
+                return [
+                    'display' => $info['name'],
+                    'tooltip' => $info['details'],
+                    'hasTooltip' => true
+                ];
+            }
+        }
+
+        return [
+            'display' => $value,
+            'tooltip' => [],
+            'hasTooltip' => false
+        ];
+    }
 @endphp
 
 <x-app-layout>
@@ -88,6 +233,10 @@
                                         $after = $change->after;
                                         $event = $change->event;
 
+                                        // Sauvegarder les valeurs originales pour la résolution des IDs
+                                        $originalBefore = $before;
+                                        $originalAfter = $after;
+
                                         if (
                                             isset($after['first_name']) &&
                                             $event === 'updating' &&
@@ -155,87 +304,192 @@
                                         $change->before = $before;
                                         $change->after = $after;
                                     @endphp
-                                    <tr>
-                                        <td
-                                            class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-200">
-                                            {!! $change->user->first_name ?? 'N/A' !!}
-                                            {!! $change->user->last_name ?? '' !!}
-                                        </td>
-                                        <td
-                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                            {!! $change->model_type !!}
-                                        </td>
-                                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-300 flex">
-                                            @if ($change->before == 'custom')
-                                                {!! $change->after !!}
-                                            @elseif (is_array($change->before) && is_array($change->after))
-                                                <table>
-                                                    @foreach ($change->before as $key => $value)
-                                                        @if ($change->after[$key] != $value && !in_array($key, $ommited_keys))
-                                                            @php
-                                                                $value = $value === null ? 'null' : $value;
-                                                            @endphp
-                                                            <tr>
-                                                                <td><strong>{!! $key !!} :</strong></td>
-                                                                <td class="flex">{!! $value !!}<x-icon
-                                                                        size="1" type="arrow_forward"
-                                                                        class="icons-no_hover mt-1" />{!! $change->after[$key] == null ? 'N/A' : $change->after[$key] !!}
-                                                                </td>
-                                                            </tr>
-                                                        @endif
-                                                    @endforeach
-                                                </table>
-                                            @elseif (is_array($change->before) && !is_array($change->after))
-                                                <table>
-                                                    @foreach ($change->before as $key => $value)
-                                                        @if (!in_array($key, $ommited_keys))
-                                                            @php
-                                                                $value = $value === null ? 'null' : $value;
-                                                            @endphp
-                                                            <tr>
-                                                                <td><strong>{!! $key !!} :</strong></td>
-                                                                <td class="flex">{!! $value !!}<x-icon
-                                                                        size="1" type="arrow_forward"
-                                                                        class="icons-no_hover mt-1" />{!! $change->after == null ? 'N/A' : $change->after !!}
-                                                                </td>
-                                                            </tr>
-                                                        @endif
-                                                    @endforeach
-                                                </table>
-                                            @elseif (!is_array($change->before) && is_array($change->after))
-                                                <table>
-                                                    @foreach ($change->after as $key => $value)
-                                                        @if (!in_array($key, $ommited_keys))
-                                                            @php
-                                                                $value = $value === null ? 'null' : $value;
-                                                            @endphp
-                                                            <tr>
-                                                                <td><strong>{!! $key !!} :</strong></td>
-                                                                <td class="flex">
-                                                                    {!! $change->before == null ? 'N/A' : $change->before !!}<x-icon size="1"
-                                                                        type="arrow_forward"
-                                                                        class="icons-no_hover mt-1" />{!! $value !!}
-                                                                </td>
-                                                            </tr>
-                                                        @endif
-                                                    @endforeach
-                                                </table>
-                                            @else
-                                                @if ($change->before === null && $change->after === null)
-                                                    N/A
-                                                @else
-                                                    {!! $change->before === null ? 'N/A' : $change->before !!}
-                                                    @if (!($change->before === null && $change->after === null))
-                                                        <x-icon size="1" type="arrow_forward"
-                                                            class="icons-no_hover mt-1" />
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-200">
+                                            <div class="flex items-center">
+                                                <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-bold mr-3">
+                                                    {{ substr($change->user->first_name ?? 'N', 0, 1) }}{{ substr($change->user->last_name ?? 'A', 0, 1) }}
+                                                </div>
+                                                <div>
+                                                    <div class="font-medium">{!! $change->user->first_name ?? 'N/A' !!} {!! $change->user->last_name ?? '' !!}</div>
+                                                    @if($change->user->role ?? false)
+                                                        <div class="text-xs text-gray-500 dark:text-gray-400">{!! $change->user->role->name !!}</div>
                                                     @endif
-                                                    {!! $change->after === null ? 'N/A' : $change->after !!}
-                                                @endif
-                                            @endif
+                                                </div>
+                                            </div>
                                         </td>
-                                        <td
-                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                            {!! $change->event !!}
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                                @if($change->model_type === 'SocieteMatiere') bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200
+                                                @elseif($change->model_type === 'MouvementStock') bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200
+                                                @elseif($change->model_type === 'User') bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200
+                                                @else bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200
+                                                @endif">
+                                                {!! $change->model_type !!}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">
+                                            <div class="space-y-1">
+                                                @if ($change->before == 'custom')
+                                                    <div class="bg-green-50 dark:bg-green-900/20 p-2 rounded-md border-l-4 border-green-400">
+                                                        {!! $change->after !!}
+                                                    </div>
+                                                @elseif (is_array($change->before) && is_array($change->after))
+                                                    @foreach ($change->before as $key => $value)
+                                                        @if (($change->after[$key] ?? null) != $value && !in_array($key, $ommited_keys))
+                                                            @php
+                                                                $originalBeforeValue = is_array($originalBefore) && isset($originalBefore[$key]) ? $originalBefore[$key] : null;
+                                                                $originalAfterValue = is_array($originalAfter) && isset($originalAfter[$key]) ? $originalAfter[$key] : null;
+
+                                                                $beforeFormatted = formatValueWithTooltip($key, $value, $originalBeforeValue);
+                                                                $afterFormatted = formatValueWithTooltip($key, $change->after[$key] ?? null, $originalAfterValue);
+                                                            @endphp
+                                                            <div class="bg-yellow-50 dark:bg-yellow-900/20 p-2 rounded-md border-l-4 border-yellow-400">
+                                                                <div class="flex items-center justify-between">
+                                                                    <span class="font-medium text-gray-700 dark:text-gray-300">{{ ucfirst(str_replace('_', ' ', $key)) }} :</span>
+                                                                </div>
+                                                                <div class="flex items-center mt-1 space-x-2">
+                                                                    @if($beforeFormatted['hasTooltip'])
+                                                                        <x-tooltip>
+                                                                            <x-slot name="slot_item">
+                                                                                <span class="bg-red-100 dark:bg-red-900/50 px-2 py-1 rounded text-xs cursor-help border border-red-200 dark:border-red-700">
+                                                                                    {!! $beforeFormatted['display'] !!}
+                                                                                </span>
+                                                                            </x-slot>
+                                                                            <x-slot name="slot_tooltip">
+                                                                                <div class="space-y-1">
+                                                                                    @foreach($beforeFormatted['tooltip'] as $detailKey => $detailValue)
+                                                                                        <div><strong>{{ $detailKey }}:</strong> {{ $detailValue }}</div>
+                                                                                    @endforeach
+                                                                                </div>
+                                                                            </x-slot>
+                                                                        </x-tooltip>
+                                                                    @else
+                                                                        <span class="bg-red-100 dark:bg-red-900/50 px-2 py-1 rounded text-xs">
+                                                                            {!! $beforeFormatted['display'] !!}
+                                                                        </span>
+                                                                    @endif
+
+                                                                    <x-icon size="1" type="arrow_forward" class="icons-no_hover text-gray-400" />
+
+                                                                    @if($afterFormatted['hasTooltip'])
+                                                                        <x-tooltip>
+                                                                            <x-slot name="slot_item">
+                                                                                <span class="bg-green-100 dark:bg-green-900/50 px-2 py-1 rounded text-xs cursor-help border border-green-200 dark:border-green-700">
+                                                                                    {!! $afterFormatted['display'] !!}
+                                                                                </span>
+                                                                            </x-slot>
+                                                                            <x-slot name="slot_tooltip">
+                                                                                <div class="space-y-1">
+                                                                                    @foreach($afterFormatted['tooltip'] as $detailKey => $detailValue)
+                                                                                        <div><strong>{{ $detailKey }}:</strong> {{ $detailValue }}</div>
+                                                                                    @endforeach
+                                                                                </div>
+                                                                            </x-slot>
+                                                                        </x-tooltip>
+                                                                    @else
+                                                                        <span class="bg-green-100 dark:bg-green-900/50 px-2 py-1 rounded text-xs">
+                                                                            {!! $afterFormatted['display'] !!}
+                                                                        </span>
+                                                                    @endif
+                                                                </div>
+                                                            </div>
+                                                        @endif
+                                                    @endforeach
+                                                @elseif (is_array($change->before) && !is_array($change->after))
+                                                    <div class="bg-red-50 dark:bg-red-900/20 p-2 rounded-md border-l-4 border-red-400">
+                                                        @foreach ($change->before as $key => $value)
+                                                            @if (!in_array($key, $ommited_keys))
+                                                                @php
+                                                                    $originalBeforeValue = is_array($originalBefore) && isset($originalBefore[$key]) ? $originalBefore[$key] : null;
+                                                                    $beforeFormatted = formatValueWithTooltip($key, $value, $originalBeforeValue);
+                                                                @endphp
+                                                                <div class="flex items-center space-x-2">
+                                                                    <span class="font-medium">{{ ucfirst(str_replace('_', ' ', $key)) }}:</span>
+                                                                    @if($beforeFormatted['hasTooltip'])
+                                                                        <x-tooltip>
+                                                                            <x-slot name="slot_item">
+                                                                                <span class="cursor-help underline decoration-dotted">
+                                                                                    {!! $beforeFormatted['display'] !!}
+                                                                                </span>
+                                                                            </x-slot>
+                                                                            <x-slot name="slot_tooltip">
+                                                                                <div class="space-y-1">
+                                                                                    @foreach($beforeFormatted['tooltip'] as $detailKey => $detailValue)
+                                                                                        <div><strong>{{ $detailKey }}:</strong> {{ $detailValue }}</div>
+                                                                                    @endforeach
+                                                                                </div>
+                                                                            </x-slot>
+                                                                        </x-tooltip>
+                                                                    @else
+                                                                        <span>{!! $beforeFormatted['display'] !!}</span>
+                                                                    @endif
+                                                                </div>
+                                                            @endif
+                                                        @endforeach
+                                                    </div>
+                                                @elseif (!is_array($change->before) && is_array($change->after))
+                                                    <div class="bg-green-50 dark:bg-green-900/20 p-2 rounded-md border-l-4 border-green-400">
+                                                        @foreach ($change->after as $key => $value)
+                                                            @if (!in_array($key, $ommited_keys))
+                                                                @php
+                                                                    $originalAfterValue = is_array($originalAfter) && isset($originalAfter[$key]) ? $originalAfter[$key] : null;
+                                                                    $afterFormatted = formatValueWithTooltip($key, $value, $originalAfterValue);
+                                                                @endphp
+                                                                <div class="flex items-center space-x-2">
+                                                                    <span class="font-medium">{{ ucfirst(str_replace('_', ' ', $key)) }}:</span>
+                                                                    @if($afterFormatted['hasTooltip'])
+                                                                        <x-tooltip>
+                                                                            <x-slot name="slot_item">
+                                                                                <span class="cursor-help underline decoration-dotted">
+                                                                                    {!! $afterFormatted['display'] !!}
+                                                                                </span>
+                                                                            </x-slot>
+                                                                            <x-slot name="slot_tooltip">
+                                                                                <div class="space-y-1">
+                                                                                    @foreach($afterFormatted['tooltip'] as $detailKey => $detailValue)
+                                                                                        <div><strong>{{ $detailKey }}:</strong> {{ $detailValue }}</div>
+                                                                                    @endforeach
+                                                                                </div>
+                                                                            </x-slot>
+                                                                        </x-tooltip>
+                                                                    @else
+                                                                        <span>{!! $afterFormatted['display'] !!}</span>
+                                                                    @endif
+                                                                </div>
+                                                            @endif
+                                                        @endforeach
+                                                    </div>
+                                                @else
+                                                    @if ($change->before === null && $change->after === null)
+                                                        <span class="text-gray-400 italic">Aucun changement détecté</span>
+                                                    @else
+                                                        <div class="flex items-center space-x-2">
+                                                            <span class="bg-red-100 dark:bg-red-900/50 px-2 py-1 rounded text-xs">
+                                                                {!! $change->before === null ? 'N/A' : $change->before !!}
+                                                            </span>
+                                                            <x-icon size="1" type="arrow_forward" class="icons-no_hover text-gray-400" />
+                                                            <span class="bg-green-100 dark:bg-green-900/50 px-2 py-1 rounded text-xs">
+                                                                {!! $change->after === null ? 'N/A' : $change->after !!}
+                                                            </span>
+                                                        </div>
+                                                    @endif
+                                                @endif
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                                            <div class="flex items-center">
+                                                @if(str_contains($change->event, 'Créé'))
+                                                    <div class="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+                                                @elseif(str_contains($change->event, 'Modifié'))
+                                                    <div class="w-2 h-2 bg-yellow-400 rounded-full mr-2"></div>
+                                                @elseif(str_contains($change->event, 'Supprimé'))
+                                                    <div class="w-2 h-2 bg-red-400 rounded-full mr-2"></div>
+                                                @elseif(str_contains($change->event, 'restauré'))
+                                                    <div class="w-2 h-2 bg-blue-400 rounded-full mr-2"></div>
+                                                @endif
+                                                {!! $change->event !!}
+                                            </div>
                                         </td>
                                     </tr>
                                 @endforeach

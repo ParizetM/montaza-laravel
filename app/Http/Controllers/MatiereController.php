@@ -7,6 +7,7 @@ use App\Models\DossierStandard;
 use App\Models\Famille;
 use App\Models\Material;
 use App\Models\Matiere;
+use App\Models\ModelChange;
 use App\Models\MouvementStock;
 use App\Models\Societe;
 use App\Models\SocieteMatiere;
@@ -366,7 +367,9 @@ class MatiereController extends Controller
         // Convert to collections for the view
         $stockHistory = collect($stockHistory);
         $mouvements = $matiere->mouvementStocks->sortByDesc('created_at');
-        $societes = Societe::fournisseurs()->get();
+        // Récupérer les fournisseurs sauf ceux déjà attachés à la matière
+        $societes = Societe::fournisseurs()
+            ->whereNotIn('id', $matiere->fournisseurs->pluck('id'))->get();
         return view('matieres.show', [
             'matiere' => $matiere,
             'fournisseurs' => $fournisseurs,
@@ -1061,6 +1064,57 @@ class MatiereController extends Controller
                 ->back()
                 ->withInput()
                 ->with('error', 'Une erreur est survenue lors de l\'ajout du fournisseur.');
+        }
+    }
+
+    /**
+     * Détacher un fournisseur d'une matière et supprimer tous les prix associés
+     */
+    public function detacherFournisseur($matiere_id, $societe_id)
+    {
+        try {
+            // Vérifier que la matière existe
+            $matiere = Matiere::findOrFail($matiere_id);
+
+            // Vérifier que la société est bien un fournisseur
+            $societe = Societe::whereIn('societe_type_id', ['2', '3'])->findOrFail($societe_id);
+
+            // Trouver la relation société-matière
+            $societeMatiere = SocieteMatiere::where('societe_id', $societe_id)
+                ->where('matiere_id', $matiere_id)
+                ->first();
+
+            if (!$societeMatiere) {
+                return redirect()
+                    ->back()
+                    ->with('error', 'Ce fournisseur n\'est pas associé à cette matière.');
+            }
+
+            // Supprimer tous les prix associés
+            \App\Models\SocieteMatierePrix::where('societe_matiere_id', $societeMatiere->id)->delete();
+
+            // Supprimer la relation société-matière
+            $societeMatiere->delete();
+            ModelChange::create([
+            'user_id' => Auth::id(),
+            'model_type' => 'SocieteMatiere',
+            'before' => $societeMatiere->getOriginal(),
+            'after' => $societeMatiere->getAttributes(),
+            'event' => 'deleting',
+        ]);
+            return redirect()
+                ->route('matieres.show', $matiere_id)
+                ->with('success', "Le fournisseur \"{$societe->raison_sociale}\" a été détaché de la matière avec succès. Tous les prix associés ont été supprimés.");
+        } catch (\Exception $e) {
+            Log::error('Erreur lors du détachement du fournisseur', [
+                'matiere_id' => $matiere_id,
+                'societe_id' => $societe_id,
+                'exception' => $e->getMessage()
+            ]);
+
+            return redirect()
+                ->back()
+                ->with('error', 'Une erreur est survenue lors du détachement du fournisseur.');
         }
     }
 
