@@ -16,12 +16,23 @@
         try {
             switch($key) {
                 case 'matiere_id':
+                    $matiere = \App\Models\Matiere::find($value);
+                    if (!$matiere) return ['name' => 'Matière #' . $value, 'details' => []];
+
+                    $details = [];
+                    $fillableFields = $matiere->getFillable();
+                    foreach ($fillableFields as $field) {
+                        if (isset($matiere->$field) && $matiere->$field !== null && $matiere->$field !== '') {
+                            $details[$field] = $matiere->$field;
+                        }
+                    }
+                    return ['name' => $matiere->name ?? 'Matière #' . $value, 'details' => $details];
                 case 'societe_matiere_id':
                     $matiere = \App\Models\SocieteMatiere::find($value);
                     if (!$matiere) return ['name' => 'Matière #' . $value, 'details' => []];
 
                     $details = [];
-                    $fillableFields = ['name', 'ref_interne', 'designation', 'code', 'unite', 'prix_unitaire', 'stock_min', 'stock_max', 'description'];
+                    $fillableFields = $matiere->getFillable();
                     foreach ($fillableFields as $field) {
                         if (isset($matiere->$field) && $matiere->$field !== null && $matiere->$field !== '') {
                             $details[$field] = $matiere->$field;
@@ -34,7 +45,7 @@
                     if (!$societe) return ['name' => 'Société #' . $value, 'details' => []];
 
                     $details = [];
-                    $fillableFields = ['name', 'raison_sociale', 'email', 'phone', 'address', 'site_web', 'siret', 'siren', 'tva'];
+                    $fillableFields = $societe->getFillable();
                     foreach ($fillableFields as $field) {
                         if (isset($societe->$field) && $societe->$field !== null && $societe->$field !== '') {
                             $details[$field] = $societe->$field;
@@ -47,7 +58,7 @@
                     if (!$user) return ['name' => 'Utilisateur #' . $value, 'details' => []];
 
                     $details = [];
-                    $fillableFields = ['first_name', 'last_name', 'email', 'phone', 'address'];
+                    $fillableFields = $user->getFillable();
                     foreach ($fillableFields as $field) {
                         if (isset($user->$field) && $user->$field !== null && $user->$field !== '') {
                             $details[$field] = $user->$field;
@@ -60,7 +71,7 @@
                     if (!$role) return ['name' => 'Rôle #' . $value, 'details' => []];
 
                     $details = [];
-                    $fillableFields = ['name', 'description', 'level'];
+                    $fillableFields = $role->getFillable();
                     foreach ($fillableFields as $field) {
                         if (isset($role->$field) && $role->$field !== null && $role->$field !== '') {
                             $details[$field] = $role->$field;
@@ -73,7 +84,7 @@
                     if (!$entite) return ['name' => 'Entité #' . $value, 'details' => []];
 
                     $details = [];
-                    $fillableFields = ['name', 'code', 'description', 'address'];
+                    $fillableFields = $entite->getFillable();
                     foreach ($fillableFields as $field) {
                         if (isset($entite->$field) && $entite->$field !== null && $entite->$field !== '') {
                             $details[$field] = $entite->$field;
@@ -95,20 +106,10 @@
                                     $details = [];
 
                                     // Récupérer tous les attributs fillable du modèle
-                                    if (method_exists($model, 'getFillable')) {
-                                        $fillableFields = $model->getFillable();
-                                        foreach ($fillableFields as $field) {
-                                            if (isset($model->$field) && $model->$field !== null && $model->$field !== '') {
-                                                $details[$field] = $model->$field;
-                                            }
-                                        }
-                                    } else {
-                                        // Fallback avec des champs communs
-                                        $commonFields = ['name', 'title', 'label', 'designation', 'code', 'description', 'email', 'phone', 'address'];
-                                        foreach ($commonFields as $field) {
-                                            if (isset($model->$field) && $model->$field !== null && $model->$field !== '') {
-                                                $details[$field] = $model->$field;
-                                            }
+                                    $fillableFields = $model->getFillable();
+                                    foreach ($fillableFields as $field) {
+                                        if (isset($model->$field) && $model->$field !== null && $model->$field !== '') {
+                                            $details[$field] = $model->$field;
                                         }
                                     }
 
