@@ -344,16 +344,17 @@
                                     @endif
                                     <td class="px-4 py-3 whitespace-nowrap text-center">
                                         <x-boutons.supprimer
-                                            customButton="<button class='btn-secondary btn-sm'>
-                                                <svg xmlns='http://www.w3.org/2000/svg' class='h-4 w-4' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-                                                    <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 18L18 6M6 6l12 12' />
-                                                </svg>
-                                            </button>"
                                             modalTitle="Détacher le fournisseur"
                                             userInfo="Êtes-vous sûr de vouloir détacher le fournisseur {{ $fournisseur->raison_sociale }} de cette matière ? <br/> Tous les prix associés seront également supprimés. Cette action est irréversible."
                                             formAction="{{ route('matieres.fournisseurs.detacher', ['matiere' => $matiere->id, 'fournisseur' => $fournisseur->id]) }}"
                                             confirmButtonText="Détacher définitivement"
-                                            cancelButtonText="Annuler" />
+                                            cancelButtonText="Annuler" >
+                                            <x-slot:customButton>
+                                                <button class=' btn' title="Détacher le fournisseur">
+                                                <x-icons.unlink  />
+                                            </button>
+                                            </x-slot:customButton>
+                                        </x-boutons.supprimer>
                                     </td>
                                 </tr>
                             @endforeach

@@ -25,27 +25,39 @@ class StockService
 
         $stockTotal = $matiere->quantite();
 
+        // On utilise un champ booléen sur la matière pour savoir si la notif a déjà été envoyée
+        // Ajoutez un champ 'stock_min_notif_envoyee' (boolean, default false) sur la table matieres
         if ($stockTotal < $matiere->stock_min) {
-            // Déclencher la notification de stock minimum
-            \Log::warning('Stock en dessous du minimum', [
-                'matiere_id' => $matiere->id,
-                'matiere_designation' => $matiere->designation,
-                'stock_actuel' => $stockTotal,
-                'stock_minimum' => $matiere->stock_min,
-                'unite' => $matiere->unite->designation ?? '',
-                'user_id' => Auth::id()
-            ]);
+            if (!$matiere->stock_min_notif_envoyee) {
+                \Log::warning('Stock en dessous du minimum', [
+                    'matiere_id' => $matiere->id,
+                    'matiere_designation' => $matiere->designation,
+                    'stock_actuel' => $stockTotal,
+                    'stock_minimum' => $matiere->stock_min,
+                    'unite' => $matiere->unite->designation ?? '',
+                    'user_id' => Auth::id()
+                ]);
 
-            ModelsNotification::createNotification(
-                Auth::user()->role,
-                'stock',
-                'Stock minimum atteint',
-                "Le stock de {$matiere->designation} est en dessous du minimum requis.",
-                "stock inférieur à {$matiere->stock_min} {$matiere->unite->short}",
-                'matieres.show',
-                ['matiere' => $matiere->id],
-                'Voir le stock'
-            );
+                ModelsNotification::createNotification(
+                    Auth::user()->role,
+                    'stock',
+                    'Stock minimum atteint',
+                    "Le stock de {$matiere->designation} est en dessous du minimum requis.",
+                    "stock inférieur à {$matiere->stock_min} {$matiere->unite->short}",
+                    'matieres.show',
+                    ['matiere' => $matiere->id],
+                    'Voir le stock'
+                );
+
+                $matiere->stock_min_notif_envoyee = true;
+                $matiere->save();
+            }
+        } else {
+            // Si le stock repasse au-dessus du seuil, on réinitialise le flag
+            if ($matiere->stock_min_notif_envoyee) {
+                $matiere->stock_min_notif_envoyee = false;
+                $matiere->save();
+            }
         }
     }
 
