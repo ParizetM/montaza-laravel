@@ -4,6 +4,7 @@ use App\Http\Controllers\AdministrationController;
 use App\Http\Controllers\CdeController;
 use App\Http\Controllers\CdeNoteController;
 use App\Http\Controllers\DdpController;
+use App\Http\Controllers\DocumentationController;
 use App\Http\Controllers\EtablissementController;
 use App\Http\Controllers\MailtemplateController;
 use App\Http\Controllers\MediaController;
@@ -46,6 +47,9 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
     })->name('administration.icons');
     Route::get('/administration/info/{entite}', [AdministrationController::class, 'info'])->name('administration.info_entite');
     Route::patch('/administration/info/{entite}/update', [AdministrationController::class, 'update'])->name('administration.update');
+    Route::get('/documentation', [DocumentationController::class, 'index'])->name('documentation.index');
+    Route::get('/documentation/download/{format}', [DocumentationController::class, 'download'])->name('documentation.download');
+    Route::get('/documentation/images/{filename}', [DocumentationController::class, 'serveImage'])->name('documentation.images');
 
     Route::get('/profile/{id}', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

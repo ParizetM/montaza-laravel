@@ -115,6 +115,9 @@
                             <x-dropdown-link :href="route('administration.index')">
                                 {{ __('Administration') }}
                             </x-dropdown-link>
+                            <x-dropdown-link :href="route('documentation.index')">
+                                {{ __('Documentation') }}
+                            </x-dropdown-link>
                         </x-slot>
                     </x-dropdown>
                     <div x-data="{ activeTab: 'tab1' }">
