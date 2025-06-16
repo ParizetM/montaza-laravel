@@ -286,8 +286,15 @@ class MatiereController extends Controller
     {
         return response()->json($matiere->fournisseurs);
     }
-    public function show($matiere_id): View
+    public function show($matiere_id, Request $request): View
     {
+        // Validation des filtres de prix
+        $request->validate([
+            'periode_prix' => 'nullable|in:today,week,month,3months,6months,year,custom',
+            'date_debut_prix' => 'nullable|date',
+            'date_fin_prix' => 'nullable|date|after_or_equal:date_debut_prix',
+        ]);
+
         $matiere = Matiere::with(['sousFamille', 'societe', 'standardVersion'])->findOrFail($matiere_id);
         $fournisseurs = $matiere->fournisseurs()
             ->get();
@@ -364,12 +371,75 @@ class MatiereController extends Controller
             $quantites = collect($stockHistory)->pluck('quantite');
         }
 
+        // Récupération des données de prix pour tous les fournisseurs
+        $prixParFournisseur = [];
+        $datesPrix = collect();
+        $hasPriceData = false;
+
+        // Construire la requête de prix avec filtrage par période
+        foreach ($fournisseurs as $fournisseur) {
+            $queryPrix = $matiere->prixPourSociete($fournisseur->id);
+
+            // Appliquer les filtres de période pour les prix
+            if ($request->filled('periode_prix')) {
+                $periode = $request->input('periode_prix');
+
+                switch ($periode) {
+                    case 'today':
+                        $queryPrix->whereDate('date', today());
+                        break;
+                    case 'week':
+                        $queryPrix->where('date', '>=', now()->startOfWeek());
+                        break;
+                    case 'month':
+                        $queryPrix->where('date', '>=', now()->startOfMonth());
+                        break;
+                    case '3months':
+                        $queryPrix->where('date', '>=', now()->subMonths(3));
+                        break;
+                    case '6months':
+                        $queryPrix->where('date', '>=', now()->subMonths(6));
+                        break;
+                    case 'year':
+                        $queryPrix->where('date', '>=', now()->startOfYear());
+                        break;
+                    case 'custom':
+                        if ($request->filled('date_debut_prix')) {
+                            $queryPrix->whereDate('date', '>=', $request->input('date_debut_prix'));
+                        }
+                        if ($request->filled('date_fin_prix')) {
+                            $queryPrix->whereDate('date', '<=', $request->input('date_fin_prix'));
+                        }
+                        break;
+                }
+            }
+
+            $prixFournisseur = $queryPrix->orderBy('date', 'asc')->get();
+
+            if ($prixFournisseur->count() > 0) {
+                $hasPriceData = true;
+                $prixParFournisseur[$fournisseur->id] = [
+                    'nom' => $fournisseur->raison_sociale,
+                    'couleur' => $this->generateColor($fournisseur->id),
+                    'dates' => $prixFournisseur->pluck('date'),
+                    'prix' => $prixFournisseur->pluck('prix_unitaire')
+                ];
+
+                // Ajouter toutes les dates à la collection globale
+                $datesPrix = $datesPrix->merge($prixFournisseur->pluck('date'));
+            }
+        }
+
+        // Supprimer les doublons et trier les dates
+        $datesPrix = $datesPrix->unique()->sort()->values();
+
         // Convert to collections for the view
         $stockHistory = collect($stockHistory);
         $mouvements = $matiere->mouvementStocks->sortByDesc('created_at');
         // Récupérer les fournisseurs sauf ceux déjà attachés à la matière
         $societes = Societe::fournisseurs()
             ->whereNotIn('id', $matiere->fournisseurs->pluck('id'))->get();
+
         return view('matieres.show', [
             'matiere' => $matiere,
             'fournisseurs' => $fournisseurs,
@@ -377,78 +447,17 @@ class MatiereController extends Controller
             'mouvements' => $mouvements,
             'quantites' => $quantites,
             'societes' => $societes,
+            'prixParFournisseur' => $prixParFournisseur,
+            'datesPrix' => $datesPrix,
+            'hasPriceData' => $hasPriceData,
         ]);
     }
-    public function showPrix($matiere_id, $societe_id): View
+    public function generateColor($id)
     {
-        $fournisseur = Societe::whereIn('societe_type_id', ['3', '2'])->findOrFail($societe_id);
-        $matiere = Matiere::with(['sousFamille', 'societe', 'standardVersion'])->findOrFail($matiere_id);
-        $fournisseurs_prix = $matiere->prixPourSociete($societe_id)
-            ->orderBy('date', 'desc')
-            ->get();
-        $dates = $fournisseurs_prix->pluck('date');
-        $prix = $fournisseurs_prix->pluck('prix_unitaire');
-        return view('matieres.show_prix', [
-            'matiere' => $matiere,
-            'fournisseur' => $fournisseur,
-            'fournisseurs_prix' => $fournisseurs_prix,
-            'dates' => $dates,
-            'prix' => $prix,
-        ]);
+        // Générer une couleur unique basée sur l'ID
+        $hue = ($id * 137) % 360;
+        return "hsl({$hue}, 70%, 50%)"; // Saturation et luminosité ajustées pour une bonne visibilité
     }
-
-    public function showPrixStore(Request $request, $matiere_id, $societe_id)
-    {
-        // Validation des données
-        $request->validate([
-            'prix_unitaire' => 'required|numeric|min:0.01',
-            'date' => 'required|date',
-        ]);
-
-        try {
-            // Vérifier que la matière existe
-            $matiere = Matiere::findOrFail($matiere_id);
-
-            // Vérifier que la société est bien un fournisseur
-            $societe = Societe::whereIn('societe_type_id', ['2', '3'])->findOrFail($societe_id);
-
-            // Vérifier si la relation société-matière existe
-            $societeMatiere = SocieteMatiere::where('societe_id', $societe_id)
-                ->where('matiere_id', $matiere_id)
-                ->first();
-
-            if (!$societeMatiere) {
-                return redirect()
-                    ->back()
-                    ->with('error', 'Ce fournisseur n\'est pas associé à cette matière.');
-            }
-
-            // Créer le prix via SocieteMatierePrix
-            \App\Models\SocieteMatierePrix::create([
-                'societe_matiere_id' => $societeMatiere->id,
-                'prix_unitaire' => $request->prix_unitaire,
-                'date' => $request->date,
-                'description' => 'Prix ajouté manuellement',
-            ]);
-
-            return redirect()
-                ->route('matieres.show_prix', ['matiere' => $matiere_id, 'fournisseur' => $societe_id])
-                ->with('success', 'Prix ajouté avec succès.');
-        } catch (\Exception $e) {
-            Log::error('Erreur lors de l\'ajout du prix', [
-                'matiere_id' => $matiere_id,
-                'societe_id' => $societe_id,
-                'prix_unitaire' => $request->prix_unitaire,
-                'exception' => $e->getMessage()
-            ]);
-
-            return redirect()
-                ->back()
-                ->withInput()
-                ->with('error', 'Une erreur est survenue lors de l\'ajout du prix.');
-        }
-    }
-
     public function retirerMatiere($matiere_id, Request $request)
     {
         // Validate the request
@@ -1240,5 +1249,74 @@ class MatiereController extends Controller
                 ->withInput()
                 ->with('error', 'Une erreur est survenue lors de la modification: ' . $e->getMessage());
         }
+    }
+    public function showPrix($matiere_id, $societe_id, Request $request): View
+    {
+        // Validation des filtres
+        $request->validate([
+            'periode' => 'nullable|in:today,week,month,3months,6months,year,custom',
+            'date_debut' => 'nullable|date',
+            'date_fin' => 'nullable|date|after_or_equal:date_debut',
+        ]);
+
+        $fournisseur = Societe::whereIn('societe_type_id', ['3', '2'])->findOrFail($societe_id);
+        $matiere = Matiere::with(['sousFamille', 'societe', 'standardVersion'])->findOrFail($matiere_id);
+
+        // Récupérer tous les prix (sans filtre pour les modaux)
+        $fournisseurs_prix = $matiere->prixPourSociete($societe_id)
+            ->orderBy('date', 'desc')
+            ->get();
+
+        // Construire la requête avec filtres pour l'affichage
+        $queryFiltered = $matiere->prixPourSociete($societe_id);
+
+        // Appliquer les filtres de période
+        if ($request->filled('periode')) {
+            $periode = $request->input('periode');
+
+            switch ($periode) {
+                case 'today':
+                    $queryFiltered->whereDate('date', today());
+                    break;
+                case 'week':
+                    $queryFiltered->where('date', '>=', now()->startOfWeek());
+                    break;
+                case 'month':
+                    $queryFiltered->where('date', '>=', now()->startOfMonth());
+                    break;
+                case '3months':
+                    $queryFiltered->where('date', '>=', now()->subMonths(3));
+                    break;
+                case '6months':
+                    $queryFiltered->where('date', '>=', now()->subMonths(6));
+                    break;
+                case 'year':
+                    $queryFiltered->where('date', '>=', now()->startOfYear());
+                    break;
+                case 'custom':
+                    if ($request->filled('date_debut')) {
+                        $queryFiltered->whereDate('date', '>=', $request->input('date_debut'));
+                    }
+                    if ($request->filled('date_fin')) {
+                        $queryFiltered->whereDate('date', '<=', $request->input('date_fin'));
+                    }
+                    break;
+            }
+        }
+
+        $fournisseurs_prix_filtered = $queryFiltered->orderBy('date', 'desc')->get();
+
+        // Données pour le graphique
+        $dates_filtered = $fournisseurs_prix_filtered->sortBy('date')->pluck('date');
+        $prix_filtered = $fournisseurs_prix_filtered->sortBy('date')->pluck('prix_unitaire');
+
+        return view('matieres.show_prix', [
+            'matiere' => $matiere,
+            'fournisseur' => $fournisseur,
+            'fournisseurs_prix' => $fournisseurs_prix,
+            'fournisseurs_prix_filtered' => $fournisseurs_prix_filtered,
+            'dates_filtered' => $dates_filtered,
+            'prix_filtered' => $prix_filtered,
+        ]);
     }
 }

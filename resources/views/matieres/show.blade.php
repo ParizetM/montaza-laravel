@@ -695,4 +695,263 @@
             });
         </script>
     @endif
+{{--
+ ######   #######  ##     ## ########     ###    ########     ###    ####  ######   #######  ##    ##
+##    ## ##     ## ###   ### ##     ##   ## ##   ##     ##   ## ##    ##  ##    ## ##     ## ###   ##
+##       ##     ## #### #### ##     ##  ##   ##  ##     ##  ##   ##   ##  ##       ##     ## ####  ##
+##       ##     ## ## ### ## ########  ##     ## ########  ##     ##  ##   ######  ##     ## ## ## ##
+##       ##     ## ##     ## ##        ######### ##   ##   #########  ##        ## ##     ## ##  ####
+##    ## ##     ## ##     ## ##        ##     ## ##    ##  ##     ##  ##  ##    ## ##     ## ##   ###
+ ######   #######  ##     ## ##        ##     ## ##     ## ##     ## ####  ######   #######  ##    ##
+
+########  ########  #### ##      ##
+##     ## ##     ##  ##   ##    ##
+##     ## ##     ##  ##    ##  ##
+########  ########   ##     ####
+##        ##   ##    ##    ##  ##
+##        ##    ##   ##   ##    ##
+##        ##     ## #### ##      ##
+
+ --}}
+
+    @if($fournisseurs->count() > 0)
+        <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-6 rounded-lg shadow-md border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-lg">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="bg-purple-100 dark:bg-purple-900 rounded-full p-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <h2 class="text-xl font-bold">Comparaison des prix par fournisseur</h2>
+            </div>
+
+            <!-- Filtres pour les prix -->
+            <div class="mb-6 p-4 bg-gray-50 dark:bg-gray-750 rounded-lg border border-gray-100 dark:border-gray-700">
+                <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Filtres des prix</h3>
+                <form id="prix-filters-form" method="GET" action="{{ route('matieres.show', $matiere->id) }}"
+                    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Préserver les autres paramètres de requête -->
+                    @foreach(request()->except(['periode_prix', 'date_debut_prix', 'date_fin_prix']) as $key => $value)
+                        <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                    @endforeach
+
+                    <!-- Filtre par période -->
+                    <div>
+                        <label for="periode_prix" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Période</label>
+                        <select id="periode_prix" name="periode_prix" class="select w-full focus:ring-purple-500 focus:border-purple-500">
+                            <option value="">Toutes les périodes</option>
+                            <option value="today" {{ request('periode_prix') == 'today' ? 'selected' : '' }}>Aujourd'hui</option>
+                            <option value="week" {{ request('periode_prix') == 'week' ? 'selected' : '' }}>Cette semaine</option>
+                            <option value="month" {{ request('periode_prix') == 'month' ? 'selected' : '' }}>Ce mois</option>
+                            <option value="3months" {{ request('periode_prix') == '3months' ? 'selected' : '' }}>3 derniers mois</option>
+                            <option value="6months" {{ request('periode_prix') == '6months' ? 'selected' : '' }}>6 derniers mois</option>
+                            <option value="year" {{ request('periode_prix') == 'year' ? 'selected' : '' }}>Cette année</option>
+                            <option value="custom" {{ request('periode_prix') == 'custom' ? 'selected' : '' }}>Période personnalisée</option>
+                        </select>
+                    </div>
+
+                    <!-- Bouton reset -->
+                    <div class="flex items-end">
+                        <a href="{{ route('matieres.show', $matiere->id) }}" class="btn">
+                            Réinitialiser
+                        </a>
+                    </div>
+
+                    <!-- Filtres de période personnalisée (cachés par défaut) -->
+                    <div id="custom-period-prix" class="col-span-full mt-4 flex gap-4"
+                        style="display: {{ request('periode_prix') == 'custom' ? 'flex' : 'none' }}">
+                        <div>
+                            <label for="date_debut_prix" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date de début</label>
+                            <input type="date" id="date_debut_prix" name="date_debut_prix" value="{{ request('date_debut_prix') }}" class="mt-1 block px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500" />
+                        </div>
+                        <div>
+                            <label for="date_fin_prix" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date de fin</label>
+                            <input type="date" id="date_fin_prix" name="date_fin_prix" value="{{ request('date_fin_prix') }}" class="mt-1 block px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            @if(!$hasPriceData)
+                <div class="bg-yellow-50 dark:bg-yellow-900/30 p-4 rounded-lg mb-6 flex items-center gap-3 border border-yellow-100 dark:border-yellow-800">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-600 dark:text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div>
+                        @if(request('periode_prix'))
+                            <p class="text-yellow-600 dark:text-yellow-400 font-medium">Aucun prix trouvé pour la période sélectionnée.</p>
+                            <p class="text-yellow-600 dark:text-yellow-400 text-sm">Essayez de modifier les filtres ou de sélectionner une période plus large.</p>
+                        @else
+                            <p class="text-yellow-600 dark:text-yellow-400 font-medium">Aucun prix enregistré pour cette matière.</p>
+                            <p class="text-yellow-600 dark:text-yellow-400 text-sm">Ajoutez des prix aux fournisseurs pour voir le graphique de comparaison.</p>
+                        @endif
+                    </div>
+                </div>
+            @elseif(count($prixParFournisseur) < 2)
+                <div class="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg mb-6 flex items-center gap-3 border border-blue-100 dark:border-blue-800">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p class="text-blue-600 dark:text-blue-400 font-medium">Il faut au moins deux fournisseurs avec des prix pour afficher le graphique de comparaison.</p>
+                </div>
+            @else
+                <div class="bg-gray-50 dark:bg-gray-750 p-4 rounded-lg border border-gray-100 dark:border-gray-700">
+                    <div class="mb-6 chart-container" style="position: relative; height:400px;">
+                        <canvas id="prixChart"></canvas>
+                    </div>
+                </div>
+            @endif
+
+            <!-- Légende des fournisseurs -->
+            @if($hasPriceData)
+                <div class="mt-4 flex flex-wrap gap-4">
+                    @foreach($prixParFournisseur as $fournisseurId => $data)
+                        <div class="flex items-center gap-2">
+                            <div class="w-4 h-4 rounded-full" style="background-color: {{ $data['couleur'] }}"></div>
+                            <span class="text-sm font-medium">{{ $data['nom'] }}</span>
+                            <a href="{{ route('matieres.show_prix', ['matiere' => $matiere->id, 'fournisseur' => $fournisseurId]) }}"
+                               class="text-xs text-blue-600 dark:text-blue-400 hover:underline">
+                                Voir détails
+                            </a>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                // Gestion des filtres de prix
+                const formPrix = document.getElementById('prix-filters-form');
+                const periodePrixSelect = document.getElementById('periode_prix');
+                const customPeriodPrix = document.getElementById('custom-period-prix');
+                const dateDebutPrix = document.getElementById('date_debut_prix');
+                const dateFinPrix = document.getElementById('date_fin_prix');
+
+                // Fonction pour soumettre le formulaire des prix automatiquement
+                function submitPrixForm() {
+                    formPrix.submit();
+                }
+
+                // Gérer le changement de période pour les prix
+                if (periodePrixSelect) {
+                    periodePrixSelect.addEventListener('change', function() {
+                        if (this.value === 'custom') {
+                            customPeriodPrix.style.display = 'flex';
+                        } else {
+                            customPeriodPrix.style.display = 'none';
+                            submitPrixForm();
+                        }
+                    });
+                }
+
+                // Soumettre lors du changement des dates personnalisées pour les prix
+                if (dateDebutPrix) {
+                    dateDebutPrix.addEventListener('change', function() {
+                        if (periodePrixSelect.value === 'custom') {
+                            submitPrixForm();
+                        }
+                    });
+                }
+
+                if (dateFinPrix) {
+                    dateFinPrix.addEventListener('change', function() {
+                        if (periodePrixSelect.value === 'custom') {
+                            submitPrixForm();
+                        }
+                    });
+                }
+
+                // Graphique de comparaison des prix
+                @if($hasPriceData && count($prixParFournisseur) >= 2)
+                const ctxPrix = document.getElementById('prixChart').getContext('2d');
+
+                const datasets = [];
+                @foreach($prixParFournisseur as $fournisseurId => $data)
+                    datasets.push({
+                        label: '{{ $data["nom"] }}',
+                        data: @json($data['prix']),
+                        borderColor: '{{ $data["couleur"] }}',
+                        backgroundColor: '{{ $data["couleur"] }}20',
+                        borderWidth: 2,
+                        tension: 0.1,
+                        fill: false,
+                        pointBackgroundColor: '{{ $data["couleur"] }}',
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    });
+                @endforeach
+
+                const prixChart = new Chart(ctxPrix, {
+                    type: 'line',
+                    data: {
+                        labels: @json($datesPrix),
+                        datasets: datasets
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                labels: {
+                                    font: {
+                                        size: 14
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.dataset.label + ': ' + new Intl.NumberFormat('fr-FR', {
+                                            style: 'currency',
+                                            currency: 'EUR'
+                                        }).format(context.parsed.y);
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                type: 'time',
+                                time: {
+                                    unit: 'day',
+                                    displayFormats: {
+                                        day: 'dd/MM/yyyy',
+                                    },
+                                },
+                                grid: {
+                                    display: false
+                                }
+                            },
+                            y: {
+                                beginAtZero: false,
+                                type: 'linear',
+                                grid: {
+                                    borderDash: [2]
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return new Intl.NumberFormat('fr-FR', {
+                                            style: 'currency',
+                                            currency: 'EUR'
+                                        }).format(value);
+                                    }
+                                }
+                            }
+                        },
+                        interaction: {
+                            mode: 'nearest',
+                            axis: 'x',
+                            intersect: false
+                        }
+                    }
+                });
+                @endif
+            });
+        </script>
+    @endif
 </x-app-layout>
