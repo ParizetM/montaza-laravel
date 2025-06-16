@@ -70,7 +70,7 @@
                                 @else
                                     <td
                                         class="border border-gray-300 dark:border-gray-700 pl-2
-                                            {{ $index % 2 == 1 ? 'bg-gray-50 dark:bg-gray-800' : '' }}
+
                                     ">
                                         <x-ref-tooltip :matiere="$ddplignes[$index]->matiere">
                                             <x-slot:slot_item>
@@ -80,7 +80,7 @@
                                     </td>
                                     <td
                                         class="text-center border border-gray-300 dark:border-gray-700
-                                            {{ $index % 2 == 1 ? 'bg-gray-50 dark:bg-gray-800' : '' }}
+
                                     ">
                                         {{ formatNumber($ddplignes[$index]->quantite) }}</td>
                                 @endif
@@ -92,7 +92,7 @@
                                         </td>
                                     @else
                                         <td
-                                            class="border border-gray-300 dark:border-gray-700 p-2 {{ $key % 3 == 0 ? 'border-l-2 border-l-gray-500 dark:border-l-gray-300' : '' }} {{ $index % 2 == 1 ? 'bg-gray-50 dark:bg-gray-800' : '' }} whitespace-nowrap
+                                            class="border border-gray-300 dark:border-gray-700 p-2 {{ $key % 3 == 0 ? 'border-l-2 border-l-gray-500 dark:border-l-gray-300' : '' }}  whitespace-nowrap
                                         ">
                                             {{ $value }}
                                         </td>
@@ -146,15 +146,18 @@
         <livewire:media-sidebar :model="'ddp'" :model-id="$ddp->id" />
     </div>
     <script>
+        const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
         document.addEventListener('DOMContentLoaded', function() {
             const rows = document.querySelectorAll('tbody tr');
             rows.forEach(row => {
                 const cells = row.querySelectorAll('td');
+
+                // Pour les prix (index % 3 === 0)
                 let minValue = Infinity;
                 let minCells = [];
-
                 cells.forEach((cell, index) => {
-                    if (index % 3 === 0) { // Only look at every 3rd column
+                    if (index % 3 === 0) {
                         const value = parseFloat(cell.textContent.trim().replace(/[, ]/g, ''));
                         if (!isNaN(value)) {
                             if (value < minValue) {
@@ -166,9 +169,48 @@
                         }
                     }
                 });
-
                 minCells.forEach(cell => {
-                    cell.style.color = 'green';
+                    if (isDarkMode) {
+                        cell.style.backgroundColor = '#145214'; // Vert foncé pour dark mode
+                        cell.style.color = '#77DD77'; // Vert clair pour dark mode
+                    } else {
+                        cell.style.backgroundColor = '#77DD77'; // Vert clair pour light mode
+                        cell.style.color = '#145214'; // Vert foncé pour light mode
+                    }
+                });
+
+                // Pour les dates (index % 3 === 1)
+                let minDate = null;
+                let minDateCells = [];
+                cells.forEach((cell, index) => {
+                    if (index % 3 === 1) {
+                        const dateText = cell.textContent.trim();
+                        // Essaye de parser la date (format attendu: jj/mm/aaaa ou yyyy-mm-dd)
+                        let dateValue = null;
+                        if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateText)) {
+                            const [d, m, y] = dateText.split('/');
+                            dateValue = new Date(`${y}-${m}-${d}`);
+                        } else if (/^\d{4}-\d{2}-\d{2}$/.test(dateText)) {
+                            dateValue = new Date(dateText);
+                        }
+                        if (dateValue instanceof Date && !isNaN(dateValue)) {
+                            if (minDate === null || dateValue < minDate) {
+                                minDate = dateValue;
+                                minDateCells = [cell];
+                            } else if (dateValue.getTime() === minDate.getTime()) {
+                                minDateCells.push(cell);
+                            }
+                        }
+                    }
+                });
+                minDateCells.forEach(cell => {
+                    if (isDarkMode) {
+                        cell.style.backgroundColor = '#145214'; // Vert foncé pour dark mode
+                        cell.style.color = '#77DD77'; // Vert clair pour dark mode
+                    } else {
+                        cell.style.backgroundColor = '#77DD77'; // Vert clair pour light mode
+                        cell.style.color = '#145214'; // Vert foncé pour light mode
+                    }
                 });
             });
         });
