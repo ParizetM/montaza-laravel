@@ -541,10 +541,6 @@ class CdeController extends Controller
                 $cde->cdeNotes()->attach($cde_note);
             }
         }
-
-        $societe = $cde->societe;
-        $societe->condition_paiement_id = $condition_paiement_id;
-        $societe->save();
         if ($request->save_custom_note && $request->save_custom_note == 'on' && !empty($request->custom_note)) {
             CdeNote::create([
                 'contenu' => $request->custom_note,
