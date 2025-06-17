@@ -1,41 +1,60 @@
 /**
- * Script pour redimensionner automatiquement les textareas selon leur contenu
+ * Script simplifié pour redimensionner automatiquement les textareas selon leur contenu
  */
 
-// Fonction pour redimensionner une textarea
+// Fonction pour redimensionner une textarea avec optimisation pour éviter les reflows forcés
 function autoResizeTextarea(textarea) {
-    // Réinitialise la hauteur pour obtenir la hauteur correcte
-    textarea.style.height = 'auto';
-    // Définit la nouvelle hauteur en fonction du contenu
-    textarea.style.height = textarea.scrollHeight + 'px';
+    // Utilise requestAnimationFrame pour éviter les reflows forcés
+    window.requestAnimationFrame(() => {
+        // Phase de lecture (mesurage)
+        const scrollHeight = textarea.scrollHeight;
 
-    // Désactive la scrollbar verticale mais garde la possibilité de redimensionnement manuel
-    textarea.style.overflowY = 'hidden';
-}
-
-// Fonction pour initialiser toutes les textareas de la page
-function initAutoResizeTextareas() {
-    // Sélectionne toutes les textareas
-    const textareas = document.querySelectorAll('textarea');
-
-    textareas.forEach(textarea => {
-        // Applique le redimensionnement initial
-        autoResizeTextarea(textarea);
-
-        // Ajoute un écouteur d'événement pour le redimensionnement dynamique
-        textarea.addEventListener('input', function() {
-            autoResizeTextarea(this);
-        });
-
-        // Redimensionne également lors du chargement des données externes
-        textarea.addEventListener('change', function() {
-            autoResizeTextarea(this);
+        // Phase d'écriture (mise à jour)
+        window.requestAnimationFrame(() => {
+            textarea.style.height = 'auto';
+            textarea.style.height = scrollHeight + 'px';
+            textarea.style.overflowY = 'hidden';
         });
     });
 }
 
-// Initialise le redimensionnement automatique lorsque le DOM est chargé
-document.addEventListener('DOMContentLoaded', initAutoResizeTextareas);
+// Fonction principale que vous pouvez appeler n'importe quand pour redimensionner toutes les textareas
+function refreshAllTextareas() {
+    const textareas = document.querySelectorAll('textarea');
+    console.log(`Found ${textareas.length} textareas to auto-resize.`);
+    textareas.forEach(textarea => {
+        if (!textarea.dataset.autoResizeInitialized) {
+            // Marque cette textarea comme initialisée
+            textarea.dataset.autoResizeInitialized = 'true';
 
-// Réapplique également en cas de chargement dynamique de contenu
-window.addEventListener('load', initAutoResizeTextareas);
+            // Ajoute les écouteurs d'événements une seule fois
+            textarea.addEventListener('input', function() {
+                autoResizeTextarea(this);
+            });
+        }
+
+        // Applique le redimensionnement initial
+        autoResizeTextarea(textarea);
+    });
+}
+
+// Initialisation de base au chargement de la page
+document.addEventListener('DOMContentLoaded', refreshAllTextareas);
+
+// Expose la fonction globalement pour pouvoir l'appeler de n'importe où
+window.refreshTextareas = refreshAllTextareas;
+// Également exposer sous l'ancien nom pour maintenir la compatibilité
+window.initAutoResizeTextareas = refreshAllTextareas;
+
+
+// Version optimisée de l'observateur de mutation pour réduire la fréquence d'appels
+const observer = new MutationObserver(function(mutations) {
+    // Utilise un debounce simple pour éviter les appels multiples
+    clearTimeout(observer.debounceTimer);
+    observer.debounceTimer = setTimeout(() => {
+        initAutoResizeTextareas();
+    }, 100); // Attendre 100ms après la dernière mutation
+});
+
+
+
