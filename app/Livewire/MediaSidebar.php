@@ -5,6 +5,7 @@ namespace App\Livewire;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Models\Media;
+use App\Models\MediaType;
 use App\Models\Cde;
 use App\Models\Ddp;
 use Illuminate\Support\Facades\Storage;
@@ -21,6 +22,8 @@ class MediaSidebar extends Component
     public $modelId;
     public $files = [];
     public $mediaList = [];
+    public $mediaTypes = [];
+    public $selectedMediaTypeId = null;
     public string|null $qrUrl = null;
 
     protected $rules = [
@@ -37,6 +40,7 @@ class MediaSidebar extends Component
     {
         $this->model = $model;
         $this->modelId = $modelId;
+        $this->mediaTypes = MediaType::all();
         $this->refreshMediaList();
     }
 
@@ -87,6 +91,7 @@ class MediaSidebar extends Component
                 'mime_type' => $file->getMimeType(),
                 'size' => $file->getSize(),
                 'uploaded_by' => Auth::id(),
+                'media_type_id' => $this->selectedMediaTypeId,
             ]);
 
             // Attach to entity

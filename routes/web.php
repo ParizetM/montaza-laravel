@@ -296,11 +296,16 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
     // Routes pour le système de médias
     Route::get('/media/download/{mediaId}', [MediaController::class, 'download'])->name('media.download');
     Route::post('/media/{model}/{id}', [MediaController::class, 'store'])->name('media.store');
-    Route::delete('/media/{media}', [MediaController::class, 'destroy'])->name('media.destroy');
-
+    Route::middleware('permission:gerer_les_medias')->group(function () {
+        Route::get('/media', [MediaController::class, 'index'])->name('media.index');
+        Route::put('/media/{media}', [MediaController::class, 'update'])->name('media.update');
+        Route::delete('/media/{media}', [MediaController::class, 'destroy'])->name('media.destroy');
+    });
     // Route pour générer un lien signé vers la page d'upload par QR code
     Route::get('/media/generate-qr/{model}/{id}', [MediaController::class, 'generateQrLink'])->name('media.generate-qr');
     Route::get('/media/{id}', [MediaController::class, 'show'])->name('media.show');
+    Route::patch('/media/{id}/commentaire/save', [MediaController::class, 'updateCommentaire'])->name('media.commentaire.save');
+    Route::patch('/media/{id}/type/save', [MediaController::class, 'updateType'])->name('media.type.save');
 });
 
 // Route d'upload via QR code (protégée par signature)

@@ -74,4 +74,48 @@ if (!function_exists('formatNumber')) {
         // Retourner le nombre formaté
         return $number;
     }
+
+    /**
+     * Formats a number of bytes into a human-readable string with appropriate units.
+     * This function converts a number of bytes into a more readable format,
+     * such as kilobytes (KB), megabytes (MB), gigabytes (GB), etc.
+     *
+     * @param int|float $bytes The number of bytes to format.
+     * @param bool $without_space Optional. If true, the formatted number will not include spaces as thousand separators.
+     * @param bool $without_unit Optional. If true, the unit (e.g., KB, MB) will not be appended to the formatted number.
+     * @return string The formatted number with appropriate units.
+     */
+    function formatNumberBytes($bytes, $without_space = false, $without_unit = false): string {
+        // Vérifier si le nombre est numérique
+        if (!is_numeric($bytes)) {
+            return (string)$bytes;
+        }
+
+        // Définir les unités de mesure
+        $units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+        $unitIndex = 0;
+
+        // Convertir les octets en unités appropriées
+        while ($bytes >= 1024 && $unitIndex < count($units) - 1) {
+            $bytes /= 1024;
+            $unitIndex++;
+        }
+
+        // Déterminer le nombre de décimales à afficher (2 pour les unités supérieures à B)
+        $decimals = ($unitIndex === 0) ? 0 : 2;
+
+        // Formater le nombre avec ou sans espace
+        if ($without_space) {
+            $formattedNumber = number_format($bytes, $decimals, '.', '');
+        } else {
+            $formattedNumber = number_format($bytes, $decimals, '.', ' ');
+        }
+
+        // Ajouter l'unité de mesure si nécessaire
+        if (!$without_unit) {
+            $formattedNumber .= ' ' . $units[$unitIndex];
+        }
+
+        return $formattedNumber;
+    }
 }

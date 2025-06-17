@@ -32,9 +32,8 @@
                 })
                 .catch(error => {
                     console.error('Erreur lors de la mise à jour du commentaire', error);
+                    showFlashMessageFromJs('Erreur lors de la mise à jour du commentaire', 2000, 'error');
                 });
         }
-
-     // Fonction pour ajuster automatiquement la hauteur d'un textarea
 </script>
 @endonce

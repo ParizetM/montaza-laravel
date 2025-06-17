@@ -27,89 +27,72 @@
     @livewireStyles
 </head>
 
-<body class="font-sans antialiased">
-
+<body class="font-sans antialiased bg-gray-100 dark:bg-gray-900">
     <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-        @if (session('status'))
-            <div id="flash-message"
-                class="fixed top-0 left-1/2 transform -translate-x-1/2 -translate-y-full bg-green-500 text-white p-4 rounded-sm shadow-lg z-50 transition-transform duration-500 ease-in-out">
-                <div class="container mx-auto flex justify-between items-center">
-                    <span>{!! session('status') !!}</span>
-                    <button onclick="hideFlashMessage()" class="text-white font-bold ml-3">X</button>
-                </div>
-            </div>
+        {{-- Notifications modernes --}}
+        @php
+            $notifType = null;
+            $notifMsg = null;
+            if(session('success')) {
+                $notifType = 'success';
+                $notifMsg = session('success');
+            } elseif(session('status')) {
+                $notifType = 'success';
+                $notifMsg = session('status');
+            } elseif(session('error')) {
+                $notifType = 'error';
+                $notifMsg = session('error');
+            }
+        @endphp
 
-            <script>
-                // Fonction pour afficher le message avec une transition de glissement
-
-
-                // Montre le message après un court délai pour l'animation
-                window.onload = function() {
-                    showFlashMessage();
-
-                    // Masque le message après 5 secondes, sauf si la souris est dessus
-                    let hideTimeout = setTimeout(function() {
-                        hideFlashMessage();
-                    }, 5000); // 5000 millisecondes = 5 secondes
-
-                    const flashMessage = document.getElementById('flash-message');
-                    flashMessage.addEventListener('mouseenter', function() {
-                        clearTimeout(hideTimeout);
-                    });
-
-                    flashMessage.addEventListener('mouseleave', function() {
-                        hideTimeout = setTimeout(function() {
-                            hideFlashMessage();
-                        }, 2000); // 2000 millisecondes = 2 secondes
-                    });
-                };
-            </script>
-        @endif
-        @if (session('success'))
-            <div id="flash-message"
-                class="fixed top-0 left-1/2 transform -translate-x-1/2 -translate-y-full bg-green-500 text-white p-4 rounded-sm shadow-lg z-50 transition-transform duration-500 ease-in-out">
-                <div class="container mx-auto flex justify-between items-center">
-                    <span>{!! session('success') !!}</span>
-                    <button onclick="hideFlashMessage()" class="text-white font-bold ml-3">X</button>
-                </div>
-            </div>
-
-            <script>
-                // Fonction pour afficher le message avec une transition de glissement
-
-
-                // Montre le message après un court délai pour l'animation
-                window.onload = function() {
-                    showFlashMessage();
-
-                    // Masque le message après 5 secondes, sauf si la souris est dessus
-                    let hideTimeout = setTimeout(function() {
-                        hideFlashMessage();
-                    }, 5000); // 5000 millisecondes = 5 secondes
-
-                    const flashMessage = document.getElementById('flash-message');
-                    flashMessage.addEventListener('mouseenter', function() {
-                        clearTimeout(hideTimeout);
-                    });
-
-                    flashMessage.addEventListener('mouseleave', function() {
-                        hideTimeout = setTimeout(function() {
-                            hideFlashMessage();
-                        }, 2000); // 2000 millisecondes = 2 secondes
-                    });
-                };
-            </script>
-        @endif
-
-        @if (session('error'))
+        @if($notifMsg)
             <div
-                class="fixed top-0 left-1/2 transform -translate-x-1/2 bg-red-500 text-white p-4 rounded-sm shadow-lg z-50 mt-4">
-                <div class="container mx-auto flex justify-between items-center">
-                    <span>{{ session('error') }}</span>
-                    <button onclick="this.parentElement.parentElement.remove()"
-                        class="text-white font-bold ml-3">X</button>
-                </div>
+                id="flash-message"
+                class="fixed top-6 left-1/2 transform -translate-x-1/2 z-100 min-w-[300px] max-w-[90vw] px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 transition-all duration-500
+                    @if($notifType === 'success') bg-green-100 text-green-800 dark:bg-green-700 dark:text-green-100 @endif
+                    @if($notifType === 'error') bg-red-100 text-red-800 dark:bg-red-700 dark:text-red-100 @endif
+                    opacity-0 pointer-events-none"
+                role="alert"
+            >
+                <svg class="w-6 h-6 flex-shrink-0
+                    @if($notifType === 'success') text-green-500 dark:text-green-200 @endif
+                    @if($notifType === 'error') text-red-500 dark:text-red-200 @endif
+                " fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    @if($notifType === 'success')
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                    @else
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                    @endif
+                </svg>
+                <span class="flex-1">{!! $notifMsg !!}</span>
+                <button onclick="hideFlashMessage()" class="ml-3 text-lg font-bold focus:outline-none hover:opacity-70 transition-opacity">&times;</button>
             </div>
+            <script>
+                // Animation d'apparition/disparition
+                window.addEventListener('DOMContentLoaded', function() {
+                    const flash = document.getElementById('flash-message');
+                    if(flash) {
+                        setTimeout(() => {
+                            flash.classList.remove('opacity-0', 'pointer-events-none');
+                            flash.classList.add('opacity-100');
+                        }, 100);
+                        // Disparition auto après 4s sauf si survolé
+                        let hideTimeout = setTimeout(hideFlashMessage, 4000);
+                        flash.addEventListener('mouseenter', () => clearTimeout(hideTimeout));
+                        flash.addEventListener('mouseleave', () => {
+                            hideTimeout = setTimeout(hideFlashMessage, 2000);
+                        });
+                    }
+                });
+                function hideFlashMessage() {
+                    const flash = document.getElementById('flash-message');
+                    if(flash) {
+                        flash.classList.remove('opacity-100');
+                        flash.classList.add('opacity-0', 'pointer-events-none');
+                        setTimeout(() => { if(flash) flash.remove(); }, 500);
+                    }
+                }
+            </script>
         @endif
         @include('layouts.navigation')
 
@@ -153,99 +136,81 @@
             }
         }
 
+        function showFlashMessageFromJs(contenu, duree = 3000, type = 'success') {
+            // Supprime les notifications existantes
+            document.querySelectorAll('#flash-message').forEach(function(element) {
+                element.remove();
+            });
+
+            // Crée la notification
+            const flashMessage = document.createElement('div');
+            flashMessage.id = 'flash-message';
+            flashMessage.className =
+                'fixed top-6 left-1/2 transform -translate-x-1/2 z-1000 min-w-[300px] max-w-[90vw] px-4 py-3 rounded-md shadow-md flex items-center gap-3 transition-all duration-500 opacity-0 pointer-events-none ' +
+                (type === 'error'
+                    ? 'bg-red-600 text-white dark:bg-red-700'
+                    : 'bg-green-600 text-white dark:bg-green-700'
+                );
+            flashMessage.innerHTML = `
+                <svg class="w-5 h-5 flex-shrink-0 ${type === 'error' ? 'text-white' : 'text-white'}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    ${type === 'error'
+                        ? '<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>'
+                        : '<path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>'
+                    }
+                </svg>
+                <span class="flex-1 font-medium">${contenu}</span>
+                <button onclick="hideFlashMessage()" class="ml-3 text-lg font-bold focus:outline-none hover:opacity-80 transition-opacity">&times;</button>
+            `;
+            document.body.appendChild(flashMessage);
+
+            setTimeout(() => {
+                flashMessage.classList.remove('opacity-0', 'pointer-events-none');
+                flashMessage.classList.add('opacity-100');
+            }, 100);
+
+            let hideTimeout = setTimeout(hideFlashMessage, duree);
+            flashMessage.addEventListener('mouseenter', () => clearTimeout(hideTimeout));
+            flashMessage.addEventListener('mouseleave', () => {
+                hideTimeout = setTimeout(hideFlashMessage, 1200);
+            });
+        }
+
+        function hideFlashMessage() {
+            const flash = document.getElementById('flash-message');
+            if (flash) {
+                flash.classList.remove('opacity-100');
+                flash.classList.add('opacity-0', 'pointer-events-none');
+                setTimeout(() => { if (flash) flash.remove(); }, 500);
+            }
+        }
+
         function copyToClipboard(text) {
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(text).then(function() {
-                    showCopiedMessage();
+                    showFlashMessageFromJs('Texte copié avec succès', 2000, 'success');
                 }, function(err) {
-                    console.error('Could not copy text: ', err);
+                    showFlashMessageFromJs('Erreur lors de la copie du texte', 3000, 'error');
                 });
             } else {
-                // Fallback for older browsers
                 const textArea = document.createElement('textarea');
+                textArea.style.position = 'fixed';
+                textArea.style.opacity = '0';
                 textArea.value = text;
                 document.body.appendChild(textArea);
                 textArea.focus();
                 textArea.select();
                 try {
                     document.execCommand('copy');
-                    showCopiedMessage();
+                    showFlashMessageFromJs('Texte copié avec succès', 2000, 'success');
                 } catch (err) {
-                    console.error('Could not copy text: ', err);
+                    showFlashMessageFromJs('Erreur lors de la copie du texte', 3000, 'error');
                 }
                 document.body.removeChild(textArea);
             }
-        }
-
-        function showCopiedMessage() {
-            // Affiche un message temporaire pour indiquer que le texte a été copié
-            const flashMessage = document.createElement('div');
-            flashMessage.id = 'flash-message';
-            flashMessage.className =
-                'fixed top-0 left-1/2 transform -translate-x-1/2 -translate-y-full bg-green-500 text-white p-4 rounded-sm shadow-lg z-50 transition-transform duration-500 ease-in-out';
-            flashMessage.innerHTML = `
-                <div class="container mx-auto flex justify-between items-center">
-                    <span>Texte copié</span>
-                    <button onclick="hideFlashMessage()" class="text-white font-bold ml-3">X</button>
-                </div>
-            `;
-            document.body.appendChild(flashMessage);
-            setTimeout(function() {
-                showFlashMessage();
-            }, 100);
-            setTimeout(function() {
-                hideFlashMessage();
-            }, 1000);
-        }
-
-        function showFlashMessage() {
-            const flashMessage = document.getElementById('flash-message');
-            flashMessage.classList.remove('-translate-y-full'); // Enlève la classe pour montrer l'élément
-            flashMessage.classList.add('translate-y-0'); // Ajoute la classe pour faire le glissement
-            flashMessage.classList.add('shadow-lg'); // Ajoute une ombre pour le rendre plus visible
-        }
-
-        // Fonction pour masquer le message avec une transition
-        function hideFlashMessage() {
-            const flashMessage = document.getElementById('flash-message');
-            flashMessage.classList.remove('translate-y-0'); // Enlève la classe pour cacher l'élément
-            flashMessage.classList.add('-translate-y-full'); // Ajoute la classe pour remonter le message
-            flashMessage.classList.remove('shadow-lg'); // Enlève l'ombre pour le rendre moins visible
-            setTimeout(function() {
-                document.querySelectorAll('#flash-message').forEach(function(element) {
-                    element.remove();
-                });
-            }, 500); // Délai pour permettre la transition avant de supprimer l'élément
-
-        }
-
-        function showFlashMessageFromJs(contenu, duree = 2000, type = 'success') {
-            // Affiche un message temporaire pour indiquer que le texte a été copié
-            const flashMessage = document.createElement('div');
-            flashMessage.id = 'flash-message';
-            if (type === 'error') {
-                flashMessage.className =
-                    'fixed top-0 left-1/2 transform -translate-x-1/2 -translate-y-full bg-red-500 text-white p-4 rounded-sm shadow-lg z-1000 transition-transform duration-500 ease-in-out';
-            } else if (type === 'success') {
-                flashMessage.className =
-                    'fixed top-0 left-1/2 transform -translate-x-1/2 -translate-y-full bg-green-500 text-white p-4 rounded-sm shadow-lg z-1000 transition-transform duration-500 ease-in-out';
-            }
-            flashMessage.innerHTML = `
-                <div class="container mx-auto flex justify-between items-center">
-                    <span>${contenu}</span>
-                    <button onclick="hideFlashMessage()" class="text-white font-bold ml-3">X</button>
-                </div>
-            `;
-            document.body.appendChild(flashMessage);
-            setTimeout(function() {
-                showFlashMessage();
-            }, 100);
-            setTimeout(function() {
-                hideFlashMessage();
-            }, duree);
         }
     </script>
     @livewireScripts
 </body>
 
 </html>
+

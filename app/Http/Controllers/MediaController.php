@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Media;
 use App\Models\Cde;
+use App\Models\Commentaire;
 use App\Models\Ddp;
+use App\Models\MediaType;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
@@ -24,10 +26,49 @@ class MediaController extends Controller
         // Ajoutez d'autres modèles selon vos besoins
     ];
 
+    public const AUTHORIZED_MIME_TYPES = Media::AUTHORIZED_MIME_TYPES;
+
+    /**
+     * Affiche la page d'accueil du gestionnaire de médias.
+     */
+    public function index(Request $request)
+    {
+        $request->validate([
+            'search' => 'nullable|string|max:255',
+            'type' => 'nullable|exists:media_types,id',
+            'nombre' => 'nullable|integer',
+        ]);
+        $medias = Media::query()
+            ->when($request->input('search'), function ($query, $search) {
+                return $query->where(function ($q) use ($search) {
+                    $q->where('original_filename', 'ilike', '%' . $search . '%')
+                        ->orWhere('filename', 'ilike', '%' . $search . '%')
+                        ->orWhereHas('uploader', function ($u) use ($search) {
+                            $u->where('first_name', 'ilike', '%' . $search . '%')
+                                ->orWhere('last_name', 'ilike', '%' . $search . '%');
+                        });
+                });
+            })
+            ->when($request->input('type'), function ($query, $mediaTypeId) {
+                return $query->where('media_type_id', $mediaTypeId);
+            })
+            ->with(['user', 'mediaType'])
+            ->orderBy('created_at', 'desc')
+            ->paginate($request->input('nombre', 50));
+        $media_types = MediaType::all();
+        return view('media.index', [
+            'medias' => $medias,
+            'media_types' => $media_types,
+
+        ]);
+    }
+
+
+
     /**
      * Affiche la liste des médias associés à une entité.
      */
-    public function index($model, $id)
+    public function indexModel($model, $id)
     {
         // Vérifier si l'entité existe
         $entity = $this->getEntity($model, $id);
@@ -36,7 +77,7 @@ class MediaController extends Controller
             return abort(404);
         }
 
-        return view('media.index', [
+        return view('media.indexModel', [
             'model' => $model,
             'modelId' => $id,
             'entity' => $entity
@@ -49,7 +90,8 @@ class MediaController extends Controller
     public function store(Request $request, $model, $id)
     {
         $request->validate([
-            'files.*' => 'required|file|max:20480', // Augmenté à 20Mo
+            'files.*' => 'required|file|max:20480|mimetypes:' . implode(',', self::AUTHORIZED_MIME_TYPES),
+            'media_type_id' => 'nullable|exists:media_types,id',
         ]);
 
         $entity = $this->getEntity($model, $id);
@@ -78,6 +120,7 @@ class MediaController extends Controller
                     'mime_type' => $file->getMimeType(),
                     'size' => $file->getSize(),
                     'uploaded_by' => Auth::getUser()->id,
+                    'media_type_id' => $request->media_type_id, // Ajouter le type de média
                 ]);
 
                 $entity->media()->save($media);
@@ -93,7 +136,7 @@ class MediaController extends Controller
 
         if (count($errorFiles) > 0) {
             return back()->with('warning', 'Certains fichiers n\'ont pas pu être téléchargés: ' . implode(', ', $errorFiles))
-                        ->with('success', $successCount . ' fichier(s) téléchargé(s) avec succès');
+                ->with('success', $successCount . ' fichier(s) téléchargé(s) avec succès');
         }
 
         return back()->with('success', 'Fichiers téléchargés avec succès');
@@ -206,7 +249,7 @@ class MediaController extends Controller
         try {
             // Vérifier si l'URL est signée
             if (!$request->hasValidSignature()) {
-                \Illuminate\Support\Facades\Log::error('Signature invalide pour upload QR code', [
+                Log::error('Signature invalide pour upload QR code', [
                     'model' => $model,
                     'id' => $id,
                     'token' => $token
@@ -216,6 +259,7 @@ class MediaController extends Controller
 
             $request->validate([
                 'files.*' => 'required|file|max:5120|mimes:jpg,jpeg,png,pdf',
+                'media_type_id' => 'nullable|exists:media_types,id',
             ]);
 
             $entity = null;
@@ -232,26 +276,27 @@ class MediaController extends Controller
             $basePath = 'media/' . $model . '/' . date('Y/m/d');
             $fullPath = $basePath;
 
-            if (!\Illuminate\Support\Facades\Storage::exists($fullPath)) {
-                \Illuminate\Support\Facades\Storage::makeDirectory($fullPath);
+            if (!Storage::exists($fullPath)) {
+                Storage::makeDirectory($fullPath);
             }
 
             foreach ($request->file('files') as $file) {
                 $originalFilename = $file->getClientOriginalName();
                 $extension = $file->getClientOriginalExtension();
-                $filename = \Illuminate\Support\Str::uuid() . '.' . $extension;
+                $filename = Str::uuid() . '.' . $extension;
 
                 // Enregistrer le fichier
                 $filePath = $file->storeAs($fullPath, $filename);
 
                 // Créer l'entrée media
-                $media = new \App\Models\Media([
+                $media = new Media([
                     'filename' => $filename,
                     'original_filename' => $originalFilename,
                     'path' => $filePath,
                     'mime_type' => $file->getMimeType(),
                     'size' => $file->getSize(),
                     'uploaded_by' => 1, // System upload
+                    'media_type_id' => $request->media_type_id, // Ajouter le type de média
                 ]);
 
                 // Associer à l'entité
@@ -260,7 +305,7 @@ class MediaController extends Controller
 
             return back()->with('success', 'Fichiers téléchargés avec succès');
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Erreur lors de l\'upload via QR code', [
+            Log::error('Erreur lors de l\'upload via QR code', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
@@ -306,5 +351,65 @@ class MediaController extends Controller
         }
         $entityClass = $this->allowedModels[$model];
         return $entityClass::find($id);
+    }
+
+    /**
+     * Met à jour un média.
+     */
+    public function update(Request $request, Media $media)
+    {
+        $request->validate([
+            'original_filename' => 'required|string|max:255',
+            'media_type_id' => 'nullable|exists:media_types,id',
+        ]);
+
+        $media->update([
+            'original_filename' => $request->original_filename,
+            'media_type_id' => $request->media_type_id,
+        ]);
+
+        return back()->with('success', 'Pièce jointe mise à jour avec succès');
+    }
+
+    public function updateCommentaire(Request $request, $id)
+    {
+        $media = Media::find($id);
+        if ($media) {
+            // Trouve le commentaire lié au media
+            $commentaire = $media->commentaire;
+            if ($commentaire) {
+                if ($commentaire->contenu == $request->commentaire) {
+                    return response()->json(['message' => 'Commentaire inchangé'], 200);
+                }
+                // Met à jour le commentaire avec la nouvelle valeur
+                $commentaire->contenu = $request->commentaire;
+                $commentaire->save();
+            } else {
+                // Si le media n'a pas encore de commentaire, on en crée un
+                $commentaire = new Commentaire();
+                $commentaire->contenu = $request->commentaire;
+                $commentaire->save();
+                $media->commentaire()->associate($commentaire);
+                $media->save();
+            }
+        }
+
+        return response()->json(['message' => 'Commentaire mis à jour'], 200);
+    }
+    public function updateType(Request $request, $id)
+    {
+        $media = Media::find($id);
+        if (!$media) {
+            return response()->json(['message' => 'Média non trouvé'], 404);
+        }
+
+        $request->validate([
+            'media_type_id' => 'required|exists:media_types,id',
+        ]);
+
+        $media->media_type_id = $request->media_type_id;
+        $media->save();
+
+        return response()->json(['message' => 'Type de média mis à jour avec succès'], 200);
     }
 }

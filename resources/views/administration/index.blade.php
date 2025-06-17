@@ -72,6 +72,15 @@
                         </div>
                     </a>
                 @endcan
+                @can('gerer_les_medias')
+                    <a href="{{ route('media.index') }}" class="flex p-6 text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-900 w-96 h-auto rounded-md cursor-pointer transition-all hover:scale-105 hover:bg-gray-200 dark:hover:bg-gray-700">
+                        <x-icons.attachement class="w-12 h-12 mr-2 fill-gray-400 dark:fill-gray-100" />
+                        <div class=" flex flex-col justify-between">
+                            <h1 class="text-3xl font-bold mb-6 text-left">{{ __('Pièces jointes') }}</h1>
+                            <p class=" p-1 rounded-sm">{{ __('Gérer les pièces jointes') }}</p>
+                        </div>
+                    </a>
+                @endcan
                 <a href="{{ route('administration.icons') }}" class="flex p-6 text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-900 w-96 h-auto rounded-md cursor-pointer transition-all hover:scale-105 hover:bg-gray-200 dark:hover:bg-gray-700">
                     <x-icons.settings class="w-12 h-12 mr-2 fill-gray-400 dark:fill-gray-100" />
                     <div class=" flex flex-col justify-between">

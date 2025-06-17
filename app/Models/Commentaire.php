@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 
 class Commentaire extends Model
@@ -17,6 +18,10 @@ class Commentaire extends Model
     {
         return $this->hasMany(Societe::class);
     }
+    public function medias(): HasMany {
+        return $this->hasMany(Media::class);
+    }
+
     protected static function booted(): void
     {
         // Enregistrer avant la création d'un modèle

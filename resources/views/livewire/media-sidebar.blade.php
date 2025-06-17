@@ -1,70 +1,25 @@
 <div>
     <div class="fixed top-1/2 left-0 transform -translate-y-1/2" x-data>
         <button @click="$dispatch('open-volet', 'media-manager')"
+            onclick="window.refreshTextareas();delayedRefreshTextareas()"
             class="btn-select-right flex items-center px-2 py-8 bg-gray-200 dark:bg-gray-800 shadow-lg hover:bg-gray-300 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-700">
-                        <span class=" whitespace-nowrap font-medium transform rotate-90 inline-block w-1  -mt-12">Médias</span>
+            <span class=" whitespace-nowrap font-medium transform rotate-90 inline-block w-1  -mt-6 mb-20">Pièces
+                jointes</span>
             <x-icon :size="1" type="arrow_back" class="-rotate-180" />
         </button>
 
     </div>
-    {{-- <div class="media-sidebar p-4 bg-white dark:bg-gray-800 shadow rounded-lg">
-        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4 flex justify-between items-center">
-            <span>Documents associés</span>
-            <button
-                type="button"
-                @click="$dispatch('open-volet', 'media-manager')"
-                class="px-3 py-1 bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 transition-colors">
-                Gérer les documents
-            </button>
-        </h3>
-
-        <!-- Liste simplifiée des documents récents -->
-        <div class="mt-3">
-            <ul class="space-y-2">
-                @if (count($mediaList ?? []) > 0)
-                    @foreach ($mediaList as $media)
-                        <li class="p-2 bg-gray-50 dark:bg-gray-700 rounded-lg flex justify-between items-center">
-                            <!-- Icône basée sur le type de fichier -->
-                            <div class="flex items-center">
-                                @if (str_contains($media->mime_type ?? '', 'image'))
-                                    <div class="w-8 h-8 mr-2 bg-gray-200 rounded overflow-hidden">
-                                        <img src="{{ route('media.show', $media->id) }}" alt="{{ $media->original_filename ?? $media->filename }}" class="w-full h-full object-cover">
-                                    </div>
-                                @elseif(str_contains($media->mime_type ?? '', 'pdf'))
-                                    <svg class="w-5 h-5 mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-                                    </svg>
-                                @else
-                                    <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                    </svg>
-                                @endif
-                                <span class="text-sm truncate" title="{{ $media->original_filename ?? $media->filename }}">
-                                    {{ Str::limit($media->original_filename ?? $media->filename, 20) }}
-                                </span>
-                            </div>
-                            <a href="{{ route('media.show', $media->id) }}" target="_blank" class="text-blue-500 hover:text-blue-700">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-                                </svg>
-                            </a>
-                        </li>
-                    @endforeach
-                @else
-                    <li class="text-center text-gray-500 dark:text-gray-400 py-4">
-                        Aucun document associé
-                    </li>
-                @endif
-            </ul>
-        </div>
-    </div> --}}
 
     <!-- Volet modal pour la gestion complète des médias -->
     <x-volet-modal name="media-manager" maxWidth="3xl" position="left">
         <div class="p-6">
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Gestion des documents</h2>
-                <button @click="$dispatch('close-volet', 'media-manager')" class="text-gray-400 hover:text-gray-500">
+                <div class="flex items-center space-x-2">
+                    <x-icons.attachement class="w-8 h-8 text-gray-600 dark:text-gray-300" />
+                    <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Gestion des Pièces jointes</h2>
+                </div>
+                <button @click="$dispatch('close-volet', 'media-manager');" class="text-gray-400 hover:text-gray-500"
+                    onclick="window.delayedRefreshTextareas()">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                         xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
@@ -77,7 +32,8 @@
             <div x-data="{ tab: 'files' }" class="mb-6">
                 <div class="border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
                     <nav class="flex space-x-4">
-                        <button @click="tab = 'files'; $wire.refreshMediaList()"
+                        <button @click="tab = 'files'; $wire.refreshMediaList();"
+                            onclick="window.delayedRefreshTextareas(1000);window.delayedRefreshTextareas(2000);window.delayedRefreshTextareas(3000);window.delayedRefreshTextareas(4000);"
                             :class="{ 'border-blue-500 text-blue-600 dark:text-blue-400': tab === 'files', 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300': tab !== 'files' }"
                             class="pb-3 px-1 border-b-2 font-medium text-sm">
                             Fichiers
@@ -109,6 +65,7 @@
                 <div x-show="tab === 'files'" class="mt-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         @if (count($mediaList ?? []) > 0)
+
                             @foreach ($mediaList as $media)
                                 <div class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
                                     <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700">
@@ -218,8 +175,57 @@
                                                 {{ $media->created_at ? $media->created_at->format('d/m/Y H:i') : 'N/A' }}
                                             </p>
                                             <p>Taille:
-                                                {{ $media->size ? number_format($media->size / 1024, 2) . ' KB' : 'N/A' }}
+                                                {{ $media->size ? formatNumberBytes($media->size) : 'N/A' }}
                                             </p>
+                                            <x-select-custom id="media_type_{{ $media->id }}"
+                                                name="mediaTypes.{{ $media->id }}"
+                                                selected="{{ $media->media_type_id }}"
+                                                wire:model="mediaTypes.{{ $media->id }}" class="mt-2"
+                                                onchange="updateTypeMedia({{ $media->id }})">
+                                                @foreach ($mediaTypes as $media_type)
+                                                    <x-opt value="{{ $media_type->id }}">
+                                                        <div
+                                                            class="text-center w-full px-2 text-xs leading-5 flex rounded-full font-bold items-center justify-center
+                                                        {{ $media_type->background_color_light ? 'bg-[' . $media_type->background_color_light . ']' : 'bg-gray-100' }}
+                                                        {{ $media_type->text_color_light ? 'text-[' . $media_type->text_color_light . ']' : 'text-gray-800' }}
+                                                        {{ $media_type->background_color_dark ? 'dark:bg-[' . $media_type->background_color_dark . ']' : 'dark:bg-gray-700' }}
+                                                        {{ $media_type->text_color_dark ? 'dark:text-[' . $media_type->text_color_dark . ']' : 'dark:text-gray-200' }}">
+                                                            {{ $media_type->nom }}
+                                                        </div>
+                                                    </x-opt>
+                                                @endforeach
+                                            </x-select-custom>
+                                            @once
+                                                <script>
+                                                    function updateTypeMedia(id) {
+                                                        const mediaId = id; // Récupère l'ID de la société
+                                                        const value = document.getElementsByName('mediaTypes.' + mediaId)[0].value; // Récupère la valeur sélectionnée
+                                                        console.log('Mise à jour du type de média pour l\'ID:', mediaId, 'avec la valeur:', value);
+                                                        // Envoie la requête AJAX avec fetch
+                                                        fetch('/media/' + mediaId + '/type/save', {
+                                                                method: 'PATCH', // Utilise la méthode PATCH pour mettre à jour
+                                                                headers: {
+                                                                    'Content-Type': 'application/json',
+                                                                    'X-CSRF-TOKEN': '{{ csrf_token() }}', // Envoie le token CSRF pour la sécurité
+                                                                },
+                                                                body: JSON.stringify({
+                                                                    media_type_id: value, // Envoie l'ID du type de média
+                                                                }),
+                                                            })
+                                                            .then(response => response.json()) // Récupère la réponse en JSON
+                                                            .then(data => {
+                                                                if (!(data.message == 'type inchangé')) {
+                                                                    showFlashMessageFromJs(data.message, 2000);
+                                                                }
+                                                            })
+                                                            .catch(error => {
+                                                                console.error('Erreur lors de la mise à jour du type', error);
+                                                                showFlashMessageFromJs('Erreur lors de la mise à jour du type', 2000, 'error');
+                                                            });
+                                                    }
+                                                </script>
+                                            @endonce
+                                            @include('../media.commentaire', ['media' => $media])
                                         </div>
                                     </div>
                                 </div>
@@ -349,6 +355,28 @@
 
                 <!-- Formulaire d'upload -->
                 <div x-show="tab === 'upload'" class="mt-4">
+                    <!-- Sélecteur de type de média -->
+                    <div class="mb-4">
+                        <label for="media_type_select"
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Type de média
+                        </label>
+                        <x-select-custom wire:model="selectedMediaTypeId" id="media_type_select" class="">
+                            @foreach ($mediaTypes as $media_type)
+                                <x-opt value="{{ $media_type->id }}">
+                                    <div
+                                        class="text-center w-full px-2 text-xs leading-5 flex rounded-full font-bold items-center justify-center
+                                    {{ $media_type->background_color_light ? 'bg-[' . $media_type->background_color_light . ']' : 'bg-gray-100' }}
+                                    {{ $media_type->text_color_light ? 'text-[' . $media_type->text_color_light . ']' : 'text-gray-800' }}
+                                    {{ $media_type->background_color_dark ? 'dark:bg-[' . $media_type->background_color_dark . ']' : 'dark:bg-gray-700' }}
+                                    {{ $media_type->text_color_dark ? 'dark:text-[' . $media_type->text_color_dark . ']' : 'dark:text-gray-200' }}">
+                                        {{ $media_type->nom }}
+                                    </div>
+                                </x-opt>
+                            @endforeach
+                        </x-select-custom>
+                    </div>
+
                     <div
                         class="border-dashed border-2 border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center">
                         <svg class="w-12 h-12 mx-auto text-gray-400" fill="none" stroke="currentColor"
@@ -357,7 +385,7 @@
                                 d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
                             </path>
                         </svg>
-                        <p class="mt-4 text-gray-500 dark:text-gray-400">Glissez-déposez vos fichiers ici ou cliquez
+                        <p class="mt-4 text-gray-500 dark:text-gray-400">Glissez-déposez votre fichier ici ou cliquez
                             pour sélectionner</p>
 
                         <!-- Zone d'upload avec gestion des événements Livewire -->
@@ -382,8 +410,7 @@
                             <label class="block">
                                 <span class="sr-only">Choisir des fichiers</span>
                                 <input type="file" wire:model="files"
-                                    class="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-500 file:text-white hover:file:bg-blue-600"
-                                    multiple />
+                                    class="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-500 file:text-white hover:file:bg-blue-600" />
                             </label>
 
                             <!-- Barre de progression -->
@@ -403,8 +430,8 @@
                         @enderror
 
                         <div class="mt-4 text-sm text-gray-500 dark:text-gray-400">
-                            <p>Formats acceptés: JPG, PNG, PDF</p>
-                            <p>Taille maximale: 10MB par fichier</p>
+                            <p>Formats acceptés: JPG, PNG, GIF, MP4, MP3, PDF, DOC, DOCX, XLS, XLSX, CSV, TXT</p>
+                            <p>Taille maximale: 5MB</p>
                         </div>
                     </div>
                 </div>
@@ -431,7 +458,8 @@
                                 Générer un QR Code
                             </button>
                         @endif
-                        <p class="mb-4 text-gray-600 dark:text-gray-400">L'appareil doit être connecté au réseau Wifi de l'entreprise pour fonctionner</p>
+                        <p class="mb-4 text-gray-600 dark:text-gray-400">L'appareil doit être connecté au réseau Wifi
+                            de l'entreprise pour fonctionner</p>
                     </div>
                 </div>
             </div>

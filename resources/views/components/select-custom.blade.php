@@ -49,14 +49,15 @@
         },
         getSelectedLabel() {
             const option = this.options.find(opt => opt.value === this.selected);
-            return option ? option.content : 'Sélectionner...';
+            return option ? option.content : (this.options.length > 0 ? this.options[0].content : 'Sélectionner...');
+
         },
         positionDropdown() {
             if (!this.open) return;
-            
+
             const button = this.$refs.selectButton;
             const dropdown = this.$refs.dropdown;
-            
+
             // Positionnement du dropdown par rapport au bouton
             const rect = button.getBoundingClientRect();
             dropdown.style.width = `${rect.width}px`;
@@ -97,7 +98,7 @@
             @click.away="open = false"
             x-transition
             x-ref="dropdown"
-            class="fixed z-50 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-lg overflow-auto"
+            class="fixed z-1000 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-lg overflow-auto"
             style="max-height: calc(100vh - 100px);"
         >
             <template x-for="option in options" :key="option.value">

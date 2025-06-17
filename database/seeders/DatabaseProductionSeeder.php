@@ -37,6 +37,7 @@ class DatabaseProductionSeeder extends Seeder
             'gerer_les_ddp_et_cde' => 'Créer, Modifier Et Désactiver Les Demandes De Prix Et Les Commandes',
             'gerer_mail_templates' => 'Modifier Les Modèles De Mail',
             'gerer_info_entreprise' => 'Modifier Les Informations De L\'entreprise',
+            'gerer_les_medias' => 'Gérer Les Médias enregistrés',
         ];
         foreach ($permissions as $permission => $description) {
             Permission::factory()->create([
@@ -201,5 +202,8 @@ class DatabaseProductionSeeder extends Seeder
         // $this->call(CdeSeeder::class);
         $this->call(CdeNoteSeeder::class);
         echo "notes de commande à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
+        $this->call(MediaTypeSeeder::class);
+        echo "types de médias à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
+
     }
 }

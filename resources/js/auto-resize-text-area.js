@@ -11,8 +11,9 @@ function autoResizeTextarea(textarea) {
 
         // Phase d'écriture (mise à jour)
         window.requestAnimationFrame(() => {
+            const minHeight = 40; // Hauteur minimale en pixels
             textarea.style.height = 'auto';
-            textarea.style.height = scrollHeight + 'px';
+            textarea.style.height = Math.max(scrollHeight, minHeight) + 'px';
             textarea.style.overflowY = 'hidden';
         });
     });

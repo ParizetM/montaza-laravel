@@ -40,7 +40,9 @@
           @endif>
         @csrf
         @method('delete')
-
+            <a x-on:click="$dispatch('close')">
+        <x-icons.close class="float-right mb-1 icons" size="1.5" unfocus />
+    </a>
         <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
             {!! $modalTitle !!}
         </h2>
