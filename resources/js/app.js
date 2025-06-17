@@ -20,6 +20,7 @@ import 'chartjs-adapter-date-fns';
 import Chart from 'chart.js/auto';
 import './form-navigation';
 import './tooltip';
+import './auto-resize-text-area';
 // Exposition des librairies dans la fenêtre globale
 window.Chart = Chart;
 window.Handsontable = Handsontable;
