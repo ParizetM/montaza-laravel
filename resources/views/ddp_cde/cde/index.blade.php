@@ -11,16 +11,18 @@
             </div>
             <form method="GET" action="{!! route('cde.index') !!}"
                 class="mr-4 mb-1 sm:mr-0 flex flex-col sm:flex-row items-start sm:items-center">
-                <select name="statut" id="statut" onchange="this.form.submit()"
-                    class="px-4 py-2 mr-2 border select mb-2 sm:mb-0 ">
-                    <option value="" selected>{!! __('Tous les types') !!}</option>
+                <x-select-custom name="statut" id="statut" onchange="this.form.submit()" :selected="request('statut')"
+                    class=" mr-2 mb-2 sm:mb-0 ">
+                    <x-opt value="">{!! __('Tous les types') !!}</x-opt>
                     @foreach ($cde_statuts as $cde_statut)
-                        <option value="{{ $cde_statut->id }}"
-                            {{ request('statut') == $cde_statut->id ? 'selected' : '' }}>
-                            {!! $cde_statut->nom . '&nbsp;&nbsp;' !!}
-                        </option>
+                        <x-opt value="{{ $cde_statut->id }}">
+                            <div class="text-center w-full px-2 text-xs leading-5 flex rounded-full font-bold items-center justify-center"
+                                style="background-color: {{ $cde_statut->couleur }}; color: {{ $cde_statut->couleur_texte }}">
+                                {{ $cde_statut->nom }}
+                            </div>
+                        </x-opt>
                     @endforeach
-                </select>
+                </x-select-custom>
                 <select name="societe" id="societe" onchange="this.form.submit()"
                     class="px-4 py-2 mr-2 border select mb-2 sm:mb-0 w-fit">
                     <option value="" selected>{!! __('Toutes les societes') !!}</option>
@@ -51,7 +53,7 @@
 
         <div class="bg-white dark:bg-gray-800 flex flex-col p-4 text-gray-800 dark:text-gray-200">
 
-            @if($cdesGrouped->count() > 0)
+            @if ($cdesGrouped->count() > 0)
                 <table class="w-full">
                     <thead>
                         <tr>
@@ -63,14 +65,20 @@
                             <x-sortable-header column="statut" route="cde.index">Statut</x-sortable-header>
                         </tr>
                     </thead>
-                    @include('ddp_cde.cde.partials.index_lignes', ['isSmall' => false, 'showCreateButton' => false, 'cdesGrouped' => $cdesGrouped])
+                    @include('ddp_cde.cde.partials.index_lignes', [
+                        'isSmall' => false,
+                        'showCreateButton' => false,
+                        'cdesGrouped' => $cdesGrouped,
+                    ])
                 </table>
             @else
                 <!-- Message si aucune commande -->
                 <div class="text-center py-8">
                     <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
-                        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Aucune commande trouvée</h3>
-                        <p class="text-gray-600 dark:text-gray-400 mb-4">Aucune commande ne correspond à vos critères de recherche.</p>
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Aucune commande trouvée
+                        </h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4">Aucune commande ne correspond à vos critères de
+                            recherche.</p>
                         <a href="{{ route('cde.create') }}" class="btn">
                             Créer une nouvelle commande
                         </a>

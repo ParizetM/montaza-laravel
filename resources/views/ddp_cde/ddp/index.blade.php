@@ -11,16 +11,18 @@
             </div>
             <form method="GET" action="{!! route('ddp.index') !!}"
                 class="mr-4 mb-1 sm:mr-0 flex flex-col sm:flex-row items-start sm:items-center">
-                <select name="statut" id="statut" onchange="this.form.submit()"
-                    class="px-4 py-2 mr-2 border select mb-2 sm:mb-0 ">
-                    <option value="" selected>{!! __('Tous les types') !!}</option>
+                <x-select-custom name="statut" id="statut" onchange="this.form.submit()" :selected="request('statut')"
+                    class=" mr-2 mb-2 sm:mb-0 ">
+                    <x-opt value="">{!! __('Tous les types') !!}</x-opt>
                     @foreach ($ddp_statuts as $ddp_statut)
-                        <option value="{{ $ddp_statut->id }}"
-                            {{ request('statut') == $ddp_statut->id ? 'selected' : '' }}>
-                            {!! $ddp_statut->nom . '&nbsp;&nbsp;' !!}
-                        </option>
+                        <x-opt value="{{ $ddp_statut->id }}">
+                            <div class="text-center w-full px-2 text-xs leading-5 flex rounded-full font-bold items-center justify-center"
+                                style="background-color: {{ $ddp_statut->couleur }}; color: {{ $ddp_statut->couleur_texte }}">
+                                {{ $ddp_statut->nom }}
+                            </div>
+                        </x-opt>
                     @endforeach
-                </select>
+                </x-select-custom>
                 <input type="text" name="search" placeholder="Rechercher..." value="{!! request('search') !!}" onblur="this.form.submit()"
                     class="w-full sm:w-auto px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
                 <div class="flex items-center ml-4 my-1 ">
