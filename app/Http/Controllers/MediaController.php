@@ -261,7 +261,7 @@ class MediaController extends Controller
             }
 
             $request->validate([
-                'files.*' => 'required|file|max:5120|mimes:jpg,jpeg,png,pdf',
+                'files.*' => 'required|file|max:5120|mimes:' . str_replace('.', '', implode(',', Media::AUTHORIZED_FILE_EXTENSIONS)),
                 'media_type_id' => 'nullable|exists:media_types,id',
             ]);
 

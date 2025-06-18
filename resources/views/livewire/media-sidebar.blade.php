@@ -75,31 +75,32 @@ use App\Models\Media;
                                 <div class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
                                     <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700">
                                         <div class="flex items-center space-x-2">
-                                            @if (str_contains($media->mime_type ?? '', 'image'))
-                                                <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor"
-                                                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                                    </path>
-                                                </svg>
-                                            @elseif(str_contains($media->mime_type ?? '', 'pdf'))
-                                                <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor"
-                                                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z">
-                                                    </path>
-                                                </svg>
-                                            @else
-                                                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor"
-                                                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                                                    </path>
-                                                </svg>
-                                            @endif
+                                            @php
+                                                $extension = strtolower(pathinfo($media->original_filename ?? $media->filename, PATHINFO_EXTENSION));
+                                                $iconMap = [
+                                                    'pdf' => 'pdf',
+                                                    'doc' => 'doc',
+                                                    'docx' => 'docx',
+                                                    'xls' => 'xls',
+                                                    'xlsx' => 'xlsx',
+                                                    'csv' => 'csv',
+                                                    'mp3' => 'mp3',
+                                                    'mp4' => 'mp4',
+                                                    'mpeg' => 'mpeg',
+                                                    'mov' => 'mov',
+                                                    'avi' => 'avi',
+                                                    'wmv' => 'wmv',
+                                                    'txt' => 'txt',
+                                                    'jpg' => 'jpg',
+                                                    'jpeg' => 'jpeg',
+                                                    'png' => 'png',
+                                                    'gif' => 'gif',
+                                                    'heic' => 'heic',
+                                                    'heif' => 'heif',
+                                                ];
+                                                $iconName = $iconMap[$extension] ?? 'attachement';
+                                            @endphp
+                                                <x-dynamic-component :component="'icons.' . $iconName" class="w-5 h-5 icons" />
                                             <span class="font-medium truncate text-gray-700 dark:text-gray-200"
                                                 title="{{ $media->original_filename ?? $media->filename }}">
                                                 {{ Str::limit($media->original_filename ?? $media->filename, 25) }}
@@ -130,43 +131,107 @@ use App\Models\Media;
                                     </div>
                                     <!-- Aperçu du fichier -->
                                     <div class="p-3">
-                                        @if (str_contains($media->mime_type ?? '', 'image'))
-                                            <a href="{{ route('media.show', $media->id) }}" target="_blank"
-                                                class="block">
-                                                <img src="{{ route('media.show', $media->id) }}"
-                                                    alt="{{ $media->original_filename ?? $media->filename }}"
-                                                    class="w-full h-32 object-cover object-center">
-                                            </a>
-                                        @elseif(str_contains($media->mime_type ?? '', 'pdf'))
-                                            <a href="{{ route('media.show', $media->id) }}" target="_blank"
-                                                class="block bg-gray-100 dark:bg-gray-800 h-32 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-                                                <div class="text-center">
-                                                    <svg class="w-16 h-16 text-red-500 mx-auto" fill="none"
-                                                        stroke="currentColor" viewBox="0 0 24 24"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z">
-                                                        </path>
-                                                    </svg>
-                                                    <p class="text-sm mt-1 text-gray-600 dark:text-gray-400">Cliquez
-                                                        pour ouvrir</p>
+                                        @php
+                                            $extension = strtolower(pathinfo($media->original_filename ?? $media->filename, PATHINFO_EXTENSION));
+                                            $isImage = in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'heic', 'heif']);
+                                            $isVideo = in_array($extension, ['mp4', 'mpeg', 'mov', 'avi', 'wmv']);
+                                            $isPdf = $extension === 'pdf';
+                                            $isDocument = in_array($extension, ['doc', 'docx']);
+                                            $isSpreadsheet = in_array($extension, ['xls', 'xlsx', 'csv']);
+                                            $isAudio = $extension === 'mp3';
+                                            $isText = $extension === 'txt';
+
+                                            // Couleurs par type de fichier
+                                            $colors = [
+                                                'pdf' => ['bg' => 'bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30', 'text' => 'text-red-600 dark:text-red-400', 'fill' => 'fill-red-600 dark:fill-red-400', 'label' => 'text-red-700 dark:text-red-300'],
+                                                'doc' => ['bg' => 'bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30', 'text' => 'text-blue-600 dark:text-blue-400', 'fill' => 'fill-blue-600 dark:fill-blue-400', 'label' => 'text-blue-700 dark:text-blue-300'],
+                                                'docx' => ['bg' => 'bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30', 'text' => 'text-blue-600 dark:text-blue-400', 'fill' => 'fill-blue-600 dark:fill-blue-400', 'label' => 'text-blue-700 dark:text-blue-300'],
+                                                'xls' => ['bg' => 'bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30', 'text' => 'text-green-600 dark:text-green-400', 'fill' => 'fill-green-600 dark:fill-green-400', 'label' => 'text-green-700 dark:text-green-300'],
+                                                'xlsx' => ['bg' => 'bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30', 'text' => 'text-green-600 dark:text-green-400', 'fill' => 'fill-green-600 dark:fill-green-400', 'label' => 'text-green-700 dark:text-green-300'],
+                                                'csv' => ['bg' => 'bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30', 'text' => 'text-green-600 dark:text-green-400', 'fill' => 'fill-green-600 dark:fill-green-400', 'label' => 'text-green-700 dark:text-green-300'],
+                                                'mp3' => ['bg' => 'bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/30', 'text' => 'text-purple-600 dark:text-purple-400', 'fill' => 'fill-purple-600 dark:fill-purple-400', 'label' => 'text-purple-700 dark:text-purple-300'],
+                                                'mp4' => ['bg' => 'bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/30', 'text' => 'text-indigo-600 dark:text-indigo-400', 'fill' => 'fill-indigo-600 dark:fill-indigo-400', 'label' => 'text-indigo-700 dark:text-indigo-300'],
+                                                'mpeg' => ['bg' => 'bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/30', 'text' => 'text-indigo-600 dark:text-indigo-400', 'fill' => 'fill-indigo-600 dark:fill-indigo-400', 'label' => 'text-indigo-700 dark:text-indigo-300'],
+                                                'mov' => ['bg' => 'bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/30', 'text' => 'text-indigo-600 dark:text-indigo-400', 'fill' => 'fill-indigo-600 dark:fill-indigo-400', 'label' => 'text-indigo-700 dark:text-indigo-300'],
+                                                'avi' => ['bg' => 'bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/30', 'text' => 'text-indigo-600 dark:text-indigo-400', 'fill' => 'fill-indigo-600 dark:fill-indigo-400', 'label' => 'text-indigo-700 dark:text-indigo-300'],
+                                                'wmv' => ['bg' => 'bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/30', 'text' => 'text-indigo-600 dark:text-indigo-400', 'fill' => 'fill-indigo-600 dark:fill-indigo-400', 'label' => 'text-indigo-700 dark:text-indigo-300'],
+                                                'txt' => ['bg' => 'bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700', 'text' => 'text-gray-600 dark:text-gray-400', 'fill' => 'fill-gray-600 dark:fill-gray-400', 'label' => 'text-gray-700 dark:text-gray-300'],
+                                                'jpg' => ['bg' => 'bg-pink-50 dark:bg-pink-900/20 hover:bg-pink-100 dark:hover:bg-pink-900/30', 'text' => 'text-pink-600 dark:text-pink-400', 'fill' => 'fill-pink-600 dark:fill-pink-400', 'label' => 'text-pink-700 dark:text-pink-300'],
+                                                'jpeg' => ['bg' => 'bg-pink-50 dark:bg-pink-900/20 hover:bg-pink-100 dark:hover:bg-pink-900/30', 'text' => 'text-pink-600 dark:text-pink-400', 'fill' => 'fill-pink-600 dark:fill-pink-400', 'label' => 'text-pink-700 dark:text-pink-300'],
+                                                'png' => ['bg' => 'bg-cyan-50 dark:bg-cyan-900/20 hover:bg-cyan-100 dark:hover:bg-cyan-900/30', 'text' => 'text-cyan-600 dark:text-cyan-400', 'fill' => 'fill-cyan-600 dark:fill-cyan-400', 'label' => 'text-cyan-700 dark:text-cyan-300'],
+                                                'gif' => ['bg' => 'bg-orange-50 dark:bg-orange-900/20 hover:bg-orange-100 dark:hover:bg-orange-900/30', 'text' => 'text-orange-600 dark:text-orange-400', 'fill' => 'fill-orange-600 dark:fill-orange-400', 'label' => 'text-orange-700 dark:text-orange-300'],
+                                                'heic' => ['bg' => 'bg-teal-50 dark:bg-teal-900/20 hover:bg-teal-100 dark:hover:bg-teal-900/30', 'text' => 'text-teal-600 dark:text-teal-400', 'fill' => 'fill-teal-600 dark:fill-teal-400', 'label' => 'text-teal-700 dark:text-teal-300'],
+                                                'heif' => ['bg' => 'bg-teal-50 dark:bg-teal-900/20 hover:bg-teal-100 dark:hover:bg-teal-900/30', 'text' => 'text-teal-600 dark:text-teal-400', 'fill' => 'fill-teal-600 dark:fill-teal-400', 'label' => 'text-teal-700 dark:text-teal-300'],
+                                                'default' => ['bg' => 'bg-yellow-50 dark:bg-yellow-900/20 hover:bg-yellow-100 dark:hover:bg-yellow-900/30', 'text' => 'text-yellow-600 dark:text-yellow-400', 'fill' => 'fill-yellow-600 dark:fill-yellow-400', 'label' => 'text-yellow-700 dark:text-yellow-300']
+                                            ];
+
+                                            $color = $colors[$extension] ?? $colors['default'];
+
+                                            // Mapping des icônes par extension
+                                            $iconMap = [
+                                                'pdf' => 'pdf',
+                                                'doc' => 'doc',
+                                                'docx' => 'docx',
+                                                'xls' => 'xls',
+                                                'xlsx' => 'xlsx',
+                                                'csv' => 'csv',
+                                                'mp3' => 'mp3', // Pas d'icône mp3 spécifique, on utilise attachement
+                                                'mp4' => 'mp4', // Pas d'icône mp4 spécifique
+                                                'mpeg' => 'mpeg',
+                                                'mov' => 'mov',
+                                                'avi' => 'avi',
+                                                'wmv' => 'wmv',
+                                                'txt' => 'txt',
+                                                'jpg' => 'jpg', // Pas d'icône jpg spécifique
+                                                'jpeg' => 'jpeg',
+                                                'png' => 'png',
+                                                'gif' => 'gif',
+                                                'heic' => 'heic',
+                                                'heif' => 'heif'
+                                            ];
+
+                                            $iconName = $iconMap[$extension] ?? 'attachement';
+                                        @endphp
+
+                                        @if ($isImage)
+                                            <div class="relative">
+                                                <a href="{{ route('media.show', $media->id) }}" target="_blank"
+                                                    class="block">
+                                                    <img src="{{ route('media.show', $media->id) }}"
+                                                        alt="{{ $media->original_filename ?? $media->filename }}"
+                                                        class="w-full h-32 object-cover object-center rounded">
+                                                </a>
+                                                <div class="absolute top-2 right-2 {{ $color['bg'] }} rounded px-2 py-1">
+                                                    <span class="text-xs font-bold {{ $color['label'] }}">{{ strtoupper($extension) }}</span>
                                                 </div>
-                                            </a>
+                                            </div>
+                                        @elseif ($isVideo)
+                                            <div class="relative">
+                                                <video controls class="w-full h-32 object-cover object-center rounded">
+                                                    <source src="{{ route('media.show', $media->id) }}" type="video/{{ $extension }}">
+                                                    Votre navigateur ne supporte pas la balise vidéo.
+                                                </video>
+                                                <div class="absolute top-2 right-2 {{ $color['bg'] }} rounded px-2 py-1">
+                                                    <span class="text-xs font-bold {{ $color['label'] }}">{{ strtoupper($extension) }}</span>
+                                                </div>
+                                            </div>
+                                        @elseif ($isAudio)
+                                            <div class="relative">
+                                                <div class=" {{ $color['bg'] }} rounded px-2 py-1 w-fit float-right">
+                                                    <span class="text-xs font-bold {{ $color['label'] }}">{{ strtoupper($extension) }}</span>
+                                                </div>
+                                                <audio controls class="w-full">
+                                                    <source src="{{ route('media.show', $media->id) }}" type="audio/{{ $extension }}">
+                                                    Votre navigateur ne supporte pas l'élément audio.
+                                                </audio>
+
+                                            </div>
                                         @else
                                             <a href="{{ route('media.show', $media->id) }}" target="_blank"
-                                                class="block bg-gray-100 dark:bg-gray-800 h-32 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                                                class="block {{ $color['bg'] }} h-32 flex items-center justify-center transition-colors rounded">
                                                 <div class="text-center">
-                                                    <svg class="w-16 h-16 text-gray-500 mx-auto" fill="none"
-                                                        stroke="currentColor" viewBox="0 0 24 24"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                                                        </path>
-                                                    </svg>
-                                                    <p class="text-sm mt-1 text-gray-600 dark:text-gray-400">Cliquez
-                                                        pour ouvrir</p>
+                                                    <x-icons.{{ $iconName }} class="w-16 h-16 {{ $color['text'] }} {{ $color['fill'] }} mx-auto" />
+                                                    <p class="text-sm mt-1 {{ $color['label'] }}">{{ strtoupper($extension) }}</p>
                                                 </div>
                                             </a>
                                         @endif
@@ -357,8 +422,24 @@ use App\Models\Media;
                         </script>
                     @endif
                 </div>
+{{--
+########  #######  ########  ##     ## ##     ## ##          ###    #### ########  ########
+##       ##     ## ##     ## ###   ### ##     ## ##         ## ##    ##  ##     ## ##
+##       ##     ## ##     ## #### #### ##     ## ##        ##   ##   ##  ##     ## ##
+######   ##     ## ########  ## ### ## ##     ## ##       ##     ##  ##  ########  ######
+##       ##     ## ##   ##   ##     ## ##     ## ##       #########  ##  ##   ##   ##
+##       ##     ## ##    ##  ##     ## ##     ## ##       ##     ##  ##  ##    ##  ##
+##        #######  ##     ## ##     ##  #######  ######## ##     ## #### ##     ## ########
 
-                <!-- Formulaire d'upload -->
+
+########    ##    ##     ## ########  ##        #######     ###    ########
+##     ##   ##    ##     ## ##     ## ##       ##     ##   ## ##   ##     ##
+##     ##         ##     ## ##     ## ##       ##     ##  ##   ##  ##     ##
+##     ##         ##     ## ########  ##       ##     ## ##     ## ##     ##
+##     ##         ##     ## ##        ##       ##     ## ######### ##     ##
+##     ##         ##     ## ##        ##       ##     ## ##     ## ##     ##
+########           #######  ##        ########  #######  ##     ## ########
+ --}}
                 <div x-show="tab === 'upload'" class="mt-4">
                     <!-- Sélecteur de type de média -->
                     <div class="mb-4">
@@ -415,7 +496,7 @@ use App\Models\Media;
                             <label class="block">
                                 <span class="sr-only">Choisir des fichiers</span>
                                 <input type="file" wire:model="files"
-                                    accept="{{ implode(',', Media::AUTHORIZED_FILE_EXTENSIONS) }}"
+                                    accept="{{ implode(',', Media::AUTHORIZED_FILE_EXTENSIONS) }}" multiple
                                     class="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-500 file:text-white hover:file:bg-blue-600" />
                             </label>
 
@@ -441,8 +522,16 @@ use App\Models\Media;
                         </div>
                     </div>
                 </div>
+{{--
+ #######   ########        ######   #######  ########  ########
+##     ##  ##     ##      ##    ## ##     ## ##     ## ##
+##     ##  ##     ##      ##       ##     ## ##     ## ##
+##     ##  ########       ##       ##     ## ##     ## ######
+##  ## ##  ##   ##        ##       ##     ## ##     ## ##
+##    ###  ##    ##       ##    ## ##     ## ##     ## ##
+ ###### ## ##     ##       ######   #######  ########  ########
 
-                <!-- QR Code -->
+                 --}}
                 <div x-show="tab === 'qrcode'" class="mt-4">
                     <div class="text-center">
                         @if ($qrUrl)
