@@ -25,6 +25,7 @@ class MediaSidebar extends Component
     public $mediaTypes = [];
     public $selectedMediaTypeId = null;
     public string|null $qrUrl = null;
+    public int $qrDuration = 3600; // durée par défaut : 1 heure
 
     protected $rules = [
         'files.*' => 'file|max:10240|mimes:jpg,jpeg,png,pdf,heic,heif,mp4,mov,avi,wmv',
@@ -142,10 +143,10 @@ class MediaSidebar extends Component
             // Génère un token unique
             $token = Str::random(32);
 
-            // Crée une URL signée temporaire (10 min)
+            // Crée une URL signée temporaire avec la durée choisie
             $this->qrUrl = URL::temporarySignedRoute(
                 'media.upload-form',
-                now()->addMinutes(10),
+                now()->addSeconds($this->qrDuration),
                 [
                     'model' => $this->model,
                     'id' => $this->modelId,

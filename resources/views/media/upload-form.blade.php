@@ -36,6 +36,26 @@
             method="POST" enctype="multipart/form-data" class="space-y-4">
             @csrf
 
+            <!-- Sélecteur de type de média -->
+            <div>
+                <x-input-label for="media_type_id" :value="__('Type de média')" />
+                <x-select-custom name="media_type_id" id="media_type_id"
+                    class="mt-1 block w-full rounded border-gray-300 dark:border-gray-600">
+                    @foreach (\App\Models\MediaType::all() as $media_type)
+                        <x-opt value="{{ $media_type->id }}">
+                            <div
+                                class="text-center w-full px-2 text-xs leading-5 flex rounded-full font-bold items-center justify-center
+                                    {{ $media_type?->background_color_light ? 'bg-[' . $media_type->background_color_light . ']' : 'bg-gray-100' }}
+                                    {{ $media_type?->text_color_light ? 'text-[' . $media_type->text_color_light . ']' : 'text-gray-800' }}
+                                    {{ $media_type?->background_color_dark ? 'dark:bg-[' . $media_type->background_color_dark . ']' : 'dark:bg-gray-700' }}
+                                    {{ $media_type?->text_color_dark ? 'dark:text-[' . $media_type->text_color_dark . ']' : 'dark:text-gray-200' }}">
+                                {{ $media_type->nom ?? 'N/A' }}
+                            </div>
+                        </x-opt>
+                    @endforeach
+                </x-select-custom>
+            </div>
+
             <div>
                 <x-input-label for="files" :value="__('Sélectionnez des fichiers')" />
                 <div class="mt-1">

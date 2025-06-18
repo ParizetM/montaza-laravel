@@ -1,3 +1,7 @@
+@php
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+@endphp
+
 <div>
     <div class="fixed top-1/2 left-0 transform -translate-y-1/2" x-data>
         <button @click="$dispatch('open-volet', 'media-manager')"
@@ -441,18 +445,29 @@
                     <div class="text-center">
                         @if ($qrUrl)
                             <div class="bg-white p-4 rounded-lg inline-block mb-4">
-                                {!! QrCode::size(200)->generate($qrUrl) !!}
+                                <img src="data:image/png;base64, {!! base64_encode(QrCode::format('png')->merge(public_path('img/montaza.png'), 0.3, true)->size(300)->generate($qrUrl)) !!} ">
                             </div>
                             <p class="mb-4 text-gray-600 dark:text-gray-400">Scannez ce code QR pour télécharger des
                                 documents depuis un autre appareil</p>
                             <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                                Le lien expire dans <span x-data="{ timeLeft: 3600 }" x-init="setInterval(() => timeLeft > 0 ? timeLeft-- : clearInterval(this), 1000)">
-                                    <span x-text="`${Math.floor(timeLeft / 60)}m ${timeLeft % 60}s`"></span>
+                                Le lien expire dans <span x-data="{ timeLeft: $wire.qrDuration ?? 3600 }" x-init="setInterval(() => timeLeft > 0 ? timeLeft-- : clearInterval(this), 1000)">
+                                    <span x-text="`${Math.floor(timeLeft / 3600)}h ${Math.floor((timeLeft % 3600) / 60)}m ${timeLeft % 60}s`"></span>
                                 </span>
                             </p>
                         @else
                             <p class="mb-4 text-gray-600 dark:text-gray-400">Générez un code QR pour télécharger des
                                 documents depuis un autre appareil</p>
+                            <!-- Sélecteur de durée de validité -->
+                            <div class="mb-4">
+                                <label for="qr_duration" class="text-gray-700 dark:text-gray-300 text-sm mr-2">Durée de validité :</label>
+                                <select id="qr_duration" wire:model="qrDuration" class="select">
+                                    <option value="600">10 minutes</option>
+                                    <option value="1800">30 minutes</option>
+                                    <option value="3600">1 heure</option>
+                                    <option value="14400">4 heures</option>
+                                    <option value="86400">1 jour</option>
+                                </select>
+                            </div>
                             <button wire:click="generateQrCode"
                                 class="px-4 py-2 mb-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
                                 Générer un QR Code
