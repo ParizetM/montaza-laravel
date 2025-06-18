@@ -1,4 +1,7 @@
 <!-- filepath: c:\Users\prepaetude\Homestead\code\montaza\resources\views\media\upload-form.blade.php -->
+@php
+    use App\Models\Media;
+@endphp
 <x-guest-layout>
     <div class="py-2">
         <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4 text-center">
@@ -60,11 +63,11 @@
                 <x-input-label for="files" :value="__('Sélectionnez des fichiers')" />
                 <div class="mt-1">
                     <input id="files" type="file" name="files[]" multiple
-                        accept=".jpg,.jpeg,.png,.gif,.mp4,.mp3,.pdf,.doc,.docx,.xls,.xlsx,.csv,.txt"
-                        class="input-file w-full" value="{{ old('files') }}" required>
+                        accept="{{ implode(',', Media::AUTHORIZED_FILE_EXTENSIONS) }}" class="input-file w-full"
+                        value="{{ old('files') }}" required>
                 </div>
                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                    JPG, PNG, GIF, MP4, MP3, PDF, DOC, DOCX, XLS, XLSX, CSV, TXT (max. 20MB)
+                    {{ implode(' ', Media::AUTHORIZED_FILE_EXTENSIONS) }} (max. 5MB)
                 </p>
             </div>
 

@@ -27,9 +27,14 @@ class MediaSidebar extends Component
     public string|null $qrUrl = null;
     public int $qrDuration = 3600; // durée par défaut : 1 heure
 
-    protected $rules = [
-        'files.*' => 'file|max:10240|mimes:jpg,jpeg,png,pdf,heic,heif,mp4,mov,avi,wmv',
-    ];
+    protected function rules()
+    {
+        $extensions = str_replace('.', '', implode(',', Media::AUTHORIZED_FILE_EXTENSIONS));
+
+        return [
+            'files.*' => "file|max:10240|mimes:{$extensions}",
+        ];
+    }
 
     protected $allowedModels = [
         'cde' => Cde::class,

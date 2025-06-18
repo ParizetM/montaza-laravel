@@ -1,5 +1,6 @@
 @php
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use App\Models\Media;
 @endphp
 
 <div>
@@ -365,11 +366,11 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
                             class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Type de média
                         </label>
-                        <x-select-custom wire:model="selectedMediaTypeId" id="media_type_select" class="">
+                        <x-select-custom wire:model="selectedMediaTypeId" id="media_type_select" class="w-fit">
                             @foreach ($mediaTypes as $media_type)
                                 <x-opt value="{{ $media_type->id }}">
                                     <div
-                                        class="text-center w-full px-2 text-xs leading-5 flex rounded-full font-bold items-center justify-center
+                                        class="text-center px-2 text-xs leading-5 flex rounded-full font-bold items-center justify-center
                                     {{ $media_type->background_color_light ? 'bg-[' . $media_type->background_color_light . ']' : 'bg-gray-100' }}
                                     {{ $media_type->text_color_light ? 'text-[' . $media_type->text_color_light . ']' : 'text-gray-800' }}
                                     {{ $media_type->background_color_dark ? 'dark:bg-[' . $media_type->background_color_dark . ']' : 'dark:bg-gray-700' }}
@@ -414,6 +415,7 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
                             <label class="block">
                                 <span class="sr-only">Choisir des fichiers</span>
                                 <input type="file" wire:model="files"
+                                    accept="{{ implode(',', Media::AUTHORIZED_FILE_EXTENSIONS) }}"
                                     class="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-500 file:text-white hover:file:bg-blue-600" />
                             </label>
 
@@ -434,7 +436,7 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
                         @enderror
 
                         <div class="mt-4 text-sm text-gray-500 dark:text-gray-400">
-                            <p>Formats acceptés: JPG, PNG, GIF, MP4, MP3, PDF, DOC, DOCX, XLS, XLSX, CSV, TXT</p>
+                            <p>Formats acceptés: {{ implode(' ', Media::AUTHORIZED_FILE_EXTENSIONS) }}</p>
                             <p>Taille maximale: 5MB</p>
                         </div>
                     </div>

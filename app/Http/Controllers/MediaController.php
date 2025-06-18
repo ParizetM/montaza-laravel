@@ -15,6 +15,8 @@ use Illuminate\Support\Str;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Facades\Log;
 
+use function Illuminate\Log\log;
+
 class MediaController extends Controller
 {
     /**
@@ -89,6 +91,7 @@ class MediaController extends Controller
      */
     public function store(Request $request, $model, $id)
     {
+        Log::info(json_encode([$request->all(),implode(',', self::AUTHORIZED_MIME_TYPES)]));
         $request->validate([
             'files.*' => 'required|file|max:20480|mimetypes:' . implode(',', self::AUTHORIZED_MIME_TYPES),
             'media_type_id' => 'nullable|exists:media_types,id',

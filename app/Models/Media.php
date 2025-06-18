@@ -34,6 +34,35 @@ class Media extends Model
         'text/csv',
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         'text/plain',
+        'image/jpg',
+        'audio/mp3',
+        'image/heic',
+        'image/heif',
+        'video/mov',
+        'video/avi',
+        'video/wmv',
+    ];
+
+    public const AUTHORIZED_FILE_EXTENSIONS = [
+        '.jpeg',
+        '.png',
+        '.gif',
+        '.mp4',
+        '.mpeg',
+        '.pdf',
+        '.doc',
+        '.docx',
+        '.xls',
+        '.csv',
+        '.xlsx',
+        '.txt',
+        '.jpg',
+        '.mp3',
+        '.heic',
+        '.heif',
+        '.mov',
+        '.avi',
+        '.wmv',
     ];
 
     /**
