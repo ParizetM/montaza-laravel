@@ -1,4 +1,3 @@
-<!-- filepath: c:\Users\prepaetude\Homestead\code\montaza\resources\views\media\index.blade.php -->
 <x-app-layout>
     @section('title', 'Gestion des Pièces jointes')
     <x-slot name="header">
@@ -58,175 +57,389 @@
                                     <th>{{ __('Nom du fichier') }}</th>
                                     <th>{{ __('Type') }}</th>
                                     <th>{{ __('Taille') }}</th>
-                                    <th>{{ __('Association') }}</th>
                                     <th>{{ __('Ajouté par') }}</th>
                                     <th>{{ __('Date d\'ajout') }}</th>
                                     <th class="text-right">{{ __('Actions') }}</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                @forelse($medias as $media)
-                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
-                                        <!-- Aperçu du média -->
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="flex-shrink-0 h-16 w-16">
-                                                @if (str_contains($media->mime_type ?? '', 'image'))
-                                                    <a href="{{ route('media.show', $media->id) }}" target="_blank"
-                                                        class="block w-16 h-16">
-                                                        <img src="{{ route('media.show', $media->id) }}"
-                                                            alt="{{ $media->original_filename ?? $media->filename }}"
-                                                            class="w-full h-full object-cover object-center rounded"
-                                                            style="max-width:64px;max-height:64px;">
-                                                    </a>
-                                                @elseif(str_contains($media->mime_type ?? '', 'pdf'))
-                                                    <a href="{{ route('media.show', $media->id) }}" target="_blank"
-                                                        class=" bg-gray-100 dark:bg-gray-800 h-32 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-                                                        <div class="text-center">
-                                                            <svg class="w-16 h-16 text-red-500 mx-auto" fill="none"
-                                                                stroke="currentColor" viewBox="0 0 24 24"
-                                                                xmlns="http://www.w3.org/2000/svg">
-                                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                                    stroke-width="2"
-                                                                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z">
-                                                                </path>
-                                                            </svg>
-                                                            <p class="text-sm mt-1 text-gray-600 dark:text-gray-400">
-                                                                Cliquez
-                                                                pour ouvrir</p>
-                                                        </div>
-                                                    </a>
-                                                @else
-                                                    <a href="{{ route('media.show', $media->id) }}" target="_blank"
-                                                        class="block bg-gray-100 dark:bg-gray-800 h-32 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-                                                        <div class="text-center">
-                                                            <svg class="w-16 h-16 text-gray-500 mx-auto" fill="none"
-                                                                stroke="currentColor" viewBox="0 0 24 24"
-                                                                xmlns="http://www.w3.org/2000/svg">
-                                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                                    stroke-width="2"
-                                                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                                                                </path>
-                                                            </svg>
-                                                            <p class="text-sm mt-1 text-gray-600 dark:text-gray-400">
-                                                                Cliquez
-                                                                pour ouvrir</p>
-                                                        </div>
-                                                    </a>
-                                                @endif
-                                            </div>
-                                        </td>
-
-                                        <!-- Nom du fichier -->
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                {{ $media->original_filename ?? 'N/A' }}
-                                            </div>
-                                            <div class="text-sm text-gray-500 dark:text-gray-400">
-                                                {{ $media->filename ?? 'N/A' }}
-                                            </div>
-                                            <div class="max-h-42 overflow-y-auto">
-                                                @include('media.commentaire', ['media' => $media])
-                                            </div>
-                                        </td>
-                                        <!-- Type de média -->
-                                        <td
-                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                            <div
-                                                class="text-center w-full px-2 text-xs leading-5 flex rounded-full font-bold items-center justify-center
-                                    {{ $media->mediaType?->background_color_light ? 'bg-[' . $media->mediaType->background_color_light . ']' : 'bg-gray-100' }}
-                                    {{ $media->mediaType?->text_color_light ? 'text-[' . $media->mediaType->text_color_light . ']' : 'text-gray-800' }}
-                                    {{ $media->mediaType?->background_color_dark ? 'dark:bg-[' . $media->mediaType->background_color_dark . ']' : 'dark:bg-gray-700' }}
-                                    {{ $media->mediaType?->text_color_dark ? 'dark:text-[' . $media->mediaType->text_color_dark . ']' : 'dark:text-gray-200' }}">
-                                                {{ $media->mediaType->nom ?? 'N/A' }}
-                                            </div>
-                                        </td>
-
-                                        <!-- Taille du fichier -->
-                                        <td
-                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                            {{ $media->size ? formatNumberBytes($media->size) : 'N/A' }}
-
-                                        </td>
-                                        <!-- Association -->
-                                        <td
-                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                            @if ($media->mediaable_type == 'App\Models\Cde' && $media->mediaable)
-                                                <a href="{{ route('cde.show', $media->mediaable->id) }}"
-                                                    target="_blank"
-                                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors border border-blue-200 dark:border-blue-700">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1"
-                                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2" />
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2" d="M14 4h6m0 0v6m0-6L10 14" />
-                                                    </svg>
-                                                    {{ $media->mediaable->code ?? 'Commande' }}
-                                                </a>
-                                            @elseif ($media->mediaable_type == 'App\Models\Ddp' && $media->mediaable)
-                                                <a href="{{ route('ddp.show', $media->mediaable->id) }}"
-                                                    target="_blank"
-                                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200 hover:bg-emerald-200 dark:hover:bg-emerald-800 transition-colors border border-emerald-200 dark:border-emerald-700">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1"
-                                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2" />
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2" d="M14 4h6m0 0v6m0-6L10 14" />
-                                                    </svg>
-                                                    {{ $media->mediaable->code ?? 'Demande de prix' }}
-                                                </a>
-                                            @else
-                                                <span
-                                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
-                                                    {{ __('Aucune association') }}
-                                                </span>
-                                            @endif
-                                        </td>
+                                @forelse($groupedMedias as $modelType => $entities)
+                                    <tr class="">
+                                        <td colspan="8"
+                                            class="   font-bold text-left text-gray-700 dark:text-gray-200 ">
+                                            <div class="flex items-center justify-between mb-4 py-2 px-4 border-b border-gray-200 dark:border-gray-600 bg-gray-100 dark:bg-gray-700">
 
 
-                                        <!-- Ajouté par -->
-                                        <td
-                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                            {{ $media->user?->first_name ?? 'N/A' }} {{ $media->user?->last_name ?? '' }}
-                                        </td>
-                                        <!-- Date d'ajout -->
-                                        <td
-                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                            {{ $media->created_at?->format('d/m/Y H:i') ?? 'N/A' }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <div class="flex justify-end space-x-2">
-
-                                                <a href="#"
-                                                   onclick="openEditModal({{ $media->id }}, '{{ addslashes($media->original_filename) }}', {{ $media->media_type_id ?? 'null' }})"
-                                                   class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300"
-                                                   title="Modifier">
-                                                    <x-icons.edit size="1.2" />
-                                                </a>
-                                                <x-boutons.supprimer modalTitle="Supprimer la pièce jointe"
-                                                    confirmButtonText="Confirmer la suppression"
-                                                    cancelButtonText="Annuler"
-                                                    formAction="{{ route('media.destroy', $media->id) }}"
-                                                    modalName="delete-media-modal-{{ $media->id }}"
-                                                    errorName="delete-media-{{ $media->id }}"
-                                                    userInfo="Êtes-vous sûr de vouloir supprimer cette pièce jointe ? Cette action est irréversible.">
-                                                    <x-slot:customButton>
-                                                        <button type="button"
-                                                            class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
-                                                            title="Supprimer">
-                                                            <x-icons.delete size="1.2" />
-                                                        </button>
-                                                    </x-slot:customButton>
-                                                </x-boutons.supprimer>
+                                                {{ $modelType === 'App\\Models\\Ddp' ? __('Demandes de prix') : ($modelType === 'App\\Models\\Cde' ? __('Commandes') : \Str::afterLast($modelType, '\\') ?? __('Autre')) }}
+                                                <button onclick="toggleModelTypeRows('{{ \Str::slug($modelType) }}')"
+                                                    class="ml-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                                                    <x-icons.chevron-down size="1.2"
+                                                        class="model-type-{{ \Str::slug($modelType) }}-chevron icons" />
+                                                </button>
                                             </div>
                                         </td>
                                     </tr>
+                                    @foreach ($entities as $entityId => $group)
+                                        @php
+                                            $entity = $group->first()->mediaable ?? null;
+                                            $entityLabel = $entity?->code ?? ($entity?->nom ?? $entityId);
+                                            $entityType = $group->first()->mediaable_type ?? null;
+
+                                            // Styles spécifiques pour ddp et cde
+                                            $entityStyles = match ($entityType) {
+                                                'App\Models\Cde'
+                                                    => 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800 border border-blue-200 dark:border-blue-700',
+                                                'App\Models\Ddp'
+                                                    => 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200 hover:bg-emerald-200 dark:hover:bg-emerald-800 border border-emerald-200 dark:border-emerald-700',
+                                                default
+                                                    => 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
+                                            };
+                                        @endphp
+                                        <tr
+                                            class="group-id-{{ $entityId }} model-type-{{ \Str::slug($modelType) }}">
+                                            <td colspan="8"
+                                                class="px-4 py-2 font-semibold text-left text-gray-600 dark:text-gray-300 border-b {{ $entityStyles }}">
+                                                <div class="flex items-center justify-between">
+                                                    <a
+                                                        href="{{ route(strtolower(\Str::afterLast($modelType, '\\') . '.show'), $entityId) }}" target="_blank" class="flex items-center text-sm font-medium text-gray-900 dark:text-gray-100 hover:underline group">
+                                                        @if ($entityLabel && $entityLabel != $entityId)
+                                                            {{ $entityLabel }}
+                                                            @else
+                                                            {{ __('Aucun nom disponible') }}
+                                                        @endif
+                                                        <x-icons.open-in-new size="1.2"
+                                                            class="ml-1 fill-none group-hover:fill-gray-700  dark:group-hover:fill-gray-200" />
+                                                    </a>
+                                                    <button onclick="toggleEntityRows('{{ $entityId }}')"
+                                                        class="ml-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                                                        <x-icons.chevron-down size="1.2"
+                                                            class="group-id-{{ \Str::slug($entityId) }}-chevron icons" />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        @foreach ($group as $media)
+                                            <tr
+                                                class="entity-{{ $entityId }} model-type-{{ \Str::slug($modelType) }} hover:bg-gray-50 dark:hover:bg-gray-700">
+                                                <!-- Aperçu du média -->
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="flex-shrink-0 h-16 w-16">
+                                                        @php
+                                                            $extension = strtolower(
+                                                                pathinfo(
+                                                                    $media->original_filename ?? $media->filename,
+                                                                    PATHINFO_EXTENSION,
+                                                                ),
+                                                            );
+                                                            $isImage = in_array($extension, [
+                                                                'jpg',
+                                                                'jpeg',
+                                                                'png',
+                                                                'gif',
+                                                                'heic',
+                                                                'heif',
+                                                            ]);
+                                                            $isVideo = in_array($extension, [
+                                                                'mp4',
+                                                                'mpeg',
+                                                                'mov',
+                                                                'avi',
+                                                                'wmv',
+                                                            ]);
+                                                            $isAudio = $extension === 'mp3';
+
+                                                            $colors = [
+                                                                'pdf' => [
+                                                                    'bg' =>
+                                                                        'bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30',
+                                                                    'text' => 'text-red-600 dark:text-red-400',
+                                                                    'fill' => 'fill-red-600 dark:fill-red-400',
+                                                                    'label' => 'text-red-700 dark:text-red-300',
+                                                                ],
+                                                                'doc' => [
+                                                                    'bg' =>
+                                                                        'bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30',
+                                                                    'text' => 'text-blue-600 dark:text-blue-400',
+                                                                    'fill' => 'fill-blue-600 dark:fill-blue-400',
+                                                                    'label' => 'text-blue-700 dark:text-blue-300',
+                                                                ],
+                                                                'docx' => [
+                                                                    'bg' =>
+                                                                        'bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30',
+                                                                    'text' => 'text-blue-600 dark:text-blue-400',
+                                                                    'fill' => 'fill-blue-600 dark:fill-blue-400',
+                                                                    'label' => 'text-blue-700 dark:text-blue-300',
+                                                                ],
+                                                                'xls' => [
+                                                                    'bg' =>
+                                                                        'bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30',
+                                                                    'text' => 'text-green-600 dark:text-green-400',
+                                                                    'fill' => 'fill-green-600 dark:fill-green-400',
+                                                                    'label' => 'text-green-700 dark:text-green-300',
+                                                                ],
+                                                                'xlsx' => [
+                                                                    'bg' =>
+                                                                        'bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30',
+                                                                    'text' => 'text-green-600 dark:text-green-400',
+                                                                    'fill' => 'fill-green-600 dark:fill-green-400',
+                                                                    'label' => 'text-green-700 dark:text-green-300',
+                                                                ],
+                                                                'csv' => [
+                                                                    'bg' =>
+                                                                        'bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30',
+                                                                    'text' => 'text-green-600 dark:text-green-400',
+                                                                    'fill' => 'fill-green-600 dark:fill-green-400',
+                                                                    'label' => 'text-green-700 dark:text-green-300',
+                                                                ],
+                                                                'mp3' => [
+                                                                    'bg' =>
+                                                                        'bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/30',
+                                                                    'text' => 'text-purple-600 dark:text-purple-400',
+                                                                    'fill' => 'fill-purple-600 dark:fill-purple-400',
+                                                                    'label' => 'text-purple-700 dark:text-purple-300',
+                                                                ],
+                                                                'mp4' => [
+                                                                    'bg' =>
+                                                                        'bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/30',
+                                                                    'text' => 'text-indigo-600 dark:text-indigo-400',
+                                                                    'fill' => 'fill-indigo-600 dark:fill-indigo-400',
+                                                                    'label' => 'text-indigo-700 dark:text-indigo-300',
+                                                                ],
+                                                                'mpeg' => [
+                                                                    'bg' =>
+                                                                        'bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/30',
+                                                                    'text' => 'text-indigo-600 dark:text-indigo-400',
+                                                                    'fill' => 'fill-indigo-600 dark:fill-indigo-400',
+                                                                    'label' => 'text-indigo-700 dark:text-indigo-300',
+                                                                ],
+                                                                'mov' => [
+                                                                    'bg' =>
+                                                                        'bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/30',
+                                                                    'text' => 'text-indigo-600 dark:text-indigo-400',
+                                                                    'fill' => 'fill-indigo-600 dark:fill-indigo-400',
+                                                                    'label' => 'text-indigo-700 dark:text-indigo-300',
+                                                                ],
+                                                                'avi' => [
+                                                                    'bg' =>
+                                                                        'bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/30',
+                                                                    'text' => 'text-indigo-600 dark:text-indigo-400',
+                                                                    'fill' => 'fill-indigo-600 dark:fill-indigo-400',
+                                                                    'label' => 'text-indigo-700 dark:text-indigo-300',
+                                                                ],
+                                                                'wmv' => [
+                                                                    'bg' =>
+                                                                        'bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/30',
+                                                                    'text' => 'text-indigo-600 dark:text-indigo-400',
+                                                                    'fill' => 'fill-indigo-600 dark:fill-indigo-400',
+                                                                    'label' => 'text-indigo-700 dark:text-indigo-300',
+                                                                ],
+                                                                'txt' => [
+                                                                    'bg' =>
+                                                                        'bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700',
+                                                                    'text' => 'text-gray-600 dark:text-gray-400',
+                                                                    'fill' => 'fill-gray-600 dark:fill-gray-400',
+                                                                    'label' => 'text-gray-700 dark:text-gray-300',
+                                                                ],
+                                                                'jpg' => [
+                                                                    'bg' =>
+                                                                        'bg-pink-50 dark:bg-pink-900/20 hover:bg-pink-100 dark:hover:bg-pink-900/30',
+                                                                    'text' => 'text-pink-600 dark:text-pink-400',
+                                                                    'fill' => 'fill-pink-600 dark:fill-pink-400',
+                                                                    'label' => 'text-pink-700 dark:text-pink-300',
+                                                                ],
+                                                                'jpeg' => [
+                                                                    'bg' =>
+                                                                        'bg-pink-50 dark:bg-pink-900/20 hover:bg-pink-100 dark:hover:bg-pink-900/30',
+                                                                    'text' => 'text-pink-600 dark:text-pink-400',
+                                                                    'fill' => 'fill-pink-600 dark:fill-pink-400',
+                                                                    'label' => 'text-pink-700 dark:text-pink-300',
+                                                                ],
+                                                                'png' => [
+                                                                    'bg' =>
+                                                                        'bg-cyan-50 dark:bg-cyan-900/20 hover:bg-cyan-100 dark:hover:bg-cyan-900/30',
+                                                                    'text' => 'text-cyan-600 dark:text-cyan-400',
+                                                                    'fill' => 'fill-cyan-600 dark:fill-cyan-400',
+                                                                    'label' => 'text-cyan-700 dark:text-cyan-300',
+                                                                ],
+                                                                'gif' => [
+                                                                    'bg' =>
+                                                                        'bg-orange-50 dark:bg-orange-900/20 hover:bg-orange-100 dark:hover:bg-orange-900/30',
+                                                                    'text' => 'text-orange-600 dark:text-orange-400',
+                                                                    'fill' => 'fill-orange-600 dark:fill-orange-400',
+                                                                    'label' => 'text-orange-700 dark:text-orange-300',
+                                                                ],
+                                                                'heic' => [
+                                                                    'bg' =>
+                                                                        'bg-teal-50 dark:bg-teal-900/20 hover:bg-teal-100 dark:hover:bg-teal-900/30',
+                                                                    'text' => 'text-teal-600 dark:text-teal-400',
+                                                                    'fill' => 'fill-teal-600 dark:fill-teal-400',
+                                                                    'label' => 'text-teal-700 dark:text-teal-300',
+                                                                ],
+                                                                'heif' => [
+                                                                    'bg' =>
+                                                                        'bg-teal-50 dark:bg-teal-900/20 hover:bg-teal-100 dark:hover:bg-teal-900/30',
+                                                                    'text' => 'text-teal-600 dark:text-teal-400',
+                                                                    'fill' => 'fill-teal-600 dark:fill-teal-400',
+                                                                    'label' => 'text-teal-700 dark:text-teal-300',
+                                                                ],
+                                                                'default' => [
+                                                                    'bg' =>
+                                                                        'bg-yellow-50 dark:bg-yellow-900/20 hover:bg-yellow-100 dark:hover:bg-yellow-900/30',
+                                                                    'text' => 'text-yellow-600 dark:text-yellow-400',
+                                                                    'fill' => 'fill-yellow-600 dark:fill-yellow-400',
+                                                                    'label' => 'text-yellow-700 dark:text-yellow-300',
+                                                                ],
+                                                            ];
+
+                                                            $color = $colors[$extension] ?? $colors['default'];
+
+                                                            // Mapping des icônes par extension
+                                                            $iconMap = [
+                                                                'pdf' => 'pdf',
+                                                                'doc' => 'doc',
+                                                                'docx' => 'docx',
+                                                                'xls' => 'xls',
+                                                                'xlsx' => 'xlsx',
+                                                                'csv' => 'csv',
+                                                                'mp3' => 'mp3',
+                                                                'mp4' => 'mp4',
+                                                                'mpeg' => 'mpeg',
+                                                                'mov' => 'mov',
+                                                                'avi' => 'avi',
+                                                                'wmv' => 'wmv',
+                                                                'txt' => 'txt',
+                                                                'jpg' => 'jpg',
+                                                                'jpeg' => 'jpeg',
+                                                                'png' => 'png',
+                                                                'gif' => 'gif',
+                                                                'heic' => 'heic',
+                                                                'heif' => 'heif',
+                                                            ];
+
+                                                            $iconName = $iconMap[$extension] ?? 'attachement';
+                                                        @endphp
+
+                                                        @if ($isImage)
+                                                            <div class="relative">
+                                                                <a href="{{ route('media.show', $media->id) }}"
+                                                                    target="_blank" class="block w-16 h-16">
+                                                                    <img src="{{ route('media.show', $media->id) }}"
+                                                                        alt="{{ $media->original_filename ?? $media->filename }}"
+                                                                        class="w-full h-full object-cover object-center rounded">
+                                                                </a>
+                                                                <div
+                                                                    class="absolute -top-1 -right-1 {{ $color['bg'] }} rounded px-1 py-0.5">
+                                                                    <span
+                                                                        class="text-xs font-bold {{ $color['label'] }}">{{ strtoupper($extension) }}</span>
+                                                                </div>
+                                                            </div>
+                                                        @elseif ($isVideo)
+                                                            <div class="relative">
+                                                                <a href="{{ route('media.show', $media->id) }}"
+                                                                    target="_blank"
+                                                                    class="block {{ $color['bg'] }} w-16 h-16 flex items-center justify-center transition-colors rounded">
+                                                                    <div class="text-center">
+                                                                        <x-dynamic-component :component="'icons.' . $iconName"
+                                                                            class="w-8 h-8 {{ $color['text'] }} {{ $color['fill'] }} mx-auto" />
+                                                                    </div>
+                                                                </a>
+                                                            </div>
+                                                        @elseif ($isAudio)
+                                                            <a href="{{ route('media.show', $media->id) }}"
+                                                                target="_blank"
+                                                                class="block {{ $color['bg'] }} w-16 h-16 flex items-center justify-center transition-colors rounded relative">
+                                                                <div class="text-center">
+                                                                    <x-dynamic-component :component="'icons.' . $iconName"
+                                                                        class="w-8 h-8 {{ $color['text'] }} {{ $color['fill'] }} mx-auto" />
+                                                                </div>
+                                                            </a>
+                                                        @else
+                                                            <a href="{{ route('media.show', $media->id) }}"
+                                                                target="_blank"
+                                                                class="block {{ $color['bg'] }} w-16 h-16 flex items-center justify-center transition-colors rounded relative">
+                                                                <div class="text-center">
+                                                                    <x-dynamic-component :component="'icons.' . $iconName"
+                                                                        class="w-8 h-8 {{ $color['text'] }} {{ $color['fill'] }} mx-auto" />
+                                                                </div>
+                                                            </a>
+                                                        @endif
+                                                    </div>
+                                                </td>
+
+                                                <!-- Nom du fichier -->
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                        {{ $media->original_filename ?? 'N/A' }}
+                                                    </div>
+                                                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                                                        {{ $media->filename ?? 'N/A' }}
+                                                    </div>
+                                                    <div class="max-h-42 overflow-y-auto">
+                                                        @include('media.commentaire', ['media' => $media])
+                                                    </div>
+                                                </td>
+                                                <!-- Type de média -->
+                                                <td
+                                                    class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                                    <div
+                                                        class="text-center w-full px-2 text-xs leading-5 flex rounded-full font-bold items-center justify-center
+                                                        {{ $media->mediaType?->background_color_light ? 'bg-[' . $media->mediaType->background_color_light . ']' : 'bg-gray-100' }}
+                                                        {{ $media->mediaType?->text_color_light ? 'text-[' . $media->mediaType->text_color_light . ']' : 'text-gray-800' }}
+                                                        {{ $media->mediaType?->background_color_dark ? 'dark:bg-[' . $media->mediaType->background_color_dark . ']' : 'dark:bg-gray-700' }}
+                                                        {{ $media->mediaType?->text_color_dark ? 'dark:text-[' . $media->mediaType->text_color_dark . ']' : 'dark:text-gray-200' }}">
+                                                        {{ $media->mediaType->nom ?? 'N/A' }}
+                                                    </div>
+                                                </td>
+
+                                                <!-- Taille du fichier -->
+                                                <td
+                                                    class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                                    {{ $media->size ? formatNumberBytes($media->size) : 'N/A' }}
+
+                                                </td>
+                                                <!-- Ajouté par -->
+                                                <td
+                                                    class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                                    {{ $media->user?->first_name ?? 'N/A' }}
+                                                    {{ $media->user?->last_name ?? '' }}
+                                                </td>
+                                                <!-- Date d'ajout -->
+                                                <td
+                                                    class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                                    {{ $media->created_at?->format('d/m/Y H:i') ?? 'N/A' }}
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                    <div class="flex justify-end space-x-2">
+
+                                                        <a href="#"
+                                                            onclick="openEditModal({{ $media->id }}, '{{ addslashes($media->original_filename) }}', {{ $media->media_type_id ?? 'null' }})"
+                                                            class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300"
+                                                            title="Modifier">
+                                                            <x-icons.edit size="1.2" />
+                                                        </a>
+                                                        <x-boutons.supprimer modalTitle="Supprimer la pièce jointe"
+                                                            confirmButtonText="Confirmer la suppression"
+                                                            cancelButtonText="Annuler"
+                                                            formAction="{{ route('media.destroy', $media->id) }}"
+                                                            modalName="delete-media-modal-{{ $media->id }}"
+                                                            errorName="delete-media-{{ $media->id }}"
+                                                            userInfo="Êtes-vous sûr de vouloir supprimer cette pièce jointe ? Cette action est irréversible.">
+                                                            <x-slot:customButton>
+                                                                <button type="button"
+                                                                    class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                                                                    title="Supprimer">
+                                                                    <x-icons.delete size="1.2" />
+                                                                </button>
+                                                            </x-slot:customButton>
+                                                        </x-boutons.supprimer>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @endforeach
                                 @empty
                                     <tr>
-                                        <td colspan="6"
+                                        <td colspan="8"
                                             class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
                                             {{ __('Aucun pièce jointe trouvé.') }}
                                         </td>
@@ -247,6 +460,7 @@
         </div>
     </div>
 
+
     <!-- Modal d'édition -->
     <x-modal name="edit-media" maxWidth="md">
         <div class="p-4">
@@ -264,7 +478,7 @@
                 <div class="mb-4">
                     <x-input-label for="edit_original_filename" :value="__('Nom du fichier')" />
                     <x-text-input id="edit_original_filename" name="original_filename" type="text"
-                                  class="mt-1 block w-full" required />
+                        class="mt-1 block w-full" required />
                     <x-input-error :messages="$errors->get('original_filename')" class="mt-2" />
                 </div>
 
@@ -304,8 +518,43 @@
         function openEditModal(mediaId, originalFilename, mediaTypeId) {
             document.getElementById('edit_original_filename').value = originalFilename;
             document.getElementById('edit_media_type_id').value = mediaTypeId || '';
-            document.getElementById('edit-media-form').action = '{{ route("media.update", "") }}/' + mediaId;
-            window.dispatchEvent(new CustomEvent('open-modal', { detail: 'edit-media' }));
+            document.getElementById('edit-media-form').action = '/media/' + mediaId;
+            window.dispatchEvent(new CustomEvent('open-modal', {
+                detail: 'edit-media'
+            }));
+        }
+
+        function toggleEntityRows(entityId) {
+            const rows = document.querySelectorAll(`.entity-${entityId}`);
+            const parentGroup = document.querySelector(`.group-id-${entityId}`);
+            const isParentHidden = rows[0]?.classList.contains('hidden');
+            rows.forEach(row => {
+                if (isParentHidden) {
+                    row.classList.remove('hidden');
+                } else {
+                    row.classList.add('hidden');
+                }
+            });
+            const chevron = document.querySelector(`.group-id-${entityId}-chevron`);
+            if (chevron) {
+                chevron.classList.toggle('rotate-180', !isParentHidden);
+            }
+        }
+
+        function toggleModelTypeRows(modelTypeSlug) {
+            const rows = document.querySelectorAll(`.model-type-${modelTypeSlug}`);
+            const isParentHidden = rows[0]?.classList.contains('hidden');
+            rows.forEach(row => {
+                if (isParentHidden) {
+                    row.classList.remove('hidden');
+                } else {
+                    row.classList.add('hidden');
+                }
+            });
+            const chevron = document.querySelector(`.model-type-${modelTypeSlug}-chevron`);
+            if (chevron) {
+                chevron.classList.toggle('rotate-180', !isParentHidden);
+            }
         }
     </script>
 </x-app-layout>

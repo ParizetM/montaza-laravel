@@ -207,6 +207,10 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::patch('/matieres/{matiere}/update', [MatiereController::class, 'update'])->name('matieres.update');
         Route::delete('/matieres/{matiere}', [MatiereController::class, 'destroy'])->name('matieres.destroy');
         Route::get('/matieres/{id}/mouvements', [MatiereController::class, 'mouvements'])->name('matieres.mouvements');
+        Route::delete('/matieres/{matiere}/mouvements/{mouvement}', [MatiereController::class, 'supprimerMouvement'])
+            ->name('matieres.mouvement.supprimer');
+        Route::put('/matieres/{matiere}/mouvements/{mouvement}', [MatiereController::class, 'modifierMouvement'])
+            ->name('matieres.mouvement.modifier');
         Route::post('/matieres/{matiere}/fournisseur/store', [MatiereController::class, 'storeFournisseur'])->name('matieres.fournisseurs.store');
         Route::delete('/matieres/{matiere}/fournisseurs/{fournisseur}', [MatiereController::class, 'detacherFournisseur'])->name('matieres.fournisseurs.detacher');
 
@@ -321,10 +325,7 @@ Route::post('/media/upload/{model}/{id}/{token}', [MediaController::class, 'uplo
 
 
 // Routes pour les mouvements de stock
-Route::delete('/matieres/{matiere}/mouvements/{mouvement}', [MatiereController::class, 'supprimerMouvement'])
-    ->name('matieres.mouvement.supprimer');
-Route::put('/matieres/{matiere}/mouvements/{mouvement}', [MatiereController::class, 'modifierMouvement'])
-    ->name('matieres.mouvement.modifier');
+
 
 // Ajouter cette route dans le groupe des routes de matières
 

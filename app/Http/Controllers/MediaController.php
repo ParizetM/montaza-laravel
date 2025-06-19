@@ -54,14 +54,27 @@ class MediaController extends Controller
             ->when($request->input('type'), function ($query, $mediaTypeId) {
                 return $query->where('media_type_id', $mediaTypeId);
             })
-            ->with(['user', 'mediaType'])
+            ->with(['user', 'mediaType', 'mediaable'])
             ->orderBy('created_at', 'desc')
             ->paginate($request->input('nombre', 50));
+
         $media_types = MediaType::all();
+
+        // Grouper par modèle lié ET par id de l'entité liée
+        $groupedMedias = $medias->getCollection()
+            ->groupBy(function($media) {
+                return $media->mediaable_type;
+            })
+            ->map(function($group) {
+                return $group->groupBy(function($media) {
+                    return $media->mediaable_id;
+                });
+            });
+
         return view('media.index', [
             'medias' => $medias,
             'media_types' => $media_types,
-
+            'groupedMedias' => $groupedMedias,
         ]);
     }
 

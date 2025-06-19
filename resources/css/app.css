@@ -5,9 +5,9 @@
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 
 @theme {
-  --font-sans:
-    Figtree, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
-    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans:
+        Figtree, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+        'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
 /*
@@ -19,197 +19,208 @@
   color utility to any element that depends on these defaults.
 */
 @layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentColor);
-  }
+
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--color-gray-200, currentColor);
+    }
 }
 
 @utility btn {
-  @apply mt-4 cursor-pointer sm:mt-0 inline-flex items-center px-4 py-2 bg-gray-200 dark:bg-gray-900 border border-transparent rounded-md font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200  disabled:opacity-25 transition;
+    @apply mt-4 cursor-pointer sm:mt-0 inline-flex items-center px-4 py-2 bg-gray-200 dark:bg-gray-900 border border-transparent rounded-md font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 disabled:opacity-25 transition;
 }
+
 @utility btn-sm {
     @apply btn px-2 py-1 text-xs;
 }
+
 @utility btn-secondary {
     @apply btn bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-700 hover:bg-gray-300 dark:hover:bg-gray-700;
 }
+
 @utility select {
-  font-family: Figtree, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
-    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-  @apply flex w-full px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-md font-semibold text-xs text-gray-900 dark:text-gray-100 tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200  disabled:opacity-25 transition;
+    font-family: Figtree, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+        'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    @apply flex w-full px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-md font-semibold text-xs text-gray-900 dark:text-gray-100 tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 disabled:opacity-25 transition;
 }
 
 @utility select-left {
-  @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-l-md rounded-r-none font-semibold text-xs text-gray-900 dark:text-gray-100 tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200  disabled:opacity-25 transition;
+    @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-l-md rounded-r-none font-semibold text-xs text-gray-900 dark:text-gray-100 tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 disabled:opacity-25 transition;
 }
 
 @utility btn-select-right {
-  @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-r-md rounded-l-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 disabled:opacity-25 transition;
+    @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-r-md rounded-l-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 disabled:opacity-25 transition;
 }
 
 @utility btn-select-left {
-  @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-l-md rounded-r-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 disabled:opacity-25 transition;
+    @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-l-md rounded-r-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 disabled:opacity-25 transition;
 }
 
 @utility btn-select-top-right {
-  @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-t-md rounded-b-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 disabled:opacity-25 transition;
+    @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-t-md rounded-b-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 disabled:opacity-25 transition;
 }
 
 @utility btn-select-top-left {
-  @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-t-md rounded-b-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 disabled:opacity-25 transition;
+    @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-t-md rounded-b-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 disabled:opacity-25 transition;
 }
 
 @utility btn-select-bottom-right {
-  @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-b-md rounded-t-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 disabled:opacity-25 transition;
+    @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-b-md rounded-t-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 disabled:opacity-25 transition;
 }
 
 @utility btn-select-bottom-left {
-  @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-b-md rounded-t-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 disabled:opacity-25 transition;
+    @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent rounded-b-md rounded-t-none font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 disabled:opacity-25 transition;
 }
 
 @utility btn-select-square {
-  @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 disabled:opacity-25 transition;
+    @apply block px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-transparent font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 disabled:opacity-25 transition;
 }
 
 @utility icons {
-  @apply fill-gray-500 dark:fill-gray-300 hover:fill-gray-700 dark:hover:fill-gray-500 text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-500;
+    @apply fill-gray-500 dark:fill-gray-300 hover:fill-gray-700 dark:hover:fill-gray-500 text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-500 cursor-pointer;
 }
 
 @utility icons-no_hover {
-  @apply fill-gray-500 dark:fill-gray-300 text-gray-500 dark:text-gray-300;
+    @apply fill-gray-500 dark:fill-gray-300 text-gray-500 dark:text-gray-300;
 }
 
 @utility text-input {
-  &:disabled {
-    @apply dark:bg-[#1b2533] bg-[#fcfcfd] border-none dark:text-[#636c79] text-[#d7d8db];
-    /* Dark mode */
-  }
+    &:disabled {
+        @apply dark:bg-[#1b2533] bg-[#fcfcfd] border-none dark:text-[#636c79] text-[#d7d8db];
+        /* Dark mode */
+    }
 }
 
 @utility copiable {
-  &:hover {
-    @apply cursor-pointer;
-  }
+    &:hover {
+        @apply cursor-pointer;
+    }
 
-  .copiable_parent:hover & {
-    @apply rounded-md dark:bg-[#2d3748] bg-[#f9fafb];
-  }
+    .copiable_parent:hover & {
+        @apply rounded-md dark:bg-[#2d3748] bg-[#f9fafb];
+    }
 
-  &:hover + .hidden_copiable {
-    display: block;
-  }
+    &:hover+.hidden_copiable {
+        display: block;
+    }
 
-  &:hover + .hidden_copiable + .hidden_copiable_small {
-    display: block;
-  }
-  &:hover {
-    display: block;
-  }
+    &:hover+.hidden_copiable+.hidden_copiable_small {
+        display: block;
+    }
+
+    &:hover {
+        display: block;
+    }
 }
 
 @utility hidden_copiable {
-  top: -105%;
-  left: 90%;
+    top: -105%;
+    left: 90%;
 
-  display: none;
-  @apply absolute bg-white dark:bg-[#2d3748] rounded-md;
-  z-index: 10;
+    display: none;
+    @apply absolute bg-white dark:bg-[#2d3748] rounded-md;
+    z-index: 10;
 
-  .copiable:hover + & {
-    display: block;
-  }
+    .copiable:hover+& {
+        display: block;
+    }
 
-  .copiable:hover + & + .hidden_copiable_small {
-    display: block;
-  }
+    .copiable:hover+&+.hidden_copiable_small {
+        display: block;
+    }
 }
 
 @utility hidden_copiable_small {
-  top: -105%;
-  left: 90%;
+    top: -105%;
+    left: 90%;
 
-  display: none;
-  @apply absolute bg-white dark:bg-[#2d3748] rounded-md;
-  @apply pl-4 pr-1 shadow-md;
-  z-index: 9;
+    display: none;
+    @apply absolute bg-white dark:bg-[#2d3748] rounded-md;
+    @apply pl-4 pr-1 shadow-md;
+    z-index: 9;
 
-  .copiable:hover + .hidden_copiable + & {
-    display: block;
-  }
+    .copiable:hover+.hidden_copiable+& {
+        display: block;
+    }
 }
 
 @utility copiable_parent {
-  &:hover .copiable {
-    @apply rounded-md dark:bg-[#2d3748] bg-[#f9fafb];
-  }
+    &:hover .copiable {
+        @apply rounded-md dark:bg-[#2d3748] bg-[#f9fafb];
+    }
 }
+
 @utility bg-gray-750 {
     --tw-bg-opacity: 1;
     background-color: oklch(32.55% 0.0335 258.2905);
 }
+
 @utility bg-gray-850 {
-  background-color: #18202f;
+    background-color: #18202f;
 }
 
 @utility bg-gray-1000 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(10 15 25 / var(--tw-bg-opacity, 1));
+    --tw-bg-opacity: 1;
+    background-color: rgb(10 15 25 / var(--tw-bg-opacity, 1));
 }
 
 @utility btn-contact {
-  padding-top: 0.25rem;
-  background: none;
-  @apply bg-none border-none;
+    padding-top: 0.25rem;
+    background: none;
+    @apply bg-none border-none;
 }
 
 @utility lien {
-  @apply text-blue-500 dark:text-blue-300 underline hover:text-blue-700 dark:hover:text-blue-500;
+    @apply text-blue-500 dark:text-blue-300 underline hover:text-blue-700 dark:hover:text-blue-500;
 }
 
 @utility input-file {
-  @apply bg-gray-100 dark:bg-gray-900 border border-transparent rounded-md font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 active:bg-indigo-700 focus:outline-hidden focus:border-indigo-700 focus:ring-3 focus:ring-indigo-200 disabled:opacity-25 transition p-2;
+    @apply bg-gray-100 dark:bg-gray-900 border border-transparent rounded-md font-semibold text-xs text-gray-900 dark:text-gray-100 uppercase tracking-widest dark:hover:bg-gray-700 hover:bg-gray-200 active:bg-indigo-700 focus:outline-hidden focus:border-indigo-700 focus:ring-3 focus:ring-indigo-200 disabled:opacity-25 transition p-2;
 }
 
 @utility progress-activity {
-  @apply animate-spin;
+    @apply animate-spin;
 }
 
 @utility price-input-container {
-  position: relative;
-  display: inline-block;
-  @apply w-28;
+    position: relative;
+    display: inline-block;
+    @apply w-28;
 
-  &::after {
-    content: '€';
-    position: absolute;
-    right: 6px; /* Ajustez la position selon votre besoin */
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none; /* Permet de cliquer à travers le symbole */
-  }
+    &::after {
+        content: '€';
+        position: absolute;
+        right: 6px;
+        /* Ajustez la position selon votre besoin */
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        /* Permet de cliquer à travers le symbole */
+    }
 }
 
 @utility price-input {
-  padding-right: 15px; /* Ajoutez un padding pour éviter que le texte ne chevauche le symbole */
-  @apply w-28;
+    padding-right: 15px;
+    /* Ajoutez un padding pour éviter que le texte ne chevauche le symbole */
+    @apply w-28;
 }
 
 @utility poste {
-  /* Texte vertical de droite à gauche */
-  white-space: nowrap;
-  /* Empêche le texte de passer à la ligne */
-  transform: rotate(-90deg);
-  /* Rotation de 180 degrés */
-  height: 40px;
-  padding-top: 10px;
-  margin-bottom: 5px;
+    /* Texte vertical de droite à gauche */
+    white-space: nowrap;
+    /* Empêche le texte de passer à la ligne */
+    transform: rotate(-90deg);
+    /* Rotation de 180 degrés */
+    height: 40px;
+    padding-top: 10px;
+    margin-bottom: 5px;
 }
+
 @utility textarea {
-  @apply mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-xs focus:outline-hidden focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-900 dark:text-gray-100;
+    @apply mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-xs focus:outline-hidden focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-900 dark:text-gray-100;
 }
 
 .mobile-tooltip-indicator {
@@ -249,8 +260,15 @@
 }
 
 @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
 }
 
 @layer components {
@@ -269,26 +287,29 @@
     ::-webkit-outer-spin-button {
         @apply dark:invert;
     }
+
     table {
         @apply min-w-full divide-y divide-gray-200 dark:divide-gray-700;
     }
+
     thead {
         @apply bg-linear-to-r from-gray-200 to-gray-50 dark:from-gray-700 dark:to-gray-800;
     }
+
     th {
         @apply px-6 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider;
     }
 }
 
 @utility input {
-  @apply mt-1 block px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-900 dark:text-gray-100 bg-gray-50;
+    @apply mt-1 block px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-900 dark:text-gray-100 bg-gray-50;
 }
 
 .documentation-container {
     background: white;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .documentation-container img {
@@ -315,4 +336,52 @@
 .documentation-container table th {
     background-color: #f5f5f5;
     font-weight: bold;
+}
+
+.circle-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    pointer-events: none;
+    /* optionnel pour ne pas bloquer les clics */
+    z-index: 9999;
+}
+
+/* Animation cercle qui s'agrandit */
+.circle-effect {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    opacity: 0;
+    transform-origin: center;
+    z-index: 9999;
+    @apply dark:bg-gray-300 bg-gray-700;
+}
+
+.circle-effect.animate {
+    animation: growCircle 1s ease-out forwards;
+}
+
+@keyframes growCircle {
+    0% {
+        transform: translateY(-50%) scale(1);
+        opacity: 0.8;
+    }
+
+    20% {
+        transform: translateY(-50%) scale(40);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(-50%) scale(120);
+        opacity: 0;
+    }
 }
