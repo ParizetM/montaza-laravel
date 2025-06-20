@@ -4,13 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Mailtemplate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class MailtemplateController extends Controller
 {
     public function index()
     {
         $mailtemplates = Mailtemplate::all();
-        return view('mailtemplates.index', compact('mailtemplates'));
+        $signaturePath = Storage::path('signature/signature.png');
+        $signature = base64_encode(file_get_contents($signaturePath));
+        return view('mailtemplates.index', compact('mailtemplates', 'signature'));
     }
     public function edit($id)
     {
@@ -31,5 +34,16 @@ class MailtemplateController extends Controller
         $mailtemplate->contenu = $contenu;
         $mailtemplate->save();
         return redirect()->route('mailtemplates.edit', $id)->with('success', 'Modèle de mail mis à jour avec succès');
+    }
+    public function uploadSignature(Request $request)
+    {
+        $request->validate([
+            'signature' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $file = $request->file('signature');
+        $filename = 'signature.' . $file->extension();
+        $file->storeAs('signature', $filename);
+        return redirect()->route('mailtemplates.index')->with('success', 'Signature uploadée avec succès ');
     }
 }

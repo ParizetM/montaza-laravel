@@ -65,7 +65,7 @@
                 @endcan
                 @can('gerer_info_entreprise')
                     <a href="{{ route('administration.info') }}" class="flex p-6 text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-900 w-96 h-auto rounded-md cursor-pointer transition-all hover:scale-105 hover:bg-gray-200 dark:hover:bg-gray-700">
-                        <x-icons.settings class="w-12 h-12 mr-2 fill-gray-400 dark:fill-gray-100" />
+                        <x-icons.entreprise class="w-12 h-12 mr-2 fill-gray-400 dark:fill-gray-100" />
                         <div class=" flex flex-col justify-between">
                             <h1 class="text-3xl font-bold mb-6 text-left">{{ __('informations entreprise') }}</h1>
                             <p class=" p-1 rounded-sm">{{ __('Gérer les informations des entreprises') }}</p>
