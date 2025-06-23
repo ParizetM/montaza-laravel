@@ -8,14 +8,14 @@
     'required' => false,
     'id' => uniqid('search_select_'),
     'onChange' => null,
-    'class' => '', // Ajout de l'attribut class
+    'class' => '',
 ])
 
 <div x-data="{
     open: false,
     search: '',
     selected: '{{ $value }}',
-    selectedText: '',
+    selectedText: '{{ collect($options)->firstWhere('value', $value)['text'] ?? '' }}',
     options: {{ json_encode($options) }},
     get filteredOptions() {
         if (this.search === '') return this.options;
@@ -24,7 +24,7 @@
         );
     },
     selectOption(value, text, disabled = false) {
-        if (disabled) return; // Empêcher la sélection si l'option est désactivée
+        if (disabled) return;
 
         this.selected = value;
         this.selectedText = text;
@@ -54,34 +54,31 @@
         const button = this.$refs.selectButton;
         const dropdown = this.$refs.dropdown;
 
-        // Positionnement du dropdown par rapport au bouton
         const rect = button.getBoundingClientRect();
         const dropdownWidth = rect.width;
-        const dropdownLeft = Math.max(10, Math.min(rect.left, window.innerWidth - dropdownWidth - 10)); // 10px du bord
+        const dropdownLeft = Math.max(10, Math.min(rect.left, window.innerWidth - dropdownWidth - 10));
         const dropdownTop = rect.bottom + window.scrollY;
 
         dropdown.style.width = `${dropdownWidth}px`;
         dropdown.style.left = `${dropdownLeft}px`;
 
-        // Ajuster la position verticale et la hauteur si le dropdown dépasse en bas
         const dropdownHeight = dropdown.offsetHeight;
         const viewportHeight = window.innerHeight;
         if (dropdownTop + dropdownHeight > viewportHeight) {
-            const maxHeight = viewportHeight - rect.bottom - 20; // 20px de marge
-            dropdown.style.maxHeight = `${Math.max(100, maxHeight)}px`; // Minimum 100px
+            const maxHeight = viewportHeight - rect.bottom - 20;
+            dropdown.style.maxHeight = `${Math.max(100, maxHeight)}px`;
             dropdown.style.top = `${dropdownTop}px`;
         } else {
-            dropdown.style.maxHeight = 'calc(100vh - 100px)'; // Réinitialiser si nécessaire
+            dropdown.style.maxHeight = 'calc(100vh - 100px)';
             dropdown.style.top = `${dropdownTop}px`;
         }
     }
-}" x-init="$nextTick(() => { $watch('open', value => { if(value) positionDropdown() }) })" @resize.window="if(open) positionDropdown()" @click.away="closeDropdown()" class="relative w-full {{ $class }}"> <!-- Ajout de {{ $class }} -->
+}" x-init="$nextTick(() => { $watch('open', value => { if(value) positionDropdown() }) })" @resize.window="if(open) positionDropdown()" @click.away="closeDropdown()" class="relative w-full {{ $class }}">
 
-    <!-- Champ caché pour le formulaire -->
-    <input type="hidden" :name="name" :value="selected" {{ $required ? 'required' : '' }}
+    <input type="hidden" name="{{ $name }}" :value="selected"
+        @if($required) required @endif
         {{ $id ? "id=$id" : '' }}>
 
-    <!-- Bouton principal du select -->
     <button type="button" @click="toggleOpen()" class="select w-full text-left flex items-center justify-between" x-ref="selectButton">
         <span x-text="selectedText || '{{ $placeholder }}'"
             :class="{ 'text-gray-500 dark:text-gray-400': !selectedText, 'text-gray-900 dark:text-gray-100': selectedText }"></span>
@@ -94,13 +91,11 @@
         </span>
     </button>
 
-    <!-- Menu déroulant placé en dehors du conteneur parent -->
     <template x-teleport="body">
         <div x-show="open" x-transition x-ref="dropdown"
             class="fixed z-1000 bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-lg overflow-auto"
             style="max-height: calc(100vh - 100px);">
 
-            <!-- Champ de recherche -->
             <div class="sticky top-0 bg-gray-100 dark:bg-gray-900 p-2 border-b border-gray-300 dark:border-gray-700 z-20">
                 <input type="text" x-model="search" x-ref="searchInput" {{ $id ? "id=$id" . '-searchInput' : '' }}
                     placeholder="{{ $searchPlaceholder }}"
@@ -108,7 +103,6 @@
                     @click.stop>
             </div>
 
-            <!-- Options -->
             <div class="py-1">
                 <template x-for="option in filteredOptions" :key="option.value">
                     <div @click="selectOption(option.value, option.text, option.disabled)"
@@ -132,7 +126,6 @@
                     </div>
                 </template>
 
-                <!-- Message si aucun résultat -->
                 <div x-show="filteredOptions.length === 0"
                     class="px-3 py-2 text-sm text-gray-500 dark:text-gray-400 text-center">
                     Aucun résultat trouvé
