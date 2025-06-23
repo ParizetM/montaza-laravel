@@ -38,6 +38,7 @@ class DatabaseProductionSeeder extends Seeder
             'gerer_mail_templates' => 'Modifier Les Modèles De Mail',
             'gerer_info_entreprise' => 'Modifier Les Informations De L\'entreprise',
             'gerer_les_medias' => 'Gérer Les Médias enregistrés',
+            'gerer_l_application' => 'paramétrer les réglages de l’application',
         ];
         foreach ($permissions as $permission => $description) {
             Permission::factory()->create([

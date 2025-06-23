@@ -29,6 +29,18 @@ class Etablissement extends Model
         'commentaire_id'
     ];
 
+
+    /**
+     * The "booted" method of the model.
+     *
+     * @return void
+     */
+    protected static function booted()
+    {
+        static::addGlobalScope('orderByName', function ($query) {
+            $query->orderBy('nom');
+        });
+    }
     /**
      * Summary of pays
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Pays, Etablissement>

@@ -50,7 +50,7 @@
                         <x-icons.inbox-text class="w-12 h-12 mr-2 fill-gray-400 dark:fill-gray-100" />
                         <div class=" flex flex-col justify-between">
                             <h1 class="text-3xl font-bold mb-6 text-left">{{ __('Modèles de mail') }}</h1>
-                            <p class=" p-1 rounded-sm">{{ __('Gérer les modèles de mail') }}</p>
+                            <p class=" p-1 rounded-sm">{{ __('Gérer les modèles de mail et la signature') }}</p>
                         </div>
                     </a>
                 @endcan
@@ -78,6 +78,15 @@
                         <div class=" flex flex-col justify-between">
                             <h1 class="text-3xl font-bold mb-6 text-left">{{ __('Pièces jointes') }}</h1>
                             <p class=" p-1 rounded-sm">{{ __('Gérer les pièces jointes') }}</p>
+                        </div>
+                    </a>
+                @endcan
+                @can('gerer_l_application')
+                    <a href="{{ route('administration.appsettings.index') }}" class="flex p-6 text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-900 w-96 h-auto rounded-md cursor-pointer transition-all hover:scale-105 hover:bg-gray-200 dark:hover:bg-gray-700">
+                        <x-icons.settings class="w-12 h-12 mr-2 fill-gray-400 dark:fill-gray-100" />
+                        <div class=" flex flex-col justify-between">
+                            <h1 class="text-3xl font-bold mb-6 text-left">{{ __('Paramètres de l\'application') }}</h1>
+                            <p class=" p-1 rounded-sm">{{ __('Gérer les paramètres principaux de l\'application') }}</p>
                         </div>
                     </a>
                 @endcan

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdministrationController;
+use App\Http\Controllers\AppSettingController;
 use App\Http\Controllers\CdeController;
 use App\Http\Controllers\CdeNoteController;
 use App\Http\Controllers\DdpController;
@@ -47,6 +48,14 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
     })->name('administration.icons');
     Route::get('/administration/info/{entite}', [AdministrationController::class, 'info'])->name('administration.info_entite');
     Route::patch('/administration/info/{entite}/update', [AdministrationController::class, 'update'])->name('administration.update');
+
+
+    Route::middleware('permission:gerer_les_utilisateurs')->group(function () {
+        route::get('/administration/settings', [AppSettingController::class, 'settings'])->name('administration.appsettings.index');
+        Route::patch('/administration/settings/update', [AppSettingController::class, 'update'])->name('administration.appsettings.update');
+    });
+
+
     Route::get('/documentation', [DocumentationController::class, 'index'])->name('documentation.index');
     Route::get('/documentation/download/{format}', [DocumentationController::class, 'download'])->name('documentation.download');
     Route::get('/documentation/images/{filename}', [DocumentationController::class, 'serveImage'])->name('documentation.images');
@@ -71,16 +80,22 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
     Route::post('/shortcuts', [UserShortcutController::class, 'store'])->name('shortcuts.store');
     Route::delete('/shortcuts/{id}', [UserShortcutController::class, 'destroy'])->name('shortcuts.destroy');
     Route::patch('/shortcuts/update-order', [UserShortcutController::class, 'updateOrder'])->name('shortcuts.updateOrder');
+
+
     Route::middleware('permission:gerer_les_utilisateurs')->group(function () {
         Route::get('/profiles', [ProfileController::class, 'index'])->name('profile.index');
         Route::post('/profile/create', [RoleController::class, 'store'])->name('role.store');
     });
+
+
     Route::middleware('permission:gerer_les_permissions')->group(function () {
         Route::get('/permissions', [PermissionController::class, 'index'])->name('permissions');
         Route::get('/permissions/{role}', [PermissionController::class, 'index'])->name('permissions.index');
         Route::post('/permission/role/create', [RoleController::class, 'store'])->name('permissions.role.store');
         Route::put('/permissions/edit', [PermissionController::class, 'edit'])->name('permissions.edit');
     });
+
+
     Route::middleware('permission:gerer_les_postes')->group(function () {
         Route::get('/postes', [RoleController::class, 'index'])->name('roles');
         Route::get('/postes/{role}', [RoleController::class, 'index'])->name('roles.index');
@@ -89,9 +104,12 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::delete('/postes/{role}/delete', [RoleController::class, 'destroy'])->name('roles.destroy');
         Route::patch('/postes/{role}/restore', [RoleController::class, 'restore'])->name('roles.restore');
     });
+
+
     Route::middleware('permission:voir_historique')->group(function () {
         Route::get('/logs', [ModelChangeController::class, 'index'])->name('model_changes.index');
     });
+
 
     // Routes pour les données de référence
     Route::middleware(['permission:gerer_les_donnees_de_reference'])->group(function () {
@@ -144,6 +162,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::delete('/administration/reference-data/unite/{unite}', [ReferenceDataController::class, 'destroyUnite'])->name('reference-data.unite.destroy');
     });
 
+
     Route::middleware('permission:voir_les_societes')->group(function () {
         Route::get('/societes', [SocieteController::class, 'index'])->name('societes.index');
         Route::get('/societes/client', [SocieteController::class, 'indexClient'])->name('societes.index_client');
@@ -178,6 +197,8 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
             Route::delete('/societe/contact/{contact}/delete', [SocieteContactController::class, 'destroy'])->name('societes.contacts.destroy');
         });
     });
+
+
     Route::middleware('permission:voir_les_matieres')->group(function () {
         Route::get('/matieres', [MatiereController::class, 'index'])->name('matieres.index');
         Route::get('/matieres/search', [MatiereController::class, 'searchResult'])->name('matieres.search');
@@ -223,12 +244,15 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::get('/matieres/standards/{dossier}/{standard}/versions/json', [StandardController::class, 'showVersionsJson'])->name('standards.show_versions_json');
         Route::get('/matieres/standards/{dossier}/{standard}', [StandardController::class, 'show'])->name('standards.show');
     });
+
+
     Route::middleware('permission:gerer_mail_templates')->group(function () {
         Route::get('/mailtemplates', [MailtemplateController::class, 'index'])->name('mailtemplates.index');
         Route::get('/mailtemplates/{mailtemplate}/edit', [MailTemplateController::class, 'edit'])->name('mailtemplates.edit');
         Route::patch('/mailtemplates/{mailtemplate}/update', [MailTemplateController::class, 'update'])->name(name: 'mailtemplates.update');
         Route::post('/mailtemplates/upload-signature', [MailtemplateController::class, 'uploadSignature'])->name('mailtemplates.uploadSignature');
     });
+
 
     Route::middleware('permission:voir_les_ddp_et_cde')->group(function () {
         Route::get('/administration/cde-notes/{entite}', [CdeNoteController::class, 'index'])->name('administration.cdeNote.index');
@@ -298,19 +322,26 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::get('/cde/{cde}/stock/no', [CdeController::class, 'noStock'])->name('cde.stock.no');
     });
 
+
     // Routes pour le système de médias
     Route::get('/media/download/{mediaId}', [MediaController::class, 'download'])->name('media.download');
     Route::post('/media/{model}/{id}', [MediaController::class, 'store'])->name('media.store');
+
+
     Route::middleware('permission:gerer_les_medias')->group(function () {
         Route::get('/media', [MediaController::class, 'index'])->name('media.index');
         Route::put('/media/{media}', [MediaController::class, 'update'])->name('media.update');
         Route::delete('/media/{media}', [MediaController::class, 'destroy'])->name('media.destroy');
     });
+
+
     // Route pour générer un lien signé vers la page d'upload par QR code
     Route::get('/media/generate-qr/{model}/{id}', [MediaController::class, 'generateQrLink'])->name('media.generate-qr');
     Route::get('/media/{id}', [MediaController::class, 'show'])->name('media.show');
     Route::patch('/media/{id}/commentaire/save', [MediaController::class, 'updateCommentaire'])->name('media.commentaire.save');
     Route::patch('/media/{id}/type/save', [MediaController::class, 'updateType'])->name('media.type.save');
+
+
 });
 
 // Route d'upload via QR code (protégée par signature)
@@ -322,13 +353,6 @@ Route::post('/media/upload/{model}/{id}/{token}', [MediaController::class, 'uplo
     ->name('media.upload')
     ->middleware(['signed', 'PreventDebugMode'])
     ->withoutMiddleware([VerifyCsrfToken::class, ValidatePostSize::class]);
-
-
-
-// Routes pour les mouvements de stock
-
-
-// Ajouter cette route dans le groupe des routes de matières
 
 
 require __DIR__ . '/auth.php';

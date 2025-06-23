@@ -190,7 +190,12 @@ class CdeController extends Controller
             $societes = $societes->push($cde->societe);
             }
         }
-        $societes = $societes->unique('id')->values();
+        $societes = $societes->groupBy('id')->map(function ($group) {
+            $societe = $group->first();
+            $societe->usage_count = $group->count();
+            $societe->raison_sociale .= ' (' . $societe->usage_count . ')';
+            return $societe;
+        })->sortByDesc('usage_count')->values();
         // Retourner la vue avec les données
         return view('ddp_cde.cde.index', compact('cdes',  ['cde_statuts','cdesGrouped', 'societes', 'sort', 'direction']));
     }

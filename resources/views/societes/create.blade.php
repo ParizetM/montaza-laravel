@@ -38,17 +38,15 @@
                             @enderror
                         </div> <div class="col-span-1">
                         <x-input-label for="forme_juridique_id" :value="__('Forme Juridique')" />
-                        <select id="forme_juridique_id" name="forme_juridique_id" class="block mt-1 w-full select"
-                            required>
-                            <option value="" disabled {{ old('forme_juridique_id') == '' ? 'selected' : '' }}>
-                                -- Choisir une forme juridique --</option>
-                            @foreach ($formeJuridiques as $formeJuridique)
-                                <option value="{{ $formeJuridique->id }}"
-                                    {{ old('forme_juridique_id') == $formeJuridique->id ? 'selected' : '' }}>
-                                    {{ $formeJuridique->code }} {{ $formeJuridique->nom }}
-                                </option>
-                            @endforeach
-                        </select>
+                        <x-search-select :options="$formeJuridiques->map(fn($formeJuridique) => ['value' => $formeJuridique->id, 'text' => $formeJuridique->code . ' ' . $formeJuridique->nom])"
+                            name="forme_juridique_id"
+                            id="forme_juridique_id"
+                            placeholder="-- Choisir une forme juridique --"
+                            searchPlaceholder="Rechercher une forme juridique..."
+                            value="{{ old('forme_juridique_id') }}"
+                            required
+                            class="mt-1"
+                            />
                         @error('forme_juridique_id')
                             <span class="text-red-500 text-sm">{{ $message }}</span>
                         @enderror
@@ -56,16 +54,15 @@
 
                 <div class="col-span-1">
                     <x-input-label for="code_ape_id" :value="__('Code APE (code NAF)')" />
-                    <select id="code_ape_id" name="code_ape_id" class="block mt-1 w-full select">
-                        <option value="" disabled {{ old('code_ape_id') == '' ? 'selected' : '' }}>--
-                            Choisir un code APE --</option>
-                        @foreach ($codeApes as $codeApe)
-                            <option value="{{ $codeApe->id }}"
-                                {{ old('code_ape_id') == $codeApe->id ? 'selected' : '' }}>
-                                {{ $codeApe->code }} {{ $codeApe->nom }}
-                            </option>
-                        @endforeach
-                    </select>
+                    <x-search-select :options="$codeApes->map(fn($codeApe) => ['value' => $codeApe->id, 'text' => $codeApe->code . ' ' . $codeApe->nom])"
+                        name="code_ape_id"
+                        id="code_ape_id"
+                        placeholder="-- Choisir un code APE --"
+                        searchPlaceholder="Rechercher un code APE..."
+                        value="{{ old('code_ape_id') }}"
+                        required
+                        class="mt-1"
+                    />
                     @error('code_ape_id')
                         <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror

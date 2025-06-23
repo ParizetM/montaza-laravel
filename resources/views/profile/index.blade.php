@@ -2,13 +2,17 @@
     <x-slot name="header">
 
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
-            <div>
+            <div class="flex items-center space-x-2">
                 <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                    {{ __('Utilisateurs') }}
+                    <a href="{{ route('administration.index') }}"
+                        class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">{!! __('Administration') !!}</a>
+                    >>
                 </h2>
-                <p class="text-sm text-gray-600 dark:text-gray-400">
-                    {{ __('Liste des profils utilisateur ') }}
-                </p>
+                <div>
+                    <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+                        {{ __('Utilisateurs') }}
+                    </h2>
+                </div>
             </div>
             <div class="mt-4 sm:mt-0 flex flex-col sm:flex-row items-start sm:items-center mx-auto">
                 <label for="Toggle1"
@@ -153,7 +157,10 @@
             window.location.href = url.toString();
             const container = document.getElementById('container');
             const containerHeight = container.offsetHeight;
-            container.innerHTML = '<div id="loading-spinner" class="inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50" style="height: ' + containerHeight + 'px;"><div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32"></div></div><style>.loader {border-top-color: #3498db;animation: spinner 1.5s linear infinite;}@keyframes spinner {0% {transform: rotate(0deg);}100% {transform: rotate(360deg);}}</style>';
+            container.innerHTML =
+                '<div id="loading-spinner" class="inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50" style="height: ' +
+                containerHeight +
+                'px;"><div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32"></div></div><style>.loader {border-top-color: #3498db;animation: spinner 1.5s linear infinite;}@keyframes spinner {0% {transform: rotate(0deg);}100% {transform: rotate(360deg);}}</style>';
 
         }
     </script>

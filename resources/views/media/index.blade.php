@@ -3,7 +3,9 @@
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                {{ __('Gestion des Pièces jointes') }}
+                <a href="{{ route('administration.index') }}"
+                class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">{!! __('Administration') !!}</a>
+                >> {{ __('Gestion des Pièces jointes') }}
             </h2>
             <div class="mt-4 sm:mt-0 flex flex-col sm:flex-row items-start sm:items-center">
                 <form method="GET" action="{{ route('media.index') }}"

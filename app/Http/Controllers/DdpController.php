@@ -13,7 +13,6 @@ use App\Models\Famille;
 use App\Models\Mailtemplate;
 use App\Models\Matiere;
 use App\Models\ModelChange;
-use App\Models\Societe;
 use App\Models\SocieteContact;
 use App\Models\SocieteMatiere;
 use App\Models\SocieteMatierePrix;
@@ -21,7 +20,6 @@ use App\Models\Unite;
 use App\Models\User;
 use Auth;
 use DB;
-use Barryvdh\DomPDF\PDF;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -32,6 +30,7 @@ use Storage;
 
 class DdpController extends Controller
 {
+
     private function getExcelColumnName($index)
     {
         $letters = '';
@@ -86,11 +85,11 @@ class DdpController extends Controller
         switch ($sort) {
             case 'code':
                 $query->orderBy('ddps.entite_id', 'asc')
-                      ->orderBy('ddps.code', $direction);
+                    ->orderBy('ddps.code', $direction);
                 break;
             case 'nom':
                 $query->orderBy('ddps.entite_id', 'asc')
-                      ->orderBy('ddps.nom', $direction);
+                    ->orderBy('ddps.nom', $direction);
                 break;
             case 'user':
                 $query->join('users', 'ddps.user_id', '=', 'users.id')
@@ -107,13 +106,13 @@ class DdpController extends Controller
                 break;
             case 'created_at':
                 $query->orderBy('ddps.entite_id', 'asc')
-                      ->orderBy('ddps.created_at', $direction);
+                    ->orderBy('ddps.created_at', $direction);
                 break;
             default:
                 // Tri par défaut : entité puis statut puis date de création
                 $query->orderBy('ddps.entite_id', 'asc')
-                      ->orderBy('ddps.ddp_cde_statut_id', 'asc')
-                      ->orderBy('ddps.created_at', 'desc');
+                    ->orderBy('ddps.ddp_cde_statut_id', 'asc')
+                    ->orderBy('ddps.created_at', 'desc');
                 break;
         }
 
@@ -261,11 +260,13 @@ class DdpController extends Controller
 
                 $sum = 0;
                 foreach ($table_data as $dataRow) {
+                    $dataRow[$indexSociete] = preg_replace('/[^\d.,]/', '', $dataRow[$indexSociete]);
                     $sum += (float)$dataRow[$indexSociete];
                 }
                 $row[] = ($sum != 0) ? formatNumberArgent($sum) : '';
                 $sum = 0;
                 foreach ($table_data as $dataRow) {
+                    $dataRow[$indexSociete + 1] = preg_replace('/[^\d.,]/', '', $dataRow[$indexSociete + 1]);
                     $sum += (float)$dataRow[$indexSociete + 1];
                 }
                 $row[] = ($sum != 0) ? formatNumberArgent($sum) : '';

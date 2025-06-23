@@ -42,16 +42,18 @@
     <div class="py-8">
         <div class="max-w-8xl mx-auto sm:px-6 lg:px-8">
             @if ($societes->isEmpty())
-                <div class="bg-white dark:bg-gray-800 overflow-hidden sm:rounded-lg shadow-md p-6 text-center text-gray-700 dark:text-gray-300">
+                <div
+                    class="bg-white dark:bg-gray-800 overflow-hidden sm:rounded-lg shadow-md p-6 text-center text-gray-700 dark:text-gray-300">
                     {!! __('Aucune société trouvée') !!}
                 </div>
             @else
                 <div class="space-y-2">
                     @foreach ($societes as $societe)
-                        <div class="bg-white dark:bg-gray-800 overflow-hidden sm:rounded-lg shadow-sm transition-all duration-300 border border-gray-200 dark:border-gray-700">
+                        <div
+                            class="bg-white dark:bg-gray-800 overflow-hidden sm:rounded-lg shadow-sm transition-all duration-300 border border-gray-200 dark:border-gray-700">
                             <!-- En-tête de la société (toujours visible) -->
                             <div class="flex justify-between items-center p-3 border-b border-gray-200 dark:border-gray-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors"
-                                 onclick="toggleSociete('{{ $societe->id }}'); rotateArrow('societe-arrow-{{ $societe->id }}')">
+                                onclick="toggleSociete('{{ $societe->id }}'); rotateArrow('societe-arrow-{{ $societe->id }}')">
                                 <div class="flex items-center">
                                     <x-icon :size="1" type="arrow_back" id="societe-arrow-{{ $societe->id }}"
                                         class="transform -rotate-90 mr-2 transition-transform text-gray-600 dark:text-gray-400" />
@@ -61,15 +63,17 @@
                                         </h3>
                                         <p class="text-xs text-gray-500 dark:text-gray-400">
                                             {{ $societe->societeType->nom }}
-                                            @if($societe->etablissements->count() > 0)
-                                                • {{ $societe->etablissements->count() }} établissement{{ $societe->etablissements->count() > 1 ? 's' : '' }}
+                                            @if ($societe->etablissements->count() > 0)
+                                                • {{ $societe->etablissements->count() }}
+                                                établissement{{ $societe->etablissements->count() > 1 ? 's' : '' }}
                                             @endif
+                                            • {{ $societe->societeContacts->count() }}
+                                            contact{{ $societe->societeContacts->count() > 1 ? 's' : '' }}
                                         </p>
                                     </div>
                                 </div>
-                                <a href="{{ route('societes.show', $societe->id) }}"
-                                   class="btn"
-                                   onclick="event.stopPropagation()">
+                                <a href="{{ route('societes.show', $societe->id) }}" class="btn"
+                                    onclick="event.stopPropagation()">
                                     <x-icon size="1" type="open_in_new" class="icons" />
                                 </a>
                             </div>
@@ -105,21 +109,26 @@
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                             <div class="space-y-1">
                                                 <x-copiable_text titre="Siren : " text="{{ $societe->siren }}" />
-                                                <x-copiable_text titre="Forme juridique : " text="{{ $societe->formeJuridique->code }}" />
-                                                <x-copiable_text titre="Code APE : " text="{{ $societe->codeApe->code ?? '' }}" />
-                                                <x-copiable_text titre="N° de TVA intra. : " text="{{ $societe->numero_tva }}" />
+                                                <x-copiable_text titre="Forme juridique : "
+                                                    text="{{ $societe->formeJuridique->code }}" />
+                                                <x-copiable_text titre="Code APE : "
+                                                    text="{{ $societe->codeApe->code ?? '' }}" />
+                                                <x-copiable_text titre="N° de TVA intra. : "
+                                                    text="{{ $societe->numero_tva }}" />
                                             </div>
                                             <div class="space-y-1">
-                                                <x-copiable_text titre="Téléphone : " text="{{ $societe->telephone }}" />
+                                                <x-copiable_text titre="Téléphone : "
+                                                    text="{{ $societe->telephone }}" />
                                                 <x-copiable_text titre="Email : " text="{{ $societe->email }}" />
-                                                @if($societe->site_web)
-                                                <div class="mb-1">
-                                                    <span class="font-semibold text-gray-700 dark:text-gray-300 text-sm">{!! __('Site web : ') !!}</span>
-                                                    <a href="https://{{ $societe->site_web }}" target="_blank"
-                                                        class="text-blue-500 hover:underline dark:text-blue-400 text-sm">
-                                                        {{ parse_url($societe->site_web, PHP_URL_HOST) ?: $societe->site_web }}
-                                                    </a>
-                                                </div>
+                                                @if ($societe->site_web)
+                                                    <div class="mb-1">
+                                                        <span
+                                                            class="font-semibold text-gray-700 dark:text-gray-300 text-sm">{!! __('Site web : ') !!}</span>
+                                                        <a href="https://{{ $societe->site_web }}" target="_blank"
+                                                            class="text-blue-500 hover:underline dark:text-blue-400 text-sm">
+                                                            {{ parse_url($societe->site_web, PHP_URL_HOST) ?: $societe->site_web }}
+                                                        </a>
+                                                    </div>
                                                 @endif
                                             </div>
                                         </div>
@@ -133,51 +142,85 @@
                                     </div>
 
                                     <!-- Onglet Établissements -->
-                                    <div id="societe-etablissements-{{ $societe->id }}" class="societe-tab-content hidden">
-                                        @if($societe->etablissements->isEmpty())
-                                            <p class="text-center py-3 text-gray-500 dark:text-gray-400 text-sm">Aucun établissement</p>
+                                    <div id="societe-etablissements-{{ $societe->id }}"
+                                        class="societe-tab-content hidden">
+                                        @if ($societe->etablissements->isEmpty())
+                                            <p class="text-center py-3 text-gray-500 dark:text-gray-400 text-sm">Aucun
+                                                établissement</p>
                                         @else
                                             <div class="space-y-2">
-                                                @foreach($societe->etablissements as $etablissement)
-                                                    <div class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                                                @foreach ($societe->etablissements as $etablissement)
+                                                    <div
+                                                        class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
                                                         <div class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-850 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                                                             onclick="toggleEtablissement('{{ $etablissement->id }}'); rotateArrow('etab-arrow-{{ $etablissement->id }}')">
+                                                            onclick="toggleEtablissement('{{ $etablissement->id }}'); rotateArrow('etab-arrow-{{ $etablissement->id }}')">
                                                             <div class="flex items-center">
-                                                                <x-icon :size="0.8" type="arrow_back" id="etab-arrow-{{ $etablissement->id }}"
+                                                                <x-icon :size="0.8" type="arrow_back"
+                                                                    id="etab-arrow-{{ $etablissement->id }}"
                                                                     class="transform {{ $societe->etablissements->count() === 1 ? '-rotate-180' : '-rotate-90' }} mr-2 transition-transform text-gray-600 dark:text-gray-400" />
-                                                                <span class="font-medium text-gray-800 dark:text-gray-200 text-sm">{{ $etablissement->nom }}</span>
+                                                                <span class="font-medium text-gray-800 dark:text-gray-200 text-sm">
+                                                                    {{ $etablissement->nom }}
+                                                                    @if ($etablissement->societeContacts->count() == 0)
+                                                                    <br/>
+                                                                        <div class="bg-red-50 dark:bg-red-900/30 border-l-4 border-red-400 dark:border-red-800 rounded inline-flex items-center">
+                                                                            <x-icon :size="1" type="error_icon" class="icons-no_hover fill-red-500 dark:fill-red-400 mr-2" />
+                                                                            <p class="text-sm text-red-500 dark:text-red-400">
+                                                                                Aucun contact n'est actuellement associé à cet établissement.
+                                                                            </p>
+                                                                        </div>
+                                                                    @endif
+                                                                </span>
                                                             </div>
+                                                            <a href="/societe/{{ $societe->id }}/etablissement/{{ $etablissement->id }}" class="btn"
+                                                                onclick="event.stopPropagation()">
+                                                                <x-icon size="1" type="open_in_new" class="icons" />
+                                                            </a>
                                                         </div>
 
-                                                        <div id="etablissement-content-{{ $etablissement->id }}" class="{{ $societe->etablissements->count() === 1 ? '' : 'hidden' }} p-3 bg-gray-100 dark:bg-gray-900">
+                                                        <div id="etablissement-content-{{ $etablissement->id }}"
+                                                            class="{{ $societe->etablissements->count() === 1 ? '' : 'hidden' }} p-3 bg-gray-100 dark:bg-gray-900">
                                                             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                                                 <div class="space-y-1">
-                                                                    <x-copiable_text titre="Adresse : " text="{{ $etablissement->adresse }}" />
+                                                                    <x-copiable_text titre="Adresse : "
+                                                                        text="{{ $etablissement->adresse }}" />
                                                                     @if ($etablissement->complement_adresse)
-                                                                        <x-copiable_text titre="Complément d'adresse : " text="{{ $etablissement->complement_adresse }}" />
+                                                                        <x-copiable_text
+                                                                            titre="Complément d'adresse : "
+                                                                            text="{{ $etablissement->complement_adresse }}" />
                                                                     @endif
-                                                                    <x-copiable_text titre="Code postal : " text="{{ $etablissement->code_postal }}" />
-                                                                    <x-copiable_text titre="Ville : " text="{{ $etablissement->ville }}" />
-                                                                    <x-copiable_text titre="Région : " text="{{ $etablissement->region }}" />
-                                                                    <x-copiable_text titre="Pays : " text="{{ $etablissement->pays->nom }}" />
-                                                                    <x-copiable_text titre="Siret : " text="{{ $etablissement->siret }}" />
+                                                                    <x-copiable_text titre="Code postal : "
+                                                                        text="{{ $etablissement->code_postal }}" />
+                                                                    <x-copiable_text titre="Ville : "
+                                                                        text="{{ $etablissement->ville }}" />
+                                                                    <x-copiable_text titre="Région : "
+                                                                        text="{{ $etablissement->region }}" />
+                                                                    <x-copiable_text titre="Pays : "
+                                                                        text="{{ $etablissement->pays->nom }}" />
+                                                                    <x-copiable_text titre="Siret : "
+                                                                        text="{{ $etablissement->siret }}" />
                                                                 </div>
                                                                 <div>
                                                                     <!-- Liste des contacts -->
                                                                     <div class="mb-3">
-                                                                        <div class="flex items-center justify-between mb-2">
-                                                                            <h4 class="font-medium text-gray-800 dark:text-gray-200 text-sm">Contacts</h4>
+                                                                        <div
+                                                                            class="flex items-center justify-between mb-2">
+                                                                            <h4
+                                                                                class="font-medium text-gray-800 dark:text-gray-200 text-sm">
+                                                                                Contacts</h4>
                                                                             <button type="button"
                                                                                 class="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white rounded-md px-2 py-1 text-xs flex items-center transition-colors"
                                                                                 x-data=""
                                                                                 x-on:click.prevent="$dispatch('open-modal', 'contacts-modal-{{ $etablissement->id }}')">
-                                                                                <x-icon :size="0.8" type="contact" class="mr-1" />
-                                                                                Voir
+                                                                                <x-icon :size="1"
+                                                                                    type="contact"
+                                                                                    class="icons-no_hover" />
                                                                             </button>
                                                                         </div>
 
                                                                         @php
-                                                                            $contacts = $etablissement->societeContacts;
+                                                                            $contacts = $etablissement
+                                                                                ->societeContacts()
+                                                                                ->get();
                                                                         @endphp
                                                                         <x-modals.contacts
                                                                             name="contacts-modal-{{ $etablissement->id }}"
@@ -186,7 +229,8 @@
 
                                                                     <!-- Commentaire établissement -->
                                                                     <div>
-                                                                        <label for="commentaire-etab-{{ $etablissement->id }}"
+                                                                        <label
+                                                                            for="commentaire-etab-{{ $etablissement->id }}"
                                                                             class="block text-xs font-medium text-gray-700 dark:text-gray-300">{!! __('Commentaire') !!}</label>
                                                                         <textarea rows="2" id="commentaire-etab-{{ $etablissement->id }}" name="commentaire"
                                                                             class="mt-1 block w-full px-2 py-1 border border-gray-300 dark:border-gray-700 rounded-md shadow-xs focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-xs dark:bg-gray-800 dark:text-gray-100"
@@ -264,23 +308,28 @@
 
             // Reset all tabs to inactive state
             infosTab.classList.remove('border-blue-500', 'dark:border-blue-400', 'text-blue-600', 'dark:text-blue-400');
-            infosTab.classList.add('border-transparent', 'hover:border-gray-300', 'dark:hover:border-gray-600', 'text-gray-500', 'dark:text-gray-400', 'hover:text-gray-700', 'dark:hover:text-gray-300');
+            infosTab.classList.add('border-transparent', 'hover:border-gray-300', 'dark:hover:border-gray-600',
+                'text-gray-500', 'dark:text-gray-400', 'hover:text-gray-700', 'dark:hover:text-gray-300');
 
-            etablissementsTab.classList.remove('border-blue-500', 'dark:border-blue-400', 'text-blue-600', 'dark:text-blue-400');
-            etablissementsTab.classList.add('border-transparent', 'hover:border-gray-300', 'dark:hover:border-gray-600', 'text-gray-500', 'dark:text-gray-400', 'hover:text-gray-700', 'dark:hover:text-gray-300');
+            etablissementsTab.classList.remove('border-blue-500', 'dark:border-blue-400', 'text-blue-600',
+                'dark:text-blue-400');
+            etablissementsTab.classList.add('border-transparent', 'hover:border-gray-300', 'dark:hover:border-gray-600',
+                'text-gray-500', 'dark:text-gray-400', 'hover:text-gray-700', 'dark:hover:text-gray-300');
 
             // Afficher le contenu de l'onglet sélectionné
             document.getElementById(`societe-${tabName}-${societeId}`).classList.remove('hidden');
 
             // Activer l'onglet sélectionné
             const activeTab = document.getElementById(`${tabName}-tab-${societeId}`);
-            activeTab.classList.remove('border-transparent', 'hover:border-gray-300', 'dark:hover:border-gray-600', 'text-gray-500', 'dark:text-gray-400', 'hover:text-gray-700', 'dark:hover:text-gray-300');
+            activeTab.classList.remove('border-transparent', 'hover:border-gray-300', 'dark:hover:border-gray-600',
+                'text-gray-500', 'dark:text-gray-400', 'hover:text-gray-700', 'dark:hover:text-gray-300');
             activeTab.classList.add('border-blue-500', 'dark:border-blue-400', 'text-blue-600', 'dark:text-blue-400');
 
             // Si on affiche l'onglet établissements et qu'il n'y a qu'un seul établissement, s'assurer qu'il reste ouvert
             if (tabName === 'etablissements') {
                 // Vérifier tous les établissements de cette société pour voir s'il n'y en a qu'un
-                const etablissementContainers = document.querySelectorAll(`[id^="etablissement-content-"][id*="${societeId}"]`);
+                const etablissementContainers = document.querySelectorAll(
+                    `[id^="etablissement-content-"][id*="${societeId}"]`);
                 if (etablissementContainers.length === 1) {
                     const etablissementId = etablissementContainers[0].id.replace('etablissement-content-', '');
                     const content = document.getElementById(`etablissement-content-${etablissementId}`);
@@ -304,24 +353,24 @@
             const commentaireTexte = element.value;
 
             fetch('/societe/' + societeId + '/commentaire/save', {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                },
-                body: JSON.stringify({
-                    commentaire: commentaireTexte,
-                }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (!(data.message == 'Commentaire inchangé')) {
-                    showFlashMessageFromJs(data.message, 2000);
-                }
-            })
-            .catch(error => {
-                console.error('Erreur lors de la mise à jour du commentaire', error);
-            });
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    },
+                    body: JSON.stringify({
+                        commentaire: commentaireTexte,
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (!(data.message == 'Commentaire inchangé')) {
+                        showFlashMessageFromJs(data.message, 2000);
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur lors de la mise à jour du commentaire', error);
+                });
         }
 
         function updateCommentaireEtablissement(element) {
@@ -329,24 +378,24 @@
             const commentaireTexte = element.value;
 
             fetch('/societe/etablissement/' + etablissementId + '/commentaire/save', {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                },
-                body: JSON.stringify({
-                    commentaire: commentaireTexte,
-                }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (!(data.message == 'Commentaire inchangé')) {
-                    showFlashMessageFromJs(data.message, 2000);
-                }
-            })
-            .catch(error => {
-                console.error('Erreur lors de la mise à jour du commentaire', error);
-            });
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    },
+                    body: JSON.stringify({
+                        commentaire: commentaireTexte,
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (!(data.message == 'Commentaire inchangé')) {
+                        showFlashMessageFromJs(data.message, 2000);
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur lors de la mise à jour du commentaire', error);
+                });
         }
     </script>
 
@@ -356,8 +405,15 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* Dark mode improvements */

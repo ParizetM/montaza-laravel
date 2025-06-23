@@ -22,6 +22,9 @@ class DossierStandard extends Model
         static::deleting(function ($model): void {
             self::logChange($model, 'deleting');
         });
+        static::addGlobalScope('orderByNom', function ($query) {
+            $query->orderBy('nom');
+        });
     }
 
     protected static function logChange(Model $model, string $event): void

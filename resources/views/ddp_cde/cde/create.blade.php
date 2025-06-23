@@ -322,7 +322,7 @@
                                                                 name="quantite[{{ $cde_ligne->matiere->id }}]"
                                                                 oninput="saveChanges()"
                                                                 class="w-20 border-r-0 rounded-r-none  dark:border-r-0 focus:ring-0 focus:border-0 dark:focus:ring-0"
-                                                                value="{{ formatNumber($cde_ligne->quantite) }}"
+                                                                value="{{ formatNumber($cde_ligne->quantite,true) }}"
                                                                 min="0" />
                                                             <div
                                                                 class="text-right bg-gray-100 dark:bg-gray-900 w-fit p-2.5 pl-0 border-1 border-l-0 rounded-r-sm border-gray-300 dark:border-gray-700 ">
@@ -340,7 +340,7 @@
                                                         <x-text-input type="number"
                                                             name="prix[{{ $cde_ligne->matiere_id }}]"
                                                             class="price-input"
-                                                            value="{{ formatNumberArgent($cde_ligne->prix_unitaire, true) }}"
+                                                            value="{{ formatNumberArgent($cde_ligne->prix_unitaire, true,true) }}"
                                                             min="0" step="0.01" oninput="saveChanges()" />
 
                                                     </div>

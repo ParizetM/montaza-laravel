@@ -20,6 +20,12 @@ class SocieteContact extends Model
         'telephone_fixe',
         'fonction',
     ];
+    protected static function booted()
+    {
+        static::addGlobalScope('orderByNom', function ($query) {
+            $query->orderBy('nom');
+        });
+    }
     public function etablissement(): BelongsTo
     {
         return $this->belongsTo(Etablissement::class);

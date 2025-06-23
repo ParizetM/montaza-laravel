@@ -49,7 +49,7 @@ class SocieteController extends Controller
             }
 
             // Ajout d'un tri et d'une pagination
-            return $query->orderBy('societe_type_id')->paginate($nombre);
+            return $query->orderBy('raison_sociale')->paginate($nombre);
         });
         return view('societes.index', [
             'societes' => $societes,
