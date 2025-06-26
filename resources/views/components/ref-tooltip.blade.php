@@ -44,7 +44,7 @@
                 <span
                     class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide block mb-2">Fournisseurs</span>
                 @if ($matiere->fournisseurs && $matiere->fournisseurs->count() > 0)
-                    <div class="space-y-1 w-full">
+                    <div class="space-y-1 w-full max-h-66 overflow-y-auto">
                         @foreach ($matiere->fournisseurs as $fournisseur)
                             @php
                                 $ref_externe = $matiere->societeMatiere($fournisseur->id)->ref_externe ?? null;
