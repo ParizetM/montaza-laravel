@@ -73,37 +73,50 @@
                     de page</h2>
                 <div class="flex justify-between">
                     <div class="flex flex-col gap-4 m-4">
-                        <div class="flex gap-4">
-                            <div class="flex flex-col gap-2">
-                                <div class="flex gap-4">
-                                    <x-input-label value="Numéro d'affaire" />
-                                    <small>(Optionnel)</small>
+                        <div class="flex gap-4 items-end">
+                            <div class="flex flex-col gap-2 w-full">
+                                <div class="flex gap-4 items-center">
+                                    <x-input-label value="Affaire associée" />
+
                                 </div>
-                                <x-text-input name="numero_affaire" :value="old('numero_affaire', $cde->affaire_numero)" />
-                                @error('numero_affaire')
+                                <div class="flex items-center">
+                                    <select name="affaire_id" id="affaire_id" class="select-left w-fit min-w-96"
+                                        required>
+                                        <option value="">Sélectionner une affaire</option>
+                                        @foreach ($affaires as $affaire)
+                                            <option value="{{ $affaire->id }}"
+                                                {{ old('affaire_id', $cde->affaire_id) == $affaire->id ? 'selected' : '' }}>
+                                                {{ $affaire->code }} — {{ $affaire->nom }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <x-tooltip position="top" class="w-full">
+                                        <x-slot name="slot_item">
+                                            <button type="button" class="btn-select-right" x-data
+                                        x-on:click.prevent="$dispatch('open-modal', 'create-affaire-modal')">
+                                        +
+                                    </button>
+                                        </x-slot>
+                                        <x-slot name="slot_tooltip">
+                                            Ajouter une affaire
+                                        </x-slot>
+                                    </x-tooltip>
+
+                                </div>
+                                @error('affaire_id')
                                     <span class="text-red-500">{{ $message }}</span>
                                 @enderror
                             </div>
-                            <div class="flex flex-col gap-2">
-                                <div class="flex gap-4">
-                                    <x-input-label value="Nom d'affaire" />
-                                    <small>(Optionnel)</small>
-                                </div>
-                                <x-text-input name="nom_affaire" :value="old('nom_affaire', $cde->affaire_nom)" />
-                                @error('nom_affaire')
-                                    <span class="text-red-500">{{ $message }}</span>
-                                @enderror
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <div class="flex gap-4">
+                                <x-input-label value="Numéro de devis" />
+                                <small>(Optionnel)</small>
                             </div>
-                            <div class="flex flex-col gap-2">
-                                <div class="flex gap-4">
-                                    <x-input-label value="Numéro de devis" />
-                                    <small>(Optionnel)</small>
-                                </div>
-                                <x-text-input name="numero_devis" :value="old('numero_devis', $cde->devis_numero)" />
-                                @error('numero_devis')
-                                    <span class="text-red-500">{{ $message }}</span>
-                                @enderror
-                            </div>
+                            <x-text-input name="numero_devis" :value="old('numero_devis', $cde->devis_numero)" />
+                            @error('numero_devis')
+                                <span class="text-red-500">{{ $message }}</span>
+                            @enderror
                         </div>
                         <div class="flex flex-col gap-2">
                             <div class="flex gap-4">
@@ -285,9 +298,9 @@
                                 <td class="p-2 text-left border border-gray-200 dark:border-gray-700">
                                     {{ $ligne->designation }}
                                     @if ($ligne->sous_ligne != null)
-                                    <br/>
+                                        <br />
                                         <span class="text-xs text-gray-500 dark:text-gray-400">
-                                            {{$ligne->sous_ligne }}
+                                            {{ $ligne->sous_ligne }}
                                         </span>
                                     @endif
                                 </td>
@@ -726,4 +739,98 @@
     </script>
 
 
+    {{-- Modal pour création rapide d'affaire --}}
+    <x-modal name="create-affaire-modal" :show="false" maxWidth="lg">
+        <div class="p-4">
+            <a x-on:click="$dispatch('close')">
+                <x-icons.close class="float-right mb-1 icons" size="1.5" unfocus />
+            </a>
+            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Nouvelle affaire</h2>
+            <div id="create-affaire-modal-body">
+                <div id="loading-spinner"
+                    class="m-6 inset-0 bg-none bg-opacity-75 flex items-center justify-center z-50 h-32 w-full">
+                    <div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32"></div>
+                </div>
+                <style>
+                    .loader {
+                        border-top-color: #3498db;
+                        animation: spinner 1.5s linear infinite;
+                    }
+
+                    @keyframes spinner {
+                        0% {
+                            transform: rotate(0deg);
+                        }
+
+                        100% {
+                            transform: rotate(360deg);
+                        }
+                    }
+                </style>
+            </div>
+        </div>
+    </x-modal>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            window.addEventListener('open-modal', function(e) {
+                if (e.detail === 'create-affaire-modal') {
+                    const modalBody = document.getElementById('create-affaire-modal-body');
+                    modalBody.innerHTML = document.getElementById('loading-spinner').outerHTML;
+                    fetch("{{ route('affaires.create') }}")
+                        .then(response => response.text())
+                        .then(html => {
+                            modalBody.innerHTML = html;
+                            attachCreateFormListener();
+                        });
+                }
+            });
+        });
+
+        function attachCreateFormListener() {
+            const form = document.getElementById('create-affaire-form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const formData = new FormData(form);
+                    fetch(form.action, {
+                            method: 'POST',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            },
+                            body: formData
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success && data.affaire) {
+                                // Ajoute la nouvelle affaire au select
+                                const select = document.getElementById('affaire_id');
+                                const option = document.createElement('option');
+                                option.value = data.affaire.id;
+                                option.text = data.affaire.code + ' — ' + data.affaire.nom;
+                                option.selected = true;
+                                select.appendChild(option);
+                                window.dispatchEvent(new CustomEvent('close-modal', {
+                                    detail: 'create-affaire-modal'
+                                }));
+                                select.focus();
+                                showFlashMessageFromJs(
+                                    'Affaire créée avec succès : ' + data.affaire.code + ' — ' + data
+                                    .affaire.nom, 3000, 'success')
+                            } else if (data.errors) {
+                                let errorHtml = '<div class="text-red-500 mb-2">';
+                                for (const key in data.errors) {
+                                    errorHtml += data.errors[key].join('<br>') + '<br>';
+                                }
+                                errorHtml += '</div>';
+                                form.insertAdjacentHTML('afterbegin', errorHtml);
+                                showFlashMessageFromJs(
+                                    'Une erreur est survenue.', 3000, 'error');
+                            }
+                        });
+                });
+            }
+        }
+    </script>
 </x-app-layout>

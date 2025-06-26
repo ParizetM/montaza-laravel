@@ -72,8 +72,8 @@
                                         </p>
                                     </div>
                                 </div>
-                                <a href="{{ route('societes.show', $societe->id) }}" class="btn"
-                                    onclick="event.stopPropagation()">
+                                <a href="{{ route('societes.show', $societe->id) }}" class="btn-sm"
+                                    onclick="event.stopPropagation()" target="_blank">
                                     <x-icon size="1" type="open_in_new" class="icons" />
                                 </a>
                             </div>

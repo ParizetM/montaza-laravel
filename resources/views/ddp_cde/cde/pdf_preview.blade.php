@@ -28,7 +28,7 @@
                     <a href="{{ route('cde.pdfs.download', $cde) }}" class="btn">Télécharger le PDF</a>
                     <a href="{{ route('cde.pdfs.pdfdownload_sans_prix', $cde) }}" class="btn">Télécharger le PDF sans
                         prix</a>
-                        <a href="{{ route('cde.annuler', $cde->id) }}" class="btn">Annuler la commande</a>
+                    <a href="{{ route('cde.annuler', $cde->id) }}" class="btn">Annuler la commande</a>
                 </div>
 
             </div>
@@ -57,7 +57,7 @@
             DIV TEMPORAIRE
              --}}
             <div class="flex w-full justify-between">
-                    <a href="{{ route('cde.validation', $cde->id) }}" class="btn h-fit">retour</a>
+                <a href="{{ route('cde.validation', $cde->id) }}" class="btn h-fit">retour</a>
                 <a href="{{ route('cde.skipmails', $cde) }}" class="btn">Suivant</a>
             </div>
             {{--
@@ -68,7 +68,7 @@
 ##     ## #########  ##  ##             ##
 ##     ## ##     ##  ##  ##       ##    ##
 ##     ## ##     ## #### ########  ######
-
+--}}
             <div>
                 <div class="flex justify-between items-center border-b border-gray-300 dark:border-gray-700 mt-6 mb-4">
                     <h1 class="text-3xl font-bold mb-6 text-left">Mails</h1>
@@ -77,6 +77,42 @@
                 <div>
                     <form action="{{ route('cde.sendmails', $cde) }}" method="POST" id="mailtemplate-form">
                         @csrf
+                        <div class="mb-4">
+                            <div class="p-4 rounded-md bg-white dark:bg-gray-900 shadow-md">
+
+                                <div class="flex flex-wrap mb-2 ">
+                                    <div class="pr-4 py-2">À :</div>
+                                    @if ($cde->SocieteContacts()->count() > 0)
+                                        {{-- Si la commande a des contacts, on affiche le premier contact comme destinataire principal --}}
+                                        @php
+                                            $destinataires = $cde->SocieteContacts();
+                                            $to = $destinataires->first(); // Prend le premier destinataire
+                                        @endphp
+                                        <div
+                                            class="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 px-4 py-2 rounded-full text-sm shadow-sm">
+                                            <x-icons.mail size="1" class="text-gray-500 dark:text-gray-300" />
+                                            <span>{{ $to->email }}</span>
+                                        </div>
+                                    @endif
+                                </div>
+
+                                @if ($destinataires->count() > 1)
+                                    <div class="flex flex-wrap ">
+
+                                        <div class="pr-4 py-2">CC :</div>
+
+                                        @foreach ($destinataires->skip(1)->get() as $cc)
+                                            <div
+                                                class="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 px-4 py-2 rounded-full text-sm shadow-sm">
+                                                <x-icons.mail size="1" class="text-gray-500 dark:text-gray-300" />
+                                                <span>{{ $cc->email }}</span>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </div>
+
+                        </div>
                         <div class="mb-4">
                             <x-input-label for="email_subject" :value="__('Objet du mail')" />
                             <x-text-input id="sujet" class="block mt-1 w-full" type="text" name="sujet"
@@ -87,6 +123,23 @@
                             <div id="editor-container" style="height: 150px;" class=""></div>
                             <textarea name="contenu" id="contenu" hidden></textarea>
                         </div>
+                        <div class="mb-4">
+                            <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300">{{ __('Signature') }}
+                                <x-tooltip position="top" class="" >
+                                    <x-slot:slot_item>
+                                        <x-icons.question/>
+                                    </x-slot:slot_item>
+                                    <x-slot:slot_tooltip>
+                                        <p class="text-sm text-gray-500 dark:text-gray-300 mb-2">Signature utilisée pour les mails</p>
+                                        <a href="{{ route('mailtemplates.index') }}" class="btn">
+                                            <x-icons.edit class="icons mr-2"/> Modifier la signature
+                                        </a>
+                                    </x-slot:slot_tooltip>
+
+                                </x-tooltip>
+                            </h3>
+                        </div>
+                        <img src="data:image/png;base64,{{$signature = base64_encode(file_get_contents(Storage::path('signature/signature.png')))}}" alt="" class="max-w-full h-auto mb-8">
                         <div class="flex justify-between -mt-6">
                             <div>
                                 <a href="{{ route('cde.cancel_validate', $cde->id) }}" class="btn h-fit">Retour</a>
@@ -97,7 +150,7 @@
 
                 </div>
 
-            </div> --}}
+            </div>
         </div>
         <script>
             document.querySelectorAll('[id^="pdf-"]').forEach(function(element) {

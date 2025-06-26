@@ -28,17 +28,19 @@ class DatabaseProductionSeeder extends Seeder
             'gerer_les_donnees_de_reference' => 'Gérer Les Données De Référence',
             'gerer_les_postes' => 'Consulter, Créer, Modifier Et Désactiver Les Postes',
             'voir_historique' => 'Consulter L\'historique Des Modifications Des Données',
-            'gerer_les_societes' => 'Créer, Modifier Et Désactiver Les Sociétés',
+            'gerer_les_societes' => 'Créer, Modifier Et supprimer Les Sociétés',
             'voir_les_societes' => 'Consulter Les Sociétés',
-            'gerer_les_contacts' => 'Consulter, Créer, Modifier Et Désactiver Les Contacts',
+            'gerer_les_contacts' => 'Consulter, Créer, Modifier Et supprimer Les Contacts',
             'voir_les_matieres' => 'Consulter Les Matières',
-            'gerer_les_matieres' => 'Créer, Modifier Et Désactiver Les Matières',
+            'gerer_les_matieres' => 'Créer, Modifier Et supprimer Les Matières',
             'voir_les_ddp_et_cde' => 'Consulter Les Demandes De Prix Et Les Commandes',
-            'gerer_les_ddp_et_cde' => 'Créer, Modifier Et Désactiver Les Demandes De Prix Et Les Commandes',
+            'gerer_les_ddp_et_cde' => 'Créer, Modifier Et supprimer Les Demandes De Prix Et Les Commandes',
             'gerer_mail_templates' => 'Modifier Les Modèles De Mail',
             'gerer_info_entreprise' => 'Modifier Les Informations De L\'entreprise',
             'gerer_les_medias' => 'Gérer Les Médias enregistrés',
             'gerer_l_application' => 'paramétrer les réglages de l’application',
+            'voir_les_affaires' => 'Consulter Les Affaires',
+            'gerer_les_affaires' => 'Créer, Modifier Et supprimer Les Affaires',
         ];
         foreach ($permissions as $permission => $description) {
             Permission::factory()->create([

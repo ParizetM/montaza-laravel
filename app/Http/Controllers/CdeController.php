@@ -144,11 +144,11 @@ class CdeController extends Controller
         switch ($sort) {
             case 'code':
                 $query->orderBy('cdes.entite_id', 'asc')
-                      ->orderBy('cdes.code', $direction);
+                    ->orderBy('cdes.code', $direction);
                 break;
             case 'nom':
                 $query->orderBy('cdes.entite_id', 'asc')
-                      ->orderBy('cdes.nom', $direction);
+                    ->orderBy('cdes.nom', $direction);
                 break;
             case 'user':
                 $query->join('users', 'cdes.user_id', '=', 'users.id')
@@ -165,13 +165,13 @@ class CdeController extends Controller
                 break;
             case 'created_at':
                 $query->orderBy('cdes.entite_id', 'asc')
-                      ->orderBy('cdes.created_at', $direction);
+                    ->orderBy('cdes.created_at', $direction);
                 break;
             default:
                 // Tri par défaut : entité puis code de commande
                 $query->orderBy('cdes.entite_id', 'asc')
-                        ->orderBy('cdes.ddp_cde_statut_id', 'asc')
-                      ->orderBy('cdes.code', 'asc');
+                    ->orderBy('cdes.ddp_cde_statut_id', 'asc')
+                    ->orderBy('cdes.code', 'asc');
                 break;
         }
 
@@ -187,7 +187,7 @@ class CdeController extends Controller
         $societes = collect();
         foreach (Cde::where('nom', '!=', 'undefined')->get() as $cde) {
             if ($cde->societe) {
-            $societes = $societes->push($cde->societe);
+                $societes = $societes->push($cde->societe);
             }
         }
         $societes = $societes->groupBy('id')->map(function ($group) {
@@ -197,7 +197,7 @@ class CdeController extends Controller
             return $societe;
         })->sortByDesc('usage_count')->values();
         // Retourner la vue avec les données
-        return view('ddp_cde.cde.index', compact('cdes',  ['cde_statuts','cdesGrouped', 'societes', 'sort', 'direction']));
+        return view('ddp_cde.cde.index', compact('cdes',  ['cde_statuts', 'cdesGrouped', 'societes', 'sort', 'direction']));
     }
 
     public function create()
@@ -427,12 +427,12 @@ class CdeController extends Controller
         try {
             $cde = Cde::findOrFail($id);
             if ($cde->ddp_id != null) {
-            $dppid = $cde->ddp_id;
-            $cde->delete();
-            return redirect()->route('ddp.show', $dppid);
+                $dppid = $cde->ddp_id;
+                $cde->delete();
+                return redirect()->route('ddp.show', $dppid);
             } else {
-            $cde->delete();
-            return redirect()->route('ddp_cde.index');
+                $cde->delete();
+                return redirect()->route('ddp_cde.index');
             }
         } catch (Exception $e) {
             Log::error('Erreur lors de la suppression de la commande : ' . $e->getMessage());
@@ -455,6 +455,7 @@ class CdeController extends Controller
         $conditionsPaiement = ConditionPaiement::all();
         $societe_id = $cde->societe->id;
         $cde_notes = CdeNote::where('entite_id', $cde->entite_id)->get();
+        $affaires = \App\Models\Affaire::orderBy('created_at', 'desc')->get();
         $total_ht = 0;
         foreach ($cde->cdeLignes as $ligne) {
             $total_ht += $ligne->prix_unitaire * $ligne->quantite;
@@ -484,15 +485,14 @@ class CdeController extends Controller
         } else {
             $listeChangement = false;
         }
-        return view('ddp_cde.cde.validation', compact('cde', ['users', 'entite', 'showRefFournisseur', 'typesExpedition', 'conditionsPaiement', 'listeChangement', 'cde_notes']));
+        return view('ddp_cde.cde.validation', compact('cde', 'users', 'entite', 'showRefFournisseur', 'typesExpedition', 'conditionsPaiement', 'listeChangement', 'cde_notes', 'affaires'));
     }
 
     public function validate(Request $request, $id)
     {
         $cde = Cde::findOrFail($id);
         $request->validate([
-            'numero_affaire' => 'nullable|string|max:255',
-            'nom_affaire' => 'nullable|string|max:255',
+            'affaire_id' => 'nullable|integer|exists:affaires,id',
             'numero_devis' => 'nullable|string|max:255',
             'affaire_suivi_par' => 'nullable|integer',
             'acheteur_id' => 'nullable|integer',
@@ -509,7 +509,7 @@ class CdeController extends Controller
             'frais_de_port' => 'nullable|numeric|min:0',
             'frais_divers' => 'nullable|numeric|min:0',
             'frais_divers_texte' => 'nullable|string|max:255',
-            'enregistrer_changement' => 'nullable', // Ajout de la validation pour enregistrer changement de ref fournisseur
+            'enregistrer_changement' => 'nullable',
             'cdenotes' => 'nullable|array',
             'custom_note' => 'nullable|string|max:255',
             'save_custom_note' => 'nullable|string|max:255',
@@ -556,8 +556,7 @@ class CdeController extends Controller
         } else {
         }
         $cde->custom_note = $request->custom_note ?? null;
-        $cde->affaire_numero = $request->input('numero_affaire') ?? null;
-        $cde->affaire_nom = $request->input('nom_affaire') ?? null;
+        $cde->affaire_id = $request->input('affaire_id') ?? null;
         $cde->devis_numero = $request->input('numero_devis') ?? null;
         $cde->affaire_suivi_par_id = $request->input('affaire_suivi_par') ?? null;
         $cde->acheteur_id = $request->input('acheteur_id') ?? null;
@@ -582,7 +581,7 @@ class CdeController extends Controller
             $ligne->save();
         }
         if ($request->enregistrer_changement && $cde->show_ref_fournisseur == true) {
-            $societe_id = $societe->id;
+            $societe_id = $cde->societe->id;
             foreach ($cde->cdeLignes->whereNull('ligne_autre_id') as $ligne) {
                 $ligne->prix = $ligne->prix_unitaire * $ligne->quantite;
                 $ligne->save();
@@ -709,8 +708,11 @@ class CdeController extends Controller
             'sujet' => 'required|string|max:255',
             'contenu' => 'required|string',
         ]);
+
         $contenu = str_replace("CHEVRON-GAUCHE", "<", $request->contenu);
         $contenu = str_replace("CHEVRON-DROIT", ">", $contenu);
+
+
         $cdeAnnee = explode('-', $cde->code)[1];
         $pdfFileName = "{$cde->code}.pdf";
         $pdfPath = storage_path("app/private/CDE/{$cdeAnnee}/{$pdfFileName}");
@@ -719,34 +721,54 @@ class CdeController extends Controller
             return response()->json(['error' => 'PDF file not found'], 404);
         }
 
-        $contact = $cde->societeContact;
+        $contacts = $cde->societeContacts;
+
+        if ($contacts->isEmpty()) {
+            return response()->json(['error' => 'Aucun contact trouvé pour cette commande'], 404);
+        }
+
+        $primaryContact = $contacts->first();
+        $ccContacts = $contacts->slice(1)->pluck('email')->toArray();
+        $signaturePath = storage_path('app/private/signature/signature.png'); // Assurez-vous que le chemin est correct
 
         try {
-            Mail::send([], [], function ($message) use ($request, $contact, $pdfPath, $contenu) {
-                $message->to($contact->email)
+            Mail::send([], [], function ($message) use ($request, $primaryContact, $ccContacts, $pdfPath, $signaturePath, &$contenu) {
+                $message->to($primaryContact->email)
+                    ->cc($ccContacts)
                     ->subject($request->sujet)
-                    ->html($contenu)
                     ->attach($pdfPath);
+
+                if (file_exists($signaturePath) && is_readable($signaturePath)) {
+                    $embeddedImage = $message->embed($signaturePath);
+                    $contenu .= '<img src="' . $embeddedImage . '" alt="Signature" class="max-w-full h-auto mb-8">';
+                } else {
+                    Log::error('Signature image not found or not readable at path: ' . $signaturePath);
+                    $contenu .= '<p>Signature image not available.</p>';
+                }
+
+                $message->html($contenu);
             });
         } catch (\Exception $e) {
             return response()->json(['error' => 'An error occurred while sending the email', 'message' => $e->getMessage()], 500);
         }
 
-        $logmail = [];
-        $logmail['sujet'] = $request->sujet;
-        $logmail['contenu'] = $contenu;
-        $logmail['Destinataire'] = $contact->email;
-        $logmail['pdf'] = $pdfPath;
-        $logmail['cde_nom'] = $cde->nom;
-        $logmail['cde_id'] = $cde->id;
-        $logmail['societe_raison_sociale'] = $cde->societe->raison_sociale;
-        $logmail['societe_id'] = $cde->societe->id;
-        $logmail['contact_nom'] = $contact->nom;
-        $logmail['contact_id'] = $contact->id;
+        $logmail = [
+            'sujet' => $request->sujet,
+            'contenu' => $contenu,
+            'Destinataire' => $primaryContact->email,
+            'cc' => implode(', ', $ccContacts),
+            'pdf' => $pdfPath,
+            'cde_nom' => $cde->nom,
+            'cde_id' => $cde->id,
+            'societe_raison_sociale' => $cde->societe->raison_sociale,
+            'societe_id' => $cde->societe->id,
+            'contact_nom' => $primaryContact->nom,
+            'contact_id' => $primaryContact->id,
+        ];
 
         ModelChange::create([
             'user_id' => Auth::id(),
-            'model_type' => 'Commentaire',
+            'model_type' => 'Mail',
             'before' => '',
             'after' => $logmail,
             'event' => 'creating',
@@ -865,6 +887,8 @@ class CdeController extends Controller
         $total_ht = 0;
         foreach ($cde->cdeLignes as $ligne) {
             if ($ligne->date_livraison_reelle && $ligne->ddp_cde_statut_id != 4) {
+                $ligne->prix = $ligne->prix_unitaire * $ligne->quantite;
+                $ligne->save();
                 $total_ht += $ligne->prix_unitaire * $ligne->quantite;
             }
         }
@@ -912,7 +936,7 @@ class CdeController extends Controller
             $matiere = $ligne->matiere;
             if ($ligne->date_livraison_reelle && $ligne->ddp_cde_statut_id != 4 && $ligne->ligne_autre_id == null) {
                 $societe_matiere = $matiere->societeMatieres()->firstOrCreate(['societe_id' => $societe->id]);
-                    $newPrix = $ligne->prix_unitaire;
+                $newPrix = $ligne->prix_unitaire;
                 if ($matiere->getLastPrice($societe->id) == null || $matiere->getLastPrice($societe->id)->prix_unitaire != $newPrix) {
                     SocieteMatierePrix::updateOrCreate(
                         [
@@ -928,6 +952,7 @@ class CdeController extends Controller
             }
         }
         $cde->save();
+        $cde->affaire->updateTotal();
         return redirect()->route('cde.show', [
             'cde' => $cde->id,
         ])->with('success', 'Commande controlée avec succès');

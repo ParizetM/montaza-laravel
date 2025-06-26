@@ -138,4 +138,9 @@ class Cde extends Model
             'id'             // Local key on CdeLigne
         );
     }
+
+    public function affaire(): BelongsTo
+    {
+        return $this->belongsTo(Affaire::class,);
+    }
 }

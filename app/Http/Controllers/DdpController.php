@@ -649,15 +649,26 @@ class DdpController extends Controller
                 $pdfPath = storage_path("app/private/DDP/{$ddpannee}/{$pdfFileName}");
 
                 if (file_exists($pdfPath) && !in_array($contact->id, $contacts_Already_sent)) {
+                    $signaturePath = storage_path('app/private/signature/signature.png'); // Assurez-vous que le chemin est correct
+
                     try {
-                        Mail::send([], [], function ($message) use ($request, $contact, $pdfPath, $contenu) {
+                        Mail::send([], [], function ($message) use ($request, $contact, $pdfPath, $signaturePath, &$contenu) {
                             $message->to($contact->email)
                                 ->subject($request->sujet)
-                                ->html($contenu)
                                 ->attach($pdfPath);
+
+                            if (file_exists($signaturePath) && is_readable($signaturePath)) {
+                                $embeddedImage = $message->embed($signaturePath);
+                                $contenu .= '<img src="' . $embeddedImage . '" alt="Signature" class="max-w-full h-auto mb-8">';
+                            } else {
+                                Log::error('Signature image not found or not readable at path: ' . $signaturePath);
+                                $contenu .= '<p>Signature image not available.</p>';
+                            }
+
+                            $message->html($contenu);
                         });
                     } catch (\Exception $e) {
-                        return response()->json(['error' => 'An error occurred while sending emails', 'message' => $e->getMessage()], 500);
+                        return response()->json(['error' => 'An error occurred while sending the email', 'message' => $e->getMessage()], 500);
                     }
                     $logmail = [];
                     $logmail['sujet'] = $request->sujet;
@@ -672,7 +683,7 @@ class DdpController extends Controller
                     $logmail['contact_id'] = $contact->id;
                     ModelChange::create([
                         'user_id' => Auth::id(),
-                        'model_type' => 'Commentaire',
+                        'model_type' => 'Mail',
                         'before' => '',
                         'after' => $logmail,
                         'event' => 'creating',

@@ -457,7 +457,15 @@
                                                                             </x-slot>
                                                                         </x-tooltip>
                                                                     @else
-                                                                        <span>{!! $afterFormatted['display'] !!}</span>
+                                                                        @if(is_array($afterFormatted['display']))
+                                                                            <ul class="list-disc list-inside">
+                                                                                @foreach($afterFormatted['display'] as $item)
+                                                                                    <li>{!! $item !!}</li>
+                                                                                @endforeach
+                                                                            </ul>
+                                                                        @else
+                                                                            <span>{!! $afterFormatted['display'] !!}</span>
+                                                                        @endif
                                                                     @endif
                                                                 </div>
                                                             @endif

@@ -25,7 +25,7 @@
                         style="background-color: {{ $ddp->statut->couleur }}; color: {{ $ddp->statut->couleur_texte }}">
                         {{ $ddp->statut->nom }}</div>
                 </div>
-                 <a href="{{ route('ddp.pdfs.download', $ddp) }}" class="btn">Télécharger tous les PDF</a>
+                <a href="{{ route('ddp.pdfs.download', $ddp) }}" class="btn">Télécharger tous les PDF</a>
 
             </div>
             <div class="flex flex-wrap gap-4">
@@ -37,11 +37,12 @@
                     <div class="flex flex-col gap-2 bg-gray-100 dark:bg-gray-700 p-4 rounded-md hover:scale-105 cursor-pointer transition-all relative"
                         id="pdf-{{ $pdf }}" title="Ouvrir le PDF dans un autre onglet">
                         <div class="flex justify-between items-center mb-2">
-                        <h2
-                            class="text-xl font-semibold text-gray-700 dark:text-gray-200  border border-gray-300 dark:border-gray-700 pb-2 hover">
-                            {{ explode('_', $pdf)[count(explode('_', $pdf)) - 1] }}</h2>
-                            <a href="{{ route('ddp.pdfdownload', ['ddp' => $ddp, 'annee' => $ddpannee, 'nom' => $pdf]) }}" class="" title="Télécharger le PDF">
-                            <x-icons.download size="2" class="icons"/>
+                            <h2
+                                class="text-xl font-semibold text-gray-700 dark:text-gray-200  border border-gray-300 dark:border-gray-700 pb-2 hover">
+                                {{ explode('_', $pdf)[count(explode('_', $pdf)) - 1] }}</h2>
+                            <a href="{{ route('ddp.pdfdownload', ['ddp' => $ddp, 'annee' => $ddpannee, 'nom' => $pdf]) }}"
+                                class="" title="Télécharger le PDF">
+                                <x-icons.download size="2" class="icons" />
                             </a>
                         </div>
                         <div style="background-color: rgba(0,0,0,0); height: 409px; width: 285px; margin-bottom: 15px;"
@@ -65,6 +66,18 @@
                     <form action="{{ route('ddp.sendmails', $ddp) }}" method="POST" id="mailtemplate-form">
                         @csrf
                         <div class="mb-4">
+                            <div class="flex flex-wrap gap-2 p-4 rounded-md bg-white dark:bg-gray-900 shadow-md">
+                                <div class="pr-4 py-2">À :</div>
+                                @foreach ($ddp->SocieteContacts() as $destinataire)
+                                    <div
+                                        class="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 px-4 py-2 rounded-full text-sm shadow-sm">
+                                        <x-icons.mail size="1" class="text-gray-500 dark:text-gray-300" />
+                                        <span>{{ $destinataire->email }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        <div class="mb-4">
                             <x-input-label for="email_subject" :value="__('Objet du mail')" />
                             <x-text-input id="sujet" class="block mt-1 w-full" type="text" name="sujet"
                                 required autofocus value="{{ $mailtemplate->sujet }}" />
@@ -74,7 +87,30 @@
                             <div id="editor-container" style="height: 150px;" class=""></div>
                             <textarea name="contenu" id="contenu" hidden></textarea>
                         </div>
-                        <button type="submit" class="btn float-right -mt-6">Envoyer les mails</button>
+                        <div class="mb-4">
+                            <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300">{{ __('Signature') }}
+                                <x-tooltip position="top" class="">
+                                    <x-slot:slot_item>
+                                        <x-icons.question />
+                                    </x-slot:slot_item>
+                                    <x-slot:slot_tooltip>
+                                        <p class="text-sm text-gray-500 dark:text-gray-300 mb-2">Signature utilisée pour
+                                            les mails</p>
+                                        <a href="{{ route('mailtemplates.index') }}" class="btn">
+                                            <x-icons.edit class="icons mr-2" /> Modifier la signature
+                                        </a>
+                                    </x-slot:slot_tooltip>
+
+                                </x-tooltip>
+                            </h3>
+                        </div>
+                        <img src="data:image/png;base64,{{ $signature = base64_encode(file_get_contents(Storage::path('signature/signature.png'))) }}"
+                            alt="" class="max-w-full h-auto mb-8">
+                        <div class="flex justify-between items-center">
+                            <a href="{{ route('ddp.cancel_validate', $ddp->id) }}" class="btn h-fit">Retour</a>
+                            <button type="submit" class="btn float-right -mt-6">Envoyer les mails</button>
+
+                        </div>
                     </form>
 
                 </div>

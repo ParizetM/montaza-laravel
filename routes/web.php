@@ -24,6 +24,7 @@ use App\Http\Controllers\UserShortcutController;
 use App\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Foundation\Http\Middleware\ValidatePostSize;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AffaireController;
 
 Route::get('/', function () {
     if (auth()->check()) {
@@ -321,7 +322,15 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::delete('/cde/{cde}/stock/ligne/{ligne}/destroy', [CdeController::class, 'destroyMouvements'])->name('cde.stock.mouvement.destroy');
         Route::get('/cde/{cde}/stock/no', [CdeController::class, 'noStock'])->name('cde.stock.no');
     });
-
+    Route::middleware('permission:voir_les_affaires')->group(function () {
+        Route::get('/affaires', [AffaireController::class, 'index'])->name('affaires.index');
+        Route::get('/affaires/create', [AffaireController::class, 'create'])->name('affaires.create');
+        Route::post('/affaires/store', [AffaireController::class, 'store'])->name('affaires.store');
+        Route::get('/affaires/{affaire}/edit', [AffaireController::class, 'edit'])->name('affaires.edit');
+        Route::patch('/affaires/{affaire}/update', [AffaireController::class, 'update'])->name('affaires.update');
+        Route::delete('/affaires/{affaire}/delete', [AffaireController::class, 'destroy'])->name('affaires.destroy');
+        Route::get('/affaires/{affaire}', [AffaireController::class, 'show'])->name('affaires.show');
+    });
 
     // Routes pour le système de médias
     Route::get('/media/download/{mediaId}', [MediaController::class, 'download'])->name('media.download');

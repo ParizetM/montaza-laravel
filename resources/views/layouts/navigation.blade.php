@@ -32,6 +32,11 @@
                                 {{ __('DDP/CDE') }}
                             </x-nav-link>
                         @endcan
+                        @can('voir_les_affaires')
+                            <x-nav-link :href="route('affaires.index')" :active="request()->routeIs('affaires.index')" title="Affaires">
+                                {{ __('Affaires') }}
+                            </x-nav-link>
+                        @endcan
                     @endif
                 </div>
             </div>
