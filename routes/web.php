@@ -324,6 +324,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
     });
     Route::middleware('permission:voir_les_affaires')->group(function () {
         Route::get('/affaires', [AffaireController::class, 'index'])->name('affaires.index');
+        Route::get('/affaires/actualiser', [AffaireController::class, 'actualiserAllTotals'])->name('affaires.actualiser_totals');
         Route::get('/affaires/create', [AffaireController::class, 'create'])->name('affaires.create');
         Route::post('/affaires/store', [AffaireController::class, 'store'])->name('affaires.store');
         Route::get('/affaires/{affaire}/edit', [AffaireController::class, 'edit'])->name('affaires.edit');

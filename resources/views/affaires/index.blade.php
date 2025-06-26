@@ -55,7 +55,29 @@
                                     </th>
                                     <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Date de création
                                     </th>
-                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Actions</th>
+                                    <th
+                                        class="text-left py-3 px-4 uppercase font-semibold text-sm flex justify-between items-center">
+                                        Actions
+                                        <x-tooltip position="left">
+                                            <x-slot:slot_item>
+
+                                                <a href="{{ route('affaires.actualiser_totals') }}"
+                                                    class="flex items-center justify-center aspect-square rounded-full text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 overflow-hidden transition p-1">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                                                        </path>
+                                                    </svg>
+                                                </a>
+                                            </x-slot:slot_item>
+                                            <x-slot:slot_tooltip>
+                                                <p>Actualiser les budget</p>
+                                            </x-slot:slot_tooltip>
+                                        </x-tooltip>
+
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"
@@ -74,10 +96,9 @@
                                             <div class="flex items-center flex-col w-fit">
                                                 <div
                                                     class="border-b-2 border-gray-500 dark:border-gray-400 text-gray-700 dark:text-gray-300">
-                                                    <p class="font-semibold text-lg
-                                                        @if($affaire->total_ht > $affaire->budget)
-                                                            text-orange-500 dark:text-orange-400
-                                                        @endif
+                                                    <p
+                                                        class="font-semibold text-lg
+                                                        @if ($affaire->total_ht > $affaire->budget) text-orange-500 dark:text-orange-400 @endif
                                                     ">
                                                         {{ formatNumberArgent($affaire->total_ht) }}
                                                     </p>

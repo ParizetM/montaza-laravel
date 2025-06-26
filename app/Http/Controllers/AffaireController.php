@@ -149,4 +149,14 @@ class AffaireController extends Controller
                 ->with('error', 'Une erreur est survenue lors de la suppression de l\'affaire.');
         }
     }
+    public function actualiserAllTotals()
+    {
+        $affaires = Affaire::all();
+        foreach ($affaires as $affaire) {
+            $affaire->updateTotal();
+        }
+
+        return redirect()->route('affaires.index')
+            ->with('success', 'Tous les totaux des affaires ont été actualisés avec succès.');
+    }
 }
