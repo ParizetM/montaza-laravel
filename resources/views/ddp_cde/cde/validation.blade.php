@@ -75,13 +75,13 @@
                     <div class="flex flex-col gap-4 m-4">
                         <div class="flex gap-4 items-end">
                             <div class="flex flex-col gap-2 w-full">
-                                <div class="flex gap-4 items-center">
-                                    <x-input-label value="Affaire associée" />
-
-                                </div>
+                                <div class="flex gap-4">
+                                <x-input-label value="Affaire associée" />
+                                <small>(Optionnel)</small>
+                            </div>
                                 <div class="flex items-center">
                                     <select name="affaire_id" id="affaire_id" class="select-left w-fit min-w-96"
-                                        required>
+                                        >
                                         <option value="">Sélectionner une affaire</option>
                                         @foreach ($affaires as $affaire)
                                             <option value="{{ $affaire->id }}"
@@ -93,9 +93,9 @@
                                     <x-tooltip position="top" class="w-full">
                                         <x-slot name="slot_item">
                                             <button type="button" class="btn-select-right" x-data
-                                        x-on:click.prevent="$dispatch('open-modal', 'create-affaire-modal')">
-                                        +
-                                    </button>
+                                                x-on:click.prevent="$dispatch('open-modal', 'create-affaire-modal')">
+                                                +
+                                            </button>
                                         </x-slot>
                                         <x-slot name="slot_tooltip">
                                             Ajouter une affaire
