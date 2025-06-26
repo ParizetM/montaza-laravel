@@ -23,6 +23,9 @@ class SousFamille extends Model
         static::deleting(function ($model): void {
             self::logChange($model, 'deleting');
         });
+        static::addGlobalScope('orderByName', function ($query) {
+            $query->orderBy('nom');
+        });
     }
 
     protected static function logChange(Model $model, string $event): void
