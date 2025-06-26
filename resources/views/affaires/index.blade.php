@@ -118,8 +118,7 @@
                                                     Voir
                                                 </a>
                                                 @can('gerer_les_affaires')
-                                                    <a href="{{ route('affaires.edit', $affaire->id) }}"
-                                                        class="inline-flex items-center px-3 py-1 text-sm font-medium text-yellow-600 hover:text-yellow-800 dark:text-yellow-400 dark:hover:text-yellow-300 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded-md transition-colors duration-200"
+                                                    <a href="{{ route('affaires.edit', $affaire->id) }}" class="btn-sm"
                                                         title="Éditer">
                                                         <x-icon type="edit" size="1.5" />
                                                     </a>
@@ -128,9 +127,7 @@
                                                         :onSubmit="'deleteAffaireAjax(event,' . $affaire->id . ')'" errorName="delete-affaire-{{ $affaire->id }}"
                                                         modalName="delete-affaire-modal-{{ $affaire->id }}">
                                                         <x-slot:customButton>
-                                                            <button type="button"
-                                                                class="inline-flex items-center px-3 py-1 text-sm font-medium text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors duration-200"
-                                                                title="Supprimer">
+                                                            <button type="button" class="btn-sm" title="Supprimer">
                                                                 <x-icon type="delete" size="1.5" />
                                                             </button>
                                                         </x-slot:customButton>
@@ -242,44 +239,72 @@
             const tbody = document.getElementById('affaires-tbody');
             const tr = document.createElement('tr');
             tr.className =
-                'hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 my-2';
+                'transition-all duration-200 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 my-2';
             tr.id = 'affaire-row-' + affaire.id;
-            let actions = `
-        <div class="flex justify-center gap-2">
-            <a href="/affaires/${affaire.id}" class="btn-sm"
-                title="Voir">
-                Voir
-            </a>
-            @can('gerer_les_affaires')
-            <a href="/affaires/${affaire.id}/edit" class="inline-flex items-center px-3 py-1 text-sm font-medium text-yellow-600 hover:text-yellow-800 dark:text-yellow-400 dark:hover:text-yellow-300 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded-md transition-colors duration-200" title="Éditer">
-                <x-icon type="edit" size="1.5" />
-            </a>
-            <x-boutons.supprimer
-                :formAction="route('affaires.destroy', '__ID__')"
-                modalTitle="Supprimer l'affaire"
-                userInfo="Voulez-vous vraiment supprimer cette affaire ?"
-                :onSubmit="'deleteAffaireAjax(event,__ID__)'"
-                errorName="delete-affaire-__ID__"
-                modalName="delete-affaire-modal-__ID__"
-            >
-                <x-slot:customButton>
-                    <button type="button"
-                        class="inline-flex items-center px-3 py-1 text-sm font-medium text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors duration-200"
-                        title="Supprimer">
-                        <x-icon type="delete" size="1.5" />
-                    </button>
-                </x-slot:customButton>
-            </x-boutons.supprimer>
-            @endcan
-        </div>
-    `.replace(/__ID__/g, affaire.id);
+
+            // Format numbers as currency (replace with your own formatting if needed)
+            function formatNumberArgent(number) {
+                return new Intl.NumberFormat('fr-FR', {
+                    style: 'currency',
+                    currency: 'EUR',
+                    minimumFractionDigits: 2
+                }).format(number);
+            }
+
+            // Highlight if total_ht > budget
+            const totalHtClass = affaire.total_ht > affaire.budget ?
+                'text-orange-500 dark:text-orange-400' :
+                '';
+
             tr.innerHTML = `
-        <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-gray-100">${affaire.code}</td>
-        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">${affaire.nom}</td>
-        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">${affaire.created_at}</td>
-        <td class="px-6 py-4 whitespace-nowrap text-center">${actions}</td>
-    `;
+                <td class="py-3 px-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-gray-100">
+                    ${affaire.code}
+                </td>
+                <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                    ${affaire.nom}
+                </td>
+                <td class="py-2 px-4">
+                    <div class="flex items-center flex-col w-fit">
+                        <div class="border-b-2 border-gray-500 dark:border-gray-400 text-gray-700 dark:text-gray-300">
+                            <p class="font-semibold text-lg ${totalHtClass}">
+                                ${formatNumberArgent(affaire.total_ht)}
+                            </p>
+                        </div>
+                        <p class="text-gray-500 dark:text-gray-400 ">
+                            ${formatNumberArgent(affaire.budget)}
+                        </p>
+                    </div>
+                </td>
+                <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                    ${affaire.created_at_formatted ?? affaire.created_at}
+                </td>
+                <td class="py-3 px-4 whitespace-nowrap text-center">
+                    <div class="flex justify-center gap-2">
+                        <a href="/affaires/${affaire.id}" class="btn-sm" title="Voir">
+                            Voir
+                        </a>
+                        @can('gerer_les_affaires')
+                            <a href="/affaires/${affaire.id}/edit" class="btn-sm" title="Éditer">
+                                <x-icon type="edit" size="1.5" />
+                            </a>
+                            <button type="button" class="btn-sm" title="Supprimer"
+                                onclick="deleteAffaireAjax(event, ${affaire.id})">
+                                <x-icon type="delete" size="1.5" />
+                            </button>
+                        @endcan
+                    </div>
+                </td>
+            `;
             tbody.prepend(tr);
+            // Reset the form after adding the new affaire
+            const createForm = document.getElementById('create-affaire-form');
+            if (createForm) {
+                createForm.reset();
+                const errorDiv = createForm.querySelector('.text-red-500');
+                if (errorDiv) {
+                    errorDiv.remove();
+                }
+            }
         }
 
         function deleteAffaireAjax(event, affaireId) {
