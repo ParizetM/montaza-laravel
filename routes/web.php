@@ -210,6 +210,10 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::post('/matieres/sous-famille/store', [MatiereController::class, 'storeSousFamille'])->name('matieres.sous_familles.store');
         Route::post('/matieres/familles', [MatiereController::class, 'storeFamille'])->name('matieres.familles.store');
         Route::post('/matieres/sous-familles', [MatiereController::class, 'storeSousFamille'])->name('matieres.sous_familles.store');
+        Route::get('/matieres/import', [MatiereController::class, 'importForm'])->name('matieres.import.form');
+        Route::post('/matieres/import/preview', [MatiereController::class, 'importExcel'])->name('matieres.import.preview');
+        Route::post('/matieres/import/store', [MatiereController::class, 'importExcelStore'])->name('matieres.import.store');
+        Route::get('/matieres/import/example', [MatiereController::class, 'importExample'])->name('matieres.import.example');
         Route::get('/matieres/{matiere}/fournisseurs/json', [MatiereController::class, 'fournisseursJson'])->name('matieres.fournisseurs.json');
         Route::get('/matieres/standards', [StandardController::class, 'index'])->name('standards.index');
         Route::get('/matieres/{matiere}', [MatiereController::class, 'show'])->name('matieres.show');
@@ -350,8 +354,6 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
     Route::get('/media/{id}', [MediaController::class, 'show'])->name('media.show');
     Route::patch('/media/{id}/commentaire/save', [MediaController::class, 'updateCommentaire'])->name('media.commentaire.save');
     Route::patch('/media/{id}/type/save', [MediaController::class, 'updateType'])->name('media.type.save');
-
-
 });
 
 // Route d'upload via QR code (protégée par signature)
@@ -366,3 +368,5 @@ Route::post('/media/upload/{model}/{id}/{token}', [MediaController::class, 'uplo
 
 
 require __DIR__ . '/auth.php';
+
+// Import matières Excel

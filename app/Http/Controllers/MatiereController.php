@@ -22,6 +22,10 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class MatiereController extends Controller
 {
@@ -1105,12 +1109,12 @@ class MatiereController extends Controller
             // Supprimer la relation société-matière
             $societeMatiere->delete();
             ModelChange::create([
-            'user_id' => Auth::id(),
-            'model_type' => 'SocieteMatiere',
-            'before' => $societeMatiere->getOriginal(),
-            'after' => $societeMatiere->getAttributes(),
-            'event' => 'deleting',
-        ]);
+                'user_id' => Auth::id(),
+                'model_type' => 'SocieteMatiere',
+                'before' => $societeMatiere->getOriginal(),
+                'after' => $societeMatiere->getAttributes(),
+                'event' => 'deleting',
+            ]);
             return redirect()
                 ->route('matieres.show', $matiere_id)
                 ->with('success', "Le fournisseur \"{$societe->raison_sociale}\" a été détaché de la matière avec succès. Tous les prix associés ont été supprimés.");
@@ -1318,5 +1322,316 @@ class MatiereController extends Controller
             'dates_filtered' => $dates_filtered,
             'prix_filtered' => $prix_filtered,
         ]);
+    }
+
+    /**
+     * Affiche le formulaire d'import de matières par Excel
+     */
+    public function importForm()
+    {
+        return view('matieres.import');
+    }
+
+    /**
+     * Télécharge un fichier CSV d'exemple pour l'import (version simplifiée)
+     */
+    public function importExample()
+    {
+        $headers = [
+            'ref_interne',
+            'designation',
+            'unite',
+            'sous_famille',
+            'dn(optionnel)',
+            'epaisseur(optionnel)',
+            'standard(optionnel)',
+            'ref_valeur_unitaire(rien ou valeur de ref unitaire (conditionnement))',
+            'materiau(optionnel)',
+            'prix(optionnel & seulement si fournisseur)'
+        ];
+        $example = ['AA-00001', 'TUBE', 'ml', 'Tubes acier', '25', '2.5', 'NF EN 10255', '6', 'Acier', '12.5'];
+        // Générer le CSV en mémoire avec ; comme séparateur
+        $handle = fopen('php://temp', 'w+');
+        fputcsv($handle, $headers, ";");
+        fputcsv($handle, $example, ";");
+        rewind($handle);
+        $csv = stream_get_contents($handle);
+        fclose($handle);
+        // Concaténer BOM + sep=; + retour ligne + CSV
+        $output = "\xEF\xBB\xBFsep=;\r\n" . $csv;
+        return response($output)
+            ->header('Content-Type', 'text/csv; charset=UTF-8')
+            ->header('Content-Disposition', 'attachment; filename="exemple_import_matieres.csv"');
+    }
+
+    /**
+     * Traite le fichier CSV et affiche un aperçu pour validation (version simplifiée)
+     */
+    public function importExcel(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file',
+            'fournisseur_id' => 'nullable|integer|exists:societes,id',
+        ]);
+        // Vérifier que le fichier est un CSV
+        if (!$request->file('file')->isValid() || $request->file('file')->getClientOriginalExtension() !== 'csv') {
+            return back()->withErrors(['file' => 'Le fichier doit être un CSV valide.']);
+        }
+        $path = $request->file('file')->getRealPath();
+        $rows = [];
+        $handle = fopen($path, 'r');
+        // Colonnes attendues dans l'ordre strict
+        $expectedHeaders = [
+            'ref_interne',
+            'designation',
+            'unite',
+            'sous_famille',
+            'dn',
+            'epaisseur',
+            'standard',
+            'ref_valeur_unitaire',
+            'materiau',
+            'prix'
+        ];
+        $firstLine = fgetcsv($handle, 0, ';');
+        // On ignore la première ligne si c'est sep=;
+        if ($firstLine && stripos($firstLine[0], 'sep=') === 0) {
+            $firstLine = fgetcsv($handle, 0, ';');
+        }
+        // Si la première ligne ressemble à des headers utilisateur, on l'ignore
+        if ($firstLine && preg_match('/réf|ref|désignation|designation|unité|unite|famille|prix/i', implode(' ', $firstLine))) {
+            // On saute la ligne
+        } else if ($firstLine) {
+            // Sinon, c'est une vraie donnée
+            $data = $firstLine;
+            $row = [];
+            foreach ($expectedHeaders as $k => $col) {
+                $row[$col] = $data[$k] ?? '';
+            }
+            $rows[] = $row;
+        }
+        while (($data = fgetcsv($handle, 0, ';')) !== false) {
+            $row = [];
+            foreach ($expectedHeaders as $k => $col) {
+                $row[$col] = $data[$k] ?? '';
+            }
+            $rows[] = $row;
+        }
+        fclose($handle);
+
+        // Récupérer les ref_interne et designation déjà existants en base
+        $existingRefs = \App\Models\Matiere::pluck('ref_interne')->map(function ($v) {
+            return mb_strtolower(trim($v));
+        })->toArray();
+
+        // Pour détecter les doublons dans le fichier importé
+        $seenRefs = [];
+
+        // Préparer les listes de référence pour matching
+        $unites = \App\Models\Unite::all();
+        $sous_familles = \App\Models\SousFamille::all();
+        $standards = \App\Models\Standard::all();
+        $materials = \App\Models\Material::all();
+        $normalize = function ($str) {
+            if (!is_string($str)) return '';
+            return strtolower(preg_replace('/[\p{Mn}]/u', '', \Normalizer::normalize($str, \Normalizer::FORM_D)));
+        };
+        $preview = [];
+        foreach ($rows as $i => $row) {
+            $previewRow = [];
+            // Unité
+            if (isset($row['unite'])) {
+                $val = $normalize($row['unite']);
+                if ($val === 'PCE') {
+                    $val = 'u'; // Normaliser PCE en u
+                }
+                $found = $unites->first(function ($u) use ($val, $normalize) {
+                    return $normalize($u->short) === $val || $normalize($u->full) === $val;
+                });
+                $previewRow['unite'] = [
+                    'value' => $row['unite'],
+                    'id' => $found ? $found->id : null,
+                    'label' => $found ? ($found->short . ' (ID ' . $found->id . ')') : null,
+                    'error' => $found ? null : 'Unité non trouvée'
+                ];
+            }
+            // Sous-famille
+            if (isset($row['sous_famille'])) {
+                $val = $normalize($row['sous_famille']);
+                $found = $sous_familles->first(function ($sf) use ($val, $normalize) {
+                    return $normalize($sf->nom) === $val;
+                });
+                $previewRow['sous_famille'] = [
+                    'value' => $row['sous_famille'],
+                    'id' => $found ? $found->id : null,
+                    'label' => $found ? ($found->nom . ' (ID ' . $found->id . ')') : null,
+                    'error' => $found ? null : 'Sous-famille non trouvée'
+                ];
+            }
+            // Standard
+            if (isset($row['standard'])) {
+                $val = $normalize($row['standard']);
+                $found = $standards->first(function ($s) use ($val, $normalize) {
+                    return $normalize($s->nom) === $val;
+                });
+                $previewRow['standard'] = [
+                    'value' => $row['standard'],
+                    'id' => $found ? $found->id : null,
+                    'label' => $found ? ($found->nom . ' (ID ' . $found->id . ')') : null,
+                    'error' => $found ? null : 'Standard non trouvé'
+                ];
+            }
+            // Matériau
+            if (isset($row['materiau'])) {
+                $val = $normalize($row['materiau']);
+                $found = $materials->first(function ($m) use ($val, $normalize) {
+                    return $normalize($m->nom) === $val;
+                });
+                $previewRow['materiau'] = [
+                    'value' => $row['materiau'],
+                    'id' => $found ? $found->id : null,
+                    'label' => $found ? ($found->nom . ' (ID ' . $found->id . ')') : null,
+                    'error' => $found ? null : 'Matériau non trouvé'
+                ];
+            }
+            // Autres champs (ref_interne, designation, etc.)
+            foreach ($row as $col => $val) {
+                if (!isset($previewRow[$col])) {
+                    $error = null;
+                    $duplicate_line = null;
+                    $exists_in_db = false;
+                    if (empty($val) && in_array($col, ['ref_interne', 'designation'])) {
+                        $error = 'Obligatoire';
+                    }
+                    // Vérification unicité ref_interne
+                    if ($col === 'ref_interne' && !empty($val)) {
+                        $valNorm = mb_strtolower(trim($val));
+                        if (in_array($valNorm, $existingRefs)) {
+                            $error = 'Déjà existant en base';
+                            $exists_in_db = true;
+                        } elseif (isset($seenRefs[$valNorm])) {
+                            $error = 'Doublon dans le fichier (ligne ' . ($seenRefs[$valNorm] + 1) . ')';
+                            $duplicate_line = $seenRefs[$valNorm] + 1;
+                        } else {
+                            $seenRefs[$valNorm] = $i;
+                        }
+                    }
+
+                    $previewRow[$col] = [
+                        'value' => $val,
+                        'id' => null,
+                        'label' => null,
+                        'error' => $error,
+                        'duplicate_line' => $duplicate_line,
+                        'exists_in_db' => $exists_in_db,
+                    ];
+                }
+            }
+            $preview[] = $previewRow;
+        }
+        return view('matieres.import_preview', [
+            'headers' => $expectedHeaders,
+            'rows' => $rows,
+            'preview' => $preview,
+            'fournisseur_id' => $request->input('fournisseur_id'),
+            'prix_fournisseur' => $request->input('prix_fournisseur'),
+        ]);
+    }
+
+    /**
+     * Traite l'import effectif des matières depuis la prévisualisation
+     */
+    public function importExcelStore(Request $request)
+    {
+        $rows = json_decode($request->input('rows'), true);
+        $fournisseur_id = $request->input('fournisseur_id');
+        $created = [];
+        $createdPrix = [];
+        // On ne prend que les lignes valides (ref_interne, designation, unite, sous_famille)
+        foreach ($rows as $i => $row) {
+            $critCols = ['ref_interne', 'designation', 'unite', 'sous_famille'];
+            $hasError = false;
+            foreach ($critCols as $col) {
+                if (empty($row[$col])) {
+                    $hasError = true;
+                    break;
+                }
+            }
+            if ($hasError) continue;
+            // Vérifier unicité ref_interne et designation
+            if (Matiere::where('ref_interne', $row['ref_interne'])->exists()) continue;
+
+            // Normalisation des champs numériques/clé étrangère
+            foreach (['dn', 'epaisseur', 'ref_valeur_unitaire', 'material_id'] as $field) {
+                if (!isset($row[$field]) || $row[$field] === '' || $row[$field] === null) {
+                    $row[$field] = null;
+                }
+            }
+
+            // Matching des IDs
+            $unite = null;
+            if (!empty($row['unite'])) {
+                if ($row['unite'] === 'PCE') {
+                    $row['unite'] = 'u'; // Normaliser PCE en u
+                }
+                $unite = Unite::where(function($query) use ($row) {
+                    $term = $row['unite'];
+                    $query->where('short', 'ILIKE', "{$term}")
+                          ->orWhere('full', 'ILIKE', "{$term}");
+                })->first();
+            }
+            $sous_famille = !empty($row['sous_famille']) ? \App\Models\SousFamille::where('nom', 'ILIKE', '%' . $row['sous_famille'] . '%')->first() : null;
+            if ($sous_famille == null) {
+                continue;
+            }
+            $standard = !empty($row['standard'])
+                ? \App\Models\Standard::whereRaw("unaccent(nom) ILIKE unaccent(?)", ["%{$row['standard']}%"])->first()
+                : null;
+            $material = !empty($row['materiau'])
+                ? \App\Models\Material::whereRaw("unaccent(nom) ILIKE unaccent(?)", ["%{$row['materiau']}%"])->first()
+                : null;
+            // Création de la matière
+            try {
+                $matiere = \App\Models\Matiere::create([
+                    'ref_interne' => $row['ref_interne'],
+                    'designation' => $row['designation'],
+                    'unite_id' => $unite ? $unite->id : null,
+                    'sous_famille_id' => $sous_famille ? $sous_famille->id : null,
+                    'dn' => $row['dn'],
+                    'epaisseur' => $row['epaisseur'],
+                    'standard_id' => $standard ? $standard->getLatestVersion()->id : null,
+                    'ref_valeur_unitaire' => $row['ref_valeur_unitaire'],
+                    'material_id' => $material ? $material->id : null,
+                    'prix_moyen' => null,
+                    'date_dernier_achat' => null,
+                    'quantite' => 0,
+                    'stock_min' => 0,
+                ]);
+            } catch (\Throwable $e) {
+                \Log::error('Erreur lors de la création de la matière à l\'import (ligne ' . ($i+1) . ')', [
+                    'row' => $row,
+                    'exception' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
+                continue;
+            }
+            $created[] = $matiere;
+            // Si fournisseur sélectionné, créer la liaison
+            if ($fournisseur_id) {
+                $societeMatiere = SocieteMatiere::create([
+                    'matiere_id' => $matiere->id,
+                    'societe_id' => $fournisseur_id,
+                ]);
+                // Si prix fourni, créer le prix
+                if (!empty($row['prix'])) {
+                    $createdPrix[] = \App\Models\SocieteMatierePrix::create([
+                        'societe_matiere_id' => $societeMatiere->id,
+                        'prix_unitaire' => str_replace(',', '.', $row['prix']),
+                        'date' => now(),
+                    ]);
+                }
+            }
+        }
+        return redirect()->route('matieres.index')->with('success', count($created) . ' matières importées avec succès. <br/>'.count($createdPrix).' prix ajoutés avec succès');
     }
 }

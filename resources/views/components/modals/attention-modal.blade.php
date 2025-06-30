@@ -9,7 +9,7 @@
     'confirmAction' => '#',
 ])
 
-<button x-data x-on:click="$dispatch('open-modal', '{{ $modalName }}')" class="btn">
+<button x-data x-on:click="$dispatch('open-modal', '{{ $modalName }}')" class="btn" type="button">
     {{ $buttonText }}
 </button>
 
@@ -26,10 +26,17 @@
                 class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-sm">
                 {{ $cancelText }}
             </button>
-            <a href="{{ $confirmAction }}"
-                class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-sm">
-                {{ $confirmText }}
-            </a>
+            @if($confirmAction === 'submit')
+                <button type="submit"
+                    class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-sm">
+                    {{ $confirmText }}
+                </button>
+            @else
+                <a href="{{ $confirmAction }}"
+                    class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-sm">
+                    {{ $confirmText }}
+                </a>
+            @endif
         </div>
     </div>
 </x-modal>

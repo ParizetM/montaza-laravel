@@ -59,6 +59,7 @@
                     </button>
                 </form>
                 <x-quick-matiere class="mb-1" />
+                <!-- Nouveau bouton d'import Excel -->
 
             </div>
         </div>
@@ -77,6 +78,10 @@
                 <button x-data="" x-on:click.prevent="$dispatch('open-modal', 'create-sous-famille-modal')" class="btn">
                     {!! __('Nouvelle sous-famille') !!}
                 </button>
+                <a href="{{ route('matieres.import.form') }}" class="btn ml-2 flex items-center">
+                    <x-icon type="upload" class="mr-1" size="1" />
+                    Importer CSV
+                </a>
             </div>
 
         </div>
