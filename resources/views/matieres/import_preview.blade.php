@@ -21,23 +21,44 @@
                 }
             }
             $rowStates[$i] = $isValid;
-            if ($isValid) $correct++; else $incorrect++;
+            if ($isValid) {
+                $correct++;
+            } else {
+                $incorrect++;
+            }
         }
         // Tri : erreurs d'abord
-        $sortedIndexes = collect($rows)->keys()->sort(function($a, $b) use ($rowStates) {
-            return ($rowStates[$b] <=> $rowStates[$a]) ?: ($a <=> $b);
-        })->values();
+        $sortedIndexes = collect($rows)
+            ->keys()
+            ->sort(function ($a, $b) use ($rowStates) {
+                return $rowStates[$b] <=> $rowStates[$a] ?: $a <=> $b;
+            })
+            ->values();
     @endphp
     <div class="max-w-8xl mx-auto mt-10 bg-white dark:bg-gray-800 p-8 rounded shadow text-gray-800 dark:text-gray-200">
-        <div class="mb-4 flex flex-wrap gap-6 items-end">
-            <div>
-                <span class="font-bold">Total lignes :</span> {{ $total }}<br>
-                <span class="text-green-700 font-bold">Correctes :</span> {{ $correct }}<br>
-                <span class="text-red-700 font-bold">Incorrectes :</span> {{ $incorrect }}
+        <div class="mb-6 flex flex-wrap gap-8 items-center justify-between">
+            <div class="flex gap-8">
+                <div class="bg-gray-100 dark:bg-gray-900 rounded-lg p-4 shadow flex flex-col min-w-[140px]">
+                    <span class="text-gray-700 dark:text-gray-200 text-xs uppercase tracking-wide mb-1">Total lignes</span>
+                    <span class="font-bold text-2xl text-gray-900 dark:text-gray-100">{{ $total }}</span>
+                </div>
+                <div class="bg-green-50 dark:bg-green-900 rounded-lg p-4 shadow flex flex-col min-w-[140px]">
+                    <span class="text-green-800 dark:text-green-200 text-xs uppercase tracking-wide mb-1">Correctes</span>
+                    <span class="font-bold text-2xl text-green-800 dark:text-green-200">{{ $correct }}</span>
+                </div>
+                <div class="bg-red-50 dark:bg-red-900 rounded-lg p-4 shadow flex flex-col min-w-[140px]">
+                    <span class="text-red-800 dark:text-red-200 text-xs uppercase tracking-wide mb-1">Incorrectes</span>
+                    <span class="font-bold text-2xl text-red-800 dark:text-red-200">{{ $incorrect }}</span>
+                </div>
+                <div class="bg-yellow-50 dark:bg-yellow-900 rounded-lg p-4 shadow flex flex-col min-w-[140px]">
+                    <span class="text-yellow-800 dark:text-yellow-200 text-xs uppercase tracking-wide mb-1">Total erreurs</span>
+                    <span class="font-bold text-2xl text-yellow-800 dark:text-yellow-200">
+                        {{ collect($preview)->flatMap(fn($row) => collect($row)->pluck('error')->filter())->count() }}
+                    </span>
+                </div>
             </div>
             <div>
-                <span class="font-bold">Total erreurs :</span>
-                {{ collect($preview)->flatMap(fn($row) => collect($row)->pluck('error')->filter())->count() }}
+                <a href="{{ route('matieres.import.form') }}" class="btn btn-secondary">Annuler</a>
             </div>
         </div>
         <form id="import-form" action="{{ route('matieres.import.store') }}" method="POST">
@@ -63,20 +84,20 @@
                                 $row = $rows[$i];
                                 // Critères de validité : ref_interne, designation, unite, sous_famille obligatoires et valides
                                 $rowValid = true;
-                                foreach (['ref_interne','designation','unite','sous_famille'] as $col) {
+                                foreach (['ref_interne', 'designation', 'unite', 'sous_famille'] as $col) {
                                     if (isset($preview[$i][$col]['error']) && $preview[$i][$col]['error']) {
                                         $rowValid = false;
                                         break;
                                     }
                                 }
                             @endphp
-                            <tr @if(!$rowValid) class="bg-gray-50 dark:bg-gray-900" @endif>
-                                <td class="px-2 py-2 border text-xs text-gray-500">{{ $i+2 }}</td>
+                            <tr @if (!$rowValid) class="bg-gray-50 dark:bg-gray-900" @endif>
+                                <td class="px-2 py-2 border text-xs text-gray-500">{{ $i + 2 }}</td>
                                 @foreach ($headers as $col)
-                                    <td class="px-4 py-2 border align-top">
+                                    <td class=" p-1 border align-top">
                                         <input type="text" name="edit[{{ $i }}][{{ $col }}]"
                                             value="{{ $row[$col] ?? '' }}"
-                                            class="w-full bg-transparent border-none focus:ring-0 @if (isset($preview[$i][$col]['error'])) bg-red-100 dark:bg-red-900 @endif">
+                                            class=" bg-transparent border-none focus:ring-0 @if (isset($preview[$i][$col]['error'])) bg-red-100 dark:bg-red-900 @endif">
                                         @if (isset($preview[$i][$col]['error']) && $preview[$i][$col]['error'])
                                             <span class="text-xs text-red-600 dark:text-red-400">&#10060;
                                                 {{ $preview[$i][$col]['error'] }}</span>
@@ -84,7 +105,8 @@
                                             <span class="text-xs text-green-700 dark:text-green-400">&#10003;</span>
                                         @endif
                                         @if (isset($preview[$i][$col]['label']) && $preview[$i][$col]['label'])
-                                            <span class="text-xs text-green-700 dark:text-green-400">{{ $preview[$i][$col]['label'] }}</span>
+                                            <span
+                                                class="text-xs text-green-700 dark:text-green-400">{{ $preview[$i][$col]['label'] }}</span>
                                         @endif
                                     </td>
                                 @endforeach
@@ -101,18 +123,32 @@
                 </table>
             </div>
             @if ($incorrect > 0)
-                <x-modals.attention-modal
-                    buttonText="Importer uniquement les lignes correctes"
+                <x-modals.attention-modal buttonText="Importer uniquement les lignes correctes"
                     title="Des erreurs sont présentes dans le fichier"
                     message="Certaines lignes comportent des erreurs et ne seront pas importées. Voulez-vous importer uniquement les lignes valides ?"
-                    confirmText="Oui, importer les lignes valides"
-                    cancelText="Annuler"
-                    confirmAction="submit"
-                />
+                    confirmText="Oui, importer les lignes valides" cancelText="Annuler" confirmAction="submit" />
             @else
                 <button type="submit" class="btn">Importer en base</button>
             @endif
             <a href="{{ route('matieres.import.form') }}" class="btn btn-secondary ml-2">Annuler</a>
         </form>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            function resizeInput(input) {
+                // Ajuste la largeur selon le nombre de caractères (ex: 1ch par caractère + un peu de marge)
+                const length = input.value.length || 1;
+                input.style.width = (length + 3) + 'ch';
+            }
+
+            // Select all editable inputs in the table
+            const inputs = document.querySelectorAll('table input[type="text"]');
+            inputs.forEach(input => {
+                resizeInput(input);
+                input.addEventListener('input', function () {
+                    resizeInput(input);
+                });
+            });
+        });
+    </script>
 </x-app-layout>
