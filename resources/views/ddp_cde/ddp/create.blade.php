@@ -85,7 +85,7 @@
                             </thead>
                             <tbody id="matiere-table">
                                 <tr>
-                                    <td colspan="100" class="text-gray-500 dark:text-gray-400 text-center ">
+                                    <td colspan="100" class="text-gray-500 dark:text-gray-400 text-center pt-4">
                                         Recherchez une matière
                                     </td>
                                 </tr>
@@ -263,11 +263,11 @@
                                             @endif
                                         @endforeach
                                     @else
-                                        {{-- <tr id="no-matiere">
-                                            <td colspan="100" class="text-gray-500 dark:text-gray-400 text-center ">
+                                         <tr id="no-matiere">
+                                            <td colspan="100" class="text-gray-500 dark:text-gray-400 text-center pt-4">
                                                 Aucune matière sélectionnée
                                             </td>
-                                        </tr> --}}
+                                        </tr> 
 
 
                                     @endif

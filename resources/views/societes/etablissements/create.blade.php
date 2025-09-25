@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Créer un établissement') }}
+            {{ __('Ajouter un établissement') }}
         </h2>
     </x-slot>
     <div class="py-8">
@@ -146,7 +146,7 @@
 
                         <div class="flex items-center justify-end col-span-6 mt-4">
                             <button type="submit" class="btn ml-4">
-                                {{ __('Créer') }}
+                                {{ __('Ajouter') }}
                             </button>
                         </div>
 
