@@ -668,7 +668,6 @@ class CdeController extends Controller
         }
         Storage::put('CDE/' . $year . '/' . $fileName, $pdf->output());
         $path = Storage::path('CDE/' . $year . '/' . $fileName);
-        chmod($path, 0775);
         return $fileName;
     }
     public function showPdf($cde, $dossier, $path)
