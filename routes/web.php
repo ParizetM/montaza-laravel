@@ -21,6 +21,7 @@ use App\Http\Controllers\SocieteContactController;
 use App\Http\Controllers\SocieteController;
 use App\Http\Controllers\StandardController;
 use App\Http\Controllers\UserShortcutController;
+use App\Http\Controllers\ProductionController;
 use App\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Foundation\Http\Middleware\ValidatePostSize;
 use Illuminate\Support\Facades\Route;
@@ -365,6 +366,15 @@ Route::post('/media/upload/{model}/{id}/{token}', [MediaController::class, 'uplo
     ->name('media.upload')
     ->middleware(['signed', 'PreventDebugMode'])
     ->withoutMiddleware([VerifyCsrfToken::class, ValidatePostSize::class]);
+
+
+
+// La page production utilise des variables globales préparées par le middleware GetGlobalVariable
+// et requiert l'authentification et la protection XSS. On inclut ces middlewares ici pour
+// que la vue `production.index` ait accès aux variables attendues (ex: $societeTypes).
+Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth', 'permission:voir_la_production'])->group(function () {
+    Route::get('/production', [ProductionController::class, 'index'])->name('production.index');
+});
 
 
 require __DIR__ . '/auth.php';

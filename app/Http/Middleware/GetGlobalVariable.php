@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use App\Models\Entite;
+use App\Models\SocieteType;
 
 
 class GetGlobalVariable
@@ -31,6 +32,9 @@ class GetGlobalVariable
             View::share('_entites', $entites);
             $shortcuts = $user->shortcuts;
             View::share('_shortcuts', $shortcuts);
+            // Partage des types de sociétés pour les formulaires réutilisés dans l'application
+            $societeTypes = SocieteType::all();
+            View::share('societeTypes', $societeTypes);
         }
 
         // return $next($request);

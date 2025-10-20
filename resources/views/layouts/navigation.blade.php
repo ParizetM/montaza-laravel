@@ -37,6 +37,11 @@
                                 {{ __('Affaires') }}
                             </x-nav-link>
                         @endcan
+                        @can('voir_la_production')
+                            <x-nav-link :href="route('production.index')" :active="request()->routeIs('production.index')" title="Production">
+                                {{ __('Production') }}
+                            </x-nav-link>
+                        @endcan
                     @endif
                 </div>
             </div>
