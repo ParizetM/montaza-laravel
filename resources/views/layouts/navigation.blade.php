@@ -42,6 +42,11 @@
                                 {{ __('Production') }}
                             </x-nav-link>
                         @endcan
+                         @can('voir_le_materiel')
+                            <x-nav-link :href="route('materiel.index')" :active="request()->routeIs('materiel.index')" title="Matériel">
+                                {{ __('Matériels') }}
+                            </x-nav-link>
+                        @endcan
                     @endif
                 </div>
             </div>

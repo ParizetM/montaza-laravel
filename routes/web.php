@@ -26,6 +26,7 @@ use App\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Foundation\Http\Middleware\ValidatePostSize;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AffaireController;
+use App\Http\Controllers\MaterielController;
 
 Route::get('/', function () {
     if (auth()->check()) {
@@ -375,6 +376,11 @@ Route::post('/media/upload/{model}/{id}/{token}', [MediaController::class, 'uplo
 Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth', 'permission:voir_la_production'])->group(function () {
     Route::get('/production', [ProductionController::class, 'index'])->name('production.index');
 });
+
+Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth', 'permission:voir_le_materiel'])->group(function () {
+    Route::get('/materiel', [MaterielController::class, 'index'])->name('materiel.index');
+});
+
 
 
 require __DIR__ . '/auth.php';
