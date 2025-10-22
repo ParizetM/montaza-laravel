@@ -22,6 +22,7 @@ use App\Http\Controllers\SocieteController;
 use App\Http\Controllers\StandardController;
 use App\Http\Controllers\UserShortcutController;
 use App\Http\Controllers\ProductionController;
+use App\Http\Controllers\ReparationController;
 use App\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Foundation\Http\Middleware\ValidatePostSize;
 use Illuminate\Support\Facades\Route;
@@ -377,8 +378,8 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth', 'permission:voi
     Route::get('/production', [ProductionController::class, 'index'])->name('production.index');
 });
 
-Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth', 'permission:voir_le_materiel'])->group(function () {
-    Route::get('/materiel', [MaterielController::class, 'index'])->name('materiel.index');
+Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth', 'permission:voir_les_reparation'])->group(function () {
+    Route::get('/reparation', [ReparationController::class, 'index'])->name('reparation.index');
 });
 
 

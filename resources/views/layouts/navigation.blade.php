@@ -42,9 +42,9 @@
                                 {{ __('Production') }}
                             </x-nav-link>
                         @endcan
-                         @can('voir_le_materiel')
-                            <x-nav-link :href="route('materiel.index')" :active="request()->routeIs('materiel.index')" title="Matériel">
-                                {{ __('Matériels') }}
+                         @can('voir_les_reparations')
+                            <x-nav-link :href="route('reparation.index')" :active="request()->routeIs('reparation.index')" title="Réparations du matériels">
+                                {{ __('Réparations du matériels') }}
                             </x-nav-link>
                         @endcan
                     @endif
