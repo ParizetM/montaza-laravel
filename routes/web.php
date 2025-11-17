@@ -378,8 +378,29 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth', 'permission:voi
     Route::get('/production', [ProductionController::class, 'index'])->name('production.index');
 });
 
-Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth', 'permission:voir_les_reparation'])->group(function () {
+Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth', 'permission:voir_les_reparations'])->group(function () {
+    // Routes statiques de réparation (avant les routes paramétrées)
     Route::get('/reparation', [ReparationController::class, 'index'])->name('reparation.index');
+    Route::get('/reparation/create', [ReparationController::class, 'create'])->name('reparation.create');
+    Route::post('/reparation/store', [ReparationController::class, 'store'])->name('reparation.store');
+
+    // Routes statiques de matériel (avant les routes paramétrées)
+    Route::get('/reparation/materiel', [MaterielController::class, 'index'])->name('reparation.materiel.index');
+    Route::get('/reparation/materiel/create', [MaterielController::class, 'create'])->name('reparation.materiel.create');
+    Route::post('/reparation/materiel/store', [MaterielController::class, 'store'])->name('reparation.materiel.store');
+    Route::get('/reparation/mareriel/historique', [MaterielController::class, 'historique'])->name('reparation.materiel.historique');
+
+    // Routes paramétrées de réparation
+    Route::get('/reparation/{reparation}', [ReparationController::class, 'show'])->name('reparation.show');
+    Route::get('/reparation/{reparation}/edit', [ReparationController::class, 'edit'])->name('reparation.edit');
+    Route::patch('/reparation/{reparation}', [ReparationController::class, 'update'])->name('reparation.update');
+    Route::post('/reparation/{reparation}/archive', [ReparationController::class, 'archive'])->name('reparation.archive');
+    Route::patch('/reparation/{reparation}/status', [ReparationController::class, 'updateStatus'])->name('reparation.updateStatus');
+
+    // Routes paramétrées de matériel
+    Route::get('/reparation/materiel/edit/{materiel}', [MaterielController::class, 'edit'])->name('reparation.materiel.edit');
+    Route::patch('/reparation/materiel/update/{materiel}', [MaterielController::class, 'update'])->name('reparation.materiel.update');
+    Route::delete('/reparation/materiel/destroy/{materiel}', [MaterielController::class, 'destroy'])->name('reparation.materiel.destroy');
 });
 
 
