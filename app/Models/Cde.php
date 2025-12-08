@@ -25,8 +25,7 @@ class Cde extends Model
         'user_id',
         'entite_id',
         'ddp_id',
-        'affaire_numero',
-        'affaire_nom',
+        'affaire_id',
         'devis_numero',
         'affaire_suivi_par_id',
         'acheteur_id',
@@ -49,6 +48,21 @@ class Cde extends Model
         'created_at',
         'updated_at',
     ];
+    protected static function booted()
+    {
+        static::saved(function ($cde) {
+            if ($cde->affaire) {
+                $cde->affaire->updateTotal();
+            }
+        });
+
+        static::deleted(function ($cde) {
+            if ($cde->affaire) {
+                $cde->affaire->updateTotal();
+            }
+        });
+    }
+
     public function cdeLignes()
     {
         return $this->hasMany(CdeLigne::class)->orderBy('poste');
@@ -89,18 +103,18 @@ class Cde extends Model
     {
         return $this->societeContacts()->exists();
     }
-    public function etablissement()
+    public function getEtablissementAttribute()
     {
         // Get the first societe contact's etablissement
         $societeContact = $this->societeContacts()->first();
-        return $societeContact ? $societeContact->etablissement() : null;
+        return $societeContact ? $societeContact->etablissement : null;
     }
 
-    public function societe()
+    public function getSocieteAttribute()
     {
         // Get the first societe contact's societe
         $societeContact = $this->societeContacts()->first();
-        return $societeContact ? $societeContact->societe() : null;
+        return $societeContact?->etablissement?->societe;
     }
     public function affaireSuiviPar(): BelongsTo
     {

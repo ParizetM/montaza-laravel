@@ -250,15 +250,15 @@
             </div>
             <div class="company-info right">
                 <div class="company_info">
-                    <strong class="entreprise_nom">{{ $etablissement->societe->raison_sociale }}</strong><br>
-                    {{ $etablissement->adresse }}<br>
-                    @if ($etablissement->complement_adresse)
+                    <strong class="entreprise_nom">{{ $etablissement?->societe?->raison_sociale ?? 'Société inconnue' }}</strong><br>
+                    {{ $etablissement?->adresse }}<br>
+                    @if ($etablissement?->complement_adresse)
                         {{ $etablissement->complement_adresse }}<br>
                     @endif
-                    {{ $etablissement->code_postal }} &nbsp;{{ $etablissement->ville }}<br>
-                    {{ $etablissement->pays->nom }}<br>
+                    {{ $etablissement?->code_postal }} &nbsp;{{ $etablissement?->ville }}<br>
+                    {{ $etablissement?->pays?->nom }}<br>
                 </div>
-                @if ($afficher_destinataire)
+                @if ($afficher_destinataire && $contact)
                     À l'attention de : {{ $contact->nom }}<br>
                     {{ $contact->email }}
                 @endif
@@ -267,15 +267,9 @@
 
         <!-- Title -->
         <div class="title">
-            @if ($cde->affaire_numero != null)
-                <strong>Affaire n°</strong> : {{ $cde->affaire_numero }}
-            @else
-                <br>
-            @endif
-            @if ($cde->affaire_nom != null)
-                <br><strong>Affaire</strong> : {{ $cde->affaire_nom }}
-            @else
-                <br>
+            @if ($cde->affaire)
+                <strong>Affaire n°</strong> : {{ $cde->affaire->code }}
+                <br><strong>Affaire</strong> : {{ $cde->affaire->nom }}
             @endif
             @if ($cde->devis_numero != null)
                 <br><strong>Devis n°</strong> : {{ $cde->devis_numero }}
@@ -452,7 +446,7 @@
                             <span>{{ $adresse->adresse }}</span>
                             <br><span>{{ $adresse->code_postal }} - {{ $adresse->ville }}</span>
                             <br><span>{{ $adresse->pays }}</span>
-                            <br><span>horaires : {{ $adresse->horaires }}</span>
+                            <br><span>horaires : {{ $adresse->horaires ?? '' }}</span>
                         @endif
                     </td>
                     @if (!$sans_prix)

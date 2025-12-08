@@ -377,6 +377,7 @@ Route::post('/media/upload/{model}/{id}/{token}', [MediaController::class, 'uplo
 // que la vue `production.index` ait accès aux variables attendues (ex: $societeTypes).
 Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth', 'permission:voir_la_production'])->group(function () {
     Route::get('/production', [ProductionController::class, 'index'])->name('production.index');
+    Route::get('/production/{affaire}', [ProductionController::class, 'show'])->name('production.show');
 });
 
 Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth', 'permission:voir_les_reparations'])->group(function () {

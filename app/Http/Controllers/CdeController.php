@@ -210,14 +210,55 @@ class CdeController extends Controller
         $commentaire_id = Commentaire::create([
             'contenu' => '',
         ])->id;
+
+        // Récupérer le premier statut disponible ou créer le statut par défaut
+        $defaultStatut = DdpCdeStatut::orderBy('id')->first();
+        if (!$defaultStatut) {
+            $defaultStatut = DdpCdeStatut::create([
+                'nom' => 'En attente',
+                'couleur' => '#F4C27F',
+                'couleur_texte' => '#5A3E1B'
+            ]);
+        }
+        $statutId = $defaultStatut->id;
+
+        // Récupérer la première entité disponible ou créer l'entité par défaut
+        $defaultEntite = Entite::orderBy('id')->first();
+        if (!$defaultEntite) {
+            $defaultEntite = Entite::create([
+                'name' => 'Entité par défaut',
+                'adresse' => 'Adresse inconnue',
+                'ville' => 'Ville inconnue',
+                'code_postal' => '00000',
+                'tel' => '00 00 00 00 00',
+                'siret' => '00000000000000',
+                'rcs' => 'Inconnu',
+                'numero_tva' => 'FR00000000000',
+                'code_ape' => '0000A',
+                'logo' => '',
+                'horaires' => '',
+            ]);
+        }
+        $entiteId = $defaultEntite->id;
+
+        // Récupérer le premier type d'expédition disponible ou créer le type par défaut
+        $defaultTypeExpedition = TypeExpedition::orderBy('id')->first();
+        if (!$defaultTypeExpedition) {
+            $defaultTypeExpedition = TypeExpedition::create([
+                'nom' => 'Livraison',
+                'short' => 'livraison'
+            ]);
+        }
+        $typeExpeditionId = $defaultTypeExpedition->id;
+
         $cde = Cde::create([
             'code' => 'undefined',
             'nom' => 'undefined',
-            'ddp_cde_statut_id' => 1,
-            'entite_id' => 1,
+            'ddp_cde_statut_id' => $statutId,
+            'entite_id' => $entiteId,
             'user_id' => Auth::id(),
             'tva' => 20,
-            'type_expedition_id' => 1,
+            'type_expedition_id' => $typeExpeditionId,
             'show_ref_fournisseur' => true,
             'commentaire_id' => $commentaire_id,
         ]);
@@ -453,7 +494,7 @@ class CdeController extends Controller
         $showRefFournisseur = $cde->show_ref_fournisseur;
         $typesExpedition = TypeExpedition::all();
         $conditionsPaiement = ConditionPaiement::all();
-        $societe_id = $cde->societe->id;
+        $societe_id = $cde->societe?->id;
         $cde_notes = CdeNote::where('entite_id', $cde->entite_id)->get();
         $affaires = \App\Models\Affaire::orderBy('created_at', 'desc')->get();
         $total_ht = 0;
@@ -461,6 +502,8 @@ class CdeController extends Controller
             $total_ht += $ligne->prix_unitaire * $ligne->quantite;
         }
         $cde->total_ht = $total_ht;
+        $cde->total_ttc = ($cde->total_ht + ($cde->frais_de_port ?? 0) + ($cde->frais_divers ?? 0)) * (1 + ($cde->tva / 100));
+        $cde->save();
         //verifier si
         if ($showRefFournisseur == true) {
             $listeChangement = [];
@@ -469,7 +512,7 @@ class CdeController extends Controller
                     $ligne->prix = $ligne->prix_unitaire * $ligne->quantite;
                     $ligne->save();
                     $societe_matiere = $ligne->matiere->societeMatiere($societe_id);
-                    $ref_externe = $societe_matiere->ref_externe ?? null;
+                    $ref_externe = $societe_matiere?->ref_externe ?? null;
                     if ($ligne->ref_fournisseur != null && $ligne->ref_fournisseur != '' && $ligne->ref_fournisseur != $ref_externe) {
                         $listeChangement[] = [
                             'id' => $ligne->id,
@@ -570,8 +613,8 @@ class CdeController extends Controller
         $cde->adresse_livraison = $adresse;
         $cde->type_expedition_id = $request->input('type_expedition_id');
         $cde->condition_paiement_id = $condition_paiement_id;
-        $cde->frais_de_port = $request->input('frais_de_port') ?? null;
-        $cde->frais_divers = $request->input('frais_divers') ?? null;
+        $cde->frais_de_port = $request->input('frais_de_port') ?? 0;
+        $cde->frais_divers = $request->input('frais_divers') ?? 0;
         $cde->frais_divers_texte = $request->input('frais_divers_texte') ?? null;
         $cde->total_ttc = ($cde->total_ht + $cde->frais_de_port + $cde->frais_divers) * (1 + ($cde->tva / 100));
         $cde->save();
@@ -953,7 +996,9 @@ class CdeController extends Controller
             }
         }
         $cde->save();
-        $cde->affaire->updateTotal();
+        if ($cde->affaire) {
+            $cde->affaire->updateTotal();
+        }
         return redirect()->route('cde.show', [
             'cde' => $cde->id,
         ])->with('success', 'Commande controlée avec succès');

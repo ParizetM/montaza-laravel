@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Commentaire;
 use App\Models\ConditionPaiement;
 use App\Models\DdpCdeStatut;
 use App\Models\Entite;
@@ -43,9 +44,6 @@ class CdeFactory extends Factory
             'user_id' => $random_user,
             'entite_id' => $random_entite,
             'ddp_id' => null,
-            'societe_contact_id' => $random_societe_contact,
-            'affaire_numero' => $this->faker->optional()->numerify('25-00#'),
-            'affaire_nom' => $this->faker->optional()->company,
             'devis_numero' => $this->faker->optional()->numerify('DEV-###'),
             'affaire_suivi_par_id' => $random_user1,
             'acheteur_id' => $random_user2,
@@ -55,6 +53,7 @@ class CdeFactory extends Factory
             'adresse_facturation' => $adresse,
             'condition_paiement_id' => $random_condition_paiement,
             'afficher_destinataire' => $this->faker->boolean,
+            'commentaire_id' => Commentaire::create(['contenu' => $this->faker->paragraph])->id,
         ];
     }
 }

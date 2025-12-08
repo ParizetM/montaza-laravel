@@ -170,9 +170,9 @@
                                     </x-slot>
                                     <x-slot name="slot_tooltip">
                                         <p class="text-sm font-bold">Affiche:</p>
-                                        <p class="text-sm">À l'attention de : {{ $cde->societeContacts->first()->nom }}
+                                        <p class="text-sm">À l'attention de : {{ $cde->societeContacts->first()?->nom }}
                                         </p>
-                                        <p class="text-sm">{{ $cde->societeContacts->first()->email }}.</p>
+                                        <p class="text-sm">{{ $cde->societeContacts->first()?->email }}.</p>
                                     </x-slot>
                                 </x-tooltip>
                             </div>
@@ -490,7 +490,7 @@
                             <div>
                                 <x-input-label value="horaires de livraison" />
                                 <textarea name="horaires"
-                                    class="mt-1 block px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-xs focus:outline-hidden focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-900 dark:text-gray-100 w-fit min-w-96">{{ old('horaires', $adresse_livraison->horaires) }}</textarea>
+                                    class="mt-1 block px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-xs focus:outline-hidden focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-900 dark:text-gray-100 w-fit min-w-96">{{ old('horaires', $adresse_livraison->horaires ?? '') }}</textarea>
                                 @error('horaires')
                                     <span class="text-red-500">{{ $message }}</span>
                                 @enderror

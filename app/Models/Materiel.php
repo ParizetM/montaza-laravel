@@ -77,4 +77,11 @@ class Materiel extends Model
     {
         $this->attributes['numero_serie'] = $value;
     }
+
+    public function affaires()
+    {
+        return $this->belongsToMany(Affaire::class, 'affaire_materiel')
+                    ->withPivot('date_debut', 'date_fin', 'statut')
+                    ->withTimestamps();
+    }
 }

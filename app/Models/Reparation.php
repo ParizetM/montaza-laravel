@@ -38,4 +38,9 @@ class Reparation extends Model
     {
         return $this->belongsTo(Materiel::class);
     }
+
+    public function affaire(): BelongsTo
+    {
+        return $this->belongsTo(Affaire::class);
+    }
 }

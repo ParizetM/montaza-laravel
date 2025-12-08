@@ -133,13 +133,13 @@
                 FRANCE
             </div>
             <div class="company-info right">
-                <strong>{{ $etablissement->societe->raison_sociale }}</strong><br>
-                {{ $etablissement->adresse }}<br>
-                @if($etablissement->complement_adresse)
+                <strong>{{ $etablissement?->societe?->raison_sociale ?? 'Société inconnue' }}</strong><br>
+                {{ $etablissement?->adresse }}<br>
+                @if($etablissement?->complement_adresse)
                 {{ $etablissement->complement_adresse }}<br>
                 @endif
-                {{ $etablissement->code_postal }} {{ $etablissement->ville }}<br>
-                {{ $etablissement->pays->nom }}<br>
+                {{ $etablissement?->code_postal }} {{ $etablissement?->ville }}<br>
+                {{ $etablissement?->pays?->nom }}<br>
                 @if ($afficher_destinataire)
                 {{ $destinataire }}
                 @endif

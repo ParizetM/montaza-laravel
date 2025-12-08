@@ -72,7 +72,7 @@ class CdeList extends Component
     {
         $query = Cde::query()
             ->where('cdes.nom', '!=', 'undefined')
-            ->with(['entite', 'user', 'ddpCdeStatut', 'societe', 'societeContacts', 'cdeLignes.matiere.unite', 'statut'])
+            ->with(['entite', 'user', 'ddpCdeStatut', 'societeContacts', 'cdeLignes.matiere.unite', 'statut'])
             ->when($this->search, function ($query, $search) {
                 $terms = explode(' ', $search);
 

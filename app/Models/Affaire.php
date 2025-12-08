@@ -17,36 +17,44 @@ class Affaire extends Model
         'total_ht',
         'budget',
         'budget_notified',
+        'statut',
+        'date_debut',
+        'date_fin_prevue',
+        'date_fin_reelle',
+        'description',
         'created_at',
         'updated_at',
     ];
 
-    /**
-     * Génère le prochain code pour une nouvelle affaire
-     * Format: YY-XXX où YY est l'année courante et XXX est un numéro incrémenté
-     *
-     * @return string
-     */
-    public static function generateNextCode()
+    const STATUT_EN_ATTENTE = 'en_attente';
+    const STATUT_EN_COURS = 'en_cours';
+    const STATUT_TERMINE = 'termine';
+    const STATUT_ARCHIVE = 'archive';
+
+    public static function getStatuts()
     {
-        $year = date('y'); // Année courante en format 2 chiffres (ex: 25 pour 2025)
+        return [
+            self::STATUT_EN_ATTENTE => 'En attente',
+            self::STATUT_EN_COURS => 'En cours',
+            self::STATUT_TERMINE => 'Terminé',
+            self::STATUT_ARCHIVE => 'Archivé',
+        ];
+    }
 
-        // Récupérer le code le plus élevé pour l'année courante
-        $lastAffaire = self::where('code', 'LIKE', $year . '-%')
-            ->orderByRaw('CAST(SUBSTRING(code, 4) AS INTEGER) DESC')
-            ->first();
+    public function getStatutLabelAttribute()
+    {
+        return self::getStatuts()[$this->statut] ?? $this->statut;
+    }
 
-        if ($lastAffaire) {
-            // Extraire la partie numérique et l'incrémenter
-            $parts = explode('-', $lastAffaire->code);
-            $nextNumber = intval($parts[1]) + 1;
-        } else {
-            // Première affaire de l'année
-            $nextNumber = 1;
-        }
-
-        // Formatage du nouveau code avec des zéros en début de partie numérique (ex: 25-001)
-        return $year . '-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+    public function getStatutColorAttribute()
+    {
+        return match($this->statut) {
+            self::STATUT_EN_ATTENTE => 'gray',
+            self::STATUT_EN_COURS => 'blue',
+            self::STATUT_TERMINE => 'green',
+            self::STATUT_ARCHIVE => 'red',
+            default => 'gray',
+        };
     }
 
     /**
@@ -57,11 +65,40 @@ class Affaire extends Model
         return $this->hasMany(Cde::class, 'affaire_id');
     }
 
+    /**
+     * Relation avec les demandes de prix (Ddp)
+     */
+    public function ddps()
+    {
+        return $this->hasMany(Ddp::class, 'affaire_id');
+    }
+
+    /**
+     * Relation avec les réparations
+     */
+    public function reparations()
+    {
+        return $this->hasMany(Reparation::class, 'affaire_id');
+    }
+
+    /**
+     * Relation avec le matériel (Many-to-Many via affaire_materiel)
+     */
+    public function materiels()
+    {
+        return $this->belongsToMany(Materiel::class, 'affaire_materiel')
+                    ->withPivot('date_debut', 'date_fin', 'statut')
+                    ->withTimestamps();
+    }
+
     public function updateTotal()
     {
-        $this->total_ht = $this->cdes->where('ddp_cde_statut_id', 5)->sum('total_ht');
+        // Calculer le total des commandes (sauf annulées et en attente)
+        // 2 = En cours, 3 = Terminée, 5 = Vérifiée
+        $this->total_ht = $this->cdes->whereIn('ddp_cde_statut_id', [2, 3, 5])->sum('total_ht');
+
         if ($this->total_ht <= 0 || is_null($this->total_ht)) {
-            $this->total_ht = 0; // Si le total est 0, on le met à null
+            $this->total_ht = 0;
         }
 
         if ($this->budget && $this->total_ht > $this->budget && !$this->budget_notified) {
@@ -87,5 +124,26 @@ class Affaire extends Model
 
         // Sauvegarder les modifications
         $this->save();
+    }
+
+    public static function generateNextCode()
+    {
+        $year = date('y');
+        $lastAffaire = self::where('code', 'like', $year . '-%')
+            ->orderBy('code', 'desc')
+            ->first();
+
+        if ($lastAffaire) {
+            $parts = explode('-', $lastAffaire->code);
+            if (count($parts) == 2 && is_numeric($parts[1])) {
+                $sequence = intval($parts[1]) + 1;
+            } else {
+                $sequence = 1;
+            }
+        } else {
+            $sequence = 1;
+        }
+
+        return $year . '-' . str_pad($sequence, 3, '0', STR_PAD_LEFT);
     }
 }

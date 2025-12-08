@@ -20,7 +20,6 @@ class CdeLigneFactory extends Factory
     public function definition(): array
     {
         $random_cde_id = Cde::all()->random()->id;
-        $random_societe_matiere_id = DB::table('societe_matiere')->inRandomOrder()->first()->id;
         $random_matiere_id = Matiere::all()->random()->id;
         return [
             'cde_id' => $random_cde_id,

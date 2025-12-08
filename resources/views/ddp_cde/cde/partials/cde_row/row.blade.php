@@ -45,13 +45,13 @@
             <x-tooltip position="left">
                 <x-slot name="slot_item">
                     <span class="text-gray-900 dark:text-gray-100">
-                        {{ Str::limit($cde->societe->raison_sociale, $limit - 10) }}
+                        {{ Str::limit($cde->societe?->raison_sociale, $limit - 10) }}
                     </span>
                 </x-slot>
                 <x-slot name="slot_tooltip">
                     <div class="flex flex-col">
                         <h3 class="text-gray-900 dark:text-gray-100 font-bold border-b border-gray-300 dark:border-gray-600 pb-2 mb-2">
-                            {{ $cde->societe->raison_sociale }}
+                            {{ $cde->societe?->raison_sociale }}
                         </h3>
                         <h3 class="text-gray-900 dark:text-gray-100 font-bold">
                             Destinataire{{ $cde->societeContacts->count() > 1 ? 's' : '' }} :

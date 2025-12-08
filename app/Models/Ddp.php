@@ -79,4 +79,8 @@ class Ddp extends Model
     {
         return $this->belongsTo(Commentaire::class);
     }
+    public function affaire(): BelongsTo
+    {
+        return $this->belongsTo(Affaire::class);
+    }
 }
