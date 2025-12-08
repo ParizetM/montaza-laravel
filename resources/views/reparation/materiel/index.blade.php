@@ -32,6 +32,55 @@
     <div class="py-8 ">
         <div class="max-w-8xl mx-auto sm:px-6 lg:px-8 ">
             <div class="bg-white dark:bg-gray-800 sm:rounded-lg shadow-md">
+                <!-- Filtres et recherche -->
+                <div class="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+                    <form method="GET" action="{{ route('reparation.materiel.index') }}" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <!-- Recherche -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Recherche</label>
+                                <input type="text" name="search" placeholder="Référence, désignation, série..."
+                                    value="{{ request('search') }}"
+                                    class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-blue-500">
+                            </div>
+
+                            <!-- Tri par -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Trier par</label>
+                                <select name="sort_by" onchange="this.form.submit()"
+                                    class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-blue-500">
+                                    <option value="date" {{ request('sort_by') === 'date' ? 'selected' : '' }}>Date d'acquisition</option>
+                                    <option value="reference" {{ request('sort_by') === 'reference' ? 'selected' : '' }}>Référence</option>
+                                    <option value="designation" {{ request('sort_by') === 'designation' ? 'selected' : '' }}>Désignation</option>
+                                </select>
+                            </div>
+
+                            <!-- Ordre de tri -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Ordre</label>
+                                <select name="sort_order" onchange="this.form.submit()"
+                                    class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-blue-500">
+                                    <option value="desc" {{ request('sort_order') === 'desc' ? 'selected' : '' }}>Décroissant</option>
+                                    <option value="asc" {{ request('sort_order') === 'asc' ? 'selected' : '' }}>Croissant</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Boutons -->
+                        <div class="flex gap-2">
+                            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                                Rechercher
+                            </button>
+                            <a href="{{ route('reparation.materiel.index') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">
+                                Réinitialiser
+                            </a>
+                        </div>
+                    </form>
+                </div>
+
                 <div class="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                     <div class="overflow-x-auto">
                         @if($materiels->isEmpty())

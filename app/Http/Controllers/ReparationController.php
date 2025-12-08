@@ -6,23 +6,53 @@ use Illuminate\View\View;
 use Illuminate\Http\Request;
 use App\Models\Materiel;
 use App\Models\Reparation;
+use App\Models\Facture;
 use Illuminate\Support\Facades\Auth;
 
 class ReparationController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->get('search');
+        $sortBy = $request->get('sort_by', 'date');
+        $sortOrder = $request->get('sort_order', 'desc');
+
         // Charger les réparations actives (non-archivées)
-        $activeReparations = Reparation::with(['materiel', 'user'])
-            ->whereNotIn('status', ['archived', 'closed'])
-            ->latest()
-            ->get();
+        $activeQuery = Reparation::with(['materiel', 'user'])
+            ->whereNotIn('status', ['archived', 'closed']);
+
+        if ($search) {
+            $activeQuery->where(function($q) use ($search) {
+                $q->where('id', 'ilike', '%' . $search . '%')
+                  ->orWhere('description', 'ilike', '%' . $search . '%')
+                  ->orWhereHas('materiel', function($q) use ($search) {
+                      $q->where('reference', 'ilike', '%' . $search . '%');
+                  });
+            });
+        }
 
         // Charger les réparations archivées
-        $archivedReparations = Reparation::with(['materiel', 'user'])
-            ->whereIn('status', ['archived', 'closed'])
-            ->latest()
-            ->get();
+        $archivedQuery = Reparation::with(['materiel', 'user'])
+            ->whereIn('status', ['archived', 'closed']);
+
+        if ($search) {
+            $archivedQuery->where(function($q) use ($search) {
+                $q->where('id', 'ilike', '%' . $search . '%')
+                  ->orWhere('description', 'ilike', '%' . $search . '%')
+                  ->orWhereHas('materiel', function($q) use ($search) {
+                      $q->where('reference', 'ilike', '%' . $search . '%');
+                  });
+            });
+        }
+
+        // Appliquer le tri
+        if ($sortBy === 'status') {
+            $activeReparations = $activeQuery->orderBy('status', $sortOrder)->get();
+            $archivedReparations = $archivedQuery->orderBy('status', $sortOrder)->get();
+        } else {
+            $activeReparations = $activeQuery->latest()->get();
+            $archivedReparations = $archivedQuery->latest()->get();
+        }
 
         return view('reparation.index', compact('activeReparations', 'archivedReparations'));
     }
@@ -49,6 +79,21 @@ class ReparationController extends Controller
             'status' => 'pending',
         ]);
 
+        // Créer automatiquement une facture associée
+        $numeroFacture = 'FAC-' . now()->format('Ymd') . '-' . str_pad(
+            Facture::whereDate('created_at', today())->count() + 1,
+            4,
+            '0',
+            STR_PAD_LEFT
+        );
+
+        Facture::create([
+            'numero_facture' => $numeroFacture,
+            'date_emission' => now()->toDateString(),
+            'montant_total' => 0.00,
+            'reparation_id' => $reparation->id,
+        ]);
+
         // Mettre le matériel en inactif
         $materiel = Materiel::find($request->input('materiel_id'));
         if ($materiel) {
@@ -56,7 +101,7 @@ class ReparationController extends Controller
             $materiel->save();
         }
 
-        return redirect()->route('reparation.index')->with('success', 'Demande de réparation créée avec succès.');
+        return redirect()->route('reparation.index')->with('success', 'Demande de réparation et facture créées avec succès.');
     }
 
     /**

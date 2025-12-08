@@ -6,22 +6,50 @@ use App\Models\Materiel;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class MaterielController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $materiels = Materiel::where('desactive', false)->latest()->get();
+        $query = Materiel::where('desactive', false);
+
+        // Filtre par recherche (référence, désignation, numéro de série)
+        if ($search = $request->get('search')) {
+            $query->where('reference', 'ilike', '%' . $search . '%')
+                  ->orWhere('designation', 'ilike', '%' . $search . '%')
+                  ->orWhere('numero_serie', 'ilike', '%' . $search . '%');
+        }
+
+        // Tri
+        $sortBy = $request->get('sort_by', 'date');
+        $sortOrder = $request->get('sort_order', 'desc');
+
+        match($sortBy) {
+            'reference' => $query->orderBy('reference', $sortOrder),
+            'designation' => $query->orderBy('designation', $sortOrder),
+            'date' => $query->orderBy('acquisition_date', $sortOrder),
+            default => $query->latest(),
+        };
+
+        $materiels = $query->get();
         return view('reparation.materiel.index', compact('materiels'));
     }
 
         public function create()
     {
-        return view('reparation.materiel.create');
+            if (!Auth::user() || !Auth::user()->hasPermission('gerer_le_materiel')) {
+                abort(403);
+            }
+
+            return view('reparation.materiel.create');
     }
 
     public function store(Request $request)
     {
+        if (!Auth::user() || !Auth::user()->hasPermission('gerer_le_materiel')) {
+            abort(403);
+        }
         $validatedData = $request->validate([
             'reference' => 'required|string|max:255',
             'designation' => 'required|string|max:255',
@@ -51,12 +79,19 @@ class MaterielController extends Controller
 
     public function edit(Materiel $materiel)
     {
+        if (!Auth::user() || !Auth::user()->hasPermission('gerer_le_materiel')) {
+            abort(403);
+        }
+
         $materiels = Materiel::all();
         return view('reparation.materiel.create', compact('materiel'));
     }
 
     public function update(Request $request, Materiel $materiel)
     {
+        if (!Auth::user() || !Auth::user()->hasPermission('gerer_le_materiel')) {
+            abort(403);
+        }
         $validatedData = $request->validate([
             'reference' => 'required|string|max:255',
             'designation' => 'required|string|max:255',
@@ -79,6 +114,9 @@ class MaterielController extends Controller
 
     public function destroy(Request $request, Materiel $materiel)
     {
+        if (!Auth::user() || !Auth::user()->hasPermission('gerer_le_materiel')) {
+            abort(403);
+        }
         if (Schema::hasColumn('materiels', 'desactive')) {
             $materiel->desactive = true;
             $materiel->save();

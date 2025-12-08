@@ -23,6 +23,7 @@ use App\Http\Controllers\StandardController;
 use App\Http\Controllers\UserShortcutController;
 use App\Http\Controllers\ProductionController;
 use App\Http\Controllers\ReparationController;
+use App\Http\Controllers\FactureController;
 use App\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Foundation\Http\Middleware\ValidatePostSize;
 use Illuminate\Support\Facades\Route;
@@ -390,6 +391,17 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth', 'permission:voi
     Route::post('/reparation/materiel/store', [MaterielController::class, 'store'])->name('reparation.materiel.store');
     Route::get('/reparation/mareriel/historique', [MaterielController::class, 'historique'])->name('reparation.materiel.historique');
 
+    //Routes statiques des factures de réparation
+    Route::get('/reparation/factures', [FactureController::class, 'index'])->name('reparation.facture.index');
+    Route::get('/reparation/facture/create', [FactureController::class, 'create'])->name('reparation.facture.create');
+    Route::post('/reparation/facture/store', [FactureController::class, 'store'])->name('reparation.facture.store');
+
+    // Routes paramétrées des factures
+    Route::get('/reparation/facture/{facture}', [FactureController::class, 'show'])->name('reparation.facture.show');
+    Route::get('/reparation/facture/{facture}/edit', [FactureController::class, 'edit'])->name('reparation.facture.edit');
+    Route::patch('/reparation/facture/{facture}', [FactureController::class, 'update'])->name('reparation.facture.update');
+    Route::delete('/reparation/facture/{facture}', [FactureController::class, 'destroy'])->name('reparation.facture.destroy');
+
     // Routes paramétrées de réparation
     Route::get('/reparation/{reparation}', [ReparationController::class, 'show'])->name('reparation.show');
     Route::get('/reparation/{reparation}/edit', [ReparationController::class, 'edit'])->name('reparation.edit');
@@ -401,6 +413,8 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth', 'permission:voi
     Route::get('/reparation/materiel/edit/{materiel}', [MaterielController::class, 'edit'])->name('reparation.materiel.edit');
     Route::patch('/reparation/materiel/update/{materiel}', [MaterielController::class, 'update'])->name('reparation.materiel.update');
     Route::delete('/reparation/materiel/destroy/{materiel}', [MaterielController::class, 'destroy'])->name('reparation.materiel.destroy');
+
+
 });
 
 
