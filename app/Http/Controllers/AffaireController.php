@@ -288,11 +288,11 @@ class AffaireController extends Controller
      */
     public function indexColAffaireSmall()
     {
-        $affaires = Affaire::orderByRaw("CASE 
-            WHEN statut = 'en_cours' THEN 1 
-            WHEN statut = 'en_attente' THEN 2 
-            WHEN statut = 'termine' THEN 3 
-            WHEN statut = 'archive' THEN 4 
+        $affaires = Affaire::orderByRaw("CASE
+            WHEN statut = 'en_cours' THEN 1
+            WHEN statut = 'en_attente' THEN 2
+            WHEN statut = 'termine' THEN 3
+            WHEN statut = 'archive' THEN 4
             ELSE 5 END ASC")
             ->orderBy('updated_at', 'desc')
             ->take(5)
@@ -322,11 +322,11 @@ class AffaireController extends Controller
         $planningData = $affaires->map(function ($affaire) use ($start, $end) {
             $dateDebut = \Carbon\Carbon::parse($affaire->date_debut);
             $dateFinPrevue = $affaire->date_fin_prevue ? \Carbon\Carbon::parse($affaire->date_fin_prevue) : $dateDebut;
-            
+
             // Logique de prolongation automatique
             $isFinished = in_array($affaire->statut, [Affaire::STATUT_TERMINE, Affaire::STATUT_ARCHIVE]);
             $today = now()->startOfDay();
-            
+
             // Date de fin effective pour l'affichage
             if ($isFinished) {
                 // Si terminé, on utilise la date de fin réelle si elle existe, sinon la prévue
@@ -354,7 +354,7 @@ class AffaireController extends Controller
 
             // Détection du retard pour le style
             $isDelayed = !$isFinished && $dateFinPrevue->lt($today);
-            
+
             // Calcul de la partie "retard" si nécessaire (pour hachurage)
             $delayedWidthPercent = 0;
             if ($isDelayed && $dateFinPrevue->gt($displayStart)) {
@@ -363,7 +363,7 @@ class AffaireController extends Controller
                  $normalEnd = $dateFinPrevue->gt($end) ? $end : $dateFinPrevue;
                  $normalDuration = $displayStart->diffInDays($normalEnd) + 1;
                  $normalWidthPercent = ($normalDuration / $totalDays) * 100;
-                 
+
                  // Ajustement visuel : la barre principale sera la partie normale, on ajoutera un pseudo-element ou une div enfant pour le retard
                  // Simplification : On garde widthPercent total, et on passera un ratio de retard
             }

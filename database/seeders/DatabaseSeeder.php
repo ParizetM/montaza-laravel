@@ -187,15 +187,15 @@ class DatabaseSeeder extends Seeder
         $this->call(FamilleSeeder::class);
         $this->call(SousFamilleSeeder::class);
         $this->call(StandardSeeder::class);
-        $this->call(MaterialSeeder::class);
-        $this->call(MatiereSeeder::class);
+        // $this->call(MaterialSeeder::class);
+        // $this->call(MatiereSeeder::class);
         $this->call(DdpCdeStatutSeeder::class);
-        $this->call(DdpSeeder::class);
+        // $this->call(DdpSeeder::class);
         $this->call(MailTemplateSeeder::class);
         $this->call(TypeExpeditionSeeder::class);
-        $this->call(CdeSeeder::class);
-        $this->call([
-            ProductionSeeder::class,
-        ]);
+        // $this->call(CdeSeeder::class);
+        // $this->call([
+        //     ProductionSeeder::class,
+        // ]);
     }
 }

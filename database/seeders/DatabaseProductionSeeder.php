@@ -196,10 +196,10 @@ class DatabaseProductionSeeder extends Seeder
         echo "sous-familles à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
         $this->call(StandardSeeder::class);
         echo "standards à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
-        $this->call(MaterialSeeder::class);
-        echo "matériaux à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
-        $this->call(MatiereProductionSeeder::class);
-        echo "matières de production à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
+        // $this->call(MaterialSeeder::class);
+        // echo "matériaux à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
+        // $this->call(MatiereProductionSeeder::class);
+        // echo "matières de production à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
         // $this->call(MatiereSeeder::class);
         $this->call(DdpCdeStatutSeeder::class);
         echo "statuts des DDP et CDE à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";

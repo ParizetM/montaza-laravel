@@ -15,7 +15,7 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            
+
             <!-- Filtres -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6 p-6">
                 <form method="GET" action="{{ route('affaires.planning') }}" class="flex flex-col sm:flex-row gap-4 items-end">
@@ -63,10 +63,10 @@
                                     <!-- La barre principale -->
                                     <div class="absolute h-full rounded-full flex items-center justify-center text-xs text-white font-semibold shadow-sm transition-all duration-300
                                         {{ $data->is_delayed ? 'bg-red-500' : 'bg-' . $data->affaire->statut_color . '-500' }}"
-                                        style="left: {{ $data->left }}%; width: {{ $data->width }}%; min-width: 20px; 
+                                        style="left: {{ $data->left }}%; width: {{ $data->width }}%; min-width: 20px;
                                         {{ $data->is_delayed ? 'background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.2) 10px, rgba(255,255,255,0.2) 20px);' : '' }}"
                                         title="Du {{ $data->date_debut->format('d/m') }} au {{ $data->date_fin_effective->format('d/m') }} ({{ $data->affaire->statut_label }})">
-                                        
+
                                         @if($data->width > 5)
                                             <span class="truncate px-2">{{ $data->affaire->statut_label }}</span>
                                         @endif
@@ -81,7 +81,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Légende -->
             <div class="mt-6 flex gap-4 text-sm text-gray-600 dark:text-gray-400">
                 <div class="flex items-center gap-2">
