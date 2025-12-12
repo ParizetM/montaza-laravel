@@ -169,13 +169,13 @@ class DatabaseSeeder extends Seeder
             'created_at' => now(),
         ]);
 
-        Notification::factory()->times(100)->create();
+        // Notification::factory()->times(100)->create();
         $this->call(PaysSeeder::class);
         $this->call(FormeJuridiqueSeeder::class);
         $this->call(CodeApeSeeder::class);
         $this->call(SocieteTypeSeeder::class);
         $this->call(ConditionPaiementSeeder::class);
-        SocieteContact::factory()->times(100)->create();
+        // SocieteContact::factory()->times(100)->create();
         $this->call(PredefinedShortcutsSeeder::class);
         foreach (PredefinedShortcut::all() as $shortcut) {
             UserShortcut::create([
