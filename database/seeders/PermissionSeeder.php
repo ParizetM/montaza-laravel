@@ -9,9 +9,9 @@ class PermissionSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     */
-    public function run(): void
-    {
-        Permission::factory()->count(20)->create();
-    }
+    //  */
+    // public function run(): void
+    // {
+    //     Permission::factory()->count(20)->create();
+    // }
 }

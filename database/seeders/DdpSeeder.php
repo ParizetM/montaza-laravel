@@ -14,10 +14,10 @@ class DdpSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-    public function run(): void
-    {
-        Ddp::factory(10)->create();
-        DdpLigne::factory(35)->create();
-        DdpLigneFournisseur::factory(60)->create();
-    }
+    // public function run(): void
+    // {
+    //     Ddp::factory(10)->create();
+    //     DdpLigne::factory(35)->create();
+    //     DdpLigneFournisseur::factory(60)->create();
+    // }
 }

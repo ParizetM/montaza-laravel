@@ -41,6 +41,12 @@ class DatabaseProductionSeeder extends Seeder
             'gerer_l_application' => 'paramétrer les réglages de l’application',
             'voir_les_affaires' => 'Consulter Les Affaires',
             'gerer_les_affaires' => 'Créer, Modifier Et supprimer Les Affaires',
+            'voir_la_production' => 'Consulter la production',
+            'voir_les_reparations' => 'Consulter les réparations',
+            'gerer_les_affaires' => 'Gérer les affaires',
+            'gerer_les_factures_reparations' => 'Gérer les factures de réparations',
+            'gerer_les_reparations' => 'Gérer les réparations',
+            'gerer_le_materiel' => 'Gérer le matériel',
         ];
         foreach ($permissions as $permission => $description) {
             Permission::factory()->create([

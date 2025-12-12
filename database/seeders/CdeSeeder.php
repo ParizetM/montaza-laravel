@@ -12,9 +12,9 @@ class CdeSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-    public function run(): void
-    {
-        Cde::factory()->count(10)->create();
-        CdeLigne::factory()->count(30)->create();
-    }
+    // public function run(): void
+    // {
+    //     Cde::factory()->count(10)->create();
+    //     CdeLigne::factory()->count(30)->create();
+    // }
 }
