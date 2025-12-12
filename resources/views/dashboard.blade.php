@@ -31,6 +31,13 @@
                         }
                     </style>
                 </div>
+                <div id="production_container" class="bg-white dark:bg-gray-800 rounded-md overflow-hidden shadow-md">
+                    <div id="loading-spinner"
+                        class=" mt-8 inset-0 bg-none bg-opacity-75 flex items-center justify-center z-50 h-dvh w-full">
+                        <div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32">
+                        </div>
+                    </div>
+                </div>
                 <div id="cde_container" class="bg-white dark:bg-gray-800 rounded-md overflow-hidden shadow-md">
                     <div id="loading-spinner"
                         class=" mt-8 inset-0 bg-none bg-opacity-75 flex items-center justify-center z-50 h-dvh w-full">
@@ -47,6 +54,13 @@
                 .then(response => response.text())
                 .then(data => {
                     document.getElementById('ddp_container').innerHTML = data;
+                });
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/colaffaire/small')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('production_container').innerHTML = data;
                 });
         });
         document.addEventListener('DOMContentLoaded', function() {

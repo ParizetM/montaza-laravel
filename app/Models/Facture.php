@@ -20,6 +20,22 @@ class Facture extends Model
         'date_emission' => 'date',
         'montant_total' => 'decimal:2',
     ];
+
+    protected static function booted()
+    {
+        static::saved(function ($facture) {
+            if ($facture->reparation && $facture->reparation->affaire) {
+                $facture->reparation->affaire->updateTotal();
+            }
+        });
+
+        static::deleted(function ($facture) {
+            if ($facture->reparation && $facture->reparation->affaire) {
+                $facture->reparation->affaire->updateTotal();
+            }
+        });
+    }
+
     public function reparation()
     {
         return $this->belongsTo(Reparation::class);

@@ -200,8 +200,15 @@ class CdeController extends Controller
         return view('ddp_cde.cde.index', compact('cdes',  ['cde_statuts', 'cdesGrouped', 'societes', 'sort', 'direction']));
     }
 
-    public function create()
+    public function create(Request $request)
     {
+        if ($request->has('affaire_id')) {
+            $affaire = \App\Models\Affaire::find($request->input('affaire_id'));
+            if ($affaire && ($affaire->statut === \App\Models\Affaire::STATUT_TERMINE || $affaire->statut === \App\Models\Affaire::STATUT_ARCHIVE)) {
+                return redirect()->back()->with('error', 'Impossible de créer une commande pour une affaire terminée ou archivée.');
+            }
+        }
+
         Cde::where('nom', 'undefined')->delete();
         $lastCde = Cde::latest()->first();
         $code = $lastCde ? $lastCde->code : 'CDE-' . now()->format('y') . '-0000';
@@ -261,6 +268,7 @@ class CdeController extends Controller
             'type_expedition_id' => $typeExpeditionId,
             'show_ref_fournisseur' => true,
             'commentaire_id' => $commentaire_id,
+            'affaire_id' => $request->input('affaire_id'),
         ]);
         $cdeid =  $cde->id;
         return redirect()->route('cde.show', $cdeid);
@@ -386,6 +394,10 @@ class CdeController extends Controller
             return response()->json(['error' => 'Invalid code format'], 400);
         }
         $cde = Cde::findOrFail($request->input('cde_id'));
+        if ($cde->affaire && $cde->affaire->statut === \App\Models\Affaire::STATUT_TERMINE) {
+            DB::rollBack();
+            return response()->json(['error' => 'Impossible de modifier une commande liée à une affaire terminée.'], 403);
+        }
         // Parse the JSON string and attach each societe contact to the CDE
         $contactIds = json_decode($request->input('contact_id'));
         if (!empty($contactIds)) {
@@ -467,6 +479,9 @@ class CdeController extends Controller
 
         try {
             $cde = Cde::findOrFail($id);
+            if ($cde->affaire && $cde->affaire->statut === \App\Models\Affaire::STATUT_TERMINE) {
+                return back()->with('error', 'Impossible de supprimer une commande liée à une affaire terminée.');
+            }
             if ($cde->ddp_id != null) {
                 $dppid = $cde->ddp_id;
                 $cde->delete();
@@ -496,7 +511,9 @@ class CdeController extends Controller
         $conditionsPaiement = ConditionPaiement::all();
         $societe_id = $cde->societe?->id;
         $cde_notes = CdeNote::where('entite_id', $cde->entite_id)->get();
-        $affaires = \App\Models\Affaire::orderBy('created_at', 'desc')->get();
+        $affaires = \App\Models\Affaire::where('statut', '!=', \App\Models\Affaire::STATUT_TERMINE)
+            ->orderBy('created_at', 'desc')
+            ->get();
         $total_ht = 0;
         foreach ($cde->cdeLignes as $ligne) {
             $total_ht += $ligne->prix_unitaire * $ligne->quantite;
@@ -842,6 +859,7 @@ class CdeController extends Controller
                 $ligne->prix_unitaire,
                 $ligne->typeExpedition->short,
                 $ligne->date_livraison_reelle ? Carbon::parse($ligne->date_livraison_reelle)->format('d/m/Y') : null,
+                $ligne->non_livre,
             ];
         });
         return $data;
@@ -849,6 +867,9 @@ class CdeController extends Controller
     public function saveRetours($id, Request $request)
     {
         $cde = Cde::findOrFail($id);
+        if ($cde->affaire && $cde->affaire->statut === \App\Models\Affaire::STATUT_TERMINE) {
+            abort(403, 'Impossible de modifier une commande liée à une affaire terminée.');
+        }
         $data = array_map('str_getcsv', array_filter(explode("\r\n", $request->data), 'strlen'));
         $compteur = 0;
         $changements = $cde->changement_livraison ? json_decode($cde->changement_livraison, true) : [];
@@ -858,6 +879,7 @@ class CdeController extends Controller
                 'quantite' => $ligne->quantite,
                 'prix_unitaire' => $ligne->prix_unitaire,
                 'type_expedition_id' => $ligne->type_expedition_id,
+                'non_livre' => $ligne->non_livre,
             ];
 
             $ligne->ddp_cde_statut_id = DdpCdeStatut::where('nom', $data[$compteur][0])->first()->id ?? $ligne->ddp_cde_statut_id;
@@ -865,12 +887,14 @@ class CdeController extends Controller
             $ligne->prix_unitaire = $data[$compteur][2];
             $ligne->type_expedition_id = TypeExpedition::where('short', $data[$compteur][3])->first()->id ?? $ligne->type_expedition_id;
             $ligne->date_livraison_reelle = $data[$compteur][4] ? Carbon::createFromFormat('d/m/Y', $data[$compteur][4]) : null;
+            $ligne->non_livre = filter_var($data[$compteur][5], FILTER_VALIDATE_BOOLEAN);
 
             $newData = [
                 'ddp_cde_statut_id' => $ligne->ddp_cde_statut_id,
                 'quantite' => $ligne->quantite,
                 'prix_unitaire' => $ligne->prix_unitaire,
                 'type_expedition_id' => $ligne->type_expedition_id,
+                'non_livre' => $ligne->non_livre,
             ];
 
             foreach ($originalData as $key => $value) {
@@ -880,7 +904,8 @@ class CdeController extends Controller
                         'ddp_cde_statut_id' => 'Statut',
                         'quantite' => 'Quantité',
                         'prix_unitaire' => 'Prix unitaire',
-                        'type_expedition_id' => 'Type d\'expédition'
+                        'type_expedition_id' => 'Type d\'expédition',
+                        'non_livre' => 'Non livré',
                     ];
 
                     $fieldName = $fieldNames[$key] ?? $key;
@@ -901,6 +926,9 @@ class CdeController extends Controller
                     } elseif ($key === 'quantite') {
                         $oldValue = formatNumber($value);
                         $newValue = formatNumber($newData[$key]);
+                    } elseif ($key === 'non_livre') {
+                        $oldValue = $value ? 'Oui' : 'Non';
+                        $newValue = $newData[$key] ? 'Oui' : 'Non';
                     }
 
 
@@ -927,6 +955,14 @@ class CdeController extends Controller
     public function terminer($id)
     {
         $cde = Cde::findOrFail($id);
+
+        // Validation : vérifier que toutes les lignes ont une date de livraison ou sont marquées comme non livrées
+        foreach ($cde->cdeLignes as $ligne) {
+            if (!$ligne->non_livre && is_null($ligne->date_livraison_reelle) && $ligne->ddp_cde_statut_id != 4) { // Ignorer les lignes annulées
+                return redirect()->back()->with('error', 'La date de livraison réelle est obligatoire pour toutes les lignes, sauf si "Non livré" est coché.');
+            }
+        }
+
         $cde->ddp_cde_statut_id = 3;
         $total_ht = 0;
         foreach ($cde->cdeLignes as $ligne) {
@@ -1176,6 +1212,9 @@ class CdeController extends Controller
     {
         $cde = Cde::find($id);
         if ($cde) {
+            if ($cde->affaire && $cde->affaire->statut === \App\Models\Affaire::STATUT_TERMINE) {
+                return response()->json(['error' => 'Impossible de modifier le commentaire d\'une commande liée à une affaire terminée.'], 403);
+            }
             // Trouve le commentaire lié à la commande
             $commentaire = $cde->commentaire;
             if ($commentaire) {
@@ -1193,6 +1232,93 @@ class CdeController extends Controller
                 $cde->commentaire()->save($commentaire);
                 return response()->json(['message' => 'Commentaire créé avec succès'], 201);
             }
+        }
+    }
+
+    public function updateMouvement(Request $request, $mouvementId)
+    {
+        $request->validate([
+            'quantity' => 'nullable|numeric|min:0',
+            'unit_value' => 'nullable|numeric|min:0',
+        ]);
+
+        try {
+            $mouvement = \App\Models\MouvementStock::findOrFail($mouvementId);
+
+            $newQuantity = $request->input('quantity', $mouvement->quantite);
+            $newUnitValue = $request->input('unit_value', $mouvement->valeur_unitaire);
+
+            $result = $this->stockService->modifierMouvement($mouvement, $newQuantity, $newUnitValue);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Mouvement mis à jour',
+                'new_id' => $result['mouvement']->id
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function storeMouvement(Request $request, $cdeId, $ligneId)
+    {
+        $request->validate([
+            'quantity' => 'required|numeric|min:0',
+            'unit_value' => 'required|numeric|min:0',
+        ]);
+
+        try {
+            $cde = Cde::findOrFail($cdeId);
+            $ligne = $cde->cdeLignes()->findOrFail($ligneId);
+            $matiere = $ligne->matiere;
+
+            $quantity = $request->input('quantity');
+            $unitValue = $request->input('unit_value');
+
+            if ($quantity > 0) {
+                $result = $this->stockService->stock(
+                    $matiere->id,
+                    'entree',
+                    $quantity,
+                    $unitValue,
+                    'Livraison - ' . $cde->code,
+                    $ligne->id
+                );
+
+                // Retrieve the created movement. stockService->stock returns array with 'mouvement' key if created?
+                // Let's check StockService::stock return value.
+                // It returns array.
+
+                $mouvement = $result['mouvement'] ?? null;
+
+                if (!$mouvement) {
+                     // Fallback if service doesn't return it, though it should.
+                     // Actually stockService->stock returns ['mouvement' => $mouvement] in my previous read?
+                     // Let's verify.
+                }
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Mouvement ajouté',
+                    'mouvement_id' => $mouvement ? $mouvement->id : null
+                ]);
+            }
+
+            return response()->json(['error' => 'Quantité invalide'], 400);
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function destroyMouvement($mouvementId)
+    {
+        try {
+            $mouvement = \App\Models\MouvementStock::findOrFail($mouvementId);
+            $this->stockService->deleteStockFromMouvement($mouvement);
+            return response()->json(['success' => true, 'message' => 'Mouvement supprimé']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 

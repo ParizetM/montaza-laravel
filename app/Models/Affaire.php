@@ -57,6 +57,23 @@ class Affaire extends Model
         };
     }
 
+    protected static function booted()
+    {
+        static::updating(function ($affaire) {
+            if ($affaire->isDirty('statut') && ($affaire->statut === self::STATUT_TERMINE || $affaire->statut === self::STATUT_ARCHIVE)) {
+                // Désassigner tous les matériels actifs
+                foreach ($affaire->materiels as $materiel) {
+                    if ($materiel->pivot->statut !== 'termine') {
+                        $affaire->materiels()->updateExistingPivot($materiel->id, [
+                            'date_fin' => now(),
+                            'statut' => 'termine'
+                        ]);
+                    }
+                }
+            }
+        });
+    }
+
     /**
      * Relation avec les commandes (Cde)
      */
@@ -95,7 +112,12 @@ class Affaire extends Model
     {
         // Calculer le total des commandes (sauf annulées et en attente)
         // 2 = En cours, 3 = Terminée, 5 = Vérifiée
-        $this->total_ht = $this->cdes->whereIn('ddp_cde_statut_id', [2, 3, 5])->sum('total_ht');
+        $totalCdes = $this->cdes->whereIn('ddp_cde_statut_id', [2, 3, 5])->sum('total_ht');
+
+        // Calculer le total des réparations
+        $totalReparations = Facture::whereIn('reparation_id', $this->reparations()->pluck('id'))->sum('montant_total');
+
+        $this->total_ht = $totalCdes + $totalReparations;
 
         if ($this->total_ht <= 0 || is_null($this->total_ht)) {
             $this->total_ht = 0;

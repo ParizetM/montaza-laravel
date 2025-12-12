@@ -12,7 +12,7 @@ class MaterielController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Materiel::where('desactive', false);
+        $query = Materiel::query();
 
         // Filtre par recherche (référence, désignation, numéro de série)
         if ($search = $request->get('search')) {
@@ -32,7 +32,8 @@ class MaterielController extends Controller
             default => $query->latest(),
         };
 
-        $materiels = $query->get();
+        $nombre = $request->input('nombre', 50);
+        $materiels = $query->paginate($nombre);
         return view('reparation.materiel.index', compact('materiels'));
     }
 

@@ -16,7 +16,7 @@ class MaterielFactory extends Factory
             'designation' => $this->faker->randomElement(['Poste à souder', 'Meuleuse', 'Perceuse colonne', 'Groupe électrogène', 'Echafaudage', 'Caisse à outils']),
             'description' => $this->faker->sentence(),
             'numero_serie' => $this->faker->bothify('SN-####-????'),
-            'status' => $this->faker->randomElement(['actif', 'maintenance', 'inactif']),
+            'status' => 'actif',
             'acquisition_date' => $this->faker->date(),
         ];
     }

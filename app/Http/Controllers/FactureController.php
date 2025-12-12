@@ -65,6 +65,11 @@ class FactureController extends Controller
             'reparation_id' => 'required|exists:reparations,id',
         ]);
 
+        $reparation = \App\Models\Reparation::findOrFail($request->reparation_id);
+        if ($reparation->affaire && ($reparation->affaire->statut === \App\Models\Affaire::STATUT_TERMINE || $reparation->affaire->statut === \App\Models\Affaire::STATUT_ARCHIVE)) {
+             return redirect()->back()->withErrors(['reparation_id' => 'Impossible de lier une facture à une réparation d\'une affaire terminée ou archivée.']);
+        }
+
         // Création de la facture
         \App\Models\Facture::create($validatedData);
 
@@ -95,6 +100,11 @@ class FactureController extends Controller
         if (!Auth::user() || !Auth::user()->hasPermission('gerer_les_factures_reparations')) {
             abort(403);
         }
+
+        if ($facture->reparation && $facture->reparation->affaire && ($facture->reparation->affaire->statut === \App\Models\Affaire::STATUT_TERMINE || $facture->reparation->affaire->statut === \App\Models\Affaire::STATUT_ARCHIVE)) {
+             abort(403, 'Impossible de modifier une facture liée à une affaire terminée ou archivée.');
+        }
+
         $validatedData = $request->validate([
             'numero_facture' => 'required|unique:factures,numero_facture,' . $facture->id,
             'date_emission' => 'required|date',

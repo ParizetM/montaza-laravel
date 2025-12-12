@@ -33,6 +33,7 @@
 
                 <form method="GET" action="{{ route('profile.index') }}" class="mr-4 mb-1 sm:mr-0 sm:grow">
                     <input type="text" name="search" placeholder="Rechercher..." value="{{ request('search') }}"
+                        oninput="debounceSubmit(this.form)"
                         class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
                     <button type="submit" class=" ml-2 btn">
                         {{ __('Rechercher') }}
@@ -162,6 +163,14 @@
                 containerHeight +
                 'px;"><div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32"></div></div><style>.loader {border-top-color: #3498db;animation: spinner 1.5s linear infinite;}@keyframes spinner {0% {transform: rotate(0deg);}100% {transform: rotate(360deg);}}</style>';
 
+        }
+
+        let timeout = null;
+        function debounceSubmit(form) {
+            clearTimeout(timeout);
+            timeout = setTimeout(function () {
+                form.submit();
+            }, 500);
         }
     </script>
 

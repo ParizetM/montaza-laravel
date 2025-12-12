@@ -319,8 +319,15 @@ class DdpController extends Controller
             ]);
         }
     }
-    public function create()
+    public function create(Request $request)
     {
+        if ($request->has('affaire_id')) {
+            $affaire = \App\Models\Affaire::find($request->input('affaire_id'));
+            if ($affaire && ($affaire->statut === \App\Models\Affaire::STATUT_TERMINE || $affaire->statut === \App\Models\Affaire::STATUT_ARCHIVE)) {
+                return redirect()->back()->with('error', 'Impossible de créer une demande de prix pour une affaire terminée ou archivée.');
+            }
+        }
+
         Ddp::where('nom', 'undefined')->delete();
         $commentaire_id = Commentaire::create([
             'contenu' => '',
@@ -332,6 +339,7 @@ class DdpController extends Controller
             'entite_id' => 1,
             'user_id' => Auth::id(),
             'commentaire_id' => $commentaire_id,
+            'affaire_id' => $request->input('affaire_id'),
         ]);
         $ddpid =  $ddp->id;
         return redirect()->route('ddp.show', $ddpid);
@@ -384,6 +392,10 @@ class DdpController extends Controller
         }
         try {
             $ddp = Ddp::findOrFail($request->ddp_id);
+            if ($ddp->affaire && $ddp->affaire->statut === \App\Models\Affaire::STATUT_TERMINE) {
+                DB::rollBack();
+                return response()->json(['error' => 'Impossible de modifier une demande de prix liée à une affaire terminée.'], 403);
+            }
             $ddp->entite_id = $request->entite_id;
             $ddp->nom = $request->nom;
             $ddp->code = "DDP-" . date('y') . "-" . $code . $entite_code;
@@ -435,6 +447,9 @@ class DdpController extends Controller
     {
 
         $ddp = Ddp::findOrFail($id);
+        if ($ddp->affaire && $ddp->affaire->statut === \App\Models\Affaire::STATUT_TERMINE) {
+            return back()->with('error', 'Impossible de supprimer une demande de prix liée à une affaire terminée.');
+        }
         $ddp->delete();
         return redirect()->route('ddp_cde.index');
     }
@@ -706,6 +721,9 @@ class DdpController extends Controller
     public function saveRetours(Request $request, $id)
     {
         $ddp = Ddp::findOrFail($id);
+        if ($ddp->affaire && $ddp->affaire->statut === \App\Models\Affaire::STATUT_TERMINE) {
+            abort(403, 'Impossible de modifier une demande de prix liée à une affaire terminée.');
+        }
         $request->validate([
             'data' => 'required|string',
         ]);
@@ -1013,6 +1031,9 @@ class DdpController extends Controller
     {
         $ddp = Ddp::find($id);
         if ($ddp) {
+            if ($ddp->affaire && $ddp->affaire->statut === \App\Models\Affaire::STATUT_TERMINE) {
+                return response()->json(['error' => 'Impossible de modifier le commentaire d\'une demande de prix liée à une affaire terminée.'], 403);
+            }
             // Trouve le commentaire lié à la demande de prix
             $commentaire = $ddp->commentaire;
             if ($commentaire) {

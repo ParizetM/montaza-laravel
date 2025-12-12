@@ -60,7 +60,7 @@
                         <div class="flex w-full">
                             <x-tooltip position="bottom" class="w-full">
                                 <x-slot name="slot_item">
-                                    <x-text-input placeholder="Recherchez une matière" id="searchbar" class="w-full" />
+                                    <x-text-input placeholder="Recherchez une matière" id="searchbar" class="w-full" oninput="liveSearch()" />
                                 </x-slot>
                                 <x-slot name="slot_tooltip">
                                     <ul class="whitespace-nowrap">

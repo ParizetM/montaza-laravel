@@ -56,6 +56,33 @@ class Cde extends Model
             }
         });
 
+        static::updated(function ($cde) {
+            // 3 = Terminée (Livrée)
+            if ($cde->ddp_cde_statut_id == 3) {
+                $stockService = app(\App\Services\StockService::class);
+
+                foreach ($cde->cdeLignes as $ligne) {
+                    if (!$ligne->is_stocke && $ligne->matiere_id && $ligne->date_livraison_reelle) {
+                        try {
+                            $stockService->stock(
+                                $ligne->matiere_id,
+                                'entree',
+                                (float) $ligne->quantite,
+                                (float) $ligne->prix_unitaire,
+                                'Livraison commande - ' . $cde->code,
+                                $ligne->id
+                            );
+
+                            $ligne->is_stocke = true;
+                            $ligne->saveQuietly();
+                        } catch (\Exception $e) {
+                            \Log::error("Failed to auto-stock line {$ligne->id}: " . $e->getMessage());
+                        }
+                    }
+                }
+            }
+        });
+
         static::deleted(function ($cde) {
             if ($cde->affaire) {
                 $cde->affaire->updateTotal();

@@ -41,6 +41,7 @@
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Recherche</label>
                                 <input type="text" name="search" placeholder="Référence, désignation, série..."
                                     value="{{ request('search') }}"
+                                    oninput="debounceSubmit(this.form)"
                                     class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-blue-500">
                             </div>
 
@@ -63,6 +64,14 @@
                                     <option value="desc" {{ request('sort_order') === 'desc' ? 'selected' : '' }}>Décroissant</option>
                                     <option value="asc" {{ request('sort_order') === 'asc' ? 'selected' : '' }}>Croissant</option>
                                 </select>
+                            </div>
+
+                            <!-- Quantité par page -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Quantité par pages</label>
+                                <input type="number" name="nombre" value="{{ request('nombre', 50) }}" min="1" max="1000"
+                                    onchange="this.form.submit()"
+                                    class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-blue-500">
                             </div>
                         </div>
 
@@ -163,7 +172,7 @@
                 </div>
                 <div class="mt-4 flex justify-center items-center pb-3 pagination">
                     <div>
-
+                        {{ $materiels->appends(request()->query())->links() }}
                     </div>
                 </div>
             </div>
@@ -211,6 +220,13 @@
             });
         }
 
+        let timeout = null;
+        function debounceSubmit(form) {
+            clearTimeout(timeout);
+            timeout = setTimeout(function () {
+                form.submit();
+            }, 500);
+        }
     </script>
 </x-app-layout>
 

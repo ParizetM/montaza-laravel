@@ -9,7 +9,17 @@
                 <form method="GET" action="{{ route('affaires.index') }}"
                     class="mr-4 mb-1 sm:mr-0 flex flex-col sm:flex-row items-start sm:items-center">
                     <input type="text" name="search" placeholder="Rechercher..." value="{{ request('search') }}"
+                        oninput="debounceSubmit(this.form)"
                         class="w-full sm:w-auto px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
+
+                    <select name="statut" onchange="this.form.submit()" class="mt-2 sm:mt-0 sm:ml-4 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
+                        <option value="">{{ __('Tous les statuts') }}</option>
+                        <option value="en_attente" {{ request('statut') == 'en_attente' ? 'selected' : '' }}>{{ __('En attente') }}</option>
+                        <option value="en_cours" {{ request('statut') == 'en_cours' ? 'selected' : '' }}>{{ __('En cours') }}</option>
+                        <option value="termine" {{ request('statut') == 'termine' ? 'selected' : '' }}>{{ __('Terminé') }}</option>
+                        <option value="archive" {{ request('statut') == 'archive' ? 'selected' : '' }}>{{ __('Archivé') }}</option>
+                    </select>
+
                     <div class="flex items-center ml-4 my-1">
                         <label for="nombre" class="mr-2 text-gray-900 dark:text-gray-100">{{ __('Quantité') }}</label>
                         <input type="number" name="nombre" id="nombre"
@@ -20,6 +30,9 @@
                         {{ __('Rechercher') }}
                     </button>
                 </form>
+                <a href="{{ route('affaires.planning') }}" class="btn mb-1 mr-2 bg-indigo-600 hover:bg-indigo-700 text-white">
+                    {{ __('Planning') }}
+                </a>
                 @can('gerer_les_affaires')
                     <button x-data="" class="btn mb-1"
                         x-on:click.prevent="$dispatch('open-modal', 'create-affaire-modal')">
@@ -29,127 +42,49 @@
             </div>
         </div>
     </x-slot>
-    <div class="py-8">
-        <div class="max-w-8xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 sm:rounded-lg shadow-md">
-                <div class="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-                    <div>
-                        <table class="min-w-full bg-white dark:bg-gray-800" id="affaires-table">
-                            <thead
-                                class="bg-linear-to-r from-gray-200 to-gray-50 dark:from-gray-700 dark:to-gray-800 text-gray-700 dark:text-gray-100">
-                                <tr>
-                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Code</th>
-                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Nom</th>
-                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">
-                                        <div class="flex items-center flex-col w-fit">
-                                            <div
-                                                class="border-b-2 border-gray-500 dark:border-gray-400 text-gray-700 dark:text-gray-300">
-                                                <p class="font-semibold text-lg">
-                                                    Total HT
-                                                </p>
-                                            </div>
-                                            <p class="text-gray-500 dark:text-gray-400 ">
-                                                Budget
-                                            </p>
-                                        </div>
-                                    </th>
-                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Date de création
-                                    </th>
-                                    <th
-                                        class="text-left py-3 px-4 uppercase font-semibold text-sm flex justify-between items-center">
-                                        Actions
-                                        <x-tooltip position="left">
-                                            <x-slot:slot_item>
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @foreach($affaires as $affaire)
+                    <a href="{{ route('affaires.show', $affaire) }}" class="block group">
+                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg hover:shadow-md transition-shadow duration-200 border border-gray-200 dark:border-gray-700">
+                            <div class="p-6">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-{{ $affaire->statut_color }}-100 text-{{ $affaire->statut_color }}-800 dark:bg-{{ $affaire->statut_color }}-900 dark:text-{{ $affaire->statut_color }}-200">
+                                            {{ $affaire->statut_label }}
+                                        </span>
+                                        <h3 class="mt-2 text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                            {{ $affaire->nom }}
+                                        </h3>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400 font-mono">{{ $affaire->code }}</p>
+                                    </div>
+                                </div>
 
-                                                <a href="{{ route('affaires.actualiser_totals') }}"
-                                                    class="flex items-center justify-center aspect-square rounded-full text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 overflow-hidden transition p-1">
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
-                                                        </path>
-                                                    </svg>
-                                                </a>
-                                            </x-slot:slot_item>
-                                            <x-slot:slot_tooltip>
-                                                <p>Actualiser les budget</p>
-                                            </x-slot:slot_tooltip>
-                                        </x-tooltip>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-500 dark:text-gray-400">Budget</span>
+                                        <span class="font-medium text-gray-900 dark:text-gray-100">{{ number_format($affaire->budget, 2, ',', ' ') }} €</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-500 dark:text-gray-400">Réalisé</span>
+                                        <span class="font-medium {{ $affaire->total_ht > $affaire->budget ? 'text-red-600' : 'text-green-600' }}">
+                                            {{ number_format($affaire->total_ht, 2, ',', ' ') }} €
+                                        </span>
+                                    </div>
+                                </div>
 
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"
-                                id="affaires-tbody">
-                                @forelse ($affaires as $affaire)
-                                    <tr class=" transition-all duration-200 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 my-2"
-                                        id="affaire-row-{{ $affaire->id }}">
-                                        <td
-                                            class="py-3 px-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-gray-100">
-                                            {{ $affaire->code }}</td>
-                                        <!-- nom de l'affaire -->
-                                        <td
-                                            class="py-3 px-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                                            {{ $affaire->nom }}</td>
-                                        <td class="py-2 px-4">
-                                            <div class="flex items-center flex-col w-fit">
-                                                <div
-                                                    class="border-b-2 border-gray-500 dark:border-gray-400 text-gray-700 dark:text-gray-300">
-                                                    <p
-                                                        class="font-semibold text-lg
-                                                        @if ($affaire->total_ht > $affaire->budget) text-orange-500 dark:text-orange-400 @endif
-                                                    ">
-                                                        {{ formatNumberArgent($affaire->total_ht) }}
-                                                    </p>
-                                                </div>
-                                                <p class="text-gray-500 dark:text-gray-400 ">
-                                                    {{ formatNumberArgent($affaire->budget) }}
-                                                </p>
-                                            </div>
-                                        </td>
-                                        <td
-                                            class="py-3 px-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                                            {{ $affaire->created_at->format('d/m/Y') }}</td>
-                                        <td class="py-3 px-4 whitespace-nowrap text-center">
-                                            <div class="flex justify-center gap-2">
-                                                <a href="{{ route('affaires.show', $affaire->id) }}" class="btn-sm"
-                                                    title="Voir">
-                                                    Voir
-                                                </a>
-                                                @can('gerer_les_affaires')
-                                                    <a href="{{ route('affaires.edit', $affaire->id) }}" class="btn-sm"
-                                                        title="Éditer">
-                                                        <x-icon type="edit" size="1.5" />
-                                                    </a>
-                                                    <x-boutons.supprimer :formAction="route('affaires.destroy', $affaire->id)" modalTitle="Supprimer l'affaire"
-                                                        userInfo="Voulez-vous vraiment supprimer cette affaire ?"
-                                                        :onSubmit="'deleteAffaireAjax(event,' . $affaire->id . ')'" errorName="delete-affaire-{{ $affaire->id }}"
-                                                        modalName="delete-affaire-modal-{{ $affaire->id }}">
-                                                        <x-slot:customButton>
-                                                            <button type="button" class="btn-sm" title="Supprimer">
-                                                                <x-icon type="delete" size="1.5" />
-                                                            </button>
-                                                        </x-slot:customButton>
-                                                    </x-boutons.supprimer>
-                                                @endcan
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="4"
-                                            class="text-center py-3 px-4 text-gray-900 dark:text-gray-100">Aucune
-                                            affaire trouvée</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="mt-4 flex justify-center items-center pb-3 pagination">
-                    {{ $affaires->appends(request()->query())->links() }}
-                </div>
+                                <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 flex justify-between text-xs text-gray-500 dark:text-gray-400">
+                                    <span>{{ $affaire->cdes->count() }} Commandes</span>
+                                    <span>{{ $affaire->materiels->where('pivot.statut', '!=', 'termine')->count() }} Matériels</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                @endforeach
+            </div>
+            <div class="mt-4 flex justify-center items-center pb-3 pagination">
+                {{ $affaires->appends(request()->query())->links() }}
             </div>
         </div>
     </div>
@@ -218,10 +153,7 @@
                         .then(response => response.json())
                         .then(data => {
                             if (data.success && data.affaire) {
-                                addAffaireRow(data.affaire);
-                                window.dispatchEvent(new CustomEvent('close-modal', {
-                                    detail: 'create-affaire-modal'
-                                }));
+                                window.location.reload();
                             } else if (data.errors) {
                                 let errorHtml = '<div class="text-red-500 mb-2">';
                                 for (const key in data.errors) {
@@ -235,97 +167,12 @@
             }
         }
 
-        function addAffaireRow(affaire) {
-            const tbody = document.getElementById('affaires-tbody');
-            const tr = document.createElement('tr');
-            tr.className =
-                'transition-all duration-200 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 my-2';
-            tr.id = 'affaire-row-' + affaire.id;
-
-            // Format numbers as currency (replace with your own formatting if needed)
-            function formatNumberArgent(number) {
-                return new Intl.NumberFormat('fr-FR', {
-                    style: 'currency',
-                    currency: 'EUR',
-                    minimumFractionDigits: 2
-                }).format(number);
-            }
-
-            // Highlight if total_ht > budget
-            const totalHtClass = affaire.total_ht > affaire.budget ?
-                'text-orange-500 dark:text-orange-400' :
-                '';
-
-            tr.innerHTML = `
-                <td class="py-3 px-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-gray-100">
-                    ${affaire.code}
-                </td>
-                <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                    ${affaire.nom}
-                </td>
-                <td class="py-2 px-4">
-                    <div class="flex items-center flex-col w-fit">
-                        <div class="border-b-2 border-gray-500 dark:border-gray-400 text-gray-700 dark:text-gray-300">
-                            <p class="font-semibold text-lg ${totalHtClass}">
-                                ${formatNumberArgent(affaire.total_ht)}
-                            </p>
-                        </div>
-                        <p class="text-gray-500 dark:text-gray-400 ">
-                            ${formatNumberArgent(affaire.budget)}
-                        </p>
-                    </div>
-                </td>
-                <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                    ${affaire.created_at_formatted ?? affaire.created_at}
-                </td>
-                <td class="py-3 px-4 whitespace-nowrap text-center">
-                    <div class="flex justify-center gap-2">
-                        <a href="/affaires/${affaire.id}" class="btn-sm" title="Voir">
-                            Voir
-                        </a>
-                        @can('gerer_les_affaires')
-                            <a href="/affaires/${affaire.id}/edit" class="btn-sm" title="Éditer">
-                                <x-icon type="edit" size="1.5" />
-                            </a>
-                            <button type="button" class="btn-sm" title="Supprimer"
-                                onclick="deleteAffaireAjax(event, ${affaire.id})">
-                                <x-icon type="delete" size="1.5" />
-                            </button>
-                        @endcan
-                    </div>
-                </td>
-            `;
-            tbody.prepend(tr);
-            // Reset the form after adding the new affaire
-            const createForm = document.getElementById('create-affaire-form');
-            if (createForm) {
-                createForm.reset();
-                const errorDiv = createForm.querySelector('.text-red-500');
-                if (errorDiv) {
-                    errorDiv.remove();
-                }
-            }
-        }
-
-        function deleteAffaireAjax(event, affaireId) {
-            event.preventDefault();
-            fetch(`/affaires/${affaireId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'X-Requested-With': 'XMLHttpRequest',
-                    },
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const row = document.getElementById('affaire-row-' + affaireId);
-                        if (row) row.remove();
-                        window.dispatchEvent(new CustomEvent('close-modal'));
-                    } else {
-                        alert('Erreur lors de la suppression.');
-                    }
-                });
+        let timeout = null;
+        function debounceSubmit(form) {
+            clearTimeout(timeout);
+            timeout = setTimeout(function () {
+                form.submit();
+            }, 500);
         }
     </script>
 </x-app-layout>

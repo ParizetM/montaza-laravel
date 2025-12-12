@@ -42,7 +42,7 @@
 
                                 <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 flex justify-between text-xs text-gray-500 dark:text-gray-400">
                                     <span>{{ $affaire->cdes->count() }} Commandes</span>
-                                    <span>{{ $affaire->materiels->count() }} Matériels</span>
+                                    <span>{{ $affaire->materiels->where('pivot.statut', '!=', 'termine')->count() }} Matériels</span>
                                 </div>
                             </div>
                         </div>

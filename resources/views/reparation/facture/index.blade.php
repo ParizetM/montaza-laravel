@@ -37,6 +37,7 @@
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Recherche</label>
                                 <input type="text" name="search" placeholder="Numéro facture, réparation, matériel..."
                                     value="{{ request('search') }}"
+                                    oninput="debounceSubmit(this.form)"
                                     class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-blue-500">
                             </div>
 
@@ -190,6 +191,13 @@
         //     });
         // }
 
+        let timeout = null;
+        function debounceSubmit(form) {
+            clearTimeout(timeout);
+            timeout = setTimeout(function () {
+                form.submit();
+            }, 500);
+        }
     </script>
 </x-app-layout>
 

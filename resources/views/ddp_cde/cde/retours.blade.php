@@ -110,6 +110,7 @@
                 'PU HT',
                 'Expédition',
                 'Date livraison réelle',
+                'Non livré',
             ];
 
             const mode_livraison = @json($typeExpedition);
@@ -146,6 +147,10 @@
                             weekdaysShort: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam']
                         }
                     },
+                },
+                {
+                    type: 'checkbox',
+                    className: 'htCenter',
                 }
             ];
 
@@ -174,13 +179,15 @@
                     th.classList.add('row-header-left');
                 },
 
-                colWidths: [100, 100, 100, 120, 200],
+                colWidths: [100, 100, 100, 120, 200, 100],
                 cells: function(row, col, prop) {
                     var cellProperties = {};
                     datarows = this.instance.getData();
                     if (datarows[row][0] === 'Annulée' && col !== 0) {
                         cellProperties.readOnly = true;
                     }
+                    // Si "Non livré" est coché (colonne 5), la date (colonne 4) est vide et readOnly ?
+                    // On peut le gérer dans afterChange pour vider la date
                     return cellProperties;
                 },
             });
@@ -188,7 +195,18 @@
             const debouncedSaveChanges = debounce(saveChanges, 500);
             hot.addHook('afterChange', function(changes, source) {
                 if (source === 'loadData') return;
+
                 if (changes) {
+                    changes.forEach(([row, prop, oldValue, newValue]) => {
+                        // Si on coche "Non livré" (index 5), on vide la date (index 4)
+                        if (prop === 5 && newValue === true) {
+                            hot.setDataAtCell(row, 4, null);
+                        }
+                        // Si on met une date (index 4), on décoche "Non livré" (index 5)
+                        if (prop === 4 && newValue !== null && newValue !== '') {
+                            hot.setDataAtCell(row, 5, false);
+                        }
+                    });
                     debouncedSaveChanges();
                 }
             });

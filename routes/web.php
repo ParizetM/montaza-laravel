@@ -327,11 +327,16 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::get('/cde/{cde}/annuler_terminer_controler', [CdeController::class, 'annulerTerminerControler'])->name('cde.annuler_terminer_controler');
         Route::post('/cde/{cde}/stock/store', [CdeController::class, 'storeStock'])->name('cde.stock.store');
         Route::post('/cde/{cde}/stock/{ligne}/store', [CdeController::class, 'storeStockLigne'])->name('cde.stock.ligne.store');
+        Route::post('/cde/{cde}/stock/{ligne}/store-mouvement', [CdeController::class, 'storeMouvement'])->name('cde.stock.mouvement.store');
+        Route::patch('/cde/stock/mouvement/{mouvement}/update', [CdeController::class, 'updateMouvement'])->name('cde.stock.mouvement.update');
+        Route::delete('/cde/stock/mouvement/{mouvement}/destroy', [CdeController::class, 'destroyMouvement'])->name('cde.stock.mouvement.destroy_single');
         Route::delete('/cde/{cde}/stock/ligne/{ligne}/destroy', [CdeController::class, 'destroyMouvements'])->name('cde.stock.mouvement.destroy');
         Route::get('/cde/{cde}/stock/no', [CdeController::class, 'noStock'])->name('cde.stock.no');
     });
     Route::middleware('permission:voir_les_affaires')->group(function () {
         Route::get('/affaires', [AffaireController::class, 'index'])->name('affaires.index');
+        Route::get('/affaires/planning', [AffaireController::class, 'planning'])->name('affaires.planning');
+        Route::get('/colaffaire/small', [AffaireController::class, 'indexColAffaireSmall'])->name('affaires.index_col_small');
         Route::get('/affaires/actualiser', [AffaireController::class, 'actualiserAllTotals'])->name('affaires.actualiser_totals');
         Route::get('/affaires/create', [AffaireController::class, 'create'])->name('affaires.create');
         Route::post('/affaires/store', [AffaireController::class, 'store'])->name('affaires.store');
@@ -339,6 +344,11 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::patch('/affaires/{affaire}/update', [AffaireController::class, 'update'])->name('affaires.update');
         Route::delete('/affaires/{affaire}/delete', [AffaireController::class, 'destroy'])->name('affaires.destroy');
         Route::get('/affaires/{affaire}', [AffaireController::class, 'show'])->name('affaires.show');
+
+        // Routes fusionnées depuis Production
+        Route::patch('/affaires/{affaire}/update-status', [AffaireController::class, 'updateStatus'])->name('affaires.update_status');
+        Route::post('/affaires/{affaire}/assign-materiel', [AffaireController::class, 'assignMateriel'])->name('affaires.assign_materiel');
+        Route::post('/affaires/{affaire}/detach-materiel/{materiel}', [AffaireController::class, 'detachMateriel'])->name('affaires.detach_materiel');
     });
 
     // Routes pour le système de médias
@@ -375,10 +385,14 @@ Route::post('/media/upload/{model}/{id}/{token}', [MediaController::class, 'uplo
 // La page production utilise des variables globales préparées par le middleware GetGlobalVariable
 // et requiert l'authentification et la protection XSS. On inclut ces middlewares ici pour
 // que la vue `production.index` ait accès aux variables attendues (ex: $societeTypes).
-Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth', 'permission:voir_la_production'])->group(function () {
-    Route::get('/production', [ProductionController::class, 'index'])->name('production.index');
-    Route::get('/production/{affaire}', [ProductionController::class, 'show'])->name('production.show');
-});
+// Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth', 'permission:voir_la_production'])->group(function () {
+//     Route::get('/production', [ProductionController::class, 'index'])->name('production.index');
+//     Route::get('/colproduction/small', [ProductionController::class, 'indexColProductionSmall'])->name('production.index_col_small');
+//     Route::get('/production/{affaire}', [ProductionController::class, 'show'])->name('production.show');
+//     Route::patch('/production/{affaire}/update-status', [ProductionController::class, 'updateStatus'])->name('production.update_status');
+//     Route::post('/production/{affaire}/assign-materiel', [ProductionController::class, 'assignMateriel'])->name('production.assign_materiel');
+//     Route::post('/production/{affaire}/detach-materiel/{materiel}', [ProductionController::class, 'detachMateriel'])->name('production.detach_materiel');
+// });
 
 Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth', 'permission:voir_les_reparations'])->group(function () {
     // Routes statiques de réparation (avant les routes paramétrées)

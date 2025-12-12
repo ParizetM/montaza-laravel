@@ -74,7 +74,7 @@ class StockService
      * @throws InvalidArgumentException
      * @throws RuntimeException
      */
-    public function stock(int $matiereId, string $type, int $quantite, ?float $valeurUnitaire = null, ?string $raison = null, $cde_ligne_id = null): array
+    public function stock(int $matiereId, string $type, float $quantite, ?float $valeurUnitaire = null, ?string $raison = null, $cde_ligne_id = null): array
     {
         $matiere = Matiere::findOrFail($matiereId);
         $mouvement = null;

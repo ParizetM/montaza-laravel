@@ -29,6 +29,7 @@ class CdeLigne extends Model
         'date_livraison_reelle',
         'is_stocke',
         'ligne_autre_id',
+        'non_livre',
     ];
     public function unite()
     {

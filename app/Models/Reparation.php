@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Reparation extends Model
 {
@@ -15,6 +16,7 @@ class Reparation extends Model
     protected $fillable = [
         'user_id',
         'materiel_id',
+        'affaire_id',
         'description',
         'status',
     ];
@@ -42,5 +44,15 @@ class Reparation extends Model
     public function affaire(): BelongsTo
     {
         return $this->belongsTo(Affaire::class);
+    }
+
+    /**
+     * Relation : reparation has many factures
+     *
+     * @return HasMany<Facture>
+     */
+    public function factures(): HasMany
+    {
+        return $this->hasMany(Facture::class);
     }
 }

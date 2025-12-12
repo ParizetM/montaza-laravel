@@ -29,6 +29,7 @@
                     </x-select-custom>
                     <input type="text" name="search" placeholder="{{ __('Rechercher...') }}"
                         value="{{ request('search') }}"
+                        oninput="debounceSubmit(this.form)"
                         class="w-full sm:w-auto px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
                     <div class="flex items-center ml-4 my-1">
                         <label for="nombre"
@@ -557,6 +558,14 @@
             if (chevron) {
                 chevron.classList.toggle('rotate-180', !isParentHidden);
             }
+        }
+
+        let timeout = null;
+        function debounceSubmit(form) {
+            clearTimeout(timeout);
+            timeout = setTimeout(function () {
+                form.submit();
+            }, 500);
         }
     </script>
 </x-app-layout>

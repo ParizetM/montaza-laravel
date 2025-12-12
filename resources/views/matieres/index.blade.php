@@ -36,6 +36,7 @@
                         <x-slot name="slot_item">
                             <input type="text" name="search" placeholder="Rechercher..."
                                 value="{!! request('search') !!}"
+                                oninput="debounceSubmit(this.form)"
                                 class="w-full sm:w-auto px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
                         </x-slot>
                         <x-slot name="slot_tooltip">
@@ -478,6 +479,14 @@
                 submitButton.textContent = 'Créer';
             });
         });
+
+        let timeout = null;
+        function debounceSubmit(form) {
+            clearTimeout(timeout);
+            timeout = setTimeout(function () {
+                form.submit();
+            }, 500);
+        }
     </script>
 
 

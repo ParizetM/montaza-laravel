@@ -60,7 +60,7 @@ class ReparationController extends Controller
 
     public function create()
     {
-        $materiels = Materiel::where('desactive', false)->get();
+        $materiels = Materiel::all();
         return view('reparation.create', compact('materiels'));
     }
 
@@ -71,10 +71,29 @@ class ReparationController extends Controller
             'description' => 'required|string',
         ]);
 
+        // Chercher si le matériel est assigné à une affaire active
+        $materiel = Materiel::find($request->input('materiel_id'));
+        $affaireId = null;
+        if ($materiel) {
+            $activeAffaire = $materiel->affaires()
+                ->wherePivot('date_debut', '<=', now())
+                ->where(function ($query) {
+                    $query->where('affaire_materiel.date_fin', '>=', now())
+                          ->orWhereNull('affaire_materiel.date_fin');
+                })
+                ->where('statut', '!=', \App\Models\Affaire::STATUT_TERMINE)
+                ->first();
+
+            if ($activeAffaire) {
+                $affaireId = $activeAffaire->id;
+            }
+        }
+
         // Créer la demande de réparation
         $reparation = Reparation::create([
             'user_id' => Auth::id(),
             'materiel_id' => $request->input('materiel_id'),
+            'affaire_id' => $affaireId,
             'description' => $request->input('description'),
             'status' => 'pending',
         ]);

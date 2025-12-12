@@ -1,123 +1,304 @@
 <x-app-layout>
-    @section('title', $affaire->code . ' ' . $affaire->nom)
+    @section('title', 'Affaire ' . $affaire->code)
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                <a href="{{ route('affaires.index') }}"
-                    class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-sm">Affaires</a>
-                >> {{ $affaire->code }} — {{ $affaire->nom }}
-            </h2>
-            <div class="flex gap-2 flex-wrap">
-                @can('gerer_les_affaires')
-                    <a href="{{ route('affaires.edit', $affaire) }}" class="btn">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                        Modifier
-                    </a>
-                @endcan
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+            <div>
+                <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+                    {{ $affaire->nom }} <span class="text-gray-500 text-sm font-normal">({{ $affaire->code }})</span>
+                </h2>
+                <div class="mt-1 flex items-center gap-2">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-{{ $affaire->statut_color }}-100 text-{{ $affaire->statut_color }}-800 dark:bg-{{ $affaire->statut_color }}-900 dark:text-{{ $affaire->statut_color }}-200">
+                        {{ $affaire->statut_label }}
+                    </span>
+                    @if($affaire->date_debut && $affaire->date_fin_prevue)
+                        <span class="text-sm text-gray-500 dark:text-gray-400">
+                            Du {{ \Carbon\Carbon::parse($affaire->date_debut)->format('d/m/Y') }} au {{ \Carbon\Carbon::parse($affaire->date_fin_prevue)->format('d/m/Y') }}
+                        </span>
+                    @endif
+                </div>
+            </div>
+            <div class="mt-4 sm:mt-0 flex gap-2">
+                @if($affaire->statut !== \App\Models\Affaire::STATUT_TERMINE && $affaire->statut !== \App\Models\Affaire::STATUT_ARCHIVE)
+                    <button x-data="" x-on:click.prevent="$dispatch('open-modal', 'update-status-modal')" class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150">
+                        Changer Statut
+                    </button>
+                @endif
+                <a href="{{ route('affaires.edit', $affaire) }}" class="inline-flex items-center px-4 py-2 bg-gray-800 dark:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-white focus:bg-gray-700 dark:focus:bg-white active:bg-gray-900 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
+                    Modifier
+                </a>
             </div>
         </div>
     </x-slot>
 
-    <div class="max-w-8xl py-4 mx-auto sm:px-4 lg:px-6 space-y-6">
-        <!-- Carte d'information principale -->
-        <div
-            class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-6 rounded-lg shadow-md border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-lg">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                <div class="flex items-center gap-4">
-                    <div class="bg-blue-100 dark:bg-blue-900 rounded-full p-3 shadow-inner">
-                        <x-icons.affaire size="2" class="fill-blue-600 dark:fill-blue-300" />
-                    </div>
-                    <h1
-                        class="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-gray-100 dark:to-gray-300 bg-clip-text text-transparent">
-                        {{ $affaire->code }} — {{ $affaire->nom }}
-                    </h1>
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+
+            <!-- KPI Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
+                    <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Budget</div>
+                    <div class="mt-1 text-2xl font-semibold text-gray-900 dark:text-white">{{ number_format($affaire->budget, 2, ',', ' ') }} €</div>
                 </div>
-                <div
-                    class="bg-gray-100 dark:bg-gray-700 rounded-full px-5 py-2 flex items-center gap-2 shadow-inner text-sm font-medium">
-                    <span class="text-gray-500 dark:text-gray-400">Créée le :</span>
-                    <span
-                        class="font-bold text-gray-900 dark:text-gray-100">{{ $affaire->created_at ? $affaire->created_at->format('d/m/Y') : '-' }}</span>
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
+                    <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Engagé (CDE)</div>
+                    <div class="mt-1 text-2xl font-semibold {{ $affaire->total_ht > $affaire->budget ? 'text-red-600' : 'text-green-600' }}">
+                        {{ number_format($affaire->total_ht, 2, ',', ' ') }} €
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
+                    <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Commandes</div>
+                    <div class="mt-1 text-2xl font-semibold text-gray-900 dark:text-white">{{ $affaire->cdes->count() }}</div>
+                </div>
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
+                    <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Matériels</div>
+                    <div class="mt-1 text-2xl font-semibold text-gray-900 dark:text-white">{{ $affaire->materiels->where('pivot.statut', '!=', 'termine')->count() }}</div>
                 </div>
             </div>
-            <!-- Infos principales en grid -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
 
-                <div
-                    class="bg-gray-50 dark:bg-gray-750 p-4 rounded-lg border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-md">
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Nombre de commandes</p>
-                    <p class="font-semibold text-lg">{{ $affaire->cdes->count() }}</p>
-                </div>
-                <div
-                    class="bg-gray-50 dark:bg-gray-750 p-4 rounded-lg border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-md">
-                    <p class="font-semibold text-lg">
-                    <div class="flex items-center flex-col w-1/2">
-                        <div
-                            class="border-b-2 border-gray-500 dark:border-gray-400 text-gray-700 dark:text-gray-300 w-full">
-                            <div
-                                class="font-semibold text-lg flex items-center justify-between
-                                                        @if ($affaire->total_ht > $affaire->budget) text-orange-500 dark:text-orange-400 @endif
-                                                    ">
-                                <span>Coût total </span><span> {{ formatNumberArgent($affaire->total_ht) }}</span>
-                            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                <!-- Section Commerciale -->
+                <div class="space-y-6">
+                    <!-- Commandes -->
+                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                        <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-white">Commandes Fournisseurs</h3>
+                            @if($affaire->statut !== \App\Models\Affaire::STATUT_TERMINE && $affaire->statut !== \App\Models\Affaire::STATUT_ARCHIVE)
+                                <a href="{{ route('cde.create', ['affaire_id' => $affaire->id]) }}" class="text-sm text-blue-600 hover:text-blue-500">Nouvelle CDE</a>
+                            @endif
                         </div>
-                        <div class="flex items-center justify-between text-gray-500 dark:text-gray-400 w-full">
-                            <span>Budget </span><span> {{ formatNumberArgent($affaire->budget) }}</span>
+                        <div class="p-6">
+                            @if($affaire->cdes->isEmpty())
+                                <p class="text-gray-500 dark:text-gray-400 text-sm">Aucune commande liée.</p>
+                            @else
+                                <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+                                    @foreach($affaire->cdes as $cde)
+                                        <li class="py-3 flex justify-between items-center">
+                                            <div>
+                                                <a href="{{ route('cde.show', $cde) }}" class="text-sm font-medium text-blue-600 hover:text-blue-500">{{ $cde->code }}</a>
+                                                <p class="text-xs text-gray-500">{{ $cde->societe?->raison_sociale ?? 'Fournisseur inconnu' }}</p>
+                                            </div>
+                                            <div class="text-right">
+                                                <span class="block text-sm font-medium text-gray-900 dark:text-white">{{ number_format($cde->total_ht, 2, ',', ' ') }} €</span>
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                                                    {{ $cde->statut->nom ?? '-' }}
+                                                </span>
+                                            </div>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            @endif
                         </div>
                     </div>
-                    </p>
-                </div>
-            </div>
-        </div>
 
-        <!-- Tableau des commandes associées -->
-        <div
-            class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-6 rounded-lg shadow-md border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-lg">
-            <h3 class="text-xl font-bold mb-4">Commandes associées</h3>
-            <div class="overflow-x-auto rounded-lg">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead>
-                        <tr class="bg-gray-50 dark:bg-gray-750">
-                            <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Numéro</th>
-                            <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Date</th>
-                            <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Nom</th>
-                            <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Statut</th>
-                            <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Total_ht</th>
-                            <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                        @forelse ($affaire->cdes as $cde)
-                            <tr class="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
-                                <td class="px-4 py-3">{{ $cde->code }}</td>
-                                <td class="px-4 py-3">{{ $cde->created_at ? $cde->created_at->format('d/m/Y') : '-' }}
-                                </td>
-                                <td class="px-4 py-3">{{ $cde->nom }}</td>
-                                <td class="px-4 py-3">
-                                    <span class="px-2 py-1 rounded-full text-xs font-bold"
-                                        style="background: {{ $cde->statut?->couleur ?? '#eee' }}; color: {{ $cde->statut?->couleur_texte ?? '#333' }}">
-                                        {{ $cde->statut?->nom ?? '-' }}
-                                    </span>
-                                </td>
-                                <td class="px-4 py-3">{{ formatNumberArgent($cde->total_ht) }}</td>
-                                <td class="px-4 py-3">
-                                    <a href="{{ route('cde.show', $cde->id) }}" class="btn-sm" target="_blank" title="Voir la commande">
-                                        <x-icon size="1" type="open_in_new" class="icons" />
-                                    </a>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="text-center py-3 px-4 text-gray-900 dark:text-gray-100">Aucune
-                                    commande associée</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                    <!-- Demandes de Prix -->
+                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                        <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-white">Demandes de Prix</h3>
+                            @if($affaire->statut !== \App\Models\Affaire::STATUT_TERMINE && $affaire->statut !== \App\Models\Affaire::STATUT_ARCHIVE)
+                                <a href="{{ route('ddp.create', ['affaire_id' => $affaire->id]) }}" class="text-sm text-blue-600 hover:text-blue-500">Nouvelle DDP</a>
+                            @endif
+                        </div>
+                        <div class="p-6">
+                            @if($affaire->ddps->isEmpty())
+                                <p class="text-gray-500 dark:text-gray-400 text-sm">Aucune demande de prix liée.</p>
+                            @else
+                                <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+                                    @foreach($affaire->ddps as $ddp)
+                                        <li class="py-3 flex justify-between items-center">
+                                            <div>
+                                                <a href="{{ route('ddp.show', $ddp) }}" class="text-sm font-medium text-blue-600 hover:text-blue-500">{{ $ddp->code }}</a>
+                                                <p class="text-xs text-gray-500">{{ $ddp->nom }}</p>
+                                            </div>
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                                                {{ $ddp->statut->nom ?? '-' }}
+                                            </span>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section Technique -->
+                <div class="space-y-6">
+                    <!-- Matériel -->
+                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                        <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-white">Matériel Assigné</h3>
+                            <button x-data="" x-on:click.prevent="$dispatch('open-modal', 'assign-materiel')" class="text-sm text-blue-600 hover:text-blue-500">
+                                Assigner un matériel
+                            </button>
+                        </div>
+                        <div class="p-6">
+                            @if($affaire->materiels->isEmpty())
+                                <p class="text-gray-500 dark:text-gray-400 text-sm">Aucun matériel assigné.</p>
+                            @else
+                                <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+                                    @foreach($affaire->materiels as $materiel)
+                                        <li class="py-3 flex justify-between items-center">
+                                            <div>
+                                                <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $materiel->designation }}</span>
+                                                <p class="text-xs text-gray-500">{{ $materiel->numero_serie }}</p>
+                                            </div>
+                                            <div class="text-right flex items-center gap-4">
+                                                <span class="text-xs text-gray-500">Du {{ $materiel->pivot->date_debut }} au {{ $materiel->pivot->date_fin }}</span>
+                                                @if(is_null($materiel->pivot->date_fin) || \Carbon\Carbon::parse($materiel->pivot->date_fin)->isFuture())
+                                                    <form method="POST" action="{{ route('affaires.detach_materiel', ['affaire' => $affaire, 'materiel' => $materiel]) }}">
+                                                        @csrf
+                                                        <button type="submit" class="text-red-600 hover:text-red-800 text-xs font-medium" onclick="return confirm('Êtes-vous sûr de vouloir désassigner ce matériel ?')">
+                                                            Désassigner
+                                                        </button>
+                                                    </form>
+                                                @endif
+                                            </div>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Réparations -->
+                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                        <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-white">Réparations / SAV</h3>
+                        </div>
+                        <div class="p-6">
+                            @php
+                                // Récupérer les IDs des matériels actuellement assignés (date_fin null ou future)
+                                $assignedMaterielIds = $affaire->materiels->filter(function ($m) {
+                                    return is_null($m->pivot->date_fin) || \Carbon\Carbon::parse($m->pivot->date_fin)->isFuture();
+                                })->pluck('id');
+
+                                // Filtrer les réparations pour ne montrer que celles des matériels assignés
+                                $visibleReparations = $affaire->reparations->filter(function ($reparation) use ($assignedMaterielIds) {
+                                    return $assignedMaterielIds->contains($reparation->materiel_id);
+                                });
+
+                                // Filtrer les matériels inactifs pour ne montrer que ceux assignés
+                                $inactiveMateriels = $affaire->materiels->filter(function ($m) use ($assignedMaterielIds) {
+                                    return $m->status === 'inactif' && $assignedMaterielIds->contains($m->id);
+                                });
+
+                                $hasReparations = $visibleReparations->isNotEmpty();
+                                $hasInactiveMateriels = $inactiveMateriels->isNotEmpty();
+                            @endphp
+
+                            @if(!$hasReparations && !$hasInactiveMateriels)
+                                <p class="text-gray-500 dark:text-gray-400 text-sm">Aucune réparation liée.</p>
+                            @else
+                                <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+                                    @foreach($visibleReparations as $reparation)
+                                        <li class="py-3 flex justify-between items-center">
+                                            <div>
+                                                <a href="{{ route('reparation.show', $reparation) }}" class="text-sm font-medium text-blue-600 hover:text-blue-500">Réparation #{{ $reparation->id }}</a>
+                                                <p class="text-xs text-gray-500">{{ $reparation->materiel->designation }}</p>
+                                            </div>
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                {{ $reparation->status }}
+                                            </span>
+                                        </li>
+                                    @endforeach
+
+                                    @foreach($inactiveMateriels as $materiel)
+                                        @php
+                                            $alreadyShown = $visibleReparations->contains('materiel_id', $materiel->id);
+                                        @endphp
+                                        @if(!$alreadyShown)
+                                            <li class="py-3 flex justify-between items-center">
+                                                <div>
+                                                    <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $materiel->designation }} ({{ $materiel->reference }})</span>
+                                                    <p class="text-xs text-red-500">Matériel Inactif / En panne</p>
+                                                </div>
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                                                    Inactif
+                                                </span>
+                                            </li>
+                                        @endif
+                                    @endforeach
+                                </ul>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
+
+    <x-modal name="assign-materiel" focusable>
+        <form method="post" action="{{ route('affaires.assign_materiel', $affaire) }}" class="p-6">
+            @csrf
+
+            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+                Assigner un matériel
+            </h2>
+
+            <div class="mt-6">
+                <x-input-label for="materiel_id" value="Matériel" />
+                <select id="materiel_id" name="materiel_id" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
+                    @foreach($availableMateriels as $materiel)
+                        <option value="{{ $materiel->id }}">{{ $materiel->designation }} ({{ $materiel->reference }})</option>
+                    @endforeach
+                </select>
+                <x-input-error :messages="$errors->get('materiel_id')" class="mt-2" />
+            </div>
+
+            <div class="mt-6">
+                <x-input-label for="date_debut" value="Date de début" />
+                <x-text-input id="date_debut" name="date_debut" type="date" class="mt-1 block w-full" required />
+                <x-input-error :messages="$errors->get('date_debut')" class="mt-2" />
+            </div>
+
+            <div class="mt-6">
+                <x-input-label for="date_fin" value="Date de fin (optionnel)" />
+                <x-text-input id="date_fin" name="date_fin" type="date" class="mt-1 block w-full" />
+                <x-input-error :messages="$errors->get('date_fin')" class="mt-2" />
+            </div>
+
+            <div class="mt-6 flex justify-end">
+                <x-secondary-button x-on:click="$dispatch('close')">
+                    Annuler
+                </x-secondary-button>
+
+                <x-primary-button class="ml-3">
+                    Assigner
+                </x-primary-button>
+            </div>
+        </form>
+    </x-modal>
+
+    <x-modal name="update-status-modal" focusable>
+        <form method="post" action="{{ route('affaires.update_status', $affaire) }}" class="p-6" x-data="{ statut: '{{ $affaire->statut }}', currentStatut: '{{ $affaire->statut }}' }" x-on:submit.prevent="if(statut === 'termine') { if(currentStatut === 'en_attente') { alert('Impossible de passer directement de \'En attente\' à \'Terminé\'.'); return; } if(confirm('Attention : Une fois la production terminée, elle ne pourra plus être modifiée et tous les matériels seront désassignés. Voulez-vous continuer ?')) $el.submit(); } else if(statut === 'archive') { if(confirm('Attention : Une fois l\'affaire archivée, elle ne pourra plus être modifiée. Voulez-vous continuer ?')) $el.submit(); } else { $el.submit(); }">
+            @csrf
+            @method('PATCH')
+
+            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+                Modifier le statut de la production
+            </h2>
+
+            <div class="mt-6">
+                <x-input-label for="statut" value="Statut" />
+                <select id="statut" name="statut" x-model="statut" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
+                    @foreach($statuts as $key => $label)
+                        <option value="{{ $key }}" {{ $affaire->statut === $key ? 'selected' : '' }}>
+                            {{ $label }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="mt-6 flex justify-end">
+                <x-secondary-button x-on:click="$dispatch('close')">
+                    Annuler
+                </x-secondary-button>
+
+                <x-primary-button class="ml-3">
+                    Enregistrer
+                </x-primary-button>
+            </div>
+        </form>
+    </x-modal>
 </x-app-layout>
