@@ -90,9 +90,9 @@ class DatabaseSeeder extends Seeder
             'entite_id' => 1,
         ]);
 
-        User::factory(10)->create([
-            'role_id' => 1,
-        ]);
+        // User::factory(10)->create([
+        //     'role_id' => 1,
+        // ]);
 
         User::factory()->create([
             'last_name' => 'Admin',

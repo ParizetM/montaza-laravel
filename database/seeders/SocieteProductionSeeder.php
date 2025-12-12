@@ -6,6 +6,11 @@ use App\Models\Commentaire;
 use App\Models\Etablissement;
 use App\Models\Societe;
 use App\Models\SocieteContact;
+use App\Models\CodeApe;
+use App\Models\FormeJuridique;
+use App\Models\SocieteType;
+use App\Models\ConditionPaiement;
+use App\Models\Pays;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -16,17 +21,30 @@ class SocieteProductionSeeder extends Seeder
      */
     public function run(): void
     {
+        // Helper to get ID or first
+        $getId = function ($model, $id) {
+            return $model::find($id) ? $id : ($model::first()->id ?? null);
+        };
+
+        // Helper for Pays (France or first)
+        $getPaysId = function ($id) {
+             $pays = Pays::find($id);
+             if ($pays) return $id;
+             $france = Pays::where('nom', 'like', '%France%')->first();
+             return $france ? $france->id : (Pays::first()->id ?? null);
+        };
+
         $societe = Societe::create([
             'raison_sociale' => "Chantiers de l'Atlantique",
             'siren' => '439067612',
-            'forme_juridique_id' => 5,
-            'code_ape_id' => 279,
-            'societe_type_id' => 3,
+            'forme_juridique_id' => $getId(FormeJuridique::class, 5),
+            'code_ape_id' => $getId(CodeApe::class, 279),
+            'societe_type_id' => $getId(SocieteType::class, 3),
             'telephone' => '02 51 10 91 00',
             'email' => null,
             'site_web' => 'chantiers-atlantique.com',
             'numero_tva' => 'FR78439067612',
-            'condition_paiement_id' => 1,
+            'condition_paiement_id' => $getId(ConditionPaiement::class, 1),
             'commentaire_id' => Commentaire::factory()->create()->id,
         ]);
         $etablissement = Etablissement::create([
@@ -35,7 +53,7 @@ class SocieteProductionSeeder extends Seeder
             'code_postal' => '44613',
             'ville' => 'Saint Nazaire',
             'region' => 'Pays de la Loire',
-            'pay_id' => 65,
+            'pay_id' => $getPaysId(65),
             'societe_id' => $societe->id,
             'siret' => '43906761200036',
             'commentaire_id' => Commentaire::factory()->create()->id,
@@ -60,14 +78,14 @@ class SocieteProductionSeeder extends Seeder
         $societe = Societe::create([
             'raison_sociale' => "PROLIANS VAMA DOCKS",
             'siren' => '856802145',
-            'forme_juridique_id' => 6,
-            'code_ape_id' => 426,
-            'societe_type_id' => 2,
+            'forme_juridique_id' => $getId(FormeJuridique::class, 6),
+            'code_ape_id' => $getId(CodeApe::class, 426),
+            'societe_type_id' => $getId(SocieteType::class, 2),
             'telephone' => null,
             'email' => null,
             'site_web' => 'www.prolians.fr/',
             'numero_tva' => 'FR 52 856 802',
-            'condition_paiement_id' => 11,
+            'condition_paiement_id' => $getId(ConditionPaiement::class, 11),
             'commentaire_id' => Commentaire::factory()->create()->id,
         ]);
 
@@ -77,7 +95,7 @@ class SocieteProductionSeeder extends Seeder
             'code_postal' => '44611',
             'ville' => 'Saint Nazaire',
             'region' => 'Pays de la Loire',
-            'pay_id' => 65,
+            'pay_id' => $getPaysId(65),
             'societe_id' => $societe->id,
             'siret' => '85680214500115',
             'commentaire_id' => Commentaire::factory()->create()->id,
@@ -168,14 +186,14 @@ class SocieteProductionSeeder extends Seeder
         $societe = Societe::create([
             'raison_sociale' => "ATLANTIC ROBINETTERIE",
             'siren' => '352873418',
-            'forme_juridique_id' => 2,
-            'code_ape_id' => 423,
-            'societe_type_id' => 2,
+            'forme_juridique_id' => $getId(FormeJuridique::class, 2),
+            'code_ape_id' => $getId(CodeApe::class, 423),
+            'societe_type_id' => $getId(SocieteType::class, 2),
             'telephone' => '02 40 00 04 75',
             'email' => null,
             'site_web' => 'www.atlantic-robinetterie.fr',
             'numero_tva' => 'FR96352873418',
-            'condition_paiement_id' => 3,
+            'condition_paiement_id' => $getId(ConditionPaiement::class, 3),
             'commentaire_id' => Commentaire::factory()->create()->id,
         ]);
 
@@ -185,7 +203,7 @@ class SocieteProductionSeeder extends Seeder
             'code_postal' => '44550',
             'ville' => 'MONTOIR DE BRETAGNE',
             'region' => 'Pays de la Loire',
-            'pay_id' => 65,
+            'pay_id' => $getPaysId(65),
             'societe_id' => $societe->id,
             'siret' => '35287341800045',
             'commentaire_id' => Commentaire::factory()->create()->id,
@@ -222,14 +240,14 @@ class SocieteProductionSeeder extends Seeder
         $societe = Societe::create([
             'raison_sociale' => "SODIME - LRI",
             'siren' => '572002053',
-            'forme_juridique_id' => 2,
-            'code_ape_id' => 430,
-            'societe_type_id' => 2,
+            'forme_juridique_id' => $getId(FormeJuridique::class, 2),
+            'code_ape_id' => $getId(CodeApe::class, 430),
+            'societe_type_id' => $getId(SocieteType::class, 2),
             'telephone' => null,
             'email' => null,
             'site_web' => 'www.larobinetterie.com',
             'numero_tva' => 'FR26572002053',
-            'condition_paiement_id' => 2,
+            'condition_paiement_id' => $getId(ConditionPaiement::class, 2),
             'commentaire_id' => Commentaire::factory()->create()->id,
         ]);
 
@@ -239,7 +257,7 @@ class SocieteProductionSeeder extends Seeder
             'code_postal' => '44400',
             'ville' => 'REZE',
             'region' => 'Pays de la Loire',
-            'pay_id' => 65,
+            'pay_id' => $getPaysId(65),
             'societe_id' => $societe->id,
             'siret' => '57200205300252',
             'commentaire_id' => Commentaire::factory()->create()->id,
