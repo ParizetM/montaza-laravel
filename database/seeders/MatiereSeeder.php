@@ -1,13 +1,13 @@
 <?php
-namespace Database\Seeders;
+// namespace Database\Seeders;
 
-use App\Models\Matiere;
-use App\Models\Societe;
-use Illuminate\Database\Seeder;
-use Faker\Factory as Faker;
+// use App\Models\Matiere;
+// use App\Models\Societe;
+// use Illuminate\Database\Seeder;
+// use Faker\Factory as Faker;
 
-class MatiereSeeder extends Seeder
-{
+// class MatiereSeeder extends Seeder
+// {
     // public function run()
     // {
     //     // Créer une instance de Faker
@@ -33,4 +33,4 @@ class MatiereSeeder extends Seeder
     //         );
     //     });
     // }
-}
+// } -->
