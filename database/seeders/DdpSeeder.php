@@ -1,13 +1,13 @@
 <?php
 
-// namespace Database\Seeders;
+namespace Database\Seeders;
 
-// use App\Models\Ddp;
-// use App\Models\DdpLigne;
-// use App\Models\DdpLigneFournisseur;
-// use Database\Factories\DdpFactory;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-// use Illuminate\Database\Seeder;
+use App\Models\Ddp;
+use App\Models\DdpLigne;
+use App\Models\DdpLigneFournisseur;
+use Database\Factories\DdpFactory;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
 
 // class DdpSeeder extends Seeder
 // {
