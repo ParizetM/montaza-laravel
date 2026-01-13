@@ -1341,7 +1341,6 @@ class MatiereController extends Controller
             'ref_interne',
             'designation',
             'unite',
-            'famille',
             'sous_famille',
             'dn(optionnel)',
             'epaisseur(optionnel)',
@@ -1350,7 +1349,7 @@ class MatiereController extends Controller
             'materiau(optionnel)',
             'prix(optionnel & seulement si fournisseur)'
         ];
-        $example = ['AA-00001', 'TUBE', 'ml', 'Tubes', 'Tubes acier', '25', '2.5', 'NF EN 10255', '6', 'Acier', '12.5'];
+        $example = ['AA-00001', 'TUBE', 'ml', 'Tubes acier', '25', '2.5', 'NF EN 10255', '6', 'Acier', '12.5'];
         // Générer le CSV en mémoire avec ; comme séparateur
         $handle = fopen('php://temp', 'w+');
         fputcsv($handle, $headers, ";");
@@ -1374,10 +1373,9 @@ class MatiereController extends Controller
             'file' => 'required|file',
             'fournisseur_id' => 'nullable|integer|exists:societes,id',
         ]);
-        // Vérifier que le fichier est un CSV ou TXT
-        $extension = $request->file('file')->getClientOriginalExtension();
-        if (!$request->file('file')->isValid() || !in_array($extension, ['csv', 'txt'])) {
-            return back()->withErrors(['file' => 'Le fichier doit être un CSV ou TXT valide.']);
+        // Vérifier que le fichier est un CSV
+        if (!$request->file('file')->isValid() || $request->file('file')->getClientOriginalExtension() !== 'csv') {
+            return back()->withErrors(['file' => 'Le fichier doit être un CSV valide.']);
         }
         $path = $request->file('file')->getRealPath();
         $rows = [];
@@ -1387,7 +1385,6 @@ class MatiereController extends Controller
             'ref_interne',
             'designation',
             'unite',
-            'famille',
             'sous_famille',
             'dn',
             'epaisseur',
@@ -1464,21 +1461,11 @@ class MatiereController extends Controller
                 $found = $sous_familles->first(function ($sf) use ($val, $normalize) {
                     return $normalize($sf->nom) === $val;
                 });
-                
-                $label = $found ? ($found->nom . ' (ID ' . $found->id . ')') : null;
-                $error = $found ? null : 'Sous-famille non trouvée';
-                
-                // Si non trouvée mais qu'une famille est spécifiée, on indique qu'elle sera créée
-                if (!$found && !empty($row['famille'])) {
-                    $error = null;
-                    $label = 'Sera créée dans la famille : ' . $row['famille'];
-                }
-
                 $previewRow['sous_famille'] = [
                     'value' => $row['sous_famille'],
                     'id' => $found ? $found->id : null,
-                    'label' => $label,
-                    'error' => $error
+                    'label' => $found ? ($found->nom . ' (ID ' . $found->id . ')') : null,
+                    'error' => $found ? null : 'Sous-famille non trouvée'
                 ];
             }
             // Standard
@@ -1594,21 +1581,6 @@ class MatiereController extends Controller
                 })->first();
             }
             $sous_famille = !empty($row['sous_famille']) ? \App\Models\SousFamille::where('nom', 'ILIKE', '%' . $row['sous_famille'] . '%')->first() : null;
-            
-            if (!$sous_famille) {
-                $familleName = $row['famille'] ?? null;
-                if ($familleName) {
-                    $famille = \App\Models\Famille::where('nom', 'ILIKE', '%' . $familleName . '%')->first();
-                    if (!$famille) {
-                        $famille = \App\Models\Famille::create(['nom' => $familleName]);
-                    }
-                    $sous_famille = \App\Models\SousFamille::create([
-                        'nom' => $row['sous_famille'],
-                        'famille_id' => $famille->id
-                    ]);
-                }
-            }
-
             if ($sous_famille == null) {
                 continue;
             }

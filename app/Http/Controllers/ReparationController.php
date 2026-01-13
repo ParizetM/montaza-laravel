@@ -81,7 +81,7 @@ class ReparationController extends Controller
                     $query->where('affaire_materiel.date_fin', '>=', now())
                           ->orWhereNull('affaire_materiel.date_fin');
                 })
-                ->where('statut', '!=', \App\Models\Affaire::STATUT_TERMINE)
+                ->where('affaires.statut', '!=', \App\Models\Affaire::STATUT_TERMINE)
                 ->first();
 
             if ($activeAffaire) {

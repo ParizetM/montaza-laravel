@@ -101,11 +101,11 @@
                                                 $unites = 0;
                                                 $reste = 0;
 
-                                                if ($ligne->matiere->ref_valeur_unitaire != null && $ligne->matiere->ref_valeur_unitaire != 0) {
-                                                    $valeur_unitaire = $ligne->matiere->ref_valeur_unitaire;
-                                                    $is_packaged = true;
-                                                } elseif ($ligne->conditionnement != 0) {
+                                                if ($ligne->conditionnement != 0) {
                                                     $valeur_unitaire = $ligne->conditionnement;
+                                                    $is_packaged = true;
+                                                } elseif ($ligne->matiere->ref_valeur_unitaire != null && $ligne->matiere->ref_valeur_unitaire != 0) {
+                                                    $valeur_unitaire = $ligne->matiere->ref_valeur_unitaire;
                                                     $is_packaged = true;
                                                 }
 
@@ -117,7 +117,7 @@
                                                         $rows[] = ['qty' => $unites, 'val' => $valeur_unitaire];
                                                     }
                                                     if ($reste > 0) {
-                                                        $rows[] = ['qty' => $reste / $valeur_unitaire, 'val' => $valeur_unitaire];
+                                                        $rows[] = ['qty' => 1, 'val' => $reste];
                                                     }
                                                 } else {
                                                     $rows[] = ['qty' => $ligne->quantite, 'val' => 1];
@@ -129,10 +129,12 @@
                                             @endphp
 
                                             <div class="flex w-full justify-end">
+                                                @if($ligne->matiere->ref_valeur_unitaire)
                                                 <p class="text-sm text-gray-800 dark:text-gray-200 -mt-9 md:-mt-5">
                                                     Valeur unitaire :
-                                                    {{ formatNumber($valeur_unitaire) }}
+                                                    {{ $ligne->matiere->ref_valeur_unitaire }}
                                                     {{ $ligne->matiere->unite->short }}</p>
+                                                @endif
                                             </div>
 
                                             <table class="w-full border-collapse border border-gray-400 dark:border-gray-700 mt-2 mb-2">
@@ -208,7 +210,6 @@
                                                 }
                                                 document.addEventListener('DOMContentLoaded', function() {
                                                     const poste = '{{ $ligne->poste }}';
-                                                    const refValeurUnitaire = {{ $ligne->matiere->ref_valeur_unitaire ?? 'null' }};
                                                     const addButton = document.getElementById(`add-row-button-${poste}`);
 
                                                     if (!window.rowCounters) {
@@ -224,8 +225,6 @@
                                                         const newRow = document.createElement('tr');
                                                         newRow.className = 'border-b border-gray-300 dark:border-gray-700';
                                                         newRow.id = `stock-${poste}-row-${rowIndex}`;
-
-                                                        const val = refValeurUnitaire ? refValeurUnitaire : 1;
 
                                                         newRow.innerHTML = `
                                                             <td class="p-1">
@@ -243,7 +242,7 @@
                                                                     id="stock-${poste}-row-${rowIndex}-unit-value"
                                                                     class="w-full border-0 focus:ring-0 p-1"
                                                                     min="0" step="0.01"
-                                                                    value="${val}" />
+                                                                    value="1" />
                                                             </td>
                                                             <td class="flex w-fit justify-center items-center pt-1">
                                                                 <button type="button" class="delete-row-button focus:outline-none" title="Supprimer cette ligne" onclick="deleteStockRow('stock-${poste}-row-${rowIndex}')">
