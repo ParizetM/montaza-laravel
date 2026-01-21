@@ -24,6 +24,7 @@ use App\Http\Controllers\UserShortcutController;
 use App\Http\Controllers\ProductionController;
 use App\Http\Controllers\ReparationController;
 use App\Http\Controllers\FactureController;
+use App\Http\Controllers\DevisTuyauterieController;
 use App\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Foundation\Http\Middleware\ValidatePostSize;
 use Illuminate\Support\Facades\Route;
@@ -368,6 +369,15 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
     Route::get('/media/{id}', [MediaController::class, 'show'])->name('media.show');
     Route::patch('/media/{id}/commentaire/save', [MediaController::class, 'updateCommentaire'])->name('media.commentaire.save');
     Route::patch('/media/{id}/type/save', [MediaController::class, 'updateType'])->name('media.type.save');
+
+    // Devis Tuyauterie
+    Route::get('/devis-tuyauterie', [DevisTuyauterieController::class, 'index'])->name('devis_tuyauterie.index');
+    Route::get('/coldevistuyauterie/small', [DevisTuyauterieController::class, 'indexColDevisTuyauterieSmall'])->name('devis_tuyauterie.index_col_small');
+    Route::get('/devis-tuyauterie/create', [DevisTuyauterieController::class, 'create'])->name('devis_tuyauterie.create');
+    Route::get('/devis-tuyauterie/{id}', [DevisTuyauterieController::class, 'show'])->name('devis_tuyauterie.show');
+    Route::get('/devis-tuyauterie/{id}/pdf', [DevisTuyauterieController::class, 'pdf'])->name('devis_tuyauterie.pdf');
+    Route::get('/devis-tuyauterie/{id}/preview', [DevisTuyauterieController::class, 'preview'])->name('devis_tuyauterie.preview');
+    Route::get('/devis-tuyauterie/{id}/pdf/download', [DevisTuyauterieController::class, 'downloadPdf'])->name('devis_tuyauterie.download_pdf');
 });
 
 // Route d'upload via QR code (protégée par signature)

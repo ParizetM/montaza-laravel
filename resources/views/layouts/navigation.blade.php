@@ -43,6 +43,10 @@
                                 {{ __('Réparations du matériels') }}
                             </x-nav-link>
                         @endcan
+
+                        <x-nav-link :href="route('devis_tuyauterie.index')" :active="request()->routeIs('devis_tuyauterie.*')" title="Devis">
+                            {{ __('Devis') }}
+                        </x-nav-link>
                     @endif
                 </div>
             </div>

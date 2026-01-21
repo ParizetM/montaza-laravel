@@ -33,53 +33,106 @@
                 </form>
             </div>
 
-            <!-- Gantt Chart -->
+            <!-- Timeline / Grid View -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6 overflow-x-auto">
-                <div class="min-w-[800px]">
-                    <!-- Timeline Header -->
-                    <div class="flex border-b border-gray-200 dark:border-gray-700 pb-2 mb-4">
-                        <div class="w-1/4 font-bold text-gray-700 dark:text-gray-300">Affaire</div>
-                        <div class="w-3/4 relative h-6">
-                            <div class="absolute left-0 text-xs text-gray-500">{{ $start->format('d/m/Y') }}</div>
-                            <div class="absolute right-0 text-xs text-gray-500">{{ $end->format('d/m/Y') }}</div>
-                            <!-- Grid lines could go here -->
-                        </div>
-                    </div>
+                {{-- On génère la période complète --}}
+                @php
+                    $period = \Carbon\CarbonPeriod::create($start, $end);
+                    $months = [];
+                    foreach ($period as $date) {
+                        $monthKey = $date->translatedFormat('F Y');
+                        if (!isset($months[$monthKey])) {
+                            $months[$monthKey] = 0;
+                        }
+                        $months[$monthKey]++;
+                    }
+                @endphp
 
-                    <!-- Timeline Rows -->
-                    <div class="space-y-4">
+                <table class="min-w-full border-collapse">
+                    <thead>
+                        <!-- Ligne des Mois -->
+                        <tr>
+                            <th class="sticky left-0 z-20 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-2"></th>
+                            @foreach($months as $monthName => $daysCount)
+                                <th colspan="{{ $daysCount }}" class="border-b border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 p-1 text-center font-bold text-gray-700 dark:text-gray-300 text-sm border-r border-gray-300 dark:border-gray-600">
+                                    {{ ucfirst($monthName) }}
+                                </th>
+                            @endforeach
+                        </tr>
+                        <!-- Ligne des Jours -->
+                        <tr>
+                            <th class="sticky left-0 z-10 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-2 text-left text-sm font-bold text-gray-700 dark:text-gray-300 min-w-[200px]">
+                                Affaire
+                            </th>
+                            @foreach($period as $date)
+                                <th class="border-b border-gray-200 dark:border-gray-700 p-1 text-center min-w-[30px] {{ $date->isToday() ? 'bg-indigo-100 dark:bg-indigo-900' : '' }} border-r border-gray-100 dark:border-gray-700">
+                                    <div class="text-[10px] font-semibold text-gray-500">{{ $date->translatedFormat('D') }}</div>
+                                    <div class="text-xs font-bold text-gray-700 dark:text-gray-300">{{ $date->format('d') }}</div>
+                                </th>
+                            @endforeach
+                        </tr>
+                    </thead>
+                    <tbody>
                         @forelse($planningData as $data)
-                            <div class="flex items-center group">
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                                 <!-- Info Affaire -->
-                                <div class="w-1/4 pr-4 truncate">
-                                    <a href="{{ route('affaires.show', $data->affaire) }}" class="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:underline" title="{{ $data->affaire->nom }}">
-                                        {{ $data->affaire->code }}
-                                    </a>
-                                    <div class="text-xs text-gray-500 truncate">{{ $data->affaire->nom }}</div>
-                                </div>
-
-                                <!-- Barre Gantt -->
-                                <div class="w-3/4 relative h-8 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
-                                    <!-- La barre principale -->
-                                    <div class="absolute h-full rounded-full flex items-center justify-center text-xs text-white font-semibold shadow-sm transition-all duration-300
-                                        {{ $data->is_delayed ? 'bg-red-500' : 'bg-' . $data->affaire->statut_color . '-500' }}"
-                                        style="left: {{ $data->left }}%; width: {{ $data->width }}%; min-width: 20px;
-                                        {{ $data->is_delayed ? 'background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.2) 10px, rgba(255,255,255,0.2) 20px);' : '' }}"
-                                        title="Du {{ $data->date_debut->format('d/m') }} au {{ $data->date_fin_effective->format('d/m') }} ({{ $data->affaire->statut_label }})">
-
-                                        @if($data->width > 5)
-                                            <span class="truncate px-2">{{ $data->affaire->statut_label }}</span>
-                                        @endif
+                                <td class="sticky left-0 z-10 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 p-2 border-r">
+                                    <div class="truncate max-w-[200px]">
+                                        <a href="{{ route('affaires.show', $data->affaire) }}" class="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:underline">
+                                            {{ $data->affaire->code }}
+                                        </a>
+                                        <div class="text-xs text-gray-500 truncate">{{ $data->affaire->nom }}</div>
                                     </div>
-                                </div>
-                            </div>
+                                </td>
+
+                                <!-- Jours -->
+                                @foreach($period as $date)
+                                    @php
+                                        // Vérifie si le jour est dans la plage effective
+                                        // On utilise startOfDay pour comparer des dates sans l'heure
+                                        $infosDay = $date->copy()->startOfDay();
+                                        $startDay = $data->date_debut->copy()->startOfDay();
+                                        $endDay = $data->date_fin_effective->copy()->startOfDay();
+
+                                        $isActive = $infosDay->between($startDay, $endDay);
+
+                                        // Gestion du style
+                                        $bgClass = '';
+                                        $styles = '';
+
+                                        if ($isActive) {
+                                            if ($data->is_delayed && $infosDay->gt($data->date_fin_prevue)) {
+                                                // C'est du retard
+                                                $bgClass = 'bg-red-500';
+                                                $styles = 'background-image: repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(255,255,255,0.3) 2px, rgba(255,255,255,0.3) 4px);';
+                                            } else {
+                                                $bgClass = 'bg-' . $data->affaire->statut_color . '-500';
+                                            }
+                                        }
+
+                                        // Week-end styling (optionnel, pour repère visuel)
+                                        $isWeekend = $date->isWeekend();
+                                    @endphp
+
+                                    <td class="border-b border-gray-100 dark:border-gray-700 p-0 h-10 border-r border-dashed border-gray-200 dark:border-gray-700 {{ $isWeekend ? 'bg-gray-50 dark:bg-gray-900' : '' }} relative">
+                                        @if($isActive)
+                                            <div class="h-6 w-full mx-auto my-auto rounded-sm {{ $bgClass }}"
+                                                 style="{{ $styles }}"
+                                                 title="{{ $date->format('d/m/Y') }} : {{ $data->affaire->statut_label }}">
+                                            </div>
+                                        @endif
+                                    </td>
+                                @endforeach
+                            </tr>
                         @empty
-                            <div class="text-center text-gray-500 dark:text-gray-400 py-8">
-                                Aucune affaire trouvée sur cette période.
-                            </div>
+                            <tr>
+                                <td colspan="{{ count($period) + 1 }}" class="text-center text-gray-500 py-8">
+                                    Aucune affaire trouvée sur cette période.
+                                </td>
+                            </tr>
                         @endforelse
-                    </div>
-                </div>
+                    </tbody>
+                </table>
             </div>
 
             <!-- Légende -->

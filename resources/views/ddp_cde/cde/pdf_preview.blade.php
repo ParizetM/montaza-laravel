@@ -80,12 +80,15 @@
                         <div class="mb-4">
                             <div class="p-4 rounded-md bg-white dark:bg-gray-900 shadow-md">
 
+                                @php
+                                    $destinataires = $cde->SocieteContacts();
+                                    $destinatairesCount = $destinataires->count();
+                                @endphp
                                 <div class="flex flex-wrap mb-2 ">
                                     <div class="pr-4 py-2">À :</div>
-                                    @if ($cde->SocieteContacts()->count() > 0)
+                                    @if ($destinatairesCount > 0)
                                         {{-- Si la commande a des contacts, on affiche le premier contact comme destinataire principal --}}
                                         @php
-                                            $destinataires = $cde->SocieteContacts();
                                             $to = $destinataires->first(); // Prend le premier destinataire
                                         @endphp
                                         <div
@@ -96,7 +99,7 @@
                                     @endif
                                 </div>
 
-                                @if ($destinataires->count() > 1)
+                                @if ($destinatairesCount > 1)
                                     <div class="flex flex-wrap ">
 
                                         <div class="pr-4 py-2">CC :</div>

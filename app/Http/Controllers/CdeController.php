@@ -722,7 +722,7 @@ class CdeController extends Controller
             8,
             [0, 0, 0]
         );
-        $year = now()->format('y');
+        $year = explode('-', $cde->code)[1];
         if ($sans_prix) {
             $fileName = 'sans_prix_' . $fileName;
         }

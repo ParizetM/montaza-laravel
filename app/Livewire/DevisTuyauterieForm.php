@@ -1,0 +1,251 @@
+<?php
+
+namespace App\Livewire;
+
+use Livewire\Component;
+use App\Models\Societe;
+use App\Models\SocieteContact;
+
+class DevisTuyauterieForm extends Component
+{
+    // 1. Informations En-tête
+    public $reference_projet;
+    public $lieu_intervention;
+    public $societe_id;
+    public $societe_contact_id;
+    public $client_nom;
+    public $client_contact;
+    public $client_adresse;
+    public $date_emission;
+    public $duree_validite = 30; // 30 jours par défaut (acier volatile)
+
+    public $contacts = [];
+
+    // 2. Corps du Devis (Sections et Lignes)
+    public $sections = [
+        [
+            'titre' => 'Lot 1 : Préfabrication Atelier',
+            'lignes' => [
+                [
+                    'type' => 'fourniture',
+                    'designation' => '',
+                    'matiere' => '',
+                    'quantite' => 1,
+                    'unite' => 'u',
+                    'prix_achat' => 0, // Pour calcul marge
+                    'prix_unitaire' => 0,
+                    'total_ht' => 0
+                ]
+            ]
+        ]
+    ];
+
+    // 3. Options Métier
+    public $options = [
+        'essais_hydrauliques' => false,
+        'ressuage' => false,
+        'radiographie' => false,
+        'dossier_fin_travaux' => true,
+        'cahier_soudage' => false,
+        'certificats_matiere' => true,
+        'nacelle' => false,
+        'echafaudage' => false,
+        'levage' => false,
+        'frais_consommables_forfait' => 0,
+    ];
+
+    // 4. Pied de page
+    public $conditions_paiement = "30% à la commande, solde à réception.";
+    public $delais_execution = "À définir selon planning.";
+
+    // Totaux calculés
+    public $total_ht = 0;
+    public $total_tva = 0;
+    public $total_ttc = 0;
+    public $marge_globale = 0;
+    public $marge_pourcent = 0;
+
+    public function mount()
+    {
+        $this->date_emission = now()->format('Y-m-d');
+        $this->calculateTotals();
+    }
+
+    // Gestion des Sections
+    public function addSection()
+    {
+        $this->sections[] = [
+            'titre' => 'Nouveau Lot',
+            'lignes' => [
+                ['type' => 'fourniture', 'designation' => '', 'matiere' => '', 'quantite' => 1, 'unite' => 'u', 'prix_achat' => 0, 'prix_unitaire' => 0, 'total_ht' => 0]
+            ]
+        ];
+    }
+
+    public function removeSection($index)
+    {
+        unset($this->sections[$index]);
+        $this->sections = array_values($this->sections); // Réindexation
+        $this->calculateTotals();
+    }
+
+    // Gestion des Lignes
+    public function addLine($sectionIndex)
+    {
+        $this->sections[$sectionIndex]['lignes'][] = [
+            'type' => 'fourniture',
+            'designation' => '',
+            'matiere' => '',
+            'quantite' => 1,
+            'unite' => 'u',
+            'prix_achat' => 0,
+            'prix_unitaire' => 0,
+            'total_ht' => 0
+        ];
+    }
+
+    public function removeLine($sectionIndex, $lineIndex)
+    {
+        unset($this->sections[$sectionIndex]['lignes'][$lineIndex]);
+        $this->sections[$sectionIndex]['lignes'] = array_values($this->sections[$sectionIndex]['lignes']);
+        $this->calculateTotals();
+    }
+
+    // Hook automatique lors de la mise à jour des champs
+    public function updated($propertyName)
+    {
+        $this->calculateTotals();
+    }
+
+    public function updatedSocieteId($val)
+    {
+        if ($val) {
+            $societe = Societe::find($val);
+            if ($societe) {
+                $this->client_nom = $societe->raison_sociale;
+
+                $etablissement = $societe->etablissements()->first();
+                if ($etablissement) {
+                     $this->client_adresse = $etablissement->adresse . ($etablissement->code_postal ? "\n" . $etablissement->code_postal : "") . ($etablissement->ville ? " " . $etablissement->ville : "");
+                } else {
+                     $this->client_adresse = '';
+                }
+
+                $this->contacts = $societe->societeContacts()->get()->toArray();
+            }
+        } else {
+            $this->contacts = [];
+            $this->societe_contact_id = null;
+        }
+    }
+
+    public function updatedSocieteContactId($val)
+    {
+        if ($val) {
+            $contact = SocieteContact::find($val);
+            if ($contact) {
+                $this->client_contact = $contact->nom;
+            }
+        }
+    }
+
+    public function calculateTotals()
+    {
+        $totalHt = 0;
+        $totalCout = 0;
+
+        foreach ($this->sections as $sKey => $section) {
+            foreach ($section['lignes'] as $lKey => $ligne) {
+                // Calcul ligne
+                $lineTotal = (float)$ligne['quantite'] * (float)$ligne['prix_unitaire'];
+                $lineCost = (float)$ligne['quantite'] * (float)$ligne['prix_achat'];
+
+                $this->sections[$sKey]['lignes'][$lKey]['total_ht'] = $lineTotal;
+
+                $totalHt += $lineTotal;
+                $totalCout += $lineCost;
+            }
+        }
+
+        // Ajout forfaits
+        $totalHt += (float)$this->options['frais_consommables_forfait'];
+
+        $this->total_ht = $totalHt;
+        $this->total_tva = $totalHt * 0.20; // 20% par défaut
+        $this->total_ttc = $this->total_ht + $this->total_tva;
+
+        // Calcul Marge
+        $this->marge_globale = $totalHt - $totalCout;
+        $this->marge_pourcent = $totalHt > 0 ? ($this->marge_globale / $totalHt) * 100 : 0;
+    }
+
+    public function save()
+    {
+        $this->validate([
+            'reference_projet' => 'required|string|max:255',
+            'client_nom' => 'required|string|max:255',
+            'date_emission' => 'required|date',
+            'sections' => 'required|array|min:1',
+            'sections.*.titre' => 'required|string',
+            'sections.*.lignes.*.designation' => 'required|string',
+            'sections.*.lignes.*.quantite' => 'required|numeric|min:0.01',
+            'sections.*.lignes.*.prix_unitaire' => 'required|numeric|min:0',
+        ]);
+
+        // Transaction DB pour intégrité
+        \Illuminate\Support\Facades\DB::transaction(function () {
+            // Création Devis
+            $devis = \App\Models\DevisTuyauterie::create([
+                'reference_projet' => $this->reference_projet,
+                'lieu_intervention' => $this->lieu_intervention,
+                'societe_id' => $this->societe_id ?: null,
+                'societe_contact_id' => $this->societe_contact_id ?: null,
+                'client_nom' => $this->client_nom,
+                'client_contact' => $this->client_contact,
+                'client_adresse' => $this->client_adresse,
+                'date_emission' => $this->date_emission,
+                'duree_validite' => $this->duree_validite,
+                'conditions_paiement' => $this->conditions_paiement,
+                'delais_execution' => $this->delais_execution,
+                'options' => $this->options, // Casté en JSON auto par le modèle
+                'total_ht' => $this->total_ht,
+                'total_tva' => $this->total_tva,
+                'total_ttc' => $this->total_ttc,
+                'marge_globale' => $this->marge_globale,
+            ]);
+
+            // Création Sections et Lignes
+            foreach ($this->sections as $sectionIndex => $sectionData) {
+                $section = $devis->sections()->create([
+                    'titre' => $sectionData['titre'],
+                    'ordre' => $sectionIndex,
+                ]);
+
+                foreach ($sectionData['lignes'] as $ligneIndex => $ligneData) {
+                    $section->lignes()->create([
+                        'type' => $ligneData['type'],
+                        'designation' => $ligneData['designation'],
+                        'matiere' => $ligneData['matiere'],
+                        'quantite' => $ligneData['quantite'],
+                        'unite' => $ligneData['unite'],
+                        'prix_achat' => $ligneData['prix_achat'],
+                        'prix_unitaire' => $ligneData['prix_unitaire'],
+                        'total_ht' => $ligneData['total_ht'],
+                        'ordre' => $ligneIndex,
+                    ]);
+                }
+            }
+        });
+
+        // Redirection avec message succès
+        session()->flash('success', 'Devis enregistré avec succès !');
+        return redirect()->route('devis_tuyauterie.index');
+    }
+
+    public function render()
+    {
+        return view('livewire.devis-tuyauterie-form', [
+            'societes' => Societe::orderBy('raison_sociale')->get()
+        ]);
+    }
+}
