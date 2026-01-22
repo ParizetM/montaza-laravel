@@ -14,6 +14,7 @@ class DevisTuyauterie extends Model
     protected $casts = [
         'date_emission' => 'date',
         'options' => 'array',
+        'is_archived' => 'boolean',
     ];
 
     public function sections()

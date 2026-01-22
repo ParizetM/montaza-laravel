@@ -8,53 +8,57 @@
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Référence Projet / Nom Chantier</label>
-                <input type="text" wire:model="reference_projet" placeholder="Ex: Remplacement Vapeur Ligne 4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                <x-input-label for="reference_projet" :value="__('Référence Projet / Nom Chantier')" help="Nom interne du projet pour le suivi. Ex: Remplacement Vapeur Ligne 4" />
+                <x-text-input id="reference_projet" type="text" wire:model="reference_projet" placeholder="Ex: Remplacement Vapeur Ligne 4" class="mt-1 block w-full" />
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Lieu d'intervention (Précis)</label>
-                <input type="text" wire:model="lieu_intervention" placeholder="Ex: Usine Nord, Atelier Méca, Niv +2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                <x-input-label for="lieu_intervention" :value="__('Lieu d\'intervention (Précis)')" help="Localisation exacte (Bâtiment, Étage, Zone). Important pour l'accès et la logistique." />
+                <x-text-input id="lieu_intervention" type="text" wire:model="lieu_intervention" placeholder="Ex: Usine Nord, Atelier Méca, Niv +2" class="mt-1 block w-full" />
                 <p class="text-xs text-gray-500 mt-1">Influe sur les frais de déplacement et accès.</p>
             </div>
 
             <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Société</label>
-                    <select wire:model.live="societe_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white mb-2">
-                        <option value="">-- Sélectionner --</option>
-                        @foreach($societes as $societe)
-                            <option value="{{ $societe->id }}">{{ $societe->raison_sociale }}</option>
-                        @endforeach
-                    </select>
-                    <input type="text" wire:model="client_nom" placeholder="Nom Client (Affiché)" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Contact Technique</label>
-                    @if($societe_id)
-                        <select wire:model.live="societe_contact_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white mb-2">
-                            <option value="">-- Sélectionner contact --</option>
-                            @foreach($contacts as $contact)
-                                <option value="{{ $contact['id'] }}">{{ $contact['nom'] }}</option>
+                    <x-input-label for="societe_id" :value="__('Société')" help="Client à facturer." />
+                    <div class="space-y-2">
+                        <select id="societe_id" wire:model.live="societe_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white mb-2">
+                            <option value="">-- Sélectionner --</option>
+                            @foreach($societes as $societe)
+                                <option value="{{ $societe->id }}">{{ $societe->raison_sociale }}</option>
                             @endforeach
                         </select>
-                    @endif
-                    <input type="text" wire:model="client_contact" placeholder="Nom Contact" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                        <x-text-input type="text" wire:model="client_nom" placeholder="Nom Client (Affiché)" class="mt-1 block w-full" />
+                    </div>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Adresse Facturation</label>
-                    <textarea wire:model="client_adresse" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"></textarea>
+                    <x-input-label for="societe_contact_id" :value="__('Contact Technique')" help="Interlocuteur principal pour ce devis." />
+                    <div class="space-y-2">
+                        @if($societe_id)
+                            <select id="societe_contact_id" wire:model.live="societe_contact_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white mb-2">
+                                <option value="">-- Sélectionner contact --</option>
+                                @foreach($contacts as $contact)
+                                    <option value="{{ $contact['id'] }}">{{ $contact['nom'] }}</option>
+                                @endforeach
+                            </select>
+                        @endif
+                        <x-text-input type="text" wire:model="client_contact" placeholder="Nom Contact" class="mt-1 block w-full" />
+                    </div>
+                </div>
+                <div>
+                    <x-input-label for="client_adresse" :value="__('Adresse Facturation')" help="Adresse complète qui apparaîtra sur le devis final." />
+                    <textarea id="client_adresse" wire:model="client_adresse" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"></textarea>
                 </div>
             </div>
 
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Date d'émission</label>
-                    <input type="date" wire:model="date_emission" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                    <x-input-label for="date_emission" :value="__('Date d\'émission')" help="Date affichée sur le devis." />
+                    <x-text-input id="date_emission" type="date" wire:model="date_emission" class="mt-1 block w-full" />
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Validité (Jours)</label>
+                    <x-input-label for="duree_validite" :value="__('Validité (Jours)')" help="Durée de validité de l'offre. Attention aux variations du cours des matières." />
                     <div class="relative mt-1 rounded-md shadow-sm">
-                        <input type="number" wire:model="duree_validite" class="block w-full rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white pr-12">
+                        <x-text-input id="duree_validite" type="number" wire:model="duree_validite" class="block w-full pr-12" />
                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                             <span class="text-gray-500 sm:text-sm">Jours</span>
                         </div>
@@ -65,29 +69,29 @@
     </div>
 
     <!-- 2. Corps du Devis -->
-    <div class="space-y-6">
+    <div class="flex flex-col gap-8">
         @foreach($sections as $index => $section)
-            <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6 border border-gray-200 dark:border-gray-700 relative">
+            <div wire:key="section-{{ $index }}" class="bg-white dark:bg-gray-800 shadow rounded-lg p-6 border border-gray-200 dark:border-gray-700 relative">
                 <button wire:click="removeSection({{ $index }})" class="absolute top-4 right-4 text-red-500 hover:text-red-700" title="Supprimer la section">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                 </button>
 
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Intitulé de la Zone / Lot</label>
-                    <input type="text" wire:model="sections.{{ $index }}.titre" class="mt-1 text-lg font-bold block w-full border-none border-b-2 border-gray-300 focus:border-blue-500 focus:ring-0 dark:bg-gray-800 dark:text-white px-0" placeholder="Ex: Zone 1 - Préfabrication">
+                    <x-input-label :value="__('Intitulé de la Zone / Lot')" help="Divisez votre devis en sous-ensembles (lots, zones, phases) pour une meilleure lecture client." />
+                    <x-text-input type="text" wire:model="sections.{{ $index }}.titre" class="mt-1 text-lg font-bold block w-full border-none border-b-2 border-gray-300 focus:border-blue-500 focus:ring-0 dark:bg-gray-800 dark:text-white px-0" placeholder="Ex: Zone 1 - Préfabrication" />
                 </div>
 
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                         <thead class="bg-gray-50 dark:bg-gray-700">
                             <tr>
-                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase w-1/3">Désignation</th>
-                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Matière/Norme</th>
+                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase" title="Type de dépense (Matériel, MO, etc.)">Type <sup class="text-blue-500 cursor-help">?</sup></th>
+                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase w-1/3" title="Description détaillée pour le client">Désignation</th>
+                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase" title="Nuance matière ou norme applicable">Matière/Norme</th>
                                 <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase w-20">Qté</th>
-                                <th class="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase w-16">Unité</th>
-                                <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase w-24">Prix Achat (Caché)</th>
-                                <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase w-24">P.U. Vente</th>
+                                <th class="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase w-24">Unité</th>
+                                <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase w-24" title="Prix de revient interne (visible seulement par vous)">Prix Achat (Caché) <sup class="text-blue-500 cursor-help">?</sup></th>
+                                <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase w-24" title="Prix vendu au client">P.U. Vente</th>
                                 <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase w-24">Total HT</th>
                                 <th class="px-3 py-2"></th>
                             </tr>
@@ -121,13 +125,13 @@
                                             <option value="ens">Ens</option>
                                         </select>
                                     </td>
-                                    <td class="px-2 py-2 bg-yellow-50 dark:bg-yellow-900/10">
-                                        <input type="number" step="0.01" wire:model.live.debounce.500ms="sections.{{ $index }}.lignes.{{ $lineIndex }}.prix_achat" class="block w-full text-sm border-transparent bg-transparent text-right focus:ring-0 text-gray-500" placeholder="0.00">
+                                    <td class="px-2 py-2">
+                                        <input type="number" step="0.01" wire:model.live.debounce.500ms="sections.{{ $index }}.lignes.{{ $lineIndex }}.prix_achat" class="block w-full text-sm rounded-md border-gray-300 dark:bg-gray-700 dark:text-white text-right" placeholder="0.00">
                                     </td>
                                     <td class="px-2 py-2">
                                         <input type="number" step="0.01" wire:model.live.debounce.500ms="sections.{{ $index }}.lignes.{{ $lineIndex }}.prix_unitaire" class="block w-full text-sm rounded-md border-gray-300 dark:bg-gray-700 dark:text-white text-right font-bold">
                                     </td>
-                                    <td class="px-2 py-2 text-right font-mono text-sm">
+                                    <td class="px-2 py-2 text-right font-mono text-sm text-gray-900 dark:text-white">
                                         {{ number_format($line['total_ht'], 2) }} €
                                     </td>
                                     <td class="px-2 py-2 text-center">
@@ -149,7 +153,7 @@
             </div>
         @endforeach
 
-        <button wire:click="addSection" class="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-blue-500 hover:text-blue-500 transition-colors flex justify-center items-center">
+        <button wire:click="addSection" class="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-blue-500 hover:text-blue-500 transition-colors flex justify-center items-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50">
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
             Ajouter une nouvelle Zone / Lot
         </button>
@@ -161,54 +165,62 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <!-- Essais -->
             <div class="space-y-3">
-                <h4 class="font-semibold text-gray-700 dark:text-gray-300 text-sm uppercase">Essais & CND</h4>
-                <label class="flex items-center">
+                <h4 class="font-semibold text-gray-700 dark:text-gray-300 text-sm uppercase border-b pb-1 mb-2">Essais & CND</h4>
+                <label class="flex items-center group">
                     <input type="checkbox" wire:model="options.essais_hydrauliques" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                    <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">Épreuves Hydrauliques</span>
+                    <span class="ml-2 text-sm text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200">Épreuves Hydrauliques</span>
+                    <x-help-icon text="Mise en pression pour vérifier l'étanchéité." />
                 </label>
-                <label class="flex items-center">
+                <label class="flex items-center group">
                     <input type="checkbox" wire:model="options.ressuage" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                    <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">Ressuage (PT)</span>
+                    <span class="ml-2 text-sm text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200">Ressuage (PT)</span>
+                    <x-help-icon text="Contrôle de surface des soudures par pénétrant coloré." />
                 </label>
-                <label class="flex items-center">
+                <label class="flex items-center group">
                     <input type="checkbox" wire:model="options.radiographie" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                    <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">Radiographie (RT) - % Soudures</span>
+                    <span class="ml-2 text-sm text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200">Radiographie (RT)</span>
+                    <x-help-icon text="Contrôle volumétrique des soudures (Rayons X/Gamma)." />
                 </label>
             </div>
 
             <!-- Documents -->
             <div class="space-y-3">
-                <h4 class="font-semibold text-gray-700 dark:text-gray-300 text-sm uppercase">Documentation Technique</h4>
-                <label class="flex items-center">
+                <h4 class="font-semibold text-gray-700 dark:text-gray-300 text-sm uppercase border-b pb-1 mb-2">Documentation Technique</h4>
+                <label class="flex items-center group">
                     <input type="checkbox" wire:model="options.dossier_fin_travaux" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                    <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">Dossier Fin de Travaux (DFT)</span>
+                    <span class="ml-2 text-sm text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200">Dossier Fin de Travaux (DFT)</span>
+                    <x-help-icon text="Compilation de tous les documents techniques finaux." />
                 </label>
-                <label class="flex items-center">
+                <label class="flex items-center group">
                     <input type="checkbox" wire:model="options.cahier_soudage" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                    <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">Cahier de Soudage (DMOS/QMOS)</span>
+                    <span class="ml-2 text-sm text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200">Cahier de Soudage</span>
+                    <x-help-icon text="Inclut les DMOS, QMOS et qualifications des soudeurs." />
                 </label>
-                <label class="flex items-center">
+                <label class="flex items-center group">
                     <input type="checkbox" wire:model="options.certificats_matiere" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                    <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">Certificats Matières (3.1)</span>
+                    <span class="ml-2 text-sm text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200">Certificats Matières (3.1)</span>
+                    <x-help-icon text="Traçabilité des matériaux utilisés (CCPU)." />
                 </label>
             </div>
 
             <!-- Logistique -->
             <div class="space-y-3">
-                <h4 class="font-semibold text-gray-700 dark:text-gray-300 text-sm uppercase">Moyens Spécifiques</h4>
-                <div class="flex items-center gap-4">
-                    <label class="flex items-center">
+                <h4 class="font-semibold text-gray-700 dark:text-gray-300 text-sm uppercase border-b pb-1 mb-2">Moyens Spécifiques</h4>
+                <div class="flex flex-col gap-2">
+                    <label class="flex items-center group">
                         <input type="checkbox" wire:model="options.nacelle" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                        <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">Nacelle</span>
+                        <span class="ml-2 text-sm text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200">Nacelle / PEMP</span>
+                        <x-help-icon text="Nécessaire pour travaux en hauteur (sans échafaudage)." />
                     </label>
-                    <label class="flex items-center">
+                    <label class="flex items-center group">
                         <input type="checkbox" wire:model="options.echafaudage" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                        <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">Échafaudage</span>
+                        <span class="ml-2 text-sm text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200">Échafaudage</span>
+                        <x-help-icon text="Structure fixe pour accès complexe." />
                     </label>
                 </div>
-                <div>
-                   <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mt-2">Forfait Consom. (Gaz, etc.) €</label>
-                   <input type="number" wire:model.live.debounce.500ms="options.frais_consommables_forfait" class="mt-1 block w-full rounded-md border-gray-300 dark:bg-gray-700 dark:text-white">
+                <div class="mt-4">
+                   <x-input-label for="frais_consommables_forfait" :value="__('Forfait Consom. (Gaz, etc.) €')" help="Estimation des coûts de gaz de soudage, disques, électrodes..." />
+                   <x-text-input id="frais_consommables_forfait" type="number" wire:model.live.debounce.500ms="options.frais_consommables_forfait" class="mt-1 block w-full" />
                 </div>
             </div>
         </div>
@@ -220,12 +232,12 @@
              <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Conditions Commerciales</h3>
              <div class="grid grid-cols-1 gap-4">
                  <div>
-                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Conditions de Paiement</label>
-                     <input type="text" wire:model="conditions_paiement" class="mt-1 block w-full rounded-md border-gray-300 dark:bg-gray-700 dark:text-white">
+                     <x-input-label for="conditions_paiement" :value="__('Conditions de Paiement')" help="Ex: 30% à la commande, solde à réception - 30j fin de mois." />
+                     <x-text-input id="conditions_paiement" type="text" wire:model="conditions_paiement" class="mt-1 block w-full" placeholder="Ex: 30 jours fin de mois" />
                  </div>
                  <div>
-                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Délai / Planning</label>
-                     <input type="text" wire:model="delais_execution" class="mt-1 block w-full rounded-md border-gray-300 dark:bg-gray-700 dark:text-white">
+                     <x-input-label for="delais_execution" :value="__('Délai / Planning')" help="Estimation réaliste du délai d'intervention (semaines)." />
+                     <x-text-input id="delais_execution" type="text" wire:model="delais_execution" class="mt-1 block w-full" placeholder="Ex: 4 à 6 semaines après commande" />
                  </div>
              </div>
         </div>

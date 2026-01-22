@@ -1,14 +1,14 @@
-@props(['value','optionnel' => false])
+@props(['value', 'optionnel' => false, 'help' => null])
 
-@if ($optionnel)
-    <label {{ $attributes->merge(['class' => 'block font-medium text-sm text-gray-700 dark:text-gray-300']) }}>
-        {{ $value ?? $slot }}
-        <small>(Optionnel)</small>
-    </label>
+<label {{ $attributes->merge(['class' => 'block font-medium text-sm text-gray-700 dark:text-gray-300 flex items-center gap-2']) }}>
+    <span>{{ $value ?? $slot }}</span>
 
-@else
-<label {{ $attributes->merge(['class' => 'block font-medium text-sm text-gray-700 dark:text-gray-300']) }}>
-    {{ $value ?? $slot }}
+    @if ($optionnel)
+        <small class="text-gray-500 font-normal">(Optionnel)</small>
+    @endif
+
+    @if($help)
+        <x-help-icon :text="$help" />
+    @endif
 </label>
-@endif
 

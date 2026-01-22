@@ -6,6 +6,29 @@
                 {{ __('Détail Devis') }} - {{ $devis->reference_projet ?? "Devis #".$devis->id }}
             </h2>
             <div>
+                @if(!$devis->is_archived)
+                    <a href="{{ route('devis_tuyauterie.edit', $devis->id) }}" class="inline-flex items-center px-4 py-2 bg-amber-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-amber-500 active:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 transition ease-in-out duration-150 mr-2">
+                        {{ __('Modifier') }}
+                    </a>
+
+                    <form method="POST" action="{{ route('devis_tuyauterie.archive', $devis->id) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir archiver ce devis ?');" class="inline-block">
+                        @csrf
+                        <button type="submit" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-500 active:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150 mr-2">
+                            {{ __('Archiver') }}
+                        </button>
+                    </form>
+                @else
+                    <span class="inline-flex items-center px-4 py-2 bg-gray-400 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest mr-2 cursor-not-allowed">
+                        {{ __('Archivé') }}
+                    </span>
+                     <form method="POST" action="{{ route('devis_tuyauterie.unarchive', $devis->id) }}" class="inline-block">
+                        @csrf
+                        <button type="submit" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-500 active:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150 mr-2">
+                            {{ __('Restaurer') }}
+                        </button>
+                    </form>
+                @endif
+
                 <a href="{{ route('devis_tuyauterie.preview', $devis->id) }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 active:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150 mr-2">
                     {{ __('Prévisualiser PDF') }}
                 </a>

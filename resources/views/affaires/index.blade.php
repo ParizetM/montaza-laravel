@@ -40,12 +40,12 @@
                     </a>
 
                     @can('gerer_les_affaires')
-                        <button x-on:click.prevent="$dispatch('open-modal', 'create-affaire-modal')" class="inline-flex items-center px-4 py-2 bg-purple-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-purple-700 active:bg-purple-900 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-sm whitespace-nowrap">
+                        <a href="{{ route('affaires.create') }}" class="group inline-flex items-center px-4 py-2 bg-purple-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-colors duration-200 shadow-sm whitespace-nowrap">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                             </svg>
                             {{ __('Nouvelle affaire') }}
-                        </button>
+                        </a>
                     @endcan
                 </div>
             </div>
@@ -124,91 +124,4 @@
             </div>
         </div>
     </div>
-
-    <x-modal name="create-affaire-modal" :show="false" maxWidth="lg">
-        <div class="p-4">
-            <a x-on:click="$dispatch('close')">
-                <x-icons.close class="float-right mb-1 icons" size="1.5" unfocus />
-            </a>
-            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Nouvelle affaire</h2>
-            <div id="create-affaire-modal-body">
-                <div id="loading-spinner"
-                    class=" m-6 inset-0 bg-none bg-opacity-75 flex items-center justify-center z-50 h-32 w-full">
-                    <div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32"></div>
-                </div>
-                <style>
-                    .loader {
-                        border-top-color: #3498db;
-                        animation: spinner 1.5s linear infinite;
-                    }
-
-                    @keyframes spinner {
-                        0% {
-                            transform: rotate(0deg);
-                        }
-
-                        100% {
-                            transform: rotate(360deg);
-                        }
-                    }
-                </style>
-
-            </div>
-        </div>
-    </x-modal>
-
-    <script>
-        document.addEventListener('alpine:init', () => {
-            window.addEventListener('open-modal', function(e) {
-                if (e.detail === 'create-affaire-modal') {
-                    const modalBody = document.getElementById('create-affaire-modal-body');
-                    fetch("{{ route('affaires.create') }}")
-                        .then(response => response.text())
-                        .then(html => {
-                            modalBody.innerHTML = html;
-                            attachCreateFormListener();
-                        });
-                }
-            });
-        });
-
-        function attachCreateFormListener() {
-            const form = document.getElementById('create-affaire-form');
-            if (form) {
-                form.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    const formData = new FormData(form);
-                    fetch(form.action, {
-                            method: 'POST',
-                            headers: {
-                                'X-Requested-With': 'XMLHttpRequest',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            },
-                            body: formData
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success && data.affaire) {
-                                window.location.reload();
-                            } else if (data.errors) {
-                                let errorHtml = '<div class="text-red-500 mb-2">';
-                                for (const key in data.errors) {
-                                    errorHtml += data.errors[key].join('<br>') + '<br>';
-                                }
-                                errorHtml += '</div>';
-                                form.insertAdjacentHTML('afterbegin', errorHtml);
-                            }
-                        });
-                });
-            }
-        }
-
-        let timeout = null;
-        function debounceSubmit(form) {
-            clearTimeout(timeout);
-            timeout = setTimeout(function () {
-                form.submit();
-            }, 500);
-        }
-    </script>
 </x-app-layout>

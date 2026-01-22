@@ -20,10 +20,12 @@
     <div class="flex-1 overflow-y-auto p-2 scrollbar-thin scrollbar-thumb-amber-200 dark:scrollbar-thumb-amber-800">
          @if (!$isSmall)
             <div class="mb-4 px-2 pt-2">
-                <a href="{{ route('devis_tuyauterie.create') }}" class="w-full flex justify-center items-center gap-2 px-4 py-2 bg-amber-600 text-white text-xs font-semibold rounded hover:bg-amber-700 transition shadow-sm group">
-                    <svg class="w-3 h-3 transition-transform group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                    Créer un devis
-                </a>
+                @can('gerer_les_devis')
+                    <a href="{{ route('devis_tuyauterie.create') }}" class="w-full flex justify-center items-center gap-2 px-4 py-2 bg-amber-600 text-white text-xs font-semibold rounded hover:bg-amber-700 transition shadow-sm group">
+                        <svg class="w-3 h-3 transition-transform group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        Créer un devis
+                    </a>
+                @endcan
             </div>
         @endif
 

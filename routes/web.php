@@ -372,11 +372,16 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
 
     // Devis Tuyauterie
     Route::get('/devis-tuyauterie', [DevisTuyauterieController::class, 'index'])->name('devis_tuyauterie.index');
+    Route::get('/devis-tuyauterie/archives', [DevisTuyauterieController::class, 'archives'])->name('devis_tuyauterie.archives');
+    Route::post('/devis-tuyauterie/{id}/archive', [DevisTuyauterieController::class, 'archive'])->name('devis_tuyauterie.archive');
+    Route::post('/devis-tuyauterie/{id}/unarchive', [DevisTuyauterieController::class, 'unarchive'])->name('devis_tuyauterie.unarchive');
     Route::get('/coldevistuyauterie/small', [DevisTuyauterieController::class, 'indexColDevisTuyauterieSmall'])->name('devis_tuyauterie.index_col_small');
     Route::get('/devis-tuyauterie/create', [DevisTuyauterieController::class, 'create'])->name('devis_tuyauterie.create');
+    Route::get('/devis-tuyauterie/{id}/edit', [DevisTuyauterieController::class, 'edit'])->name('devis_tuyauterie.edit');
     Route::get('/devis-tuyauterie/{id}', [DevisTuyauterieController::class, 'show'])->name('devis_tuyauterie.show');
     Route::get('/devis-tuyauterie/{id}/pdf', [DevisTuyauterieController::class, 'pdf'])->name('devis_tuyauterie.pdf');
     Route::get('/devis-tuyauterie/{id}/preview', [DevisTuyauterieController::class, 'preview'])->name('devis_tuyauterie.preview');
+
     Route::get('/devis-tuyauterie/{id}/pdf/download', [DevisTuyauterieController::class, 'downloadPdf'])->name('devis_tuyauterie.download_pdf');
 });
 
@@ -447,3 +452,6 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth', 'permission:voi
 require __DIR__ . '/auth.php';
 
 // Import matières Excel
+require __DIR__ . '/dev_tools.php';
+
+

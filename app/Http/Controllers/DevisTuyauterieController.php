@@ -12,14 +12,35 @@ class DevisTuyauterieController extends Controller
 {
     public function index()
     {
-        // Récupérer les devis triés par date d'émission décroissante
-        $devis = DevisTuyauterie::orderBy('date_emission', 'desc')->get();
+        // Récupérer les devis actifs triés par date d'émission décroissante
+        $devis = DevisTuyauterie::where('is_archived', false)->orderBy('date_emission', 'desc')->get();
         return view('devis_tuyauterie.index', compact('devis'));
+    }
+
+    public function archives()
+    {
+        // Récupérer les devis archivés
+        $devis = DevisTuyauterie::where('is_archived', true)->orderBy('date_emission', 'desc')->get();
+        return view('devis_tuyauterie.archives', compact('devis'));
+    }
+
+    public function archive($id)
+    {
+        $devis = DevisTuyauterie::findOrFail($id);
+        $devis->update(['is_archived' => true]);
+        return redirect()->back()->with('success', 'Devis archivé avec succès.');
+    }
+
+    public function unarchive($id)
+    {
+        $devis = DevisTuyauterie::findOrFail($id);
+        $devis->update(['is_archived' => false]);
+        return redirect()->back()->with('success', 'Devis restauré avec succès.');
     }
 
     public function indexColDevisTuyauterieSmall()
     {
-        $devis = DevisTuyauterie::orderBy('date_emission', 'desc')->take(7)->get();
+        $devis = DevisTuyauterie::where('is_archived', false)->orderBy('date_emission', 'desc')->take(7)->get();
         $isSmall = true;
         return view('devis_tuyauterie.index_col', compact('devis', 'isSmall'));
     }
@@ -27,6 +48,12 @@ class DevisTuyauterieController extends Controller
     public function create()
     {
         return view('devis_tuyauterie.create');
+    }
+
+    public function edit($id)
+    {
+        $devis = DevisTuyauterie::with(['sections.lignes'])->findOrFail($id);
+        return view('devis_tuyauterie.edit', compact('devis'));
     }
 
     public function show($id)

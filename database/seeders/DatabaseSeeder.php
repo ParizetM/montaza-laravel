@@ -47,6 +47,8 @@ class DatabaseSeeder extends Seeder
             'gerer_les_factures_reparations' => 'Gérer les factures de réparations',
             'gerer_les_reparations' => 'Gérer les réparations',
             'gerer_le_materiel' => 'Gérer le matériel',
+            'voir_les_devis' => 'Consulter les devis',
+            'gerer_les_devis' => 'Gérer les devis',
         ];
         foreach ($permissions as $permission => $description) {
             Permission::factory()->create([

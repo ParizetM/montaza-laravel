@@ -21,13 +21,20 @@
                             class="pl-10 w-full rounded-md border-gray-300 dark:border-gray-700 shadow-sm focus:border-amber-500 focus:ring focus:ring-amber-200 focus:ring-opacity-50 dark:bg-gray-900 dark:text-gray-100">
                     </div>
                 </form>
-
-                <a href="{{ route('devis_tuyauterie.create') }}" class="inline-flex items-center px-4 py-2 bg-amber-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-amber-700 active:bg-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-sm whitespace-nowrap">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                    {{ __('Nouveau Devis') }}
-                </a>
+                @can('gerer_les_devis')
+                    <a href="{{ route('devis_tuyauterie.create') }}" class="inline-flex items-center px-4 py-2 bg-amber-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-amber-700 active:bg-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-sm whitespace-nowrap">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        {{ __('Nouveau Devis') }}
+                    </a>
+                    <a href="{{ route('devis_tuyauterie.archives') }}" class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-sm whitespace-nowrap">
+                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                        </svg>
+                        {{ __('Archives') }}
+                    </a>
+                    @endcan
             </div>
         </div>
     </x-slot>
@@ -89,11 +96,28 @@
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                                         </svg>
                                                     </a>
+                                                    @can('gerer_les_devis')
+                                                        <a href="{{ route('devis_tuyauterie.edit', $item->id) }}" class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition" title="Modifier">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                                            </svg>
+                                                        </a>
+                                                    @endcan
                                                     <a href="{{ route('devis_tuyauterie.preview', $item->id) }}" class="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-full transition" title="Aperçu PDF">
                                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                                                         </svg>
                                                     </a>
+                                                    @can('gerer_les_devis')
+                                                    <form method="POST" action="{{ route('devis_tuyauterie.archive', $item->id) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir archiver ce devis ?');">
+                                                        @csrf
+                                                        <button type="submit" class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full transition" title="Archiver">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                                                            </svg>
+                                                        </button>
+                                                    </form>
+                                                    @endcan
                                                 </div>
                                             </td>
                                         </tr>
@@ -109,10 +133,12 @@
                                 </svg>
                             </div>
                             <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Aucun devis pour le moment</h3>
-                            <p class="text-gray-500 dark:text-gray-400 mb-6 text-center max-w-sm">Commencez par créer votre premier devis pour vos clients.</p>
-                            <a href="{{ route('devis_tuyauterie.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 active:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                {{ __('Créer mon premier devis') }}
-                            </a>
+                            @can('gerer_les_devis')
+                                <p class="text-gray-500 dark:text-gray-400 mb-6 text-center max-w-sm">Commencez par créer votre premier devis pour vos clients.</p>
+                                <a href="{{ route('devis_tuyauterie.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 active:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                    {{ __('Créer mon premier devis') }}
+                                </a>
+                            @endcan
                         </div>
                     @endif
                 </div>

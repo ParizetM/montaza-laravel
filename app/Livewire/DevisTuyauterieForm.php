@@ -5,9 +5,12 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Societe;
 use App\Models\SocieteContact;
+use App\Models\DevisTuyauterie;
 
 class DevisTuyauterieForm extends Component
 {
+    public ?DevisTuyauterie $devis = null;
+
     // 1. Informations En-tête
     public $reference_projet;
     public $lieu_intervention;
@@ -65,9 +68,64 @@ class DevisTuyauterieForm extends Component
     public $marge_globale = 0;
     public $marge_pourcent = 0;
 
-    public function mount()
+    public function mount(DevisTuyauterie $devis = null)
     {
-        $this->date_emission = now()->format('Y-m-d');
+        if ($devis && $devis->exists) {
+            $this->devis = $devis;
+
+            // Chargement des données entête
+            $this->reference_projet = $devis->reference_projet;
+            $this->lieu_intervention = $devis->lieu_intervention;
+            $this->societe_id = $devis->societe_id;
+            $this->societe_contact_id = $devis->societe_contact_id;
+            $this->client_nom = $devis->client_nom;
+            $this->client_contact = $devis->client_contact;
+            $this->client_adresse = $devis->client_adresse;
+            $this->date_emission = $devis->date_emission ? $devis->date_emission->format('Y-m-d') : now()->format('Y-m-d');
+            $this->duree_validite = $devis->duree_validite;
+            $this->conditions_paiement = $devis->conditions_paiement;
+            $this->delais_execution = $devis->delais_execution;
+
+            // Options : fusion des par défaut avec les existantes
+            if (is_array($devis->options)) {
+                $this->options = array_merge($this->options, $devis->options);
+            }
+
+            // Chargement Sections et Lignes
+            $this->sections = [];
+            foreach ($devis->sections as $section) {
+                $lignes = [];
+                foreach ($section->lignes as $ligne) {
+                    $lignes[] = [
+                        // 'id' => $ligne->id, // Pas nécessaire de garder l'ID si on delete/recreate, sauf si besoin spécifique
+                        'type' => $ligne->type,
+                        'designation' => $ligne->designation,
+                        'matiere' => $ligne->matiere,
+                        'quantite' => $ligne->quantite + 0, // Force number
+                        'unite' => $ligne->unite,
+                        'prix_achat' => $ligne->prix_achat + 0,
+                        'prix_unitaire' => $ligne->prix_unitaire + 0,
+                        'total_ht' => $ligne->total_ht + 0,
+                    ];
+                }
+                $this->sections[] = [
+                    'titre' => $section->titre,
+                    'lignes' => $lignes
+                ];
+            }
+
+            // Charger les contacts
+            if ($this->societe_id) {
+                $societe = Societe::find($this->societe_id);
+                if ($societe) {
+                    $this->contacts = $societe->societeContacts()->get()->toArray();
+                }
+            }
+
+        } else {
+            $this->date_emission = now()->format('Y-m-d');
+        }
+
         $this->calculateTotals();
     }
 
@@ -194,8 +252,8 @@ class DevisTuyauterieForm extends Component
 
         // Transaction DB pour intégrité
         \Illuminate\Support\Facades\DB::transaction(function () {
-            // Création Devis
-            $devis = \App\Models\DevisTuyauterie::create([
+
+            $data = [
                 'reference_projet' => $this->reference_projet,
                 'lieu_intervention' => $this->lieu_intervention,
                 'societe_id' => $this->societe_id ?: null,
@@ -212,9 +270,27 @@ class DevisTuyauterieForm extends Component
                 'total_tva' => $this->total_tva,
                 'total_ttc' => $this->total_ttc,
                 'marge_globale' => $this->marge_globale,
-            ]);
+            ];
 
-            // Création Sections et Lignes
+            if ($this->devis && $this->devis->exists) {
+                // Update
+                $this->devis->update($data);
+                $devis = $this->devis;
+
+                // Suppression propre des anciennes sections (et lignes via cascade si config DB ou manuel)
+                foreach ($devis->sections as $oldSec) {
+                    $oldSec->lignes()->delete();
+                    $oldSec->delete();
+                }
+
+                $message = 'Devis mis à jour avec succès !';
+            } else {
+                // Create
+                $devis = \App\Models\DevisTuyauterie::create($data);
+                $message = 'Devis créé avec succès !';
+            }
+
+            // Création Sections et Lignes (commune Create/Update)
             foreach ($this->sections as $sectionIndex => $sectionData) {
                 $section = $devis->sections()->create([
                     'titre' => $sectionData['titre'],
@@ -235,10 +311,15 @@ class DevisTuyauterieForm extends Component
                     ]);
                 }
             }
+
+            // Mise à jour de l'instance pour éviter bugs si on reste sur la page (mais on redirect)
+            if (!$this->devis) {
+                 $this->devis = $devis;
+            }
         });
 
         // Redirection avec message succès
-        session()->flash('success', 'Devis enregistré avec succès !');
+        session()->flash('success', $this->devis->exists ? 'Devis mis à jour !' : 'Devis créé !');
         return redirect()->route('devis_tuyauterie.index');
     }
 
