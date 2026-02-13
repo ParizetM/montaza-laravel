@@ -127,7 +127,7 @@ class MediaController extends Controller
                 $path = 'media/' . $model . '/' . date('Y/m/d');
 
                 // Utilisation de la méthode storeAs avec gestion de disque spécifique
-                $filePath = $file->storeAs($path, $filename);
+                $filePath = $file->storeAs($path, $filename, 'public');
 
                 $media = new Media([
                     'filename' => $filename,
@@ -167,18 +167,29 @@ class MediaController extends Controller
         // Cette partie peut être adaptée selon vos règles d'autorisation
 
         $media = Media::find($mediaid);
+
+        if (!$media) {
+            abort(404, 'Média non trouvé');
+        }
+
         $path = $media->path;
         if (is_null($path)) {
             abort(404, 'Chemin du fichier non défini');
         }
 
-        $path = Storage::path($path);
+        $fullPath = Storage::disk('public')->path($path);
 
-        if (!file_exists($path)) {
+        if (!file_exists($fullPath)) {
+            \Log::error('Fichier média non trouvé', [
+                'media_id' => $mediaid,
+                'path' => $path,
+                'full_path' => $fullPath
+            ]);
             abort(404, 'Fichier non trouvé');
         }
+
         $type = $media->mime_type ?? 'application/octet-stream';
-        $fileContent = file_get_contents($path);
+        $fileContent = file_get_contents($fullPath);
 
         $response = response($fileContent, 200);
         $response->header('Content-Type', $type);
@@ -205,7 +216,7 @@ class MediaController extends Controller
         if (is_null($media->path)) {
             abort(404, 'Chemin du fichier non défini');
         }
-        $path = Storage::path($media->path);
+        $path = Storage::disk('public')->path($media->path);
         return response()->download($path, $media->original_filename);
     }
 
@@ -292,8 +303,8 @@ class MediaController extends Controller
             $basePath = 'media/' . $model . '/' . date('Y/m/d');
             $fullPath = $basePath;
 
-            if (!Storage::exists($fullPath)) {
-                Storage::makeDirectory($fullPath);
+            if (!Storage::disk('public')->exists($fullPath)) {
+                Storage::disk('public')->makeDirectory($fullPath);
             }
 
             foreach ($request->file('files') as $file) {
@@ -302,7 +313,7 @@ class MediaController extends Controller
                 $filename = Str::uuid() . '.' . $extension;
 
                 // Enregistrer le fichier
-                $filePath = $file->storeAs($fullPath, $filename);
+                $filePath = $file->storeAs($fullPath, $filename, 'public');
 
                 // Créer l'entrée media
                 $media = new Media([

@@ -31,11 +31,11 @@ unset($__defined_vars); ?>
 <label <?php echo e($attributes->merge(['class' => 'block font-medium text-sm text-gray-700 dark:text-gray-300 flex items-center gap-2'])); ?>>
     <span><?php echo e($value ?? $slot); ?></span>
 
-    <!--[if BLOCK]><![endif]--><?php if($optionnel): ?>
+    <?php if($optionnel): ?>
         <small class="text-gray-500 font-normal">(Optionnel)</small>
-    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+    <?php endif; ?>
 
-    <!--[if BLOCK]><![endif]--><?php if($help): ?>
+    <?php if($help): ?>
         <?php if (isset($component)) { $__componentOriginalf80c6e4882377f1e95404ca80788f6ed = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginalf80c6e4882377f1e95404ca80788f6ed = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.help-icon','data' => ['text' => $help]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -56,7 +56,7 @@ unset($__defined_vars); ?>
 <?php $component = $__componentOriginalf80c6e4882377f1e95404ca80788f6ed; ?>
 <?php unset($__componentOriginalf80c6e4882377f1e95404ca80788f6ed); ?>
 <?php endif; ?>
-    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+    <?php endif; ?>
 </label>
 
 <?php /**PATH /home/vagrant/code/montaza/resources/views/components/input-label.blade.php ENDPATH**/ ?>

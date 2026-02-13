@@ -235,6 +235,21 @@
                         {{ __('DDP/CDE') }}
                     </x-responsive-nav-link>
                 @endcan
+                @can('voir_les_affaires')
+                    <x-responsive-nav-link :href="route('affaires.index')" :active="request()->routeIs('affaires.index')">
+                        {{ __('Affaires') }}
+                    </x-responsive-nav-link>
+                @endcan
+                @can('voir_les_reparations')
+                    <x-responsive-nav-link :href="route('reparation.index')" :active="request()->routeIs('reparation.index')">
+                        {{ __('Réparations du matériels') }}
+                    </x-responsive-nav-link>
+                @endcan
+                @can('voir_les_devis')
+                    <x-responsive-nav-link :href="route('dossiers_devis.index')" :active="request()->routeIs('dossiers_devis.*')">
+                        {{ __('Dossiers de Devis') }}
+                    </x-responsive-nav-link>
+                @endcan
             @endif
         </div>
 

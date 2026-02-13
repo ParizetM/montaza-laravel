@@ -47,6 +47,34 @@
                         </div>
                     </a>
                 <?php endif; ?>
+                <?php if (Auth::check() && Auth::user()->hasPermission('gerer_les_utilisateurs')): ?>
+                    <a href="<?php echo e(route('personnel.index')); ?>" class="flex p-6 text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-900 w-96 h-auto rounded-md cursor-pointer transition-all hover:scale-105 hover:bg-gray-200 dark:hover:bg-gray-700">
+                        <?php if (isset($component)) { $__componentOriginalfedf51d31852c9ee40b9b6e72adb510a = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginalfedf51d31852c9ee40b9b6e72adb510a = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icons.group','data' => ['class' => 'w-12 h-12 mr-2 fill-gray-400 dark:fill-gray-100']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('icons.group'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['class' => 'w-12 h-12 mr-2 fill-gray-400 dark:fill-gray-100']); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginalfedf51d31852c9ee40b9b6e72adb510a)): ?>
+<?php $attributes = $__attributesOriginalfedf51d31852c9ee40b9b6e72adb510a; ?>
+<?php unset($__attributesOriginalfedf51d31852c9ee40b9b6e72adb510a); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginalfedf51d31852c9ee40b9b6e72adb510a)): ?>
+<?php $component = $__componentOriginalfedf51d31852c9ee40b9b6e72adb510a; ?>
+<?php unset($__componentOriginalfedf51d31852c9ee40b9b6e72adb510a); ?>
+<?php endif; ?>
+                        <div class=" flex flex-col justify-between">
+                            <h1 class="text-3xl font-bold mb-6 text-left"><?php echo e(__('Personnel')); ?></h1>
+                            <p class=" p-1 rounded-sm"><?php echo e(__('Gérer le personnel de l\'entreprise')); ?></p>
+                        </div>
+                    </a>
+                <?php endif; ?>
                 <?php if (Auth::check() && Auth::user()->hasPermission('gerer_les_permissions')): ?>
                     <a href="<?php echo e(route('permissions')); ?>" class="flex p-6 text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-900 w-96 h-auto rounded-md cursor-pointer transition-all hover:scale-105 hover:bg-gray-200 dark:hover:bg-gray-700">
                         <?php if (isset($component)) { $__componentOriginala3c88cd1fcfa4c93f6b8e63aa21519e3 = $component; } ?>

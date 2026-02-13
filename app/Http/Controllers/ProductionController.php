@@ -6,6 +6,7 @@ use App\Models\Affaire;
 use App\Models\Materiel;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Carbon\Carbon;
 
 class ProductionController extends Controller
 {
@@ -50,11 +51,22 @@ class ProductionController extends Controller
             return redirect()->back()->with('error', 'Cette affaire est terminée et ne peut plus être modifiée.');
         }
 
-        $request->validate([
+        $rules = [
             'materiel_id' => 'required|exists:materiels,id',
             'date_debut' => 'required|date',
-            'date_fin' => 'nullable|date|after_or_equal:date_debut',
-        ]);
+            'date_fin' => ['nullable', 'date', 'after_or_equal:date_debut'],
+        ];
+
+        // Ajouter la validation de la date d'échéance si elle existe
+        if ($affaire->date_fin_prevue) {
+            $rules['date_fin'][] = 'before_or_equal:' . $affaire->date_fin_prevue;
+        }
+
+        $messages = [
+            'date_fin.before_or_equal' => 'La date de fin de l\'assignation ne peut pas dépasser la date d\'échéance de l\'affaire (' . ($affaire->date_fin_prevue ? Carbon::parse($affaire->date_fin_prevue)->format('d/m/Y') : '') . ').',
+        ];
+
+        $request->validate($rules, $messages);
 
         $affaire->materiels()->attach($request->materiel_id, [
             'date_debut' => $request->date_debut,

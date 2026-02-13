@@ -545,6 +545,100 @@
     <script>
         const unites = @json($unites);
 
+        // Auto-sélection de la matière si elle vient de la vérification des devis
+        @if(isset($preselectMatiere) && $preselectMatiere)
+        console.log('🔍 Présélection détectée:', @json($preselectMatiere));
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const matiereId = {{ $preselectMatiere['matiere_id'] }};
+            const quantite = {{ $preselectMatiere['quantite'] }};
+
+            console.log('📦 Tentative de présélection - ID:', matiereId, 'Quantité:', quantite);
+
+            // Récupérer les informations de la matière
+            fetch(`/matieres/${matiereId}/json`)
+                .then(response => {
+                    console.log('📡 Réponse API reçue:', response.status);
+                    if (!response.ok) {
+                        throw new Error(`Erreur HTTP: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(matiere => {
+                    console.log('✅ Matière récupérée:', matiere);
+                    console.log('👥 Fournisseurs disponibles:', matiere.fournisseurs);
+
+                    // Filtrer les fournisseurs dans le select
+                    const societeSelect = document.getElementById('societe_select');
+                    if (societeSelect && matiere.fournisseurs && matiere.fournisseurs.length > 0) {
+                        const fournisseurIds = matiere.fournisseurs.map(f => f.id);
+
+                        // Masquer les options qui ne sont pas fournisseurs de cette matière
+                        Array.from(societeSelect.options).forEach(option => {
+                            if (option.value && !fournisseurIds.includes(parseInt(option.value))) {
+                                option.style.display = 'none';
+                                option.disabled = true;
+                            } else if (option.value) {
+                                option.style.display = '';
+                                option.disabled = false;
+                            }
+                        });
+
+                        // Si un seul fournisseur, le pré-sélectionner automatiquement
+                        if (matiere.fournisseurs.length === 1) {
+                            societeSelect.value = matiere.fournisseurs[0].id;
+                            console.log('✨ Fournisseur unique pré-sélectionné:', matiere.fournisseurs[0].raison_sociale);
+                            // Déclencher l'événement change pour charger les établissements
+                            societeSelect.dispatchEvent(new Event('change'));
+                        } else {
+                            console.log('📋 Plusieurs fournisseurs disponibles, veuillez en choisir un');
+                        }
+                    }
+
+                    // Simuler un clic sur cette matière pour l'ajouter automatiquement
+                    const fakeEvent = {
+                        currentTarget: {
+                            getAttribute: function(attr) {
+                                switch(attr) {
+                                    case 'data-matiere-id': return matiere.id;
+                                    case 'data-matiere-ref': return matiere.refInterne || '';
+                                    case 'data-matiere-ref-fournisseur': return matiere.refexterne || '';
+                                    case 'data-matiere-designation': return matiere.designation || '';
+                                    case 'data-ref_valeur_unitaire': return matiere.refValeurUnitaire || '';
+                                    case 'data-typeAffichageStock': return matiere.typeAffichageStock || '';
+                                    case 'data-prix': return matiere.lastPrice || '';
+                                    case 'data-matiere-unite': return matiere.lastPriceUnite || matiere.Unite || '';
+                                }
+                            }
+                        }
+                    };
+
+                    console.log('➕ Ajout de la matière...');
+                    // Ajouter la matière
+                    addMatiere(fakeEvent);
+
+                    // Mettre à jour la quantité après un court délai pour s'assurer que l'élément existe
+                    setTimeout(() => {
+                        const quantiteInput = document.querySelector(`input[name="quantite[${matiereId}]"]`);
+                        if (quantiteInput) {
+                            console.log('✏️ Mise à jour de la quantité:', quantite);
+                            quantiteInput.value = quantite;
+                            saveChanges();
+                            console.log('💾 Sauvegarde effectuée');
+                        } else {
+                            console.error('❌ Input de quantité introuvable pour ID:', matiereId);
+                        }
+                    }, 200);
+                })
+                .catch(error => {
+                    console.error('❌ Erreur lors de la récupération de la matière:', error);
+                    alert('Erreur lors de l\'ajout automatique de la matière: ' + error.message);
+                });
+        });
+        @else
+        console.log('ℹ️ Aucune matière à présélectionner');
+        @endif
+
         // Function to update sous-familles based on selected famille
         function updateSousFamilles() {
             var familleId = document.getElementById('famille_id_search').value;

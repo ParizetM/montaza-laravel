@@ -36,10 +36,10 @@
 <?php unset($__componentOriginal7c1bf3a9346f208f66ee83b06b607fb5); ?>
 <?php endif; ?>
 
-    <form method="POST" action="<?php echo e(route('login')); ?>">
+    <form method="POST" action="<?php echo e(route('login')); ?>" onkeydown="if(event.key === 'Enter' && event.target.type !== 'checkbox') { event.preventDefault(); this.querySelector('button[type=submit]').click(); }">
         <?php echo csrf_field(); ?>
-        <div>
-            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+        <div class="text-center">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
                 <?php echo e(__('Log in')); ?>
 
             </h2>
@@ -183,24 +183,26 @@
             </label>
         </div>
 
-        <div class="flex items-center justify-end mt-4">
+        <div class="flex items-center justify-end mt-6">
             <?php if(Route::has('password.request')): ?>
                 <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="<?php echo e(route('password.request')); ?>">
                     <?php echo e(__('Forgot your password?')); ?>
 
                 </a>
             <?php endif; ?>
+        </div>
 
+        <div class="mt-6">
             <?php if (isset($component)) { $__componentOriginald411d1792bd6cc877d687758b753742c = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginald411d1792bd6cc877d687758b753742c = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.primary-button','data' => ['class' => 'ms-3']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.primary-button','data' => ['class' => 'w-full justify-center py-3 text-base']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('primary-button'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['class' => 'ms-3']); ?>
+<?php $component->withAttributes(['class' => 'w-full justify-center py-3 text-base']); ?>
                 <?php echo e(__('Log in')); ?>
 
              <?php echo $__env->renderComponent(); ?>

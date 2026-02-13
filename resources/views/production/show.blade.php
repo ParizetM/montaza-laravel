@@ -28,6 +28,18 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
+            <!-- Debug des erreurs (à retirer après test) -->
+            @if($errors->any())
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                    <strong class="font-bold">Erreurs de validation :</strong>
+                    <ul class="mt-2 list-disc list-inside">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <!-- KPI Cards -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
@@ -231,7 +243,7 @@
                 <x-input-label for="materiel_id" value="Matériel" />
                 <select id="materiel_id" name="materiel_id" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
                     @foreach($availableMateriels as $materiel)
-                        <option value="{{ $materiel->id }}">{{ $materiel->designation }} ({{ $materiel->reference }})</option>
+                        <option value="{{ $materiel->id }}" {{ old('materiel_id') == $materiel->id ? 'selected' : '' }}>{{ $materiel->designation }} ({{ $materiel->reference }})</option>
                     @endforeach
                 </select>
                 <x-input-error :messages="$errors->get('materiel_id')" class="mt-2" />
@@ -239,13 +251,13 @@
 
             <div class="mt-6">
                 <x-input-label for="date_debut" value="Date de début" />
-                <x-text-input id="date_debut" name="date_debut" type="date" class="mt-1 block w-full" required />
+                <x-text-input id="date_debut" name="date_debut" type="date" class="mt-1 block w-full" value="{{ old('date_debut') }}" required />
                 <x-input-error :messages="$errors->get('date_debut')" class="mt-2" />
             </div>
 
             <div class="mt-6">
                 <x-input-label for="date_fin" value="Date de fin (optionnel)" />
-                <x-text-input id="date_fin" name="date_fin" type="date" class="mt-1 block w-full" />
+                <x-text-input id="date_fin" name="date_fin" type="date" class="mt-1 block w-full" value="{{ old('date_fin') }}" />
                 <x-input-error :messages="$errors->get('date_fin')" class="mt-2" />
             </div>
 
@@ -292,4 +304,13 @@
             </div>
         </form>
     </x-modal>
+
+    <script>
+        // Rouvrir automatiquement le modal si des erreurs de validation existent
+        document.addEventListener('DOMContentLoaded', function() {
+            @if($errors->has('materiel_id') || $errors->has('date_debut') || $errors->has('date_fin'))
+                window.dispatchEvent(new CustomEvent('open-modal', { detail: 'assign-materiel' }));
+            @endif
+        });
+    </script>
 </x-app-layout>

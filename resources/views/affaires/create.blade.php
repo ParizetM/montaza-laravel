@@ -105,7 +105,7 @@
 
                             <!-- Bouton transformé en lien (avec comportement submit) -->
                             <a href="#" onclick="event.preventDefault(); document.getElementById('create-affaire-form').submit();"
-                                class="inline-flex items-center px-6 py-2.5 bg-purple-600 text-white rounded-xl text-sm font-semibold hover:bg-purple-700 active:bg-purple-800 transition-all duration-300 ease-in-out shadow-lg shadow-purple-500/30 hover:shadow-purple-600/40">
+                                class="inline-flex items-center px-6 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:from-purple-700 hover:to-indigo-700 transition-colors duration-200 shadow-lg shadow-purple-500/30 hover:shadow-purple-600/40">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                 </svg>

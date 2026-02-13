@@ -199,6 +199,7 @@ class DatabaseSeeder extends Seeder
         $this->call(CdeSeeder::class);
         $this->call([
             ProductionSeeder::class,
+            PersonnelSeeder::class,
         ]);
     }
 }

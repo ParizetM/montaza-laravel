@@ -7,10 +7,10 @@
     </noscript>
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <form method="POST" action="{{ route('login') }}">
+    <form method="POST" action="{{ route('login') }}" onkeydown="if(event.key === 'Enter' && event.target.type !== 'checkbox') { event.preventDefault(); this.querySelector('button[type=submit]').click(); }">
         @csrf
-        <div>
-            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+        <div class="text-center">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
                 {{ __('Log in') }}
             </h2>
         </div>
@@ -42,14 +42,16 @@
             </label>
         </div>
 
-        <div class="flex items-center justify-end mt-4">
+        <div class="flex items-center justify-end mt-6">
             @if (Route::has('password.request'))
                 <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('password.request') }}">
                     {{ __('Forgot your password?') }}
                 </a>
             @endif
+        </div>
 
-            <x-primary-button class="ms-3">
+        <div class="mt-6">
+            <x-primary-button class="w-full justify-center py-3 text-base">
                 {{ __('Log in') }}
             </x-primary-button>
         </div>

@@ -540,7 +540,7 @@
                                                     ? ($cde->condition_paiement_id == $conditionPaiement->id
                                                         ? 'selected'
                                                         : '')
-                                                    : ($cde->societe->condition_paiement_id == $conditionPaiement->id
+                                                    : ($cde->societe && $cde->societe->condition_paiement_id == $conditionPaiement->id
                                                         ? 'selected'
                                                         : ''),
                                             ) }}>

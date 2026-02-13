@@ -77,36 +77,78 @@ class MediaSidebar extends Component
         $entity = $this->getEntity();
 
         if (!$entity) {
+            session()->flash('error', 'Entité non trouvée pour le modèle ' . $this->model);
             return;
         }
 
+        $uploadCount = 0;
         foreach ($this->files as $file) {
-            $originalFilename = $file->getClientOriginalName();
-            $extension = $file->getClientOriginalExtension();
-            $filename = Str::uuid() . '.' . $extension;
-            $path = 'media/' . $this->model . '/' . date('Y/m/d');
+            try {
+                $originalFilename = $file->getClientOriginalName();
+                $extension = $file->getClientOriginalExtension();
+                $filename = Str::uuid() . '.' . $extension;
+                $path = 'media/' . $this->model . '/' . date('Y/m/d');
 
-            // Store the file
-            $filePath = $file->storeAs($path, $filename);
+                // Ensure directory exists
+                if (!Storage::disk('public')->exists($path)) {
+                    Storage::disk('public')->makeDirectory($path, 0755, true);
+                }
 
-            // Create media record
-            $media = new Media([
-                'filename' => $filename,
-                'original_filename' => $originalFilename,
-                'path' => str_replace('public/', '', $filePath),
-                'mime_type' => $file->getMimeType(),
-                'size' => $file->getSize(),
-                'uploaded_by' => Auth::id(),
-                'media_type_id' => $this->selectedMediaTypeId,
-            ]);
+                // Store the file on public disk
+                $filePath = $file->storeAs($path, $filename, 'public');
 
-            // Attach to entity
-            $entity->media()->save($media);
+                if (!$filePath) {
+                    throw new \Exception('Le fichier n\'a pas pu être stocké');
+                }
+
+                // Verify file was created
+                $fullPath = Storage::disk('public')->path($filePath);
+                if (!file_exists($fullPath)) {
+                    \Log::error('Fichier non créé après storeAs', [
+                        'path' => $filePath,
+                        'full_path' => $fullPath,
+                        'disk_root' => Storage::disk('public')->path('')
+                    ]);
+                    throw new \Exception('Le fichier n\'existe pas après upload');
+                }
+
+                // Create media record
+                $media = new Media([
+                    'filename' => $filename,
+                    'original_filename' => $originalFilename,
+                    'path' => $filePath,
+                    'mime_type' => $file->getMimeType(),
+                    'size' => $file->getSize(),
+                    'uploaded_by' => Auth::id(),
+                    'media_type_id' => $this->selectedMediaTypeId,
+                ]);
+
+                // Attach to entity
+                $entity->media()->save($media);
+                $uploadCount++;
+
+                \Log::info('Fichier uploadé avec succès', [
+                    'filename' => $originalFilename,
+                    'path' => $filePath,
+                    'full_path' => $fullPath
+                ]);
+            } catch (\Exception $e) {
+                \Log::error('Erreur upload média: ' . $e->getMessage(), [
+                    'file' => $originalFilename ?? 'unknown',
+                    'trace' => $e->getTraceAsString()
+                ]);
+                session()->flash('error', 'Erreur lors de l\'upload de ' . ($originalFilename ?? 'un fichier') . ': ' . $e->getMessage());
+                return; // Stop processing on error
+            }
         }
 
         // Reset the file input and refresh the list
         $this->files = [];
         $this->refreshMediaList();
+
+        if ($uploadCount > 0) {
+            session()->flash('success', $uploadCount . ' fichier(s) uploadé(s) avec succès');
+        }
     }
 
     public function downloadMedia($mediaId)

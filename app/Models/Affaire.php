@@ -99,12 +99,39 @@ class Affaire extends Model
     }
 
     /**
+     * Relation avec les devis de tuyauterie
+     */
+    public function devisTuyauteries()
+    {
+        return $this->hasMany(DevisTuyauterie::class, 'affaire_id');
+    }
+
+    /**
+     * Relation avec les dossiers de devis
+     */
+    public function dossiersDevis()
+    {
+        return $this->hasMany(DossierDevis::class, 'affaire_id');
+    }
+
+    /**
      * Relation avec le matériel (Many-to-Many via affaire_materiel)
      */
     public function materiels()
     {
         return $this->belongsToMany(Materiel::class, 'affaire_materiel')
                     ->withPivot('date_debut', 'date_fin', 'statut')
+                    ->withTimestamps();
+    }
+
+    /**
+     * Relation avec le personnel (Many-to-Many via affaire_personnel)
+     */
+    public function personnels()
+    {
+        return $this->belongsToMany(Personnel::class, 'affaire_personnel')
+                    ->using(AffairePersonnel::class)
+                    ->withPivot('id', 'role', 'date_debut', 'date_fin', 'notes')
                     ->withTimestamps();
     }
 

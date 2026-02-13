@@ -31,4 +31,19 @@ class DevisTuyauterie extends Model
     {
         return $this->belongsTo(SocieteContact::class);
     }
+
+    public function affaire()
+    {
+        return $this->belongsTo(Affaire::class);
+    }
+
+    public function dossierDevis()
+    {
+        return $this->belongsTo(DossierDevis::class);
+    }
+
+    public function stockReservations()
+    {
+        return $this->hasMany(DevisStockReservation::class);
+    }
 }

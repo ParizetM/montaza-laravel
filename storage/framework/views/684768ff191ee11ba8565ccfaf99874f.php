@@ -31,6 +31,13 @@
                             class="pl-10 w-full rounded-md border-gray-300 dark:border-gray-700 shadow-sm focus:border-amber-500 focus:ring focus:ring-amber-200 focus:ring-opacity-50 dark:bg-gray-900 dark:text-gray-100">
                     </div>
                 </form>
+                <a href="<?php echo e(route('dossiers_devis.index')); ?>" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-sm whitespace-nowrap">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    <?php echo e(__('Dossiers de Devis')); ?>
+
+                </a>
                 <?php if (Auth::check() && Auth::user()->hasPermission('gerer_les_devis')): ?>
                     <a href="<?php echo e(route('devis_tuyauterie.create')); ?>" class="inline-flex items-center px-4 py-2 bg-amber-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-amber-700 active:bg-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-sm whitespace-nowrap">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -61,6 +68,7 @@
                                 <thead class="bg-gray-50/50 dark:bg-gray-900/50">
                                     <tr>
                                         <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Référence</th>
+                                        <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Affaire</th>
                                         <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Client</th>
                                         <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date Emission</th>
                                         <th scope="col" class="px-6 py-4 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total HT</th>
@@ -86,6 +94,17 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <?php if($item->affaire): ?>
+                                                    <a href="<?php echo e(route('affaires.show', $item->affaire->id)); ?>" onclick="event.stopPropagation()" class="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400">
+                                                        <?php echo e($item->affaire->code); ?>
+
+                                                    </a>
+                                                    <div class="text-xs text-gray-500"><?php echo e(Str::limit($item->affaire->nom, 20)); ?></div>
+                                                <?php else: ?>
+                                                    <span class="text-xs text-gray-400">-</span>
+                                                <?php endif; ?>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <div class="text-sm font-medium text-gray-900 dark:text-gray-200"><?php echo e($item->client_nom); ?></div>

@@ -6,12 +6,14 @@ use Livewire\Component;
 use App\Models\Societe;
 use App\Models\SocieteContact;
 use App\Models\DevisTuyauterie;
+use App\Models\Matiere;
 
 class DevisTuyauterieForm extends Component
 {
     public ?DevisTuyauterie $devis = null;
 
     // 1. Informations En-tête
+    public $affaire_id; // Obligatoire
     public $reference_projet;
     public $lieu_intervention;
     public $societe_id;
@@ -68,12 +70,13 @@ class DevisTuyauterieForm extends Component
     public $marge_globale = 0;
     public $marge_pourcent = 0;
 
-    public function mount(DevisTuyauterie $devis = null)
+    public function mount(DevisTuyauterie $devis = null, $affaire_id = null)
     {
         if ($devis && $devis->exists) {
             $this->devis = $devis;
 
             // Chargement des données entête
+            $this->affaire_id = $devis->affaire_id;
             $this->reference_projet = $devis->reference_projet;
             $this->lieu_intervention = $devis->lieu_intervention;
             $this->societe_id = $devis->societe_id;
@@ -101,6 +104,9 @@ class DevisTuyauterieForm extends Component
                         'type' => $ligne->type,
                         'designation' => $ligne->designation,
                         'matiere' => $ligne->matiere,
+                        'matiere_id' => $ligne->matiere_id,
+                        'quantite_matiere_unitaire' => $ligne->quantite_matiere_unitaire + 0,
+                        'unite_matiere' => $ligne->unite_matiere,
                         'quantite' => $ligne->quantite + 0, // Force number
                         'unite' => $ligne->unite,
                         'prix_achat' => $ligne->prix_achat + 0,
@@ -123,7 +129,11 @@ class DevisTuyauterieForm extends Component
             }
 
         } else {
+            // Nouveau devis : initialiser avec affaire_id si passé en paramètre
             $this->date_emission = now()->format('Y-m-d');
+            if ($affaire_id) {
+                $this->affaire_id = $affaire_id;
+            }
         }
 
         $this->calculateTotals();
@@ -135,7 +145,19 @@ class DevisTuyauterieForm extends Component
         $this->sections[] = [
             'titre' => 'Nouveau Lot',
             'lignes' => [
-                ['type' => 'fourniture', 'designation' => '', 'matiere' => '', 'quantite' => 1, 'unite' => 'u', 'prix_achat' => 0, 'prix_unitaire' => 0, 'total_ht' => 0]
+                [
+                    'type' => 'fourniture',
+                    'designation' => '',
+                    'matiere' => '',
+                    'matiere_id' => null,
+                    'quantite_matiere_unitaire' => 0,
+                    'unite_matiere' => 'ml',
+                    'quantite' => 1,
+                    'unite' => 'u',
+                    'prix_achat' => 0,
+                    'prix_unitaire' => 0,
+                    'total_ht' => 0
+                ]
             ]
         ];
     }
@@ -154,6 +176,9 @@ class DevisTuyauterieForm extends Component
             'type' => 'fourniture',
             'designation' => '',
             'matiere' => '',
+            'matiere_id' => null,
+            'quantite_matiere_unitaire' => 0,
+            'unite_matiere' => 'ml',
             'quantite' => 1,
             'unite' => 'u',
             'prix_achat' => 0,
@@ -167,6 +192,28 @@ class DevisTuyauterieForm extends Component
         unset($this->sections[$sectionIndex]['lignes'][$lineIndex]);
         $this->sections[$sectionIndex]['lignes'] = array_values($this->sections[$sectionIndex]['lignes']);
         $this->calculateTotals();
+    }
+
+    // Sélectionner une matière depuis la base de données
+    public function selectMatiere($sectionIndex, $lineIndex, $matiereId)
+    {
+        $matiere = Matiere::with(['standardVersion', 'material', 'unite'])->find($matiereId);
+
+        if ($matiere) {
+            // Ne touche PAS à la désignation - elle reste indépendante
+            // La désignation = ce que vous fournissez au client
+            // Le champ matière = les matériaux utilisés
+
+            $this->sections[$sectionIndex]['lignes'][$lineIndex]['matiere'] = $matiere->material->nom ?? '';
+            $this->sections[$sectionIndex]['lignes'][$lineIndex]['matiere_id'] = $matiere->id;
+
+            // Ajouter la norme/version si disponible
+            if ($matiere->standardVersion) {
+                $this->sections[$sectionIndex]['lignes'][$lineIndex]['matiere'] .= ' ' . $matiere->standardVersion->version;
+            }
+
+            $this->calculateTotals();
+        }
     }
 
     // Hook automatique lors de la mise à jour des champs
@@ -248,12 +295,14 @@ class DevisTuyauterieForm extends Component
             'sections.*.lignes.*.designation' => 'required|string',
             'sections.*.lignes.*.quantite' => 'required|numeric|min:0.01',
             'sections.*.lignes.*.prix_unitaire' => 'required|numeric|min:0',
+            // 'affaire_id' => 'required|exists:affaires,id', // TEMPORAIRE: Décommenter après ajout de la colonne en BDD
         ]);
 
         // Transaction DB pour intégrité
         \Illuminate\Support\Facades\DB::transaction(function () {
 
             $data = [
+                'affaire_id' => $this->affaire_id ?: null, // Temporaire: peut être null
                 'reference_projet' => $this->reference_projet,
                 'lieu_intervention' => $this->lieu_intervention,
                 'societe_id' => $this->societe_id ?: null,
@@ -302,6 +351,9 @@ class DevisTuyauterieForm extends Component
                         'type' => $ligneData['type'],
                         'designation' => $ligneData['designation'],
                         'matiere' => $ligneData['matiere'],
+                        'matiere_id' => $ligneData['matiere_id'] ?? null,
+                        'quantite_matiere_unitaire' => $ligneData['quantite_matiere_unitaire'] ?? null,
+                        'unite_matiere' => $ligneData['unite_matiere'] ?? null,
                         'quantite' => $ligneData['quantite'],
                         'unite' => $ligneData['unite'],
                         'prix_achat' => $ligneData['prix_achat'],
@@ -323,10 +375,134 @@ class DevisTuyauterieForm extends Component
         return redirect()->route('devis_tuyauterie.index');
     }
 
+    /**
+     * Liste des désignations standards pour entreprise de tuyauterie
+     */
+    private function getDesignationsStandards()
+    {
+        return [
+            // Tubes et tuyaux
+            'Tube acier carbone soudé',
+            'Tube acier carbone sans soudure',
+            'Tube inox 304L',
+            'Tube inox 316L',
+            'Tube cuivre',
+            'Tube PVC',
+            'Tube PE',
+            'Tube multicouche',
+
+            // Raccords
+            'Coude 90° acier soudé',
+            'Coude 45° acier soudé',
+            'Coude 90° inox 304L',
+            'Coude 90° inox 316L',
+            'Té égal acier soudé',
+            'Té réduit acier soudé',
+            'Réduction concentrique acier',
+            'Réduction excentrique acier',
+            'Bouchon acier soudé',
+            'Manchon acier fileté',
+            'Bride à souder acier',
+            'Bride à collerette inox',
+            'Contre-bride acier',
+
+            // Vannes et robinetterie
+            'Vanne à boisseau sphérique',
+            'Vanne papillon',
+            'Vanne à opercule',
+            'Vanne guillotine',
+            'Clapet anti-retour',
+            'Soupape de sécurité',
+            'Détendeur de pression',
+            'Robinet d\'arrêt',
+            'Électrovanne',
+
+            // Brides et joints
+            'Bride PN10 acier',
+            'Bride PN16 acier',
+            'Bride PN25 acier',
+            'Bride PN40 acier',
+            'Joint plat caoutchouc',
+            'Joint spiral',
+            'Joint graphite',
+            'Boulonnerie bride',
+
+            // Supports et fixations
+            'Collier de fixation simple',
+            'Collier de fixation renforcé',
+            'Support à patins',
+            'Support coulissant',
+            'Support fixe',
+            'Console murale',
+            'Potence de support',
+            'Amortisseur de vibrations',
+
+            // Soudage et assemblage
+            'Soudure bout à bout',
+            'Soudure en angle',
+            'Chanfreinage',
+            'Pointage',
+            'Meulage et ébavurage',
+            'Traitement thermique',
+
+            // Calorifuge et isolation
+            'Calorifuge laine de roche',
+            'Calorifuge mousse élastomère',
+            'Tôle de protection alu',
+            'Bande d\'étanchéité',
+            'Peinture antirouille',
+            'Peinture de finition',
+
+            // Essais et contrôles
+            'Essai hydraulique',
+            'Essai pneumatique',
+            'Contrôle radiographique',
+            'Contrôle ultrasons',
+            'Contrôle ressuage',
+            'Contrôle magnétoscopie',
+            'Contrôle visuel',
+            'Épreuve en pression',
+
+            // Installation et montage
+            'Préfabrication en atelier',
+            'Montage sur site',
+            'Dépose tuyauterie existante',
+            'Modification de tracé',
+            'Mise en service',
+            'Formation utilisateur',
+
+            // Main d\'œuvre
+            'Tuyauteur',
+            'Soudeur TIG',
+            'Soudeur électrode',
+            'Chef de chantier',
+            'Contrôleur qualité',
+            'Levageur',
+
+            // Divers
+            'Piquage sur existant',
+            'Modification de tracé',
+            'By-pass temporaire',
+            'Purge et nettoyage',
+            'Traçage et marquage',
+            'Dossier technique',
+            'Plan de récolement',
+        ];
+    }
+
     public function render()
     {
+        // Récupérer les matières les plus utilisées
+        $matieres = Matiere::with(['material', 'standardVersion', 'unite'])
+            ->orderBy('designation')
+            ->limit(200)
+            ->get();
+
         return view('livewire.devis-tuyauterie-form', [
-            'societes' => Societe::orderBy('raison_sociale')->get()
+            'societes' => Societe::orderBy('raison_sociale')->get(),
+            'affaires' => \App\Models\Affaire::whereIn('statut', ['en_attente', 'en_cours'])->orderBy('code', 'desc')->get(),
+            'matieres' => $matieres,
+            'designations_standards' => $this->getDesignationsStandards()
         ]);
     }
 }

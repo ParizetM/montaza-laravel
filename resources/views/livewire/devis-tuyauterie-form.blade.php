@@ -7,6 +7,18 @@
             Informations du Chantier
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Sélection de l'affaire (TEMPORAIREMENT OPTIONNEL) -->
+            <div class="md:col-span-2">
+                <x-input-label for="affaire_id" :value="__('Affaire liée')" help="Sélectionner l'affaire à laquelle ce devis est rattaché" />
+                <select id="affaire_id" wire:model="affaire_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                    <option value="">-- Sélectionner une affaire (optionnel) --</option>
+                    @foreach($affaires as $affaire)
+                        <option value="{{ $affaire->id }}">{{ $affaire->code }} - {{ $affaire->nom }}</option>
+                    @endforeach
+                </select>
+                @error('affaire_id') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+            </div>
+
             <div>
                 <x-input-label for="reference_projet" :value="__('Référence Projet / Nom Chantier')" help="Nom interne du projet pour le suivi. Ex: Remplacement Vapeur Ligne 4" />
                 <x-text-input id="reference_projet" type="text" wire:model="reference_projet" placeholder="Ex: Remplacement Vapeur Ligne 4" class="mt-1 block w-full" />
@@ -88,6 +100,7 @@
                                 <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase" title="Type de dépense (Matériel, MO, etc.)">Type <sup class="text-blue-500 cursor-help">?</sup></th>
                                 <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase w-1/3" title="Description détaillée pour le client">Désignation</th>
                                 <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase" title="Nuance matière ou norme applicable">Matière/Norme</th>
+                                <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase bg-green-50 dark:bg-green-900/20" title="Quantité de matière pour 1 élément">Qté Mat./U <sup class="text-green-500 cursor-help">?</sup></th>
                                 <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase w-20">Qté</th>
                                 <th class="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase w-24">Unité</th>
                                 <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase w-24" title="Prix de revient interne (visible seulement par vous)">Prix Achat (Caché) <sup class="text-blue-500 cursor-help">?</sup></th>
@@ -108,10 +121,117 @@
                                         </select>
                                     </td>
                                     <td class="px-2 py-2">
-                                        <input type="text" wire:model.lazy="sections.{{ $index }}.lignes.{{ $lineIndex }}.designation" placeholder="Desc. Technique" class="block w-full text-sm rounded-md border-gray-300 dark:bg-gray-700 dark:text-white">
+                                        <div class="relative">
+                                            <input
+                                                type="text"
+                                                wire:model.lazy="sections.{{ $index }}.lignes.{{ $lineIndex }}.designation"
+                                                placeholder="Desc. Technique"
+                                                class="block w-full text-sm rounded-md border-gray-300 dark:bg-gray-700 dark:text-white"
+                                                list="designations-list-{{ $index }}-{{ $lineIndex }}"
+                                                autocomplete="off">
+
+                                            <datalist id="designations-list-{{ $index }}-{{ $lineIndex }}">
+                                                @foreach($designations_standards as $designation)
+                                                    <option value="{{ $designation }}">
+                                                @endforeach
+                                            </datalist>
+
+                                            <button
+                                                type="button"
+                                                onclick="document.getElementById('modal-designations-{{ $index }}-{{ $lineIndex }}').classList.remove('hidden')"
+                                                class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                                                title="Voir toutes les désignations">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
+
+                                        <!-- Modal de recherche des désignations -->
+                                        <div id="modal-designations-{{ $index }}-{{ $lineIndex }}" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+                                            <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
+                                                <div class="flex justify-between items-center mb-4">
+                                                    <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Désignations standards</h3>
+                                                    <button
+                                                        type="button"
+                                                        onclick="document.getElementById('modal-designations-{{ $index }}-{{ $lineIndex }}').classList.add('hidden')"
+                                                        class="text-gray-400 hover:text-gray-500">
+                                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+
+                                                <input
+                                                    type="text"
+                                                    id="search-designation-{{ $index }}-{{ $lineIndex }}"
+                                                    placeholder="🔍 Rechercher..."
+                                                    class="w-full mb-3 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                                                    onkeyup="filterDesignations({{ $index }}, {{ $lineIndex }})">
+
+                                                <div class="max-h-96 overflow-y-auto">
+                                                    <div id="designations-container-{{ $index }}-{{ $lineIndex }}" class="space-y-1">
+                                                        @foreach($designations_standards as $designation)
+                                                            <button
+                                                                type="button"
+                                                                class="designation-item w-full text-left px-3 py-2 text-sm hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded cursor-pointer text-gray-700 dark:text-gray-300"
+                                                                onclick="selectDesignation({{ $index }}, {{ $lineIndex }}, '{{ addslashes($designation) }}')">
+                                                                {{ $designation }}
+                                                            </button>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        @if($line['type'] === 'fourniture')
+                                            <div class="mt-1">
+                                                <select wire:change="selectMatiere({{ $index }}, {{ $lineIndex }}, $event.target.value)" class="block w-full text-xs rounded-md border-gray-300 dark:bg-gray-700 dark:text-white bg-blue-50 dark:bg-blue-900/20">
+                                                    <option value="">🔍 Sélectionner une matière répertoriée...</option>
+                                                    @foreach($matieres as $matiere)
+                                                        <option value="{{ $matiere->id }}">
+                                                            {{ $matiere->ref_interne }} - {{ $matiere->designation }}
+                                                            @if($matiere->material) ({{ $matiere->material->nom }}) @endif
+                                                            - Stock: {{ number_format($matiere->quantite(), 2) }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        @endif
                                     </td>
                                     <td class="px-2 py-2">
                                         <input type="text" wire:model.lazy="sections.{{ $index }}.lignes.{{ $lineIndex }}.matiere" placeholder="Ex: 316L, ISO" class="block w-full text-sm rounded-md border-gray-300 dark:bg-gray-700 dark:text-white">
+                                    </td>
+                                    <td class="px-2 py-2 bg-green-50 dark:bg-green-900/20">
+                                        @if($line['type'] === 'fourniture')
+                                            <div class="flex gap-1">
+                                                <input
+                                                    type="number"
+                                                    step="0.01"
+                                                    wire:model.lazy="sections.{{ $index }}.lignes.{{ $lineIndex }}.quantite_matiere_unitaire"
+                                                    class="block w-20 text-xs rounded-md border-gray-300 dark:bg-gray-700 dark:text-white text-right bg-green-50 dark:bg-green-900/30"
+                                                    placeholder="0"
+                                                    title="Quantité de matière pour fabriquer 1 élément">
+                                                <select
+                                                    wire:model="sections.{{ $index }}.lignes.{{ $lineIndex }}.unite_matiere"
+                                                    class="block w-16 text-xs rounded-md border-gray-300 dark:bg-gray-700 dark:text-white bg-green-50 dark:bg-green-900/30"
+                                                    title="Unité de la matière">
+                                                    <option value="ml">ml</option>
+                                                    <option value="m">m</option>
+                                                    <option value="kg">kg</option>
+                                                    <option value="g">g</option>
+                                                    <option value="u">u</option>
+                                                    <option value="l">l</option>
+                                                </select>
+                                            </div>
+                                            @if(isset($line['quantite_matiere_unitaire']) && $line['quantite_matiere_unitaire'] > 0 && $line['quantite'] > 0)
+                                                <div class="text-xs text-green-600 dark:text-green-400 mt-1 font-semibold">
+                                                    = {{ number_format($line['quantite_matiere_unitaire'] * $line['quantite'], 2) }} {{ $line['unite_matiere'] ?? 'ml' }} total
+                                                </div>
+                                            @endif
+                                        @else
+                                            <span class="text-xs text-gray-400">-</span>
+                                        @endif
                                     </td>
                                     <td class="px-2 py-2">
                                         <input type="number" step="0.01" wire:model.live.debounce.500ms="sections.{{ $index }}.lignes.{{ $lineIndex }}.quantite" class="block w-full text-sm rounded-md border-gray-300 dark:bg-gray-700 dark:text-white text-right">
@@ -278,3 +398,48 @@
     </div>
 
 </div>
+
+<script>
+    // Fonction pour filtrer les désignations dans le modal
+    function filterDesignations(sectionIndex, lineIndex) {
+        const searchInput = document.getElementById(`search-designation-${sectionIndex}-${lineIndex}`);
+        const searchTerm = searchInput.value.toLowerCase();
+        const container = document.getElementById(`designations-container-${sectionIndex}-${lineIndex}`);
+        const items = container.getElementsByClassName('designation-item');
+
+        Array.from(items).forEach(item => {
+            const text = item.textContent.toLowerCase();
+            if (text.includes(searchTerm)) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+    // Fonction pour sélectionner une désignation
+    function selectDesignation(sectionIndex, lineIndex, designation) {
+        // Utiliser Livewire pour mettre à jour la valeur
+        @this.set(`sections.${sectionIndex}.lignes.${lineIndex}.designation`, designation);
+
+        // Fermer le modal
+        document.getElementById(`modal-designations-${sectionIndex}-${lineIndex}`).classList.add('hidden');
+
+        // Réinitialiser la recherche
+        const searchInput = document.getElementById(`search-designation-${sectionIndex}-${lineIndex}`);
+        if (searchInput) {
+            searchInput.value = '';
+            filterDesignations(sectionIndex, lineIndex);
+        }
+    }
+
+    // Fermer le modal en cliquant en dehors
+    document.addEventListener('click', function(event) {
+        const modals = document.querySelectorAll('[id^="modal-designations-"]');
+        modals.forEach(modal => {
+            if (event.target === modal) {
+                modal.classList.add('hidden');
+            }
+        });
+    });
+</script>

@@ -441,6 +441,19 @@ use App\Models\Media;
 ########           #######  ##        ########  #######  ##     ## ########
  --}}
                 <div x-show="tab === 'upload'" class="mt-4">
+                    <!-- Messages de succès/erreur -->
+                    @if (session()->has('success'))
+                        <div class="mb-4 p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
+                            <p class="text-sm text-green-800 dark:text-green-200">{{ session('success') }}</p>
+                        </div>
+                    @endif
+
+                    @if (session()->has('error'))
+                        <div class="mb-4 p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+                            <p class="text-sm text-red-800 dark:text-red-200">{{ session('error') }}</p>
+                        </div>
+                    @endif
+
                     <!-- Sélecteur de type de média -->
                     <div class="mb-4">
                         <label for="media_type_select"

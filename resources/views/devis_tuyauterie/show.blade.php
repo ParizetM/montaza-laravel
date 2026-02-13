@@ -47,6 +47,14 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Informations Devis</h3>
+                        @if($devis->affaire)
+                            <p class="text-gray-600 dark:text-gray-400 mb-2">
+                                <span class="font-semibold">Affaire:</span>
+                                <a href="{{ route('affaires.show', $devis->affaire->id) }}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                                    {{ $devis->affaire->code }} - {{ $devis->affaire->nom }}
+                                </a>
+                            </p>
+                        @endif
                         <p class="text-gray-600 dark:text-gray-400"><span class="font-semibold">Référence Projet:</span> {{ $devis->reference_projet ?? 'N/A' }}</p>
                         <p class="text-gray-600 dark:text-gray-400"><span class="font-semibold">Lieu Intervention:</span> {{ $devis->lieu_intervention ?? 'N/A' }}</p>
                         <p class="text-gray-600 dark:text-gray-400"><span class="font-semibold">Date d'émission:</span> {{ $devis->date_emission ? \Carbon\Carbon::parse($devis->date_emission)->format('d/m/Y') : '-' }}</p>

@@ -17,6 +17,8 @@ use App\Models\StandardVersion;
 use App\Models\Stock;
 use App\Models\Unite;
 use App\Services\StockService;
+use App\Models\DevisTuyauterie;
+use App\Models\DevisStockReservation;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -257,6 +259,52 @@ class MatiereController extends Controller
             'societes' => $societes,
         ]);
     }
+
+    /**
+     * Vérification des matières disponibles pour les devis actifs
+     */
+    public function devisVerification(): View
+    {
+        $devis = DevisTuyauterie::with(['sections.lignes', 'affaire', 'societe', 'stockReservations'])
+            ->where('is_archived', false)
+            ->orderBy('date_emission', 'desc')
+            ->get();
+
+        return view('matieres.devis_verification', compact('devis'));
+    }
+
+    /**
+     * Assigner/Réserver du stock pour un devis
+     */
+    public function assignerStockDevis(Request $request)
+    {
+        $request->validate([
+            'devis_id' => 'required|exists:devis_tuyauteries,id',
+            'matiere_id' => 'required|exists:matieres,id',
+            'quantite' => 'required|numeric|min:0.01',
+        ]);
+
+        $matiere = Matiere::findOrFail($request->matiere_id);
+        $stockDisponible = $matiere->quantite();
+
+        // Vérifier qu'il y a assez de stock
+        if ($stockDisponible < $request->quantite) {
+            return redirect()->back()->with('error', 'Stock insuffisant pour cette réservation.');
+        }
+
+        // Créer la réservation
+        DevisStockReservation::create([
+            'devis_tuyauterie_id' => $request->devis_id,
+            'matiere_id' => $request->matiere_id,
+            'quantite_reservee' => $request->quantite,
+            'user_id' => Auth::id(),
+            'statut' => 'reserve',
+            'notes' => $request->notes,
+        ]);
+
+        return redirect()->back()->with('success', 'Stock réservé avec succès pour ce devis.');
+    }
+
     public function sousFamillesJson(Famille $famille)
     {
         $sousFamilles = $famille->sousFamilles->map(function ($sousFamille) {
@@ -290,6 +338,56 @@ class MatiereController extends Controller
     {
         return response()->json($matiere->fournisseurs);
     }
+
+    /**
+     * Retourne les informations d'une matière en JSON pour la présélection dans les commandes
+     */
+    public function getMatiereJson($id)
+    {
+        try {
+            $matiere = Matiere::with(['sousFamille', 'material', 'unite', 'standardVersion', 'fournisseurs'])
+                ->findOrFail($id);
+
+            // Récupérer le dernier prix (objet SocieteMatierePrix ou null)
+            $lastPriceObj = $matiere->getLastPrice();
+            $lastPrice = $lastPriceObj ? $lastPriceObj->prix : null;
+            $lastPriceDate = $lastPriceObj ? $lastPriceObj->date : null;
+
+            // Récupérer les fournisseurs de cette matière
+            $fournisseurs = $matiere->fournisseurs->map(function($fournisseur) {
+                return [
+                    'id' => $fournisseur->id,
+                    'raison_sociale' => $fournisseur->raison_sociale ?? $fournisseur->nom,
+                ];
+            });
+
+            return response()->json([
+                'id' => $matiere->id,
+                'refInterne' => $matiere->ref_interne ?? '',
+                'refexterne' => $matiere->ref_externe ?? '',
+                'designation' => $matiere->designation ?? '',
+                'refValeurUnitaire' => $matiere->ref_valeur_unitaire ?? 1,
+                'typeAffichageStock' => $matiere->typeAffichageStock(),
+                'lastPrice' => $lastPrice,
+                'lastPriceUnite' => $matiere->unite ? $matiere->unite->short : '',
+                'Unite' => $matiere->unite ? $matiere->unite->short : '',
+                'lastPriceDate' => $lastPriceDate ? \Carbon\Carbon::parse($lastPriceDate)->format('d/m/Y') : null,
+                'lastPrice_formated' => $lastPrice ? number_format($lastPrice, 2, ',', ' ') . ' €' : '0 €',
+                'material' => $matiere->material ? $matiere->material->nom : '',
+                'sousFamille' => $matiere->sousFamille ? $matiere->sousFamille->nom : '',
+                'dn' => $matiere->dn ?? '',
+                'epaisseur' => $matiere->epaisseur ?? '',
+                'fournisseurs' => $fournisseurs,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Erreur getMatiereJson pour matiere_id ' . $id . ': ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Erreur lors de la récupération de la matière',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function show($matiere_id, Request $request): View
     {
         // Validation des filtres de prix

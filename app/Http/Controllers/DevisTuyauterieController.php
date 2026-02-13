@@ -7,6 +7,8 @@ use App\Models\Entite;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\DevisEmail;
 
 class DevisTuyauterieController extends Controller
 {
@@ -45,9 +47,10 @@ class DevisTuyauterieController extends Controller
         return view('devis_tuyauterie.index_col', compact('devis', 'isSmall'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        return view('devis_tuyauterie.create');
+        $affaire_id = $request->query('affaire_id');
+        return view('devis_tuyauterie.create', compact('affaire_id'));
     }
 
     public function edit($id)
@@ -99,5 +102,51 @@ class DevisTuyauterieController extends Controller
         }
 
         return Storage::download($path, $fileName);
+    }
+
+    public function sendEmail(Request $request, $id)
+    {
+        $request->validate([
+            'email_destinataire' => 'required|email',
+            'email_sujet' => 'required|string|max:255',
+            'email_message' => 'nullable|string',
+        ]);
+
+        try {
+            $devis = DevisTuyauterie::with(['sections.lignes', 'societeContact'])->findOrFail($id);
+            $entite = Entite::first();
+
+            // Générer le PDF s'il n'existe pas
+            $fileName = 'Devis_' . ($devis->reference_projet ?? $devis->id) . '.pdf';
+            $year = $devis->created_at->format('Y');
+            $path = 'DevisTuyauterie/' . $year . '/' . $fileName;
+
+            if (!Storage::exists($path)) {
+                $pdf = app('dompdf.wrapper');
+                $pdf->loadView('devis_tuyauterie.pdf', compact('devis', 'entite'));
+                $pdf->setOption(['isRemoteEnabled' => true, 'isHtml5ParserEnabled' => true, 'isPhpEnabled' => true]);
+                Storage::put($path, $pdf->output());
+            }
+
+            // Récupérer le chemin complet du fichier
+            $fullPath = storage_path('app/' . $path);
+
+            // Envoyer l'email
+            Mail::to($request->email_destinataire)->send(
+                new DevisEmail(
+                    $devis,
+                    $request->email_sujet,
+                    $request->email_message,
+                    $fullPath
+                )
+            );
+
+            return redirect()->route('devis_tuyauterie.preview', $id)
+                ->with('email_success', 'Email envoyé avec succès à ' . $request->email_destinataire);
+        } catch (\Exception $e) {
+            return redirect()->route('devis_tuyauterie.preview', $id)
+                ->with('email_error', 'Erreur lors de l\'envoi de l\'email : ' . $e->getMessage())
+                ->withInput();
+        }
     }
 }

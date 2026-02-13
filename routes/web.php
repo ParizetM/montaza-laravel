@@ -14,6 +14,8 @@ use App\Http\Controllers\MatierePrixController;
 use App\Http\Controllers\ModelChangeController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\PersonnelController;
+use App\Http\Controllers\PersonnelEmploiDuTempsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReferenceDataController;
 use App\Http\Controllers\RoleController;
@@ -25,6 +27,7 @@ use App\Http\Controllers\ProductionController;
 use App\Http\Controllers\ReparationController;
 use App\Http\Controllers\FactureController;
 use App\Http\Controllers\DevisTuyauterieController;
+use App\Http\Controllers\DossierDevisController;
 use App\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Foundation\Http\Middleware\ValidatePostSize;
 use Illuminate\Support\Facades\Route;
@@ -109,6 +112,18 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::patch('/postes/{role}/update', [RoleController::class, 'update'])->name('roles.update');
         Route::delete('/postes/{role}/delete', [RoleController::class, 'destroy'])->name('roles.destroy');
         Route::patch('/postes/{role}/restore', [RoleController::class, 'restore'])->name('roles.restore');
+    });
+
+
+    Route::middleware('permission:gerer_les_utilisateurs')->group(function () {
+        Route::resource('personnel', PersonnelController::class);
+        Route::post('/personnel/{personnel}/restore', [PersonnelController::class, 'restore'])->name('personnel.restore');
+        Route::get('/personnel/{personnel}/emploi-du-temps', [PersonnelEmploiDuTempsController::class, 'index'])->name('personnel.emploi_du_temps');
+
+        // Routes pour les congés
+        Route::post('/personnel/{personnel}/conges', [PersonnelController::class, 'storeConge'])->name('personnel.conges.store');
+        Route::patch('/personnel/{personnel}/conges/{conge}', [PersonnelController::class, 'updateConge'])->name('personnel.conges.update');
+        Route::delete('/personnel/{personnel}/conges/{conge}', [PersonnelController::class, 'deleteConge'])->name('personnel.conges.delete');
     });
 
 
@@ -207,6 +222,8 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
 
     Route::middleware('permission:voir_les_matieres')->group(function () {
         Route::get('/matieres', [MatiereController::class, 'index'])->name('matieres.index');
+        Route::get('/matieres/verification-devis', [MatiereController::class, 'devisVerification'])->name('matieres.devis_verification');
+        Route::post('/matieres/assigner-stock-devis', [MatiereController::class, 'assignerStockDevis'])->name('matieres.assigner_stock_devis');
         Route::get('/matieres/search', [MatiereController::class, 'searchResult'])->name('matieres.search');
         Route::get('/matieres/quickcreate/{modalId}', [MatiereController::class, 'quickCreate'])->name('matieres.quickCreate');
         Route::POST('/matieres/quickcreate/{modalId}', [MatiereController::class, 'quickStore'])->name('matieres.quickStore');
@@ -220,6 +237,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::post('/matieres/import/store', [MatiereController::class, 'importExcelStore'])->name('matieres.import.store');
         Route::get('/matieres/import/example', [MatiereController::class, 'importExample'])->name('matieres.import.example');
         Route::get('/matieres/{matiere}/fournisseurs/json', [MatiereController::class, 'fournisseursJson'])->name('matieres.fournisseurs.json');
+        Route::get('/matieres/{id}/json', [MatiereController::class, 'getMatiereJson'])->name('matieres.get_json');
         Route::get('/matieres/standards', [StandardController::class, 'index'])->name('standards.index');
         Route::get('/matieres/{matiere}', [MatiereController::class, 'show'])->name('matieres.show');
 
@@ -345,6 +363,19 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::patch('/affaires/{affaire}/update', [AffaireController::class, 'update'])->name('affaires.update');
         Route::delete('/affaires/{affaire}/delete', [AffaireController::class, 'destroy'])->name('affaires.destroy');
         Route::get('/affaires/{affaire}', [AffaireController::class, 'show'])->name('affaires.show');
+        Route::post('/affaires/{affaire}/assign-devis', [AffaireController::class, 'assignDevis'])->name('affaires.assign_devis');
+        Route::delete('/affaires/{affaire}/unassign-devis/{devis}', [AffaireController::class, 'unassignDevis'])->name('affaires.unassign_devis');
+        Route::post('/affaires/{affaire}/assign-personnel', [AffaireController::class, 'assignPersonnel'])->name('affaires.assign_personnel');
+        Route::delete('/affaires/{affaire}/unassign-personnel/{personnel}', [AffaireController::class, 'unassignPersonnel'])->name('affaires.unassign_personnel');
+        Route::patch('/affaires/{affaire}/update-personnel/{personnel}', [AffaireController::class, 'updatePersonnelAssignment'])->name('affaires.update_personnel');
+
+        // Routes pour les tâches du personnel dans les affaires
+        Route::get('/affaires/{affaire}/personnel/{personnel}/taches', [AffaireController::class, 'showPersonnelTaches'])->name('affaires.personnel.taches');
+        Route::post('/affaires/{affaire}/personnel/{personnel}/taches', [AffaireController::class, 'storePersonnelTache'])->name('affaires.personnel.taches.store');
+        Route::patch('/affaires/{affaire}/personnel/{personnel}/taches/{tache}', [AffaireController::class, 'updatePersonnelTache'])->name('affaires.personnel.taches.update');
+        Route::delete('/affaires/{affaire}/personnel/{personnel}/taches/{tache}', [AffaireController::class, 'deletePersonnelTache'])->name('affaires.personnel.taches.delete');
+        Route::post('/affaires/{affaire}/personnel/{personnel}/taches/{tache}/complete', [AffaireController::class, 'completePersonnelTache'])->name('affaires.personnel.taches.complete');
+        Route::post('/affaires/{affaire}/personnel/{personnel}/taches/{tache}/reopen', [AffaireController::class, 'reopenPersonnelTache'])->name('affaires.personnel.taches.reopen');
 
         // Routes fusionnées depuis Production
         Route::patch('/affaires/{affaire}/update-status', [AffaireController::class, 'updateStatus'])->name('affaires.update_status');
@@ -370,19 +401,38 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
     Route::patch('/media/{id}/commentaire/save', [MediaController::class, 'updateCommentaire'])->name('media.commentaire.save');
     Route::patch('/media/{id}/type/save', [MediaController::class, 'updateType'])->name('media.type.save');
 
-    // Devis Tuyauterie
-    Route::get('/devis-tuyauterie', [DevisTuyauterieController::class, 'index'])->name('devis_tuyauterie.index');
-    Route::get('/devis-tuyauterie/archives', [DevisTuyauterieController::class, 'archives'])->name('devis_tuyauterie.archives');
-    Route::post('/devis-tuyauterie/{id}/archive', [DevisTuyauterieController::class, 'archive'])->name('devis_tuyauterie.archive');
-    Route::post('/devis-tuyauterie/{id}/unarchive', [DevisTuyauterieController::class, 'unarchive'])->name('devis_tuyauterie.unarchive');
-    Route::get('/coldevistuyauterie/small', [DevisTuyauterieController::class, 'indexColDevisTuyauterieSmall'])->name('devis_tuyauterie.index_col_small');
-    Route::get('/devis-tuyauterie/create', [DevisTuyauterieController::class, 'create'])->name('devis_tuyauterie.create');
-    Route::get('/devis-tuyauterie/{id}/edit', [DevisTuyauterieController::class, 'edit'])->name('devis_tuyauterie.edit');
-    Route::get('/devis-tuyauterie/{id}', [DevisTuyauterieController::class, 'show'])->name('devis_tuyauterie.show');
-    Route::get('/devis-tuyauterie/{id}/pdf', [DevisTuyauterieController::class, 'pdf'])->name('devis_tuyauterie.pdf');
-    Route::get('/devis-tuyauterie/{id}/preview', [DevisTuyauterieController::class, 'preview'])->name('devis_tuyauterie.preview');
+    // Dossiers de Devis - Protection par permission
+    Route::middleware('permission:voir_les_devis')->group(function () {
+        Route::get('/dossiers-devis', [DossierDevisController::class, 'index'])->name('dossiers_devis.index');
+        Route::get('/dossiers-devis/create', [DossierDevisController::class, 'create'])->name('dossiers_devis.create');
+        Route::post('/dossiers-devis', [DossierDevisController::class, 'store'])->name('dossiers_devis.store');
+        Route::get('/dossiers-devis/{dossierDevis}', [DossierDevisController::class, 'show'])->name('dossiers_devis.show');
+        Route::get('/dossiers-devis/{dossierDevis}/edit', [DossierDevisController::class, 'edit'])->name('dossiers_devis.edit');
+        Route::patch('/dossiers-devis/{dossierDevis}', [DossierDevisController::class, 'update'])->name('dossiers_devis.update');
+        Route::delete('/dossiers-devis/{dossierDevis}', [DossierDevisController::class, 'destroy'])->name('dossiers_devis.destroy');
+        Route::post('/dossiers-devis/{dossierDevis}/quantitatif', [DossierDevisController::class, 'ajouterQuantitatif'])->name('dossiers_devis.ajouter_quantitatif');
+        Route::patch('/dossiers-devis-quantitatif/{quantitatif}', [DossierDevisController::class, 'updateQuantitatif'])->name('dossiers_devis.update_quantitatif');
+        Route::delete('/dossiers-devis-quantitatif/{quantitatif}', [DossierDevisController::class, 'deleteQuantitatif'])->name('dossiers_devis.delete_quantitatif');
+        Route::get('/dossiers-devis/{dossierDevis}/preparer-devis', [DossierDevisController::class, 'preparerDevis'])->name('dossiers_devis.preparer_devis');
+        Route::post('/dossiers-devis/{dossierDevis}/generer-devis', [DossierDevisController::class, 'genererDevis'])->name('dossiers_devis.generer_devis');
+        Route::post('/dossiers-devis/{dossierDevis}/archiver', [DossierDevisController::class, 'archiver'])->name('dossiers_devis.archiver');
+    });
 
-    Route::get('/devis-tuyauterie/{id}/pdf/download', [DevisTuyauterieController::class, 'downloadPdf'])->name('devis_tuyauterie.download_pdf');
+    // Devis Tuyauterie - Protection par permission
+    Route::middleware('permission:voir_les_devis')->group(function () {
+        Route::get('/devis-tuyauterie', [DevisTuyauterieController::class, 'index'])->name('devis_tuyauterie.index');
+        Route::get('/devis-tuyauterie/archives', [DevisTuyauterieController::class, 'archives'])->name('devis_tuyauterie.archives');
+        Route::post('/devis-tuyauterie/{id}/archive', [DevisTuyauterieController::class, 'archive'])->name('devis_tuyauterie.archive');
+        Route::post('/devis-tuyauterie/{id}/unarchive', [DevisTuyauterieController::class, 'unarchive'])->name('devis_tuyauterie.unarchive');
+        Route::get('/coldevistuyauterie/small', [DevisTuyauterieController::class, 'indexColDevisTuyauterieSmall'])->name('devis_tuyauterie.index_col_small');
+        Route::get('/devis-tuyauterie/create', [DevisTuyauterieController::class, 'create'])->name('devis_tuyauterie.create');
+        Route::get('/devis-tuyauterie/{id}/edit', [DevisTuyauterieController::class, 'edit'])->name('devis_tuyauterie.edit');
+        Route::get('/devis-tuyauterie/{id}', [DevisTuyauterieController::class, 'show'])->name('devis_tuyauterie.show');
+        Route::get('/devis-tuyauterie/{id}/pdf', [DevisTuyauterieController::class, 'pdf'])->name('devis_tuyauterie.pdf');
+        Route::get('/devis-tuyauterie/{id}/preview', [DevisTuyauterieController::class, 'preview'])->name('devis_tuyauterie.preview');
+        Route::get('/devis-tuyauterie/{id}/pdf/download', [DevisTuyauterieController::class, 'downloadPdf'])->name('devis_tuyauterie.download_pdf');
+        Route::post('/devis-tuyauterie/{id}/send-email', [DevisTuyauterieController::class, 'sendEmail'])->name('devis_tuyauterie.send_email');
+    });
 });
 
 // Route d'upload via QR code (protégée par signature)

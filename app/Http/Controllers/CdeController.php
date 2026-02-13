@@ -271,6 +271,16 @@ class CdeController extends Controller
             'affaire_id' => $request->input('affaire_id'),
         ]);
         $cdeid =  $cde->id;
+
+        // Si on vient de la vérification des devis avec une matière à préselectionner
+        if ($request->has('matiere_id') && $request->has('quantite')) {
+            // Utiliser put() au lieu de flash() pour que la session persiste après redirect
+            session()->put('preselect_matiere_' . $cdeid, [
+                'matiere_id' => $request->input('matiere_id'),
+                'quantite' => $request->input('quantite')
+            ]);
+        }
+
         return redirect()->route('cde.show', $cdeid);
     }
     public function show($id, $show_stock = false)
@@ -301,6 +311,14 @@ class CdeController extends Controller
                 $cde->code = "CDE-" . date('y') . "-" . $newNumber . $entite_code;
                 $cde->save();
             }
+
+            // Récupérer les données de présélection si disponibles
+            $preselectMatiere = session()->get('preselect_matiere_' . $cdeid);
+            // Supprimer la session après l'avoir récupérée
+            if ($preselectMatiere) {
+                session()->forget('preselect_matiere_' . $cdeid);
+            }
+
             return view(
                 'ddp_cde.cde.create',
                 [
@@ -312,6 +330,7 @@ class CdeController extends Controller
                     'societes' => $societes,
                     'showRefFournisseur' => $showRefFournisseur,
                     'entite_code' => $entite_code,
+                    'preselectMatiere' => $preselectMatiere,
                 ]
             );
         } elseif ($cde->ddpCdeStatut->id == 2) {

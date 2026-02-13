@@ -26,6 +26,9 @@
     <!-- Scripts -->
     <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
 
+    <?php echo \Livewire\Mechanisms\FrontendAssets\FrontendAssets::styles(); ?>
+
+
 </head>
 
 <body class="font-sans antialiased bg-gray-100 dark:bg-gray-900">
