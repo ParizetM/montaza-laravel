@@ -28,6 +28,8 @@ class Personnel extends Model
         'departement',
         'date_embauche',
         'date_depart',
+        'raison_depart',
+        'motif_depart',
         'salaire',
         'adresse',
         'ville',
@@ -65,5 +67,39 @@ class Personnel extends Model
     public function conges()
     {
         return $this->hasMany(PersonnelConge::class);
+    }
+
+    /**
+     * Vérifie si le personnel est actuellement en congé validé
+     *
+     * @param \Carbon\Carbon|null $date
+     * @return bool
+     */
+    public function estEnConge($date = null)
+    {
+        $date = $date ?? \Carbon\Carbon::today();
+
+        return $this->conges()
+            ->where('statut', 'valide')
+            ->where('date_debut', '<=', $date)
+            ->where('date_fin', '>=', $date)
+            ->exists();
+    }
+
+    /**
+     * Retourne le congé actif du personnel s'il existe
+     *
+     * @param \Carbon\Carbon|null $date
+     * @return PersonnelConge|null
+     */
+    public function congeActif($date = null)
+    {
+        $date = $date ?? \Carbon\Carbon::today();
+
+        return $this->conges()
+            ->where('statut', 'valide')
+            ->where('date_debut', '<=', $date)
+            ->where('date_fin', '>=', $date)
+            ->first();
     }
 }

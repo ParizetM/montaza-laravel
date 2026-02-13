@@ -43,10 +43,11 @@
                                         class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-xs"
                                         required>
                                         <option value="actif" {{ old('statut', $personnel->statut) == 'actif' ? 'selected' : '' }}>Actif</option>
-                                        <option value="en_conge" {{ old('statut', $personnel->statut) == 'en_conge' ? 'selected' : '' }}>En congé</option>
+                                        <option value="en_conge" {{ old('statut', $personnel->statut) == 'en_conge' ? 'selected' : '' }} disabled>En congé (géré automatiquement)</option>
                                         <option value="suspendu" {{ old('statut', $personnel->statut) == 'suspendu' ? 'selected' : '' }}>Suspendu</option>
                                         <option value="parti" {{ old('statut', $personnel->statut) == 'parti' ? 'selected' : '' }}>Parti</option>
                                     </select>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Le statut "En congé" est automatiquement défini selon les congés validés</p>
                                     <x-input-error :messages="$errors->get('statut')" class="mt-2" />
                                 </div>
 
@@ -129,6 +130,31 @@
                                     <x-input-error :messages="$errors->get('date_depart')" class="mt-2" />
                                 </div>
 
+                                <!-- Raison du départ -->
+                                <div id="raison_depart_container" style="display: {{ old('statut', $personnel->statut) == 'parti' ? 'block' : 'none' }};">
+                                    <x-input-label for="raison_depart" :value="__('Raison du départ')" />
+                                    <select id="raison_depart" name="raison_depart"
+                                        class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-xs">
+                                        <option value="">Sélectionner...</option>
+                                        <option value="demission" {{ old('raison_depart', $personnel->raison_depart) == 'demission' ? 'selected' : '' }}>Démission</option>
+                                        <option value="licenciement" {{ old('raison_depart', $personnel->raison_depart) == 'licenciement' ? 'selected' : '' }}>Licenciement</option>
+                                        <option value="retraite" {{ old('raison_depart', $personnel->raison_depart) == 'retraite' ? 'selected' : '' }}>Retraite</option>
+                                        <option value="fin_contrat" {{ old('raison_depart', $personnel->raison_depart) == 'fin_contrat' ? 'selected' : '' }}>Fin de contrat</option>
+                                        <option value="mutation" {{ old('raison_depart', $personnel->raison_depart) == 'mutation' ? 'selected' : '' }}>Mutation</option>
+                                        <option value="autre" {{ old('raison_depart', $personnel->raison_depart) == 'autre' ? 'selected' : '' }}>Autre</option>
+                                    </select>
+                                    <x-input-error :messages="$errors->get('raison_depart')" class="mt-2" />
+                                </div>
+
+                                <!-- Motif du départ -->
+                                <div id="motif_depart_container" class="md:col-span-2" style="display: {{ old('statut', $personnel->statut) == 'parti' ? 'block' : 'none' }};">
+                                    <x-input-label for="motif_depart" :value="__('Motif du départ (détails)')" />
+                                    <textarea id="motif_depart" name="motif_depart" rows="3"
+                                        class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-xs"
+                                        placeholder="Détails sur le départ (obligatoire en cas de licenciement)">{{ old('motif_depart', $personnel->motif_depart) }}</textarea>
+                                    <x-input-error :messages="$errors->get('motif_depart')" class="mt-2" />
+                                </div>
+
                                 <!-- Salaire -->
                                 <div>
                                     <x-input-label for="salaire" :value="__('Salaire (€)')" />
@@ -201,4 +227,21 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Afficher/masquer les champs de départ selon le statut
+        document.getElementById('statut').addEventListener('change', function() {
+            const statutValue = this.value;
+            const raisonContainer = document.getElementById('raison_depart_container');
+            const motifContainer = document.getElementById('motif_depart_container');
+
+            if (statutValue === 'parti') {
+                raisonContainer.style.display = 'block';
+                motifContainer.style.display = 'block';
+            } else {
+                raisonContainer.style.display = 'none';
+                motifContainer.style.display = 'none';
+            }
+        });
+    </script>
 </x-app-layout>

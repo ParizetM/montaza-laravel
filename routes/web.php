@@ -118,12 +118,16 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
     Route::middleware('permission:gerer_les_utilisateurs')->group(function () {
         Route::resource('personnel', PersonnelController::class);
         Route::post('/personnel/{personnel}/restore', [PersonnelController::class, 'restore'])->name('personnel.restore');
+        Route::get('/personnel-anciens-employes', [PersonnelController::class, 'anciensEmployes'])->name('personnel.anciens-employes');
         Route::get('/personnel/{personnel}/emploi-du-temps', [PersonnelEmploiDuTempsController::class, 'index'])->name('personnel.emploi_du_temps');
 
         // Routes pour les congés
         Route::post('/personnel/{personnel}/conges', [PersonnelController::class, 'storeConge'])->name('personnel.conges.store');
         Route::patch('/personnel/{personnel}/conges/{conge}', [PersonnelController::class, 'updateConge'])->name('personnel.conges.update');
         Route::delete('/personnel/{personnel}/conges/{conge}', [PersonnelController::class, 'deleteConge'])->name('personnel.conges.delete');
+
+        // Route pour modifier le statut
+        Route::patch('/personnel/{personnel}/update-statut', [PersonnelController::class, 'updateStatut'])->name('personnel.updateStatut');
     });
 
 
@@ -490,6 +494,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth', 'permission:voi
     Route::patch('/reparation/{reparation}/status', [ReparationController::class, 'updateStatus'])->name('reparation.updateStatus');
 
     // Routes paramétrées de matériel
+    Route::get('/reparation/materiel/{materiel}', [MaterielController::class, 'show'])->name('reparation.materiel.show');
     Route::get('/reparation/materiel/edit/{materiel}', [MaterielController::class, 'edit'])->name('reparation.materiel.edit');
     Route::patch('/reparation/materiel/update/{materiel}', [MaterielController::class, 'update'])->name('reparation.materiel.update');
     Route::delete('/reparation/materiel/destroy/{materiel}', [MaterielController::class, 'destroy'])->name('reparation.materiel.destroy');

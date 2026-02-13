@@ -70,14 +70,14 @@
                             </div>
                             <div>
                                 <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Statut</label>
-                                <p class="mt-1">
+                                <div class="mt-1 flex items-center gap-3">
                                     @if ($personnel->statut == 'actif')
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">
                                             Actif
                                         </span>
                                     @elseif ($personnel->statut == 'en_conge')
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100">
-                                            En congé
+                                            En congé (automatique)
                                         </span>
                                     @elseif ($personnel->statut == 'suspendu')
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800 dark:bg-orange-800 dark:text-orange-100">
@@ -88,7 +88,10 @@
                                             Parti
                                         </span>
                                     @endif
-                                </p>
+                                    <button onclick="openStatutModal()" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 text-sm font-medium">
+                                        ✏️ Modifier
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -117,6 +120,53 @@
                                     <p class="mt-1 text-gray-900 dark:text-gray-100">
                                         {{ $personnel->date_depart->format('d/m/Y') }}
                                     </p>
+                                </div>
+                            @endif
+                            @if ($personnel->statut == 'parti' && $personnel->raison_depart)
+                                <div>
+                                    <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Raison du départ</label>
+                                    <p class="mt-1">
+                                        @switch($personnel->raison_depart)
+                                            @case('demission')
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100">
+                                                    Démission
+                                                </span>
+                                                @break
+                                            @case('licenciement')
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100">
+                                                    Licenciement
+                                                </span>
+                                                @break
+                                            @case('retraite')
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800 dark:bg-purple-800 dark:text-purple-100">
+                                                    Retraite
+                                                </span>
+                                                @break
+                                            @case('fin_contrat')
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100">
+                                                    Fin de contrat
+                                                </span>
+                                                @break
+                                            @case('mutation')
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">
+                                                    Mutation
+                                                </span>
+                                                @break
+                                            @case('autre')
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
+                                                    Autre
+                                                </span>
+                                                @break
+                                        @endswitch
+                                    </p>
+                                </div>
+                            @endif
+                            @if ($personnel->statut == 'parti' && $personnel->motif_depart)
+                                <div class="md:col-span-3">
+                                    <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Motif du départ</label>
+                                    <div class="mt-1 p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
+                                        <p class="text-gray-900 dark:text-gray-100">{{ $personnel->motif_depart }}</p>
+                                    </div>
                                 </div>
                             @endif
                             <div>
@@ -472,6 +522,73 @@
         </div>
     </div>
 
+    <!-- Modal Modifier le statut -->
+    <div id="statutModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white dark:bg-gray-800">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Modifier le statut</h3>
+                <button onclick="closeStatutModal()" class="text-gray-400 hover:text-gray-600">✕</button>
+            </div>
+
+            <form method="POST" action="{{ route('personnel.updateStatut', $personnel) }}">
+                @csrf
+                @method('PATCH')
+                <div class="space-y-4">
+                    <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-md p-3">
+                        <p class="text-sm text-yellow-800 dark:text-yellow-200">
+                            ℹ️ Le statut "En congé" est géré automatiquement selon les congés validés.
+                        </p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nouveau statut</label>
+                        <select name="statut" id="statut_select" required class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                            <option value="actif" {{ $personnel->statut == 'actif' ? 'selected' : '' }}>Actif</option>
+                            <option value="suspendu" {{ $personnel->statut == 'suspendu' ? 'selected' : '' }}>Suspendu</option>
+                            <option value="parti" {{ $personnel->statut == 'parti' ? 'selected' : '' }}>Parti</option>
+                        </select>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Le statut "En congé" n'est pas sélectionnable manuellement</p>
+                    </div>
+
+                    <!-- Date de départ (affiché si statut = parti) -->
+                    <div id="statut_date_depart_container" style="display: {{ $personnel->statut == 'parti' ? 'block' : 'none' }};">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date de départ</label>
+                        <input type="date" name="date_depart" value="{{ $personnel->date_depart ? $personnel->date_depart->format('Y-m-d') : '' }}" class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                    </div>
+
+                    <!-- Raison du départ (affiché si statut = parti) -->
+                    <div id="statut_raison_depart_container" style="display: {{ $personnel->statut == 'parti' ? 'block' : 'none' }};">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Raison du départ</label>
+                        <select name="raison_depart" class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                            <option value="">Sélectionner...</option>
+                            <option value="demission" {{ $personnel->raison_depart == 'demission' ? 'selected' : '' }}>Démission</option>
+                            <option value="licenciement" {{ $personnel->raison_depart == 'licenciement' ? 'selected' : '' }}>Licenciement</option>
+                            <option value="retraite" {{ $personnel->raison_depart == 'retraite' ? 'selected' : '' }}>Retraite</option>
+                            <option value="fin_contrat" {{ $personnel->raison_depart == 'fin_contrat' ? 'selected' : '' }}>Fin de contrat</option>
+                            <option value="mutation" {{ $personnel->raison_depart == 'mutation' ? 'selected' : '' }}>Mutation</option>
+                            <option value="autre" {{ $personnel->raison_depart == 'autre' ? 'selected' : '' }}>Autre</option>
+                        </select>
+                    </div>
+
+                    <!-- Motif du départ (affiché si statut = parti) -->
+                    <div id="statut_motif_depart_container" style="display: {{ $personnel->statut == 'parti' ? 'block' : 'none' }};">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Motif du départ (détails)</label>
+                        <textarea name="motif_depart" rows="3" class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300" placeholder="Détails sur le départ (obligatoire en cas de licenciement)">{{ $personnel->motif_depart }}</textarea>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 mt-6">
+                    <button type="button" onclick="closeStatutModal()" class="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-400 dark:hover:bg-gray-500">
+                        Annuler
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+                        Mettre à jour le statut
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         function openAddCongeModal() {
             document.getElementById('addCongeModal').classList.remove('hidden');
@@ -499,5 +616,31 @@
         function closeEditCongeModal() {
             document.getElementById('editCongeModal').classList.add('hidden');
         }
+
+        function openStatutModal() {
+            document.getElementById('statutModal').classList.remove('hidden');
+        }
+
+        function closeStatutModal() {
+            document.getElementById('statutModal').classList.add('hidden');
+        }
+
+        // Afficher/masquer les champs de départ selon le statut
+        document.getElementById('statut_select')?.addEventListener('change', function() {
+            const statutValue = this.value;
+            const raisonContainer = document.getElementById('statut_raison_depart_container');
+            const motifContainer = document.getElementById('statut_motif_depart_container');
+            const dateContainer = document.getElementById('statut_date_depart_container');
+
+            if (statutValue === 'parti') {
+                raisonContainer.style.display = 'block';
+                motifContainer.style.display = 'block';
+                dateContainer.style.display = 'block';
+            } else {
+                raisonContainer.style.display = 'none';
+                motifContainer.style.display = 'none';
+                dateContainer.style.display = 'none';
+            }
+        });
     </script>
 </x-app-layout>

@@ -25,14 +25,18 @@ class PersonnelController extends Controller
         }
 
         // Rechercher des employés en fonction du terme de recherche
+        // Exclure les employés avec le statut "parti" (ils sont dans "Anciens employés")
         $personnels = Personnel::query()
+            ->where('statut', '!=', 'parti')
             ->when($search, function ($query, $search) {
-                $query->where('nom', 'ILIKE', "%{$search}%")
-                    ->orWhere('prenom', 'ILIKE', "%{$search}%")
-                    ->orWhere('email', 'ILIKE', "%{$search}%")
-                    ->orWhere('matricule', 'ILIKE', "%{$search}%")
-                    ->orWhere('poste', 'ILIKE', "%{$search}%")
-                    ->orWhere('departement', 'ILIKE', "%{$search}%");
+                $query->where(function($q) use ($search) {
+                    $q->where('nom', 'ILIKE', "%{$search}%")
+                        ->orWhere('prenom', 'ILIKE', "%{$search}%")
+                        ->orWhere('email', 'ILIKE', "%{$search}%")
+                        ->orWhere('matricule', 'ILIKE', "%{$search}%")
+                        ->orWhere('poste', 'ILIKE', "%{$search}%")
+                        ->orWhere('departement', 'ILIKE', "%{$search}%");
+                });
             })
             ->orderBy('nom')
             ->orderBy('prenom')
@@ -65,16 +69,24 @@ class PersonnelController extends Controller
             'departement' => 'nullable|string|max:255',
             'date_embauche' => 'nullable|date',
             'date_depart' => 'nullable|date|after_or_equal:date_embauche',
+            'raison_depart' => 'nullable|in:demission,licenciement,retraite,fin_contrat,mutation,autre',
+            'motif_depart' => 'nullable|string|max:1000',
             'salaire' => 'nullable|numeric|min:0',
             'adresse' => 'nullable|string|max:255',
             'ville' => 'nullable|string|max:255',
             'code_postal' => 'nullable|string|max:10',
             'numero_securite_sociale' => 'nullable|string|max:50',
-            'statut' => 'required|in:actif,en_conge,suspendu,parti',
+            'statut' => 'required|in:actif,suspendu,parti',
             'notes' => 'nullable|string',
         ]);
 
-        Personnel::create($validated);
+        $personnel = Personnel::create($validated);
+
+        // Redirection intelligente selon le statut de départ
+        if ($validated['statut'] === 'parti') {
+            return redirect()->route('personnel.anciens-employes')
+                ->with('success', "L'employé {$personnel->prenom} {$personnel->nom} a été créé et ajouté aux anciens employés.");
+        }
 
         return redirect()->route('personnel.index')
             ->with('success', 'Employé créé avec succès.');
@@ -104,6 +116,9 @@ class PersonnelController extends Controller
      */
     public function update(Request $request, Personnel $personnel)
     {
+        // Sauvegarder l'ancien statut pour la logique de redirection
+        $ancienStatut = $personnel->statut;
+
         $validated = $request->validate([
             'matricule' => 'required|string|max:255|unique:personnels,matricule,' . $personnel->id,
             'nom' => 'required|string|max:255',
@@ -115,17 +130,33 @@ class PersonnelController extends Controller
             'departement' => 'nullable|string|max:255',
             'date_embauche' => 'nullable|date',
             'date_depart' => 'nullable|date|after_or_equal:date_embauche',
+            'raison_depart' => 'nullable|in:demission,licenciement,retraite,fin_contrat,mutation,autre',
+            'motif_depart' => 'nullable|string|max:1000',
             'salaire' => 'nullable|numeric|min:0',
             'adresse' => 'nullable|string|max:255',
             'ville' => 'nullable|string|max:255',
             'code_postal' => 'nullable|string|max:10',
             'numero_securite_sociale' => 'nullable|string|max:50',
-            'statut' => 'required|in:actif,en_conge,suspendu,parti',
+            'statut' => 'required|in:actif,suspendu,parti',
             'notes' => 'nullable|string',
         ]);
 
         $personnel->update($validated);
 
+        // Redirection intelligente selon le changement de statut
+        $nouveauStatut = $validated['statut'];
+
+        if ($nouveauStatut === 'parti' && $ancienStatut !== 'parti') {
+            // L'employé vient de passer à "parti" → rediriger vers les anciens employés
+            return redirect()->route('personnel.anciens-employes')
+                ->with('success', "L'employé {$personnel->prenom} {$personnel->nom} a été mis à jour et déplacé vers les anciens employés.");
+        } elseif ($nouveauStatut !== 'parti' && $ancienStatut === 'parti') {
+            // L'employé n'est plus "parti" → rediriger vers la liste principale
+            return redirect()->route('personnel.index')
+                ->with('success', "L'employé {$personnel->prenom} {$personnel->nom} a été mis à jour et réintégré dans la liste du personnel actif.");
+        }
+
+        // Sinon, retour à la liste principale
         return redirect()->route('personnel.index')
             ->with('success', 'Employé mis à jour avec succès.');
     }
@@ -254,5 +285,93 @@ class PersonnelController extends Controller
 
         return redirect()->back()
             ->with('success', 'Le congé a été supprimé avec succès.');
+    }
+
+    /**
+     * Affiche la liste des anciens employés
+     */
+    public function anciensEmployes(Request $request)
+    {
+        $search = $request->input('search');
+        if (!is_string($search)) {
+            $search = '';
+        }
+
+        $raison = $request->input('raison');
+
+        // Récupérer les employés avec le statut "parti"
+        $personnels = Personnel::query()
+            ->where('statut', 'parti')
+            ->when($search, function ($query, $search) {
+                $query->where(function($q) use ($search) {
+                    $q->where('nom', 'ILIKE', "%{$search}%")
+                        ->orWhere('prenom', 'ILIKE', "%{$search}%")
+                        ->orWhere('email', 'ILIKE', "%{$search}%")
+                        ->orWhere('matricule', 'ILIKE', "%{$search}%")
+                        ->orWhere('poste', 'ILIKE', "%{$search}%")
+                        ->orWhere('departement', 'ILIKE', "%{$search}%");
+                });
+            })
+            ->when($raison, function ($query, $raison) {
+                $query->where('raison_depart', $raison);
+            })
+            ->orderBy('date_depart', 'desc')
+            ->paginate(20);
+
+        return view('personnel.anciens-employes', compact('personnels'));
+    }
+
+    /**
+     * Met à jour uniquement le statut d'un personnel
+     */
+    public function updateStatut(Request $request, Personnel $personnel)
+    {
+        $validated = $request->validate([
+            'statut' => 'required|in:actif,suspendu,parti',
+            'date_depart' => 'nullable|date',
+            'raison_depart' => 'nullable|in:demission,licenciement,retraite,fin_contrat,mutation,autre',
+            'motif_depart' => 'nullable|string|max:1000',
+        ]);
+
+        // Sauvegarder l'ancien statut pour la logique de redirection
+        $ancienStatut = $personnel->statut;
+
+        // Si le statut passe à "parti", vérifier que les informations de départ sont fournies
+        if ($validated['statut'] === 'parti') {
+            if ($request->filled('raison_depart') && $request->input('raison_depart') === 'licenciement') {
+                // Pour un licenciement, le motif est obligatoire
+                if (!$request->filled('motif_depart')) {
+                    return redirect()->back()
+                        ->withErrors(['motif_depart' => 'Le motif est obligatoire en cas de licenciement.'])
+                        ->withInput();
+                }
+            }
+        }
+
+        // Mettre à jour le statut et les informations de départ
+        $personnel->statut = $validated['statut'];
+
+        if ($validated['statut'] === 'parti') {
+            $personnel->date_depart = $validated['date_depart'] ?? now();
+            $personnel->raison_depart = $validated['raison_depart'] ?? null;
+            $personnel->motif_depart = $validated['motif_depart'] ?? null;
+        }
+
+        $personnel->save();
+
+        // Redirection intelligente selon le changement de statut
+        if ($validated['statut'] === 'parti' && $ancienStatut !== 'parti') {
+            // L'employé vient de passer à "parti" → rediriger vers les anciens employés
+            return redirect()->route('personnel.anciens-employes')
+                ->with('success', "L'employé {$personnel->prenom} {$personnel->nom} a été déplacé vers les anciens employés.");
+        } elseif ($validated['statut'] !== 'parti' && $ancienStatut === 'parti') {
+            // L'employé n'est plus "parti" → rediriger vers la liste principale
+            return redirect()->route('personnel.index')
+                ->with('success', "L'employé {$personnel->prenom} {$personnel->nom} a été réintégré dans la liste du personnel actif.");
+        }
+
+        // Sinon, retour à la page précédente
+        return redirect()->back()
+            ->with('success', 'Le statut a été mis à jour avec succès.');
     }
 }

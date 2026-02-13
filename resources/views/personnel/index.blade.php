@@ -14,6 +14,13 @@
                 </div>
             </div>
             <div class="mt-4 sm:mt-0 flex flex-col sm:flex-row items-start sm:items-center mx-auto">
+                <a href="{{ route('personnel.anciens-employes') }}" class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md text-sm mr-4 mb-2 sm:mb-0 transition">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Anciens employés
+                </a>
+
                 <label for="Toggle1"
                     class="inline-flex items-center space-x-4 cursor-pointer dark:text-gray-100 text-gray-800 mr-4 mb-1">
                     <span class="whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">Afficher les employés supprimés</span>
