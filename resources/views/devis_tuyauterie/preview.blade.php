@@ -47,6 +47,18 @@
                     </div>
                 @endif
 
+                {{-- Afficher l'expéditeur --}}
+                <div class="mb-4 p-3 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600">
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-semibold text-gray-800 dark:text-gray-200">Expéditeur :</span>
+                        <div class="flex items-center gap-2 text-gray-700 dark:text-gray-100">
+                            <x-icons.new-contact size="1" class="text-gray-500 dark:text-gray-300" />
+                            <span class="font-medium">{{ Auth::user()->getName() }}</span>
+                            <span class="text-gray-500 dark:text-gray-400">&lt;{{ Auth::user()->email }}&gt;</span>
+                        </div>
+                    </div>
+                </div>
+
                 <form action="{{ route('devis_tuyauterie.send_email', $devis->id) }}" method="POST">
                     @csrf
                     <div class="grid grid-cols-1 gap-4">

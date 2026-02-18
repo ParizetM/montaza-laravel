@@ -200,6 +200,11 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::patch('/societe/{id}/commentaire/save', [SocieteController::class, 'updateCommentaire'])->name('societes.commentaire');
         Route::patch('/societe/etablissement/{id}/commentaire/save', [EtablissementController::class, 'updateCommentaire'])->name('societes.etablissement.commentaire');
         Route::get('/societes/{societeId}/etablissements/{etablissementId}/contacts/json', [SocieteContactController::class, 'showJson'])->name('societes.contacts.show_json');
+        
+        // Routes pour gérer les matières d'un établissement
+        Route::get('/etablissement/{etablissement}/matieres/json', [EtablissementController::class, 'getMatieresJson'])->name('etablissements.matieres.json');
+        Route::post('/etablissement/{etablissement}/matieres/attach', [EtablissementController::class, 'attachMatiere'])->name('etablissements.matieres.attach');
+        Route::delete('/etablissement/{etablissement}/matieres/{matiere}/detach', [EtablissementController::class, 'detachMatiere'])->name('etablissements.matieres.detach');
 
         Route::middleware('permission:gerer_les_societes')->group(function () {
             Route::get('/societes/create', [SocieteController::class, 'create'])->name('societes.create');
@@ -494,7 +499,6 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth', 'permission:voi
     Route::patch('/reparation/{reparation}/status', [ReparationController::class, 'updateStatus'])->name('reparation.updateStatus');
 
     // Routes paramétrées de matériel
-    Route::get('/reparation/materiel/{materiel}', [MaterielController::class, 'show'])->name('reparation.materiel.show');
     Route::get('/reparation/materiel/edit/{materiel}', [MaterielController::class, 'edit'])->name('reparation.materiel.edit');
     Route::patch('/reparation/materiel/update/{materiel}', [MaterielController::class, 'update'])->name('reparation.materiel.update');
     Route::delete('/reparation/materiel/destroy/{materiel}', [MaterielController::class, 'destroy'])->name('reparation.materiel.destroy');

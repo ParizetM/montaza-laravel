@@ -75,6 +75,18 @@ class Etablissement extends Model
     {
         return $this->hasMany(SocieteContact::class);
     }
+
+    public function societeMatieres(): HasMany
+    {
+        return $this->hasMany(SocieteMatiere::class);
+    }
+
+    public function matieres()
+    {
+        return $this->belongsToMany(Matiere::class, 'societe_matieres')
+            ->withPivot(['ref_externe', 'standard_version_id'])
+            ->withTimestamps();
+    }
 }
 
 

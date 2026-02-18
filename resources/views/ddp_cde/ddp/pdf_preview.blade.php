@@ -66,15 +66,28 @@
                     <form action="{{ route('ddp.sendmails', $ddp) }}" method="POST" id="mailtemplate-form">
                         @csrf
                         <div class="mb-4">
-                            <div class="flex flex-wrap gap-2 p-4 rounded-md bg-white dark:bg-gray-900 shadow-md">
-                                <div class="pr-4 py-2">À :</div>
-                                @foreach ($ddp->SocieteContacts() as $destinataire)
+                            <div class="p-4 rounded-md bg-white dark:bg-gray-900 shadow-md">
+                                {{-- Afficher l'expéditeur --}}
+                                <div class="flex flex-wrap mb-3 pb-3 border-b border-gray-300 dark:border-gray-600">
+                                    <div class="pr-4 py-2 font-semibold">De :</div>
                                     <div
-                                        class="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 px-4 py-2 rounded-full text-sm shadow-sm">
-                                        <x-icons.mail size="1" class="text-gray-500 dark:text-gray-300" />
-                                        <span>{{ $destinataire->email }}</span>
+                                        class="flex items-center gap-2 text-gray-800 dark:text-gray-100 px-4 py-2 rounded-full text-sm shadow-sm bg-gray-100 dark:bg-gray-800">
+                                        <x-icons.new-contact size="1" class="text-gray-500 dark:text-gray-300" />
+                                        <span class="font-medium">{{ Auth::user()->getName() }}</span>
+                                        <span class="text-gray-500 dark:text-gray-400">&lt;{{ Auth::user()->email }}&gt;</span>
                                     </div>
-                                @endforeach
+                                </div>
+
+                                <div class="flex flex-wrap gap-2">
+                                    <div class="pr-4 py-2">À :</div>
+                                    @foreach ($ddp->SocieteContacts() as $destinataire)
+                                        <div
+                                            class="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 px-4 py-2 rounded-full text-sm shadow-sm">
+                                            <x-icons.mail size="1" class="text-gray-500 dark:text-gray-300" />
+                                            <span>{{ $destinataire->email }}</span>
+                                        </div>
+                                    @endforeach
+                                </div>
                             </div>
                         </div>
                         <div class="mb-4">

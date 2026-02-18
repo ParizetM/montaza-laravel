@@ -79,6 +79,16 @@
                         @csrf
                         <div class="mb-4">
                             <div class="p-4 rounded-md bg-white dark:bg-gray-900 shadow-md">
+                                {{-- Afficher l'expéditeur --}}
+                                <div class="flex flex-wrap mb-3 pb-3 border-b border-gray-300 dark:border-gray-600">
+                                    <div class="pr-4 py-2 font-semibold">De :</div>
+                                    <div
+                                        class="flex items-center gap-2 text-gray-800 dark:text-gray-100 px-4 py-2 rounded-full text-sm shadow-sm bg-gray-100 dark:bg-gray-800">
+                                        <x-icons.new-contact size="1" class="text-gray-500 dark:text-gray-300" />
+                                        <span class="font-medium">{{ Auth::user()->getName() }}</span>
+                                        <span class="text-gray-500 dark:text-gray-400">&lt;{{ Auth::user()->email }}&gt;</span>
+                                    </div>
+                                </div>
 
                                 @php
                                     $destinataires = $cde->SocieteContacts();

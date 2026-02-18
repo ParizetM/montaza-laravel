@@ -267,7 +267,7 @@
                                             <td colspan="100" class="text-gray-500 dark:text-gray-400 text-center pt-4">
                                                 Aucune matière sélectionnée
                                             </td>
-                                        </tr> 
+                                        </tr>
 
 
                                     @endif

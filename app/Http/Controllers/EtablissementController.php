@@ -228,4 +228,97 @@ class EtablissementController extends Controller
         Cache::flush();
         return redirect()->route('societes.show', $societe)->with('success', 'Etablissement supprimé');
     }
+
+    /**
+     * Récupère les matières associées à un établissement au format JSON
+     */
+    public function getMatieresJson(Etablissement $etablissement)
+    {
+        $matieres = $etablissement->matieres()
+            ->with(['famille', 'sousFamille'])
+            ->get()
+            ->map(function ($matiere) {
+                return [
+                    'id' => $matiere->id,
+                    'ref_interne' => $matiere->ref_interne,
+                    'designation' => $matiere->designation,
+                    'famille' => $matiere->famille->nom ?? '',
+                    'sous_famille' => $matiere->sousFamille->nom ?? '',
+                ];
+            });
+
+        return response()->json($matieres);
+    }
+
+    /**
+     * Attache une matière à un établissement
+     */
+    public function attachMatiere(Request $request, Etablissement $etablissement)
+    {
+        $request->validate([
+            'matiere_id' => 'required|exists:matieres,id',
+        ]);
+
+        $societe = $etablissement->societe;
+        $matiereId = $request->matiere_id;
+
+        // Vérifier si l'association existe déjà
+        $exists = \DB::table('societe_matieres')
+            ->where('societe_id', $societe->id)
+            ->where('matiere_id', $matiereId)
+            ->where('etablissement_id', $etablissement->id)
+            ->exists();
+
+        if ($exists) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cette matière est déjà associée à cet établissement'
+            ], 400);
+        }
+
+        // Créer l'association
+        \DB::table('societe_matieres')->insert([
+            'societe_id' => $societe->id,
+            'matiere_id' => $matiereId,
+            'etablissement_id' => $etablissement->id,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        Cache::flush();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Matière associée avec succès'
+        ]);
+    }
+
+    /**
+     * Détache une matière d'un établissement
+     */
+    public function detachMatiere(Etablissement $etablissement, $matiereId)
+    {
+        $societe = $etablissement->societe;
+
+        // Supprimer l'association
+        $deleted = \DB::table('societe_matieres')
+            ->where('societe_id', $societe->id)
+            ->where('matiere_id', $matiereId)
+            ->where('etablissement_id', $etablissement->id)
+            ->delete();
+
+        if ($deleted === 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Association non trouvée'
+            ], 404);
+        }
+
+        Cache::flush();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Matière dissociée avec succès'
+        ]);
+    }
 }

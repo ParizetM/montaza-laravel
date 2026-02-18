@@ -15,7 +15,7 @@ class PersonnelControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Créer un utilisateur authentifié pour tous les tests
         $this->user = User::factory()->create();
         $this->actingAs($this->user);
@@ -121,7 +121,7 @@ class PersonnelControllerTest extends TestCase
 
         $response->assertRedirect(route('personnel.index'));
         $response->assertSessionHas('success', 'Employé créé avec succès.');
-        
+
         $this->assertDatabaseHas('personnels', [
             'matricule' => 'EMP001',
             'nom' => 'Dupont',
@@ -144,7 +144,7 @@ class PersonnelControllerTest extends TestCase
         Personnel::factory()->create(['matricule' => 'EMP001']);
 
         $data = Personnel::factory()->make(['matricule' => 'EMP001'])->toArray();
-        
+
         $response = $this->post(route('personnel.store'), $data);
 
         $response->assertSessionHasErrors(['matricule']);
@@ -156,7 +156,7 @@ class PersonnelControllerTest extends TestCase
         Personnel::factory()->create(['email' => 'test@example.com']);
 
         $data = Personnel::factory()->make(['email' => 'test@example.com'])->toArray();
-        
+
         $response = $this->post(route('personnel.store'), $data);
 
         $response->assertSessionHasErrors(['email']);
@@ -166,7 +166,7 @@ class PersonnelControllerTest extends TestCase
     public function l_email_doit_etre_valide()
     {
         $data = Personnel::factory()->make(['email' => 'email-invalide'])->toArray();
-        
+
         $response = $this->post(route('personnel.store'), $data);
 
         $response->assertSessionHasErrors(['email']);
@@ -179,7 +179,7 @@ class PersonnelControllerTest extends TestCase
             'date_embauche' => '2024-01-01',
             'date_depart' => '2023-12-31',
         ])->toArray();
-        
+
         $response = $this->post(route('personnel.store'), $data);
 
         $response->assertSessionHasErrors(['date_depart']);
@@ -189,7 +189,7 @@ class PersonnelControllerTest extends TestCase
     public function le_salaire_doit_etre_positif()
     {
         $data = Personnel::factory()->make(['salaire' => -1000])->toArray();
-        
+
         $response = $this->post(route('personnel.store'), $data);
 
         $response->assertSessionHasErrors(['salaire']);
@@ -199,7 +199,7 @@ class PersonnelControllerTest extends TestCase
     public function le_statut_doit_etre_valide()
     {
         $data = Personnel::factory()->make(['statut' => 'invalide'])->toArray();
-        
+
         $response = $this->post(route('personnel.store'), $data);
 
         $response->assertSessionHasErrors(['statut']);
@@ -251,7 +251,7 @@ class PersonnelControllerTest extends TestCase
 
         $response->assertRedirect(route('personnel.index'));
         $response->assertSessionHas('success', 'Employé mis à jour avec succès.');
-        
+
         $this->assertDatabaseHas('personnels', [
             'id' => $personnel->id,
             'nom' => 'Nouveau Nom',
@@ -268,7 +268,7 @@ class PersonnelControllerTest extends TestCase
 
         $response->assertRedirect(route('personnel.index'));
         $response->assertSessionHas('success', 'Employé supprimé avec succès.');
-        
+
         $this->assertSoftDeleted('personnels', [
             'id' => $personnel->id,
         ]);
@@ -284,7 +284,7 @@ class PersonnelControllerTest extends TestCase
 
         $response->assertRedirect(route('personnel.index'));
         $response->assertSessionHas('success', 'Employé restauré avec succès.');
-        
+
         $this->assertDatabaseHas('personnels', [
             'id' => $personnel->id,
             'deleted_at' => null,
@@ -308,7 +308,7 @@ class PersonnelControllerTest extends TestCase
 
         $response->assertRedirect();
         $response->assertSessionHas('success', 'Le congé a été ajouté avec succès.');
-        
+
         $this->assertDatabaseHas('personnel_conges', [
             'personnel_id' => $personnel->id,
             'date_debut' => '2024-06-01',
@@ -321,7 +321,7 @@ class PersonnelControllerTest extends TestCase
     public function un_conge_ne_peut_pas_chevaucher_un_autre_conge()
     {
         $personnel = Personnel::factory()->create();
-        
+
         // Créer un congé existant
         PersonnelConge::factory()->create([
             'personnel_id' => $personnel->id,
@@ -340,7 +340,7 @@ class PersonnelControllerTest extends TestCase
         $response = $this->post(route('personnel.conges.store', $personnel), $data);
 
         $response->assertSessionHasErrors(['date_debut']);
-        
+
         $this->assertCount(1, $personnel->fresh()->conges);
     }
 
@@ -400,7 +400,7 @@ class PersonnelControllerTest extends TestCase
 
         $response->assertRedirect();
         $response->assertSessionHas('success', 'Le congé a été mis à jour avec succès.');
-        
+
         $this->assertDatabaseHas('personnel_conges', [
             'id' => $conge->id,
             'date_debut' => '2024-07-01',
@@ -420,7 +420,7 @@ class PersonnelControllerTest extends TestCase
 
         $response->assertRedirect();
         $response->assertSessionHas('success', 'Le congé a été supprimé avec succès.');
-        
+
         $this->assertDatabaseMissing('personnel_conges', [
             'id' => $conge->id,
         ]);
@@ -430,7 +430,7 @@ class PersonnelControllerTest extends TestCase
     public function l_affichage_d_un_personnel_charge_ses_relations()
     {
         $personnel = Personnel::factory()->create();
-        
+
         // Créer des congés
         PersonnelConge::factory()->count(3)->create([
             'personnel_id' => $personnel->id,

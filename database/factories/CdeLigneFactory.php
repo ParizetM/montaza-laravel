@@ -31,6 +31,10 @@ class CdeLigneFactory extends Factory
             'prix_unitaire' => $this->faker->randomFloat(2, 0.01, 1000),
             'quantite' => $this->faker->numberBetween(1, 1000),
             'date_livraison' => $this->faker->optional()->date(),
+            'date_livraison_reelle' => null,
+            'is_stocke' => false,
+            'non_livre' => false,
+            'sous_ligne' => false,
         ];
     }
 }

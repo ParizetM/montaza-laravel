@@ -75,6 +75,12 @@
     </div>
 
     <div class="content">
+        @if(isset($senderEmail) && isset($senderName))
+            <div style="margin-bottom: 20px; padding: 10px; background-color: #f3f4f6; border-left: 4px solid #3b82f6; font-size: 14px;">
+                <strong>Envoyé par :</strong> {{ $senderName }} (<a href="mailto:{{ $senderEmail }}">{{ $senderEmail }}</a>)
+            </div>
+        @endif
+
         <p>Bonjour @if($devis->client_contact) {{ $devis->client_contact }}@endif,</p>
 
         @if($customMessage)

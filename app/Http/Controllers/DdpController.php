@@ -342,6 +342,18 @@ class DdpController extends Controller
             'affaire_id' => $request->input('affaire_id'),
         ]);
         $ddpid =  $ddp->id;
+
+        // Si matiere_id et quantite sont fournis, créer une ligne DDP pré-remplie
+        if ($request->has('matiere_id') && $request->has('quantite')) {
+            $matiere_id = $request->input('matiere_id');
+            $quantite = $request->input('quantite');
+
+            $ddp->ddpLigne()->create([
+                'matiere_id' => $matiere_id,
+                'quantite' => $quantite,
+            ]);
+        }
+
         return redirect()->route('ddp.show', $ddpid);
     }
     ######     ###    ##     ## ########

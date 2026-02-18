@@ -131,13 +131,20 @@ class DevisTuyauterieController extends Controller
             // Récupérer le chemin complet du fichier
             $fullPath = storage_path('app/' . $path);
 
+            // Récupérer l'utilisateur connecté
+            $currentUser = \Auth::user();
+            $senderEmail = $currentUser->email;
+            $senderName = $currentUser->getName();
+
             // Envoyer l'email
             Mail::to($request->email_destinataire)->send(
                 new DevisEmail(
                     $devis,
                     $request->email_sujet,
                     $request->email_message,
-                    $fullPath
+                    $fullPath,
+                    $senderEmail,
+                    $senderName
                 )
             );
 

@@ -9,6 +9,7 @@ class SocieteMatiere extends Model
     protected $fillable = [
         'matiere_id',
         'societe_id',
+        'etablissement_id',
         'ref_externe',
         'standard_version_id',
     ];
@@ -19,6 +20,10 @@ class SocieteMatiere extends Model
     public function societe()
     {
         return $this->belongsTo(Societe::class);
+    }
+    public function etablissement()
+    {
+        return $this->belongsTo(Etablissement::class);
     }
     public function prix()
     {

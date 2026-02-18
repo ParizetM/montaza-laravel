@@ -50,7 +50,47 @@ class MatiereController extends Controller
         if ($request->filled('sous_famille')) {
             $query->where('sous_famille_id', $request->input('sous_famille'));
         }
-        // Filtrer par société
+
+        // Filtrer par établissement (prioritaire) ou société (fournisseur)
+        if ($request->filled('etablissement')) {
+            $etablissementId = $request->input('etablissement');
+            // Vérifier si l'établissement a des matières associées
+            $hasMatieres = \DB::table('societe_matieres')
+                ->where('etablissement_id', $etablissementId)
+                ->exists();
+
+            if ($hasMatieres) {
+                // Afficher les matières spécifiques à cet établissement
+                $query->whereHas('societeMatieres', function ($subQuery) use ($etablissementId) {
+                    $subQuery->where('etablissement_id', $etablissementId);
+                });
+            } else {
+                // Si l'établissement n'a pas encore de matières, afficher celles du fournisseur parent
+                $etablissement = \App\Models\Etablissement::find($etablissementId);
+                if ($etablissement && $etablissement->societe_id) {
+                    $query->whereHas('societeMatieres', function ($subQuery) use ($etablissement) {
+                        $subQuery->where('societe_id', $etablissement->societe_id);
+                    });
+                }
+            }
+        } elseif ($request->filled('societe')) {
+            // Filtrer par société seulement si pas d'établissement spécifié
+            $societeId = $request->input('societe');
+            // Vérifier si le fournisseur a des matières associées
+            $hasMatieres = \DB::table('societe_matieres')
+                ->where('societe_id', $societeId)
+                ->exists();
+
+            // Appliquer le filtre seulement si le fournisseur a des matières associées
+            if ($hasMatieres) {
+                $query->whereHas('societeMatieres', function ($subQuery) use ($societeId) {
+                    $subQuery->where('societe_id', $societeId);
+                });
+            }
+            // Si le fournisseur n'a pas de matières associées, on n'applique pas de filtre
+            // Cela permet d'afficher toutes les matières pour un nouveau fournisseur
+        }
+        // Filtrer par société (ancien paramètre)
         if ($request->filled('societe_filter')) {
             $query->whereHas('societeMatieres', function ($subQuery) use ($request) {
                 $subQuery->where('societe_id', $request->input('societe'));
@@ -104,13 +144,19 @@ class MatiereController extends Controller
                                 $subQuery->where('epaisseur', '=', $value);
                                 $hasValidSearchTerms = true;
                             } else {
-                                // Seulement si le terme fait au moins 2 caractères
-                                if (strlen(trim($term)) >= 2) {
-                                    $subQuery->whereRaw("unaccent(designation) ILIKE unaccent(?)", ["%{$term}%"])
-                                        ->orWhereHas('sousFamille', function ($subSubQuery) use ($term) {
-                                            $subSubQuery->where('nom', 'ILIKE', "%{$term}%");
-                                        })
-                                        ->orWhere('ref_interne', 'ILIKE', "%{$term}%");
+                                // Seulement si le terme fait au moins 1 caractère
+                                if (strlen(trim($term)) >= 1) {
+                                    // Vérifier le mode de recherche (depuis la requête)
+                                    $searchMode = request()->input('search_mode', 'contains');
+                                    
+                                    if ($searchMode === 'start_with') {
+                                        // Recherche au début de la désignation uniquement (pour établissements)
+                                        $subQuery->where('designation', 'ILIKE', "{$term}%");
+                                    } else {
+                                        // Recherche partout (par défaut, pour DDP/CDE)
+                                        $subQuery->where('designation', 'ILIKE', "%{$term}%")
+                                            ->orWhere('ref_interne', 'ILIKE', "%{$term}%");
+                                    }
 
                                     // Pour une recherche avec un seul terme (première ou deuxième tentative)
                                     if (count($terms) == 1) {
@@ -133,19 +179,20 @@ class MatiereController extends Controller
                 // Ajouter un score de pertinence pour ordonner les résultats
                 $relevanceScore = [];
                 foreach ($terms as $index => $term) {
-                    if (strlen(trim($term)) >= 2 && stripos($term, 'dn') !== 0 && stripos($term, 'ep') !== 0) {
+                    if (strlen(trim($term)) >= 1 && stripos($term, 'dn') !== 0 && stripos($term, 'ep') !== 0) {
+                        $escapedTerm = str_replace("'", "''", $term); // Échapper les quotes pour SQL
                         // Score pour sous-famille (priorité 3)
                         $relevanceScore[] = "CASE WHEN EXISTS (
                             SELECT 1 FROM sous_familles sf
                             WHERE sf.id = matieres.sous_famille_id
-                            AND unaccent(sf.nom) ILIKE unaccent('%{$term}%')
+                            AND sf.nom ILIKE '%{$escapedTerm}%'
                         ) THEN 3 ELSE 0 END";
 
                         // Score pour ref_interne (priorité 2)
-                        $relevanceScore[] = "CASE WHEN unaccent(matieres.ref_interne) ILIKE unaccent('%{$term}%') THEN 2 ELSE 0 END";
+                        $relevanceScore[] = "CASE WHEN matieres.ref_interne ILIKE '%{$escapedTerm}%' THEN 2 ELSE 0 END";
 
                         // Score pour désignation (priorité 1)
-                        $relevanceScore[] = "CASE WHEN unaccent(matieres.designation) ILIKE unaccent('%{$term}%') THEN 1 ELSE 0 END";
+                        $relevanceScore[] = "CASE WHEN matieres.designation ILIKE '%{$escapedTerm}%' THEN 1 ELSE 0 END";
                     }
                 }
 
@@ -225,6 +272,8 @@ class MatiereController extends Controller
             'sous_famille'   => 'nullable|integer|exists:sous_familles,id',
             'with_last_price' => 'nullable|boolean',
             'societe'        => 'nullable|integer|exists:societes,id',
+            'etablissement'  => 'nullable|integer|exists:etablissements,id',
+            'search_mode'    => 'nullable|string|in:contains,start_with',
         ]);
 
         // Construction de la requête avec la logique principale

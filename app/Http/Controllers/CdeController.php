@@ -792,6 +792,17 @@ class CdeController extends Controller
         $contenu = str_replace("CHEVRON-GAUCHE", "<", $request->contenu);
         $contenu = str_replace("CHEVRON-DROIT", ">", $contenu);
 
+        // Récupérer l'utilisateur connecté
+        $currentUser = Auth::user();
+        $senderEmail = $currentUser->email;
+        $senderName = $currentUser->getName();
+
+        // Ajouter l'information de l'expéditeur au début du contenu du mail
+        $senderInfo = '<div style="margin-bottom: 20px; padding: 10px; background-color: #f3f4f6; border-left: 4px solid #3b82f6; font-size: 14px;">';
+        $senderInfo .= '<strong>Envoyé par :</strong> ' . htmlspecialchars($senderName) . ' (<a href="mailto:' . htmlspecialchars($senderEmail) . '">' . htmlspecialchars($senderEmail) . '</a>)';
+        $senderInfo .= '</div>';
+
+        $contenu = $senderInfo . $contenu;
 
         $cdeAnnee = explode('-', $cde->code)[1];
         $pdfFileName = "{$cde->code}.pdf";
@@ -812,10 +823,11 @@ class CdeController extends Controller
         $signaturePath = storage_path('app/private/signature/signature.png'); // Assurez-vous que le chemin est correct
 
         try {
-            Mail::send([], [], function ($message) use ($request, $primaryContact, $ccContacts, $pdfPath, $signaturePath, &$contenu) {
+            Mail::send([], [], function ($message) use ($request, $primaryContact, $ccContacts, $pdfPath, $signaturePath, &$contenu, $senderEmail, $senderName) {
                 $message->to($primaryContact->email)
                     ->cc($ccContacts)
                     ->subject($request->sujet)
+                    ->from($senderEmail, $senderName)
                     ->attach($pdfPath);
 
                 if (file_exists($signaturePath) && is_readable($signaturePath)) {
@@ -835,6 +847,7 @@ class CdeController extends Controller
         $logmail = [
             'sujet' => $request->sujet,
             'contenu' => $contenu,
+            'Expéditeur' => $senderName . ' <' . $senderEmail . '>',
             'Destinataire' => $primaryContact->email,
             'cc' => implode(', ', $ccContacts),
             'pdf' => $pdfPath,
