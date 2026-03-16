@@ -2,15 +2,15 @@
 <html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>">
 
 
-<?php if(Auth::check()): ?>
-    <?php if(!Auth::user()->role): ?>
+<?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(Auth::check()): ?>
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!Auth::user()->role): ?>
         <?php echo e(Auth::logout()); ?>
 
         <script>
             window.location.href = "<?php echo e(route('login')); ?>";
         </script>
-    <?php endif; ?>
-<?php endif; ?>
+    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+<?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
 <head>
     <meta charset="utf-8">
@@ -52,7 +52,7 @@
             }
         ?>
 
-        <?php if($notifMsg): ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($notifMsg): ?>
             <div id="flash-message"
                 class="fixed top-6 left-1/2 transform -translate-x-1/2 z-100 min-w-[300px] max-w-[90vw] px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 transition-all duration-500
                     <?php if($notifType === 'success'): ?> bg-green-100 text-green-800 dark:bg-green-700 dark:text-green-100 <?php endif; ?>
@@ -64,11 +64,11 @@
                     <?php if($notifType === 'error'): ?> text-red-500 dark:text-red-200 <?php endif; ?>
                 "
                     fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <?php if($notifType === 'success'): ?>
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($notifType === 'success'): ?>
                         <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                     <?php else: ?>
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                    <?php endif; ?>
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 </svg>
                 <span class="flex-1"><?php echo $notifMsg; ?></span>
                 <button onclick="hideFlashMessage()"
@@ -103,11 +103,11 @@
                     }
                 }
             </script>
-        <?php endif; ?>
+        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         <?php echo $__env->make('layouts.navigation', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
         <!-- Page Heading -->
-        <?php if(isset($header)): ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(isset($header)): ?>
             <header class="bg-white dark:bg-gray-800 shadow-sm flex ">
                 <a href="<?php echo e(url()->previous()); ?>" onclick="window.history.go(-1); return false;"
                     class="flex px-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 items-center">
@@ -137,8 +137,8 @@
 
                 </div>
             </header>
-        <?php endif; ?>
-        <?php if(isset($header_nav)): ?>
+        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(isset($header_nav)): ?>
             <header class="bg-white dark:bg-gray-800 shadow-sm flex ">
                 <a href="<?php echo e(url()->previous()); ?>" onclick="window.history.go(-1); return false;"
                     class="flex p-4 sm:p-6 lg:p-8 px-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 items-center">
@@ -168,7 +168,7 @@
 
                 </div>
             </header>
-        <?php endif; ?>
+        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
         <!-- Page Content -->
         <main>

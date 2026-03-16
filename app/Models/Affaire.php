@@ -115,6 +115,14 @@ class Affaire extends Model
     }
 
     /**
+     * Relation avec les lignes de suivi tuyauterie
+     */
+    public function suiviLignes()
+    {
+        return $this->hasMany(AffaireSuiviLigne::class, 'affaire_id')->orderBy('ordre');
+    }
+
+    /**
      * Relation avec le matériel (Many-to-Many via affaire_materiel)
      */
     public function materiels()

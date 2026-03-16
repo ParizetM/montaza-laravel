@@ -26,7 +26,7 @@ foreach ($attributes->all() as $__key => $__value) {
     if (array_key_exists($__key, $__defined_vars)) unset($$__key);
 }
 
-unset($__defined_vars); ?>
+unset($__defined_vars, $__key, $__value); ?>
 
 <input <?php echo e($disabled ? 'disabled' : ''); ?> <?php echo $attributes->merge(['class' => ' bg-gray-100 border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-xs text-input']); ?>>
 <?php /**PATH /home/vagrant/code/montaza/resources/views/components/text-input.blade.php ENDPATH**/ ?>

@@ -200,7 +200,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::patch('/societe/{id}/commentaire/save', [SocieteController::class, 'updateCommentaire'])->name('societes.commentaire');
         Route::patch('/societe/etablissement/{id}/commentaire/save', [EtablissementController::class, 'updateCommentaire'])->name('societes.etablissement.commentaire');
         Route::get('/societes/{societeId}/etablissements/{etablissementId}/contacts/json', [SocieteContactController::class, 'showJson'])->name('societes.contacts.show_json');
-        
+
         // Routes pour gérer les matières d'un établissement
         Route::get('/etablissement/{etablissement}/matieres/json', [EtablissementController::class, 'getMatieresJson'])->name('etablissements.matieres.json');
         Route::post('/etablissement/{etablissement}/matieres/attach', [EtablissementController::class, 'attachMatiere'])->name('etablissements.matieres.attach');
@@ -245,6 +245,9 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::post('/matieres/import/preview', [MatiereController::class, 'importExcel'])->name('matieres.import.preview');
         Route::post('/matieres/import/store', [MatiereController::class, 'importExcelStore'])->name('matieres.import.store');
         Route::get('/matieres/import/example', [MatiereController::class, 'importExample'])->name('matieres.import.example');
+        Route::get('/matieres/import-database', [MatiereController::class, 'importDatabaseForm'])->name('matieres.import.database.form');
+        Route::post('/matieres/import-database', [MatiereController::class, 'importDatabase'])->name('matieres.import.database.preview');
+        Route::post('/matieres/import-database/store', [MatiereController::class, 'importDatabaseStore'])->name('matieres.import.database.store');
         Route::get('/matieres/{matiere}/fournisseurs/json', [MatiereController::class, 'fournisseursJson'])->name('matieres.fournisseurs.json');
         Route::get('/matieres/{id}/json', [MatiereController::class, 'getMatiereJson'])->name('matieres.get_json');
         Route::get('/matieres/standards', [StandardController::class, 'index'])->name('standards.index');
@@ -364,6 +367,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
     Route::middleware('permission:voir_les_affaires')->group(function () {
         Route::get('/affaires', [AffaireController::class, 'index'])->name('affaires.index');
         Route::get('/affaires/planning', [AffaireController::class, 'planning'])->name('affaires.planning');
+        Route::get('/affaires/suivi', [AffaireController::class, 'suivi'])->name('affaires.suivi');
         Route::get('/colaffaire/small', [AffaireController::class, 'indexColAffaireSmall'])->name('affaires.index_col_small');
         Route::get('/affaires/actualiser', [AffaireController::class, 'actualiserAllTotals'])->name('affaires.actualiser_totals');
         Route::get('/affaires/create', [AffaireController::class, 'create'])->name('affaires.create');
@@ -371,6 +375,11 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::get('/affaires/{affaire}/edit', [AffaireController::class, 'edit'])->name('affaires.edit');
         Route::patch('/affaires/{affaire}/update', [AffaireController::class, 'update'])->name('affaires.update');
         Route::delete('/affaires/{affaire}/delete', [AffaireController::class, 'destroy'])->name('affaires.destroy');
+        Route::get('/affaires/{affaire}/suivi', [AffaireController::class, 'suiviDetail'])->name('affaires.suivi_detail');
+        Route::post('/affaires/{affaire}/suivi-lignes', [AffaireController::class, 'storeSuiviLigne'])->name('affaires.suivi_lignes.store');
+        Route::patch('/affaires/{affaire}/suivi-lignes/{ligne}', [AffaireController::class, 'updateSuiviLigne'])->name('affaires.suivi_lignes.update');
+        Route::delete('/affaires/{affaire}/suivi-lignes/{ligne}', [AffaireController::class, 'deleteSuiviLigne'])->name('affaires.suivi_lignes.delete');
+        Route::post('/affaires/{affaire}/suivi-lignes/import', [AffaireController::class, 'importSuiviLignes'])->name('affaires.suivi_lignes.import');
         Route::get('/affaires/{affaire}', [AffaireController::class, 'show'])->name('affaires.show');
         Route::post('/affaires/{affaire}/assign-devis', [AffaireController::class, 'assignDevis'])->name('affaires.assign_devis');
         Route::delete('/affaires/{affaire}/unassign-devis/{devis}', [AffaireController::class, 'unassignDevis'])->name('affaires.unassign_devis');

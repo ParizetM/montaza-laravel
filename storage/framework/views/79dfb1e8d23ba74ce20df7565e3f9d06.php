@@ -1,8 +1,8 @@
 
 
 <div class="grid grid-cols-3 gap-6 ">
-    <?php $__currentLoopData = $_shortcuts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $shortcut): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-        <?php if($shortcut->shortcut->modal): ?>
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $_shortcuts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $shortcut): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($shortcut->shortcut->modal): ?>
             <?php
                 $modal = $shortcut->shortcut->modal;
                 $modal = json_decode($modal);
@@ -178,7 +178,7 @@
 <?php $component = $__componentOriginal7875b222dc4d64f17fd6d2e345da8799; ?>
 <?php unset($__componentOriginal7875b222dc4d64f17fd6d2e345da8799); ?>
 <?php endif; ?>
-        <?php endif; ?>
-    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 </div>
 <?php /**PATH /home/vagrant/code/montaza/resources/views/shortcuts/partials/shortcuts.blade.php ENDPATH**/ ?>

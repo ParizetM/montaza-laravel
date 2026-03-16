@@ -7,7 +7,9 @@ use App\Models\Materiel;
 use App\Models\Personnel;
 use App\Models\AffairePersonnel;
 use App\Models\AffairePersonnelTache;
+use App\Models\AffaireSuiviLigne;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Carbon\Carbon;
 
@@ -139,6 +141,43 @@ class AffaireController extends Controller
     }
 
     /**
+     * Affiche le tableau de suivi détaillé d'une affaire spécifique (suivi tuyauterie).
+     */
+    public function suiviDetail(Affaire $affaire): View
+    {
+        $affaire->load(['suiviLignes']);
+
+        $lignes = $affaire->suiviLignes;
+
+        // Statistiques
+        $stats = [
+            'total_lignes' => $lignes->count(),
+            'fabrication_terminees' => $lignes->whereNotNull('fin_fabrication')->count(),
+            'montage_termines' => $lignes->whereNotNull('monte')->count(),
+            'soudure_terminees' => $lignes->whereNotNull('soude')->count(),
+            'eprouves' => $lignes->whereNotNull('eprouve_le')->count(),
+            'non_conformites' => $lignes->where('non_conformite', '!=', null)->where('non_conformite', '!=', '')->count(),
+            'temps_fab_total' => $lignes->sum('temps_fabrication'),
+            'temps_montage_estime_total' => $lignes->sum('temps_montage_total_estime'),
+            'temps_montage_reel_total' => $lignes->sum('temps_montage_total_reel'),
+            'pouces_total' => $lignes->sum('pouces_total'),
+        ];
+
+        $stats['progression_fab'] = $stats['total_lignes'] > 0
+            ? round(($stats['fabrication_terminees'] / $stats['total_lignes']) * 100)
+            : 0;
+        $stats['progression_montage'] = $stats['total_lignes'] > 0
+            ? round(($stats['montage_termines'] / $stats['total_lignes']) * 100)
+            : 0;
+
+        return view('affaires.suivi-detail', compact(
+            'affaire',
+            'lignes',
+            'stats'
+        ));
+    }
+
+    /**
      * Affiche le formulaire d'édition d'une affaire.
      */
     public function edit(Affaire $affaire): View
@@ -198,6 +237,117 @@ class AffaireController extends Controller
                 ->with('error', 'Une erreur est survenue lors de la suppression de l\'affaire.');
         }
     }
+
+    /**
+     * Affiche le tableau de suivi d'affaires.
+     */
+    public function suivi(Request $request): View
+    {
+        $request->validate([
+            'search' => 'nullable|string|max:255',
+            'statut' => 'nullable|string',
+            'sort' => 'nullable|string|in:code,nom,statut,budget,total_ht,date_debut,date_fin_prevue,ecart,progression',
+            'direction' => 'nullable|string|in:asc,desc',
+        ]);
+
+        $search = $request->input('search');
+        $statut = $request->input('statut');
+        $sort = $request->input('sort', 'code');
+        $direction = $request->input('direction', 'desc');
+
+        $query = Affaire::with(['cdes', 'ddps', 'reparations', 'devisTuyauteries', 'materiels', 'personnels']);
+
+        if ($statut) {
+            $query->where('statut', $statut);
+        }
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('code', 'LIKE', "%{$search}%")
+                    ->orWhere('nom', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // Tri spécial pour les colonnes calculées
+        if (in_array($sort, ['ecart', 'progression'])) {
+            $affaires = $query->get();
+
+            // Calculer les colonnes dérivées
+            $affaires = $affaires->map(function ($affaire) {
+                $affaire->ecart_budget = $affaire->budget > 0 ? $affaire->budget - $affaire->total_ht : 0;
+                $affaire->progression = $affaire->budget > 0 ? min(100, round(($affaire->total_ht / $affaire->budget) * 100, 1)) : 0;
+                return $affaire;
+            });
+
+            if ($sort === 'ecart') {
+                $affaires = $direction === 'asc'
+                    ? $affaires->sortBy('ecart_budget')
+                    : $affaires->sortByDesc('ecart_budget');
+            } else {
+                $affaires = $direction === 'asc'
+                    ? $affaires->sortBy('progression')
+                    : $affaires->sortByDesc('progression');
+            }
+
+            // Pagination manuelle
+            $page = $request->input('page', 1);
+            $perPage = 25;
+            $total = $affaires->count();
+            $affaires = new \Illuminate\Pagination\LengthAwarePaginator(
+                $affaires->slice(($page - 1) * $perPage, $perPage)->values(),
+                $total,
+                $perPage,
+                $page,
+                ['path' => $request->url(), 'query' => $request->query()]
+            );
+        } else {
+            // Tri standard SQL
+            $sortColumn = match($sort) {
+                'code' => 'code',
+                'nom' => 'nom',
+                'statut' => DB::raw("CASE
+                    WHEN statut = 'en_attente' THEN 1
+                    WHEN statut = 'en_cours' THEN 2
+                    WHEN statut = 'termine' THEN 3
+                    WHEN statut = 'archive' THEN 4
+                    ELSE 5 END"),
+                'budget' => 'budget',
+                'total_ht' => 'total_ht',
+                'date_debut' => 'date_debut',
+                'date_fin_prevue' => 'date_fin_prevue',
+                default => 'code',
+            };
+
+            $affaires = $query->orderBy($sortColumn, $direction)->paginate(25);
+        }
+
+        // KPIs globaux
+        $allAffaires = Affaire::all();
+        $kpis = [
+            'total' => $allAffaires->count(),
+            'en_cours' => $allAffaires->where('statut', 'en_cours')->count(),
+            'en_attente' => $allAffaires->where('statut', 'en_attente')->count(),
+            'terminees' => $allAffaires->where('statut', 'termine')->count(),
+            'budget_total' => $allAffaires->sum('budget'),
+            'engage_total' => $allAffaires->sum('total_ht'),
+            'en_retard' => $allAffaires->filter(function ($a) {
+                return $a->statut === 'en_cours'
+                    && $a->date_fin_prevue
+                    && Carbon::parse($a->date_fin_prevue)->lt(now());
+            })->count(),
+            'budget_depasse' => $allAffaires->filter(function ($a) {
+                return $a->budget > 0 && $a->total_ht > $a->budget;
+            })->count(),
+        ];
+
+        return view('affaires.suivi', [
+            'affaires' => $affaires,
+            'kpis' => $kpis,
+            'sort' => $sort,
+            'direction' => $direction,
+        ]);
+    }
+
     public function actualiserAllTotals()
     {
         $affaires = Affaire::all();
@@ -916,6 +1066,273 @@ class AffaireController extends Controller
 
         return redirect()->back()
             ->with('success', 'La tâche a été supprimée avec succès.');
+    }
+
+    // ─── SUIVI TUYAUTERIE (CRUD lignes) ─────────────────────────────
+
+    /**
+     * Ajoute une ligne de suivi tuyauterie.
+     */
+    public function storeSuiviLigne(Request $request, Affaire $affaire)
+    {
+        $data = $request->validate([
+            'projet'       => 'nullable|string|max:255',
+            'tm'           => 'nullable|string|max:255',
+            'indice'       => 'nullable|string|max:50',
+            'activite'     => 'nullable|string|max:255',
+            'stade_montage'=> 'nullable|string|max:255',
+            'lot'          => 'nullable|string|max:255',
+            'bloc'         => 'nullable|string|max:255',
+            'panneau'      => 'nullable|string|max:255',
+            'repere'       => 'nullable|string|max:255',
+            'date_reception_iso'   => 'nullable|date',
+            'fournisseur_prefa'    => 'nullable|string|max:255',
+            'classe'       => 'nullable|string|max:100',
+            'code_ts'      => 'nullable|string|max:100',
+            'traitement_surface'   => 'nullable|string|max:255',
+            'schema_ligne' => 'nullable|string|max:255',
+            'trigramme'    => 'nullable|string|max:50',
+            'longueur_poids'       => 'nullable|numeric',
+            'pouces_total' => 'nullable|numeric',
+            'qtt_cintrages'=> 'nullable|integer',
+            'dn'           => 'nullable|string|max:50',
+            'ep'           => 'nullable|string|max:50',
+            'matiere'      => 'nullable|string|max:255',
+            'categorie'    => 'nullable|string|max:255',
+            'dp_armement'  => 'nullable|string|max:255',
+            'temps_fabrication'    => 'nullable|numeric',
+            'temps_montage_total_estime' => 'nullable|numeric',
+            'temps_soudure_estime'       => 'nullable|numeric',
+            'temps_montage_estime'       => 'nullable|numeric',
+            'matiere_commande_le'  => 'nullable|date',
+            'appro_matiere'        => 'nullable|date',
+            'piking'       => 'nullable|date',
+            'fin_debit'    => 'nullable|date',
+            'debut_fabrication'    => 'nullable|date',
+            'tuyauteur'    => 'nullable|string|max:255',
+            'fin_assemblage'       => 'nullable|date',
+            'nbr_soudure'  => 'nullable|integer',
+            'soudeur'      => 'nullable|string|max:255',
+            'fin_soudage'  => 'nullable|date',
+            'fin_fabrication'      => 'nullable|date',
+            'depart_traitement'    => 'nullable|date',
+            'retour_traitement'    => 'nullable|date',
+            'livraison_bord'       => 'nullable|date',
+            'debut_montage'        => 'nullable|date',
+            'monte'        => 'nullable|date',
+            'soude'        => 'nullable|date',
+            'supporte'     => 'nullable|date',
+            'nb_heures_montages'   => 'nullable|numeric',
+            'equipe_montage'       => 'nullable|string|max:255',
+            'nb_heures_soudages'   => 'nullable|numeric',
+            'soudeurs'     => 'nullable|string|max:255',
+            'temps_montage_total_reel'   => 'nullable|numeric',
+            'eprouve_le'   => 'nullable|date',
+            'non_conformite'       => 'nullable|string',
+        ]);
+
+        $data['affaire_id'] = $affaire->id;
+        $data['ordre'] = ($affaire->suiviLignes()->max('ordre') ?? 0) + 1;
+
+        AffaireSuiviLigne::create($data);
+
+        return redirect()->route('affaires.suivi_detail', $affaire)
+            ->with('success', 'Ligne de suivi ajoutée avec succès.');
+    }
+
+    /**
+     * Met à jour une ligne de suivi tuyauterie.
+     */
+    public function updateSuiviLigne(Request $request, Affaire $affaire, $ligneId)
+    {
+        $ligne = AffaireSuiviLigne::where('affaire_id', $affaire->id)->findOrFail($ligneId);
+
+        $data = $request->validate([
+            'projet'       => 'nullable|string|max:255',
+            'tm'           => 'nullable|string|max:255',
+            'indice'       => 'nullable|string|max:50',
+            'activite'     => 'nullable|string|max:255',
+            'stade_montage'=> 'nullable|string|max:255',
+            'lot'          => 'nullable|string|max:255',
+            'bloc'         => 'nullable|string|max:255',
+            'panneau'      => 'nullable|string|max:255',
+            'repere'       => 'nullable|string|max:255',
+            'date_reception_iso'   => 'nullable|date',
+            'fournisseur_prefa'    => 'nullable|string|max:255',
+            'classe'       => 'nullable|string|max:100',
+            'code_ts'      => 'nullable|string|max:100',
+            'traitement_surface'   => 'nullable|string|max:255',
+            'schema_ligne' => 'nullable|string|max:255',
+            'trigramme'    => 'nullable|string|max:50',
+            'longueur_poids'       => 'nullable|numeric',
+            'pouces_total' => 'nullable|numeric',
+            'qtt_cintrages'=> 'nullable|integer',
+            'dn'           => 'nullable|string|max:50',
+            'ep'           => 'nullable|string|max:50',
+            'matiere'      => 'nullable|string|max:255',
+            'categorie'    => 'nullable|string|max:255',
+            'dp_armement'  => 'nullable|string|max:255',
+            'temps_fabrication'    => 'nullable|numeric',
+            'temps_montage_total_estime' => 'nullable|numeric',
+            'temps_soudure_estime'       => 'nullable|numeric',
+            'temps_montage_estime'       => 'nullable|numeric',
+            'matiere_commande_le'  => 'nullable|date',
+            'appro_matiere'        => 'nullable|date',
+            'piking'       => 'nullable|date',
+            'fin_debit'    => 'nullable|date',
+            'debut_fabrication'    => 'nullable|date',
+            'tuyauteur'    => 'nullable|string|max:255',
+            'fin_assemblage'       => 'nullable|date',
+            'nbr_soudure'  => 'nullable|integer',
+            'soudeur'      => 'nullable|string|max:255',
+            'fin_soudage'  => 'nullable|date',
+            'fin_fabrication'      => 'nullable|date',
+            'depart_traitement'    => 'nullable|date',
+            'retour_traitement'    => 'nullable|date',
+            'livraison_bord'       => 'nullable|date',
+            'debut_montage'        => 'nullable|date',
+            'monte'        => 'nullable|date',
+            'soude'        => 'nullable|date',
+            'supporte'     => 'nullable|date',
+            'nb_heures_montages'   => 'nullable|numeric',
+            'equipe_montage'       => 'nullable|string|max:255',
+            'nb_heures_soudages'   => 'nullable|numeric',
+            'soudeurs'     => 'nullable|string|max:255',
+            'temps_montage_total_reel'   => 'nullable|numeric',
+            'eprouve_le'   => 'nullable|date',
+            'non_conformite'       => 'nullable|string',
+        ]);
+
+        $ligne->update($data);
+
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true, 'ligne' => $ligne->fresh()->toArray()]);
+        }
+
+        return redirect()->route('affaires.suivi_detail', $affaire)
+            ->with('success', 'Ligne de suivi mise à jour.');
+    }
+
+    /**
+     * Supprime une ligne de suivi tuyauterie.
+     */
+    public function deleteSuiviLigne(Affaire $affaire, $ligneId)
+    {
+        $ligne = AffaireSuiviLigne::where('affaire_id', $affaire->id)->findOrFail($ligneId);
+        $ligne->delete();
+
+        return redirect()->route('affaires.suivi_detail', $affaire)
+            ->with('success', 'Ligne de suivi supprimée.');
+    }
+
+    /**
+     * Import CSV des lignes de suivi tuyauterie.
+     */
+    public function importSuiviLignes(Request $request, Affaire $affaire)
+    {
+        $request->validate(['csv_file' => 'required|file|mimes:csv,txt|max:5120']);
+
+        $file = $request->file('csv_file');
+        $handle = fopen($file->getPathname(), 'r');
+
+        // Première ligne = en-têtes
+        $headers = fgetcsv($handle, 0, ';');
+        if (!$headers) {
+            fclose($handle);
+            return redirect()->back()->with('error', 'Fichier CSV invalide.');
+        }
+
+        // Mapping en-têtes CSV → colonnes BDD
+        $mapping = [
+            'Projet' => 'projet', 'TM' => 'tm', 'Indice' => 'indice',
+            'Activité' => 'activite', 'Activite' => 'activite',
+            'Stade de Montage' => 'stade_montage', 'Lot' => 'lot',
+            'Bloc' => 'bloc', 'Panneau' => 'panneau', 'Repère' => 'repere', 'Repere' => 'repere',
+            'Date Réception Iso' => 'date_reception_iso', 'Date Reception Iso' => 'date_reception_iso',
+            'Fournisseur Préfa' => 'fournisseur_prefa', 'Fournisseur Prefa' => 'fournisseur_prefa',
+            'Classe' => 'classe', 'Code TS' => 'code_ts',
+            'Traitement Surface' => 'traitement_surface',
+            'Schéma-Ligne/Serrurerie' => 'schema_ligne', 'Schema-Ligne/Serrurerie' => 'schema_ligne',
+            'Trigramme' => 'trigramme',
+            'Lg(M)/Poids(Kg)' => 'longueur_poids', 'Longueur/Poids' => 'longueur_poids',
+            'Pouces total' => 'pouces_total', 'Qtt Cintrages' => 'qtt_cintrages',
+            'DN' => 'dn', 'Ep' => 'ep', 'Matière' => 'matiere', 'Matiere' => 'matiere',
+            'Catégorie' => 'categorie', 'Categorie' => 'categorie',
+            'DP_Armement' => 'dp_armement',
+            'Temps Fabrication' => 'temps_fabrication',
+            'Temps Montage Total Estimé' => 'temps_montage_total_estime',
+            'Temps de Soudure Estimé' => 'temps_soudure_estime',
+            'Temps Montage Estimé' => 'temps_montage_estime',
+            'Matière commandé le' => 'matiere_commande_le', 'Matiere commande le' => 'matiere_commande_le',
+            'Appro Matière' => 'appro_matiere', 'Appro Matiere' => 'appro_matiere',
+            'Piking' => 'piking', 'Fin Débit' => 'fin_debit', 'Fin Debit' => 'fin_debit',
+            'Début Fabrication' => 'debut_fabrication', 'Debut Fabrication' => 'debut_fabrication',
+            'Tuyauteur' => 'tuyauteur', 'Fin Assemblage' => 'fin_assemblage',
+            'Nbr de Soudure' => 'nbr_soudure', 'Soudeur' => 'soudeur',
+            'Fin Soudage' => 'fin_soudage', 'Fin Fabrication' => 'fin_fabrication',
+            'Départ Traitement' => 'depart_traitement', 'Depart Traitement' => 'depart_traitement',
+            'Retour Traitement' => 'retour_traitement',
+            'Livraison Bord' => 'livraison_bord',
+            'Début Montage' => 'debut_montage', 'Debut Montage' => 'debut_montage',
+            'Monté' => 'monte', 'Monte' => 'monte',
+            'Soudé' => 'soude', 'Soude' => 'soude',
+            'Supporté' => 'supporte', 'Supporte' => 'supporte',
+            'Nb Heures Montages' => 'nb_heures_montages',
+            'Equipe Montage' => 'equipe_montage',
+            'Nb Heures Soudages' => 'nb_heures_soudages',
+            'Soudeurs' => 'soudeurs',
+            'Temps Montage Total Réel' => 'temps_montage_total_reel',
+            'Éprouvé le' => 'eprouve_le', 'Eprouve le' => 'eprouve_le',
+            'Non-Conformitée' => 'non_conformite', 'Non-Conformite' => 'non_conformite',
+        ];
+
+        // Convertir en-têtes → index colonne
+        $columnMap = [];
+        foreach ($headers as $i => $header) {
+            $header = trim($header);
+            if (isset($mapping[$header])) {
+                $columnMap[$i] = $mapping[$header];
+            }
+        }
+
+        $dateFields = [
+            'date_reception_iso', 'matiere_commande_le', 'appro_matiere', 'piking',
+            'fin_debit', 'debut_fabrication', 'fin_assemblage', 'fin_soudage',
+            'fin_fabrication', 'depart_traitement', 'retour_traitement', 'livraison_bord',
+            'debut_montage', 'monte', 'soude', 'supporte', 'eprouve_le',
+        ];
+
+        $imported = 0;
+        $ordre = ($affaire->suiviLignes()->max('ordre') ?? 0);
+
+        while (($row = fgetcsv($handle, 0, ';')) !== false) {
+            $data = ['affaire_id' => $affaire->id];
+            foreach ($columnMap as $i => $field) {
+                $val = isset($row[$i]) ? trim($row[$i]) : null;
+                if ($val === '') $val = null;
+
+                if ($val !== null && in_array($field, $dateFields)) {
+                    try {
+                        $val = Carbon::parse($val)->format('Y-m-d');
+                    } catch (\Exception $e) {
+                        $val = null;
+                    }
+                }
+
+                $data[$field] = $val;
+            }
+
+            $ordre++;
+            $data['ordre'] = $ordre;
+
+            AffaireSuiviLigne::create($data);
+            $imported++;
+        }
+
+        fclose($handle);
+
+        return redirect()->route('affaires.suivi_detail', $affaire)
+            ->with('success', "{$imported} ligne(s) importée(s) avec succès.");
     }
 }
 

@@ -19,14 +19,14 @@ class PersonnelEmploiDuTempsController extends Controller
         // Navigation par semaine
         $weekOffset = (int) $request->get('week', 0);
 
-        // Calculer la semaine courante
-        $startOfWeek = now()->addWeeks($weekOffset)->startOfWeek(Carbon::SUNDAY);
-        $endOfWeek = $startOfWeek->copy()->endOfWeek(Carbon::SATURDAY);
+        // Calculer la semaine courante (lundi à vendredi)
+        $startOfWeek = now()->addWeeks($weekOffset)->startOfWeek(Carbon::MONDAY);
+        $endOfWeek = $startOfWeek->copy()->addDays(4); // Vendredi
 
-        // Générer les jours de la semaine
+        // Générer les jours de la semaine (lundi à vendredi)
         $weekDays = [];
         $tempDate = $startOfWeek->copy();
-        for ($i = 0; $i < 7; $i++) {
+        for ($i = 0; $i < 5; $i++) {
             $weekDays[] = $tempDate->copy();
             $tempDate->addDay();
         }

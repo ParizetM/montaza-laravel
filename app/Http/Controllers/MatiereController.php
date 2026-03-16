@@ -148,7 +148,7 @@ class MatiereController extends Controller
                                 if (strlen(trim($term)) >= 1) {
                                     // Vérifier le mode de recherche (depuis la requête)
                                     $searchMode = request()->input('search_mode', 'contains');
-                                    
+
                                     if ($searchMode === 'start_with') {
                                         // Recherche au début de la désignation uniquement (pour établissements)
                                         $subQuery->where('designation', 'ILIKE', "{$term}%");
@@ -1780,5 +1780,534 @@ class MatiereController extends Controller
             }
         }
         return redirect()->route('matieres.index')->with('success', count($created) . ' matières importées avec succès. <br/>'.count($createdPrix).' prix ajoutés avec succès');
+    }
+
+    /**
+     * Affiche le formulaire d'import de base de données XLSX
+     */
+    public function importDatabaseForm()
+    {
+        return view('matieres.import_database');
+    }
+
+    /**
+     * Génère une prévisualisation de l'import de base de données depuis un fichier XLSX
+     */
+    public function importDatabase(Request $request)
+    {
+        set_time_limit(300); // 5 minutes
+        ini_set('memory_limit', '512M');
+
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls',
+        ]);
+
+        try {
+            $file = $request->file('file');
+            $data = Excel::toArray([], $file);
+
+            if (empty($data) || empty($data[0])) {
+                return back()->withErrors(['file' => 'Le fichier est vide ou invalide.']);
+            }
+
+            $sheet = $data[0];
+
+            // Log pour debugging - afficher les 6 premières lignes pour localiser les en-têtes
+            \Log::info('Import XLSX - Échantillon de données (6 premières lignes)', [
+                'total_lignes' => count($sheet),
+                'ligne_1' => $sheet[0] ?? null,
+                'ligne_2' => $sheet[1] ?? null,
+                'ligne_3' => $sheet[2] ?? null,
+                'ligne_4' => $sheet[3] ?? null,
+                'ligne_5' => $sheet[4] ?? null,
+                'ligne_6' => $sheet[5] ?? null,
+            ]);
+
+            // Fonction de normalisation
+            $normalize = function ($str) {
+                if (!is_string($str)) return '';
+                return strtolower(preg_replace('/[\p{Mn}]/u', '', \Normalizer::normalize($str, \Normalizer::FORM_D)));
+            };
+
+            // Charger les données de référence
+            $unites = \App\Models\Unite::all();
+            $unitesIndex = [];
+            foreach ($unites as $unite) {
+                $unitesIndex[$normalize($unite->short)] = $unite;
+                $unitesIndex[$normalize($unite->full)] = $unite;
+            }
+
+            $familles = \App\Models\Famille::all();
+            $famillesIndex = [];
+            foreach ($familles as $famille) {
+                $famillesIndex[$normalize($famille->nom)] = $famille;
+            }
+
+            $sous_familles = \App\Models\SousFamille::all();
+            $sousFamillesIndex = [];
+            $sousFamillesByFamille = [];
+            foreach ($sous_familles as $sf) {
+                $sousFamillesIndex[$normalize($sf->nom)] = $sf;
+                if (!isset($sousFamillesByFamille[$sf->famille_id])) {
+                    $sousFamillesByFamille[$sf->famille_id] = $sf;
+                }
+            }
+
+            $standards = \App\Models\Standard::all();
+            $standardsIndex = [];
+            foreach ($standards as $standard) {
+                $standardsIndex[$normalize($standard->nom)] = $standard;
+            }
+
+            $materials = \App\Models\Material::all();
+            $materialsIndex = [];
+            foreach ($materials as $material) {
+                $materialsIndex[$normalize($material->nom)] = $material;
+            }
+
+            $fournisseurs = \App\Models\Societe::whereIn('societe_type_id', ['2','3'])->get();
+            $fournisseursIndex = [];
+            foreach ($fournisseurs as $fournisseur) {
+                $fournisseursIndex[$normalize($fournisseur->raison_sociale)] = $fournisseur;
+                if ($fournisseur->nom) {
+                    $fournisseursIndex[$normalize($fournisseur->nom)] = $fournisseur;
+                }
+            }
+
+            // Charger les références existantes
+            $existingRefs = \App\Models\Matiere::pluck('ref_interne')->map(function ($v) {
+                return mb_strtolower(trim($v));
+            })->flip()->toArray();
+
+            // Détecter les en-têtes (ligne 5, index 4)
+            $headers = array_map('trim', $sheet[4] ?? []);
+            $headerMapping = $this->mapDatabaseHeaders($headers);
+
+            // Log pour debugging
+            \Log::info('Import XLSX - Headers détectés', [
+                'headers_bruts' => $headers,
+                'mapping' => $headerMapping,
+                'note' => 'En-têtes lus depuis la ligne 5, données à partir de la ligne 6',
+            ]);
+
+            // Définir les colonnes pour la prévisualisation
+            $columns = ['ref_interne', 'famille', 'materiau', 'fournisseur', 'designation', 'standard', 'dn', 'epaisseur', 'unite', 'ref_valeur_unitaire', 'prix'];
+
+            // Préparer les données pour la prévisualisation
+            $rows = [];
+            $preview = [];
+
+            // Traiter chaque ligne (commence à la ligne 6, index 5)
+            for ($i = 5; $i < count($sheet); $i++) {
+                $rowData = $sheet[$i];
+
+                // Ignorer les lignes vides
+                if (empty(array_filter($rowData))) {
+                    continue;
+                }
+
+                // Mapper les données selon les en-têtes
+                $row = [];
+                foreach ($columns as $col) {
+                    $row[$col] = '';
+                }
+
+                foreach ($headerMapping as $index => $columnName) {
+                    if (isset($row[$columnName])) {
+                        $row[$columnName] = isset($rowData[$index]) ? trim($rowData[$index]) : '';
+                    }
+                }
+
+                $rows[] = $row;
+
+                // Générer les informations de prévisualisation avec validation
+                $previewRow = [];
+
+                // Vérifier ref_interne
+                if (empty($row['ref_interne'])) {
+                    $previewRow['ref_interne'] = ['error' => 'Référence interne obligatoire'];
+                } else {
+                    $refNormalized = mb_strtolower(trim($row['ref_interne']));
+                    if (isset($existingRefs[$refNormalized])) {
+                        $previewRow['ref_interne'] = ['error' => 'Référence déjà existante'];
+                    } else {
+                        $previewRow['ref_interne'] = ['id' => true];
+                        $existingRefs[$refNormalized] = true; // Éviter les doublons dans le fichier
+                    }
+                }
+
+                // Vérifier designation
+                if (empty($row['designation'])) {
+                    $previewRow['designation'] = ['error' => 'Désignation obligatoire'];
+                } else {
+                    $previewRow['designation'] = ['id' => true];
+                }
+
+                // Vérifier unité
+                if (empty($row['unite'])) {
+                    $previewRow['unite'] = ['error' => 'Unité obligatoire'];
+                } else {
+                    $val = $normalize($row['unite']);
+                    if ($val === 'pce') $val = 'u';
+                    $unite = $unitesIndex[$val] ?? null;
+                    if ($unite) {
+                        $previewRow['unite'] = ['id' => $unite->id, 'label' => $unite->short];
+                    } else {
+                        $previewRow['unite'] = ['error' => 'Unité non trouvée'];
+                    }
+                }
+
+                // Vérifier famille/sous-famille
+                $sous_famille = null;
+                if (!empty($row['famille'])) {
+                    $val = $normalize($row['famille']);
+                    $famille = $famillesIndex[$val] ?? null;
+
+                    if ($famille) {
+                        $sous_famille = $sousFamillesByFamille[$famille->id] ?? null;
+                        if ($sous_famille) {
+                            $previewRow['famille'] = ['id' => $sous_famille->id, 'label' => $famille->nom . ' → ' . $sous_famille->nom];
+                        } else {
+                            $previewRow['famille'] = ['error' => 'Aucune sous-famille trouvée pour cette famille'];
+                        }
+                    } else {
+                        $previewRow['famille'] = ['error' => 'Famille non trouvée'];
+                    }
+                } else {
+                    $previewRow['famille'] = ['error' => 'Famille obligatoire'];
+                }
+
+                // Vérifier matériau (optionnel)
+                if (!empty($row['materiau'])) {
+                    $val = $normalize($row['materiau']);
+                    $material = $materialsIndex[$val] ?? null;
+                    if ($material) {
+                        $previewRow['materiau'] = ['id' => $material->id, 'label' => $material->nom];
+                    } else {
+                        $previewRow['materiau'] = ['error' => 'Matériau non trouvé (sera ignoré)'];
+                    }
+                } else {
+                    $previewRow['materiau'] = ['id' => null];
+                }
+
+                // Vérifier standard (optionnel)
+                if (!empty($row['standard'])) {
+                    $val = $normalize($row['standard']);
+                    $standard = $standardsIndex[$val] ?? null;
+                    if ($standard) {
+                        $previewRow['standard'] = ['id' => $standard->id, 'label' => $standard->nom];
+                    } else {
+                        $previewRow['standard'] = ['error' => 'Standard non trouvé (sera ignoré)'];
+                    }
+                } else {
+                    $previewRow['standard'] = ['id' => null];
+                }
+
+                // Vérifier fournisseur (optionnel)
+                if (!empty($row['fournisseur'])) {
+                    $val = $normalize($row['fournisseur']);
+                    $fournisseur = $fournisseursIndex[$val] ?? null;
+                    if ($fournisseur) {
+                        $previewRow['fournisseur'] = ['id' => $fournisseur->id, 'label' => $fournisseur->raison_sociale];
+                    } else {
+                        $previewRow['fournisseur'] = ['error' => 'Fournisseur non trouvé (sera ignoré)'];
+                    }
+                } else {
+                    $previewRow['fournisseur'] = ['id' => null];
+                }
+
+                // DN et épaisseur (optionnels)
+                $previewRow['dn'] = ['id' => !empty($row['dn'])];
+                $previewRow['epaisseur'] = ['id' => !empty($row['epaisseur'])];
+                $previewRow['ref_valeur_unitaire'] = ['id' => !empty($row['ref_valeur_unitaire'])];
+
+                // Prix (optionnel)
+                if (!empty($row['prix'])) {
+                    $previewRow['prix'] = ['id' => true, 'label' => $row['prix']];
+                } else {
+                    $previewRow['prix'] = ['id' => null];
+                }
+
+                $preview[] = $previewRow;
+            }
+
+            // Log pour debugging
+            \Log::info('Import XLSX - Résultats du traitement', [
+                'total_lignes_fichier' => count($sheet) - 1,
+                'lignes_traitees' => count($rows),
+                'lignes_preview' => count($preview),
+            ]);
+
+            // Si aucune ligne valide n'a été trouvée
+            if (empty($rows)) {
+                return back()->withErrors(['file' => 'Aucune ligne valide trouvée dans le fichier. Vérifiez que le format correspond aux spécifications.']);
+            }
+
+            return view('matieres.import_database_preview', [
+                'headers' => $columns,
+                'rows' => $rows,
+                'preview' => $preview,
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Erreur lors de la prévisualisation de l\'import XLSX', [
+                'exception' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return back()->withErrors(['file' => 'Erreur lors de la prévisualisation : ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Traite l'import effectif de la base de données depuis la prévisualisation
+     */
+    public function importDatabaseStore(Request $request)
+    {
+        set_time_limit(300); // 5 minutes
+        ini_set('memory_limit', '512M');
+
+        $rows = json_decode($request->input('rows'), true);
+
+        if (empty($rows)) {
+            return redirect()->route('matieres.index')->withErrors(['error' => 'Aucune donnée à importer.']);
+        }
+
+        $created = 0;
+        $errors = 0;
+        $skipped = 0;
+
+        // Fonction de normalisation
+        $normalize = function ($str) {
+            if (!is_string($str)) return '';
+            return strtolower(preg_replace('/[\p{Mn}]/u', '', \Normalizer::normalize($str, \Normalizer::FORM_D)));
+        };
+
+        // Charger les données de référence
+        $unites = \App\Models\Unite::all();
+        $unitesIndex = [];
+        foreach ($unites as $unite) {
+            $unitesIndex[$normalize($unite->short)] = $unite;
+            $unitesIndex[$normalize($unite->full)] = $unite;
+        }
+
+        $familles = \App\Models\Famille::all();
+        $famillesIndex = [];
+        foreach ($familles as $famille) {
+            $famillesIndex[$normalize($famille->nom)] = $famille;
+        }
+
+        $sous_familles = \App\Models\SousFamille::all();
+        $sousFamillesIndex = [];
+        $sousFamillesByFamille = [];
+        foreach ($sous_familles as $sf) {
+            $sousFamillesIndex[$normalize($sf->nom)] = $sf;
+            if (!isset($sousFamillesByFamille[$sf->famille_id])) {
+                $sousFamillesByFamille[$sf->famille_id] = $sf;
+            }
+        }
+
+        $standards = \App\Models\Standard::all();
+        $standardsIndex = [];
+        foreach ($standards as $standard) {
+            $standardsIndex[$normalize($standard->nom)] = $standard;
+        }
+
+        $materials = \App\Models\Material::all();
+        $materialsIndex = [];
+        foreach ($materials as $material) {
+            $materialsIndex[$normalize($material->nom)] = $material;
+        }
+
+        $fournisseurs = \App\Models\Societe::whereIn('societe_type_id', ['2','3'])->get();
+        $fournisseursIndex = [];
+        foreach ($fournisseurs as $fournisseur) {
+            $fournisseursIndex[$normalize($fournisseur->raison_sociale)] = $fournisseur;
+            if ($fournisseur->nom) {
+                $fournisseursIndex[$normalize($fournisseur->nom)] = $fournisseur;
+            }
+        }
+
+        // Charger les références existantes
+        $existingRefs = \App\Models\Matiere::pluck('ref_interne')->map(function ($v) {
+            return mb_strtolower(trim($v));
+        })->flip()->toArray();
+
+        // Traiter chaque ligne
+        foreach ($rows as $i => $row) {
+            // Vérifier les champs obligatoires
+            if (empty($row['ref_interne']) || empty($row['designation']) || empty($row['unite'])) {
+                $errors++;
+                continue;
+            }
+
+            // Vérifier unicité
+            $refNormalized = mb_strtolower(trim($row['ref_interne']));
+            if (isset($existingRefs[$refNormalized])) {
+                $skipped++;
+                continue;
+            }
+            $existingRefs[$refNormalized] = true;
+
+            // Trouver l'unité
+            $val = $normalize($row['unite']);
+            if ($val === 'pce') $val = 'u';
+            $unite = $unitesIndex[$val] ?? null;
+            if (!$unite) {
+                $errors++;
+                continue;
+            }
+
+            // Trouver la sous-famille
+            $sous_famille = null;
+            if (!empty($row['famille'])) {
+                $val = $normalize($row['famille']);
+                $famille = $famillesIndex[$val] ?? null;
+                if ($famille) {
+                    $sous_famille = $sousFamillesByFamille[$famille->id] ?? null;
+                }
+            }
+
+            if (!$sous_famille) {
+                $errors++;
+                continue;
+            }
+
+            // Trouver le standard
+            $standard = null;
+            if (!empty($row['standard'])) {
+                $val = $normalize($row['standard']);
+                $standard = $standardsIndex[$val] ?? null;
+            }
+
+            // Trouver le matériau
+            $material = null;
+            if (!empty($row['materiau'])) {
+                $val = $normalize($row['materiau']);
+                $material = $materialsIndex[$val] ?? null;
+            }
+
+            // Trouver le fournisseur
+            $fournisseur = null;
+            if (!empty($row['fournisseur'])) {
+                $val = $normalize($row['fournisseur']);
+                $fournisseur = $fournisseursIndex[$val] ?? null;
+            }
+
+            // Créer la matière
+            try {
+                $matiere = \App\Models\Matiere::create([
+                    'ref_interne' => $row['ref_interne'],
+                    'designation' => $row['designation'],
+                    'unite_id' => $unite->id,
+                    'sous_famille_id' => $sous_famille->id,
+                    'dn' => $row['dn'] ?? null,
+                    'epaisseur' => $row['epaisseur'] ?? null,
+                    'standard_id' => $standard ? $standard->getLatestVersion()->id : null,
+                    'ref_valeur_unitaire' => $row['ref_valeur_unitaire'] ?? null,
+                    'material_id' => $material ? $material->id : null,
+                    'prix_moyen' => null,
+                    'date_dernier_achat' => null,
+                    'quantite' => 0,
+                    'stock_min' => 0,
+                ]);
+
+                // Créer la liaison avec le fournisseur si présent
+                if ($fournisseur && !empty($row['prix'])) {
+                    $societeMatiere = SocieteMatiere::create([
+                        'matiere_id' => $matiere->id,
+                        'societe_id' => $fournisseur->id,
+                    ]);
+
+                    \App\Models\SocieteMatierePrix::create([
+                        'societe_matiere_id' => $societeMatiere->id,
+                        'prix_unitaire' => str_replace(',', '.', $row['prix']),
+                        'date' => now(),
+                    ]);
+                }
+
+                $created++;
+            } catch (\Throwable $e) {
+                \Log::error('Erreur lors de l\'import de base de données (ligne ' . ($i + 1) . ')', [
+                    'row' => $row,
+                    'exception' => $e->getMessage(),
+                ]);
+                $errors++;
+            }
+        }
+
+        $message = "$created matières importées avec succès.";
+        if ($skipped > 0) {
+            $message .= " <br/>$skipped matières ignorées (déjà existantes).";
+        }
+        if ($errors > 0) {
+            $message .= " <br/>$errors lignes avec erreurs.";
+        }
+
+        return redirect()->route('matieres.index')->with('success', $message);
+    }
+
+    /**
+     * Mapping des en-têtes pour l'import de base de données
+     */
+    private function mapDatabaseHeaders($headers)
+    {
+        $mapping = [];
+        $normalize = function ($str) {
+            return mb_strtolower(trim(preg_replace('/[^a-zA-Z0-9\s]/', '', $str)));
+        };
+
+        foreach ($headers as $index => $header) {
+            $normalized = $normalize($header);
+            $found = false;
+
+            // Log pour debugging
+            \Log::debug("Header #{$index}: '{$header}' -> normalisé: '{$normalized}'");
+
+            if (preg_match('/ref.*interne|reference/i', $normalized)) {
+                $mapping[$index] = 'ref_interne';
+                $found = true;
+            } elseif (preg_match('/fournisseur/i', $normalized)) {
+                $mapping[$index] = 'fournisseur';
+                $found = true;
+            } elseif (preg_match('/famille/i', $normalized) && !preg_match('/sous/i', $normalized)) {
+                $mapping[$index] = 'famille';
+                $found = true;
+            } elseif (preg_match('/sous.*famille/i', $normalized)) {
+                $mapping[$index] = 'sous_famille';
+                $found = true;
+            } elseif (preg_match('/matiere|materiau|material/i', $normalized)) {
+                $mapping[$index] = 'materiau';
+                $found = true;
+            } elseif (preg_match('/designation/i', $normalized)) {
+                $mapping[$index] = 'designation';
+                $found = true;
+            } elseif (preg_match('/standar/i', $normalized)) {
+                $mapping[$index] = 'standard';
+                $found = true;
+            } elseif (preg_match('/\bdn\b/i', $normalized)) {
+                $mapping[$index] = 'dn';
+                $found = true;
+            } elseif (preg_match('/\bep\b|epaisseur/i', $normalized)) {
+                $mapping[$index] = 'epaisseur';
+                $found = true;
+            } elseif (preg_match('/unite/i', $normalized)) {
+                $mapping[$index] = 'unite';
+                $found = true;
+            } elseif (preg_match('/longueur|ref.*valeur.*unitaire/i', $normalized)) {
+                $mapping[$index] = 'ref_valeur_unitaire';
+                $found = true;
+            } elseif (preg_match('/prix/i', $normalized)) {
+                $mapping[$index] = 'prix';
+                $found = true;
+            }
+
+            if ($found) {
+                \Log::debug("  -> Mappé à: {$mapping[$index]}");
+            } else {
+                \Log::debug("  -> Non mappé (ignoré)");
+            }
+        }
+
+        return $mapping;
     }
 }
