@@ -4,9 +4,9 @@
 
         <div class="w-full">
             @if (Auth::check())
-                <a href="{{ url('/dashboard') }}" class="block w-full">
+                <a href="{{ route('accueil') }}" class="block w-full">
                      <x-primary-button class="w-full justify-center py-3 text-base">
-                        {{ __('Accéder au Dashboard') }}
+                        {{ __('Accéder au site') }}
                     </x-primary-button>
                 </a>
             @else

@@ -36,10 +36,10 @@ use App\Http\Controllers\MaterielController;
 
 Route::get('/', function () {
     if (auth()->check()) {
-        return redirect()->route('dashboard');
+        return view('accueil');
     }
     return view('welcome');
-})->middleware(['GetGlobalVariable'])->name('welcome');
+})->middleware(['GetGlobalVariable'])->name('accueil');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
