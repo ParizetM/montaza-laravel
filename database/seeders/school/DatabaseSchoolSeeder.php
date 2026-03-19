@@ -186,8 +186,8 @@ class DatabaseSchoolSeeder extends Seeder
         $this->call(ConditionPaiementSeeder::class);
         echo "Les conditions de paiement à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
         // SocieteContact::factory()->times(100)->create();
-        $this->call(SocieteSchoolSeeder::class);
-        echo "Les sociétés à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
+        // $this->call(SocieteSchoolSeeder::class);
+        // echo "Les sociétés à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
         $this->call(PredefinedShortcutsSeeder::class);
         echo "Les raccourcis prédéfinis ont été créés avec succès en " . $temps->diffInSeconds(now()) . " secondes.\n";
         foreach (PredefinedShortcut::all() as $shortcut) {
@@ -205,10 +205,10 @@ class DatabaseSchoolSeeder extends Seeder
         echo "sous-familles à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
         $this->call(StandardSeeder::class);
         echo "standards à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
-        $this->call(MaterialSeeder::class);
-        echo "matériaux à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
-        $this->call(MatiereProductionSeeder::class);
-        echo "matières de production à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
+        // $this->call(MaterialSeeder::class);
+        // echo "matériaux à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
+        // $this->call(MatiereProductionSeeder::class);
+        // echo "matières de production à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
         // $this->call(MatiereSeeder::class);
         $this->call(DdpCdeStatutSeeder::class);
         echo "statuts des DDP et CDE à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
@@ -218,8 +218,8 @@ class DatabaseSchoolSeeder extends Seeder
         $this->call(TypeExpeditionSeeder::class);
         echo "types d'expédition à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
         // $this->call(CdeSeeder::class);
-        $this->call(CdeNoteSeeder::class);
-        echo "notes de commande à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
+        // $this->call(CdeNoteSeeder::class);
+        // echo "notes de commande à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
     }
 }
 

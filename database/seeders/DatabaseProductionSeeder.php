@@ -166,7 +166,7 @@ class DatabaseProductionSeeder extends Seeder
             'created_at' => now(),
         ]);
         $temps = now();
-        Notification::factory()->times(100)->create();
+        // Notification::factory()->times(100)->create();
         echo "Les utilisateurs ont été créés avec succès en " . $temps->diffInSeconds(now()) . " secondes.\n";
         $this->call(PaysSeeder::class);
         echo "Les pays ont été créés avec succès en " . $temps->diffInSeconds(now()) . " secondes.\n";
@@ -178,9 +178,9 @@ class DatabaseProductionSeeder extends Seeder
         echo "Les types de société ont été créés avec succès en " . $temps->diffInSeconds(now()) . " secondes.\n";
         $this->call(ConditionPaiementSeeder::class);
         echo "Les conditions de paiement à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
-        SocieteContact::factory()->times(100)->create();
-        $this->call(SocieteProductionSeeder::class);
-        echo "Les sociétés à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
+        // SocieteContact::factory()->times(100)->create();
+        // $this->call(SocieteProductionSeeder::class);
+        // echo "Les sociétés à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
         $this->call(PredefinedShortcutsSeeder::class);
         echo "Les raccourcis prédéfinis ont été créés avec succès en " . $temps->diffInSeconds(now()) . " secondes.\n";
         foreach (PredefinedShortcut::all() as $shortcut) {
@@ -198,21 +198,21 @@ class DatabaseProductionSeeder extends Seeder
         echo "sous-familles à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
         $this->call(StandardSeeder::class);
         echo "standards à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
-        $this->call(MaterialSeeder::class);
-        echo "matériaux à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
-        $this->call(MatiereProductionSeeder::class);
-        echo "matières de production à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
-        $this->call(MatiereSeeder::class);
+        // $this->call(MaterialSeeder::class);
+        // echo "matériaux à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
+        // $this->call(MatiereProductionSeeder::class);
+        // echo "matières de production à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
+        // $this->call(MatiereSeeder::class);
         $this->call(DdpCdeStatutSeeder::class);
         echo "statuts des DDP et CDE à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
-        $this->call(DdpSeeder::class);
+        // $this->call(DdpSeeder::class);
         $this->call(MailTemplateSeeder::class);
         echo "modèles de mail à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
         $this->call(TypeExpeditionSeeder::class);
         echo "types d'expédition à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
-        $this->call(CdeSeeder::class);
-        $this->call(CdeNoteSeeder::class);
-        echo "notes de commande à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
+        // $this->call(CdeSeeder::class);
+        // $this->call(CdeNoteSeeder::class);
+        // echo "notes de commande à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
         $this->call(MediaTypeSeeder::class);
         echo "types de médias à été remplie en " . $temps->diffInSeconds(now()) . " secondes.\n";
 
