@@ -167,14 +167,12 @@ class DatabaseSeeder extends Seeder
             'created_at' => now(),
         ]);
 
-        // Notification::factory()->times(100)->create();
         $this->call(PaysSeeder::class);
         $this->call(FormeJuridiqueSeeder::class);
         $this->call(CodeApeSeeder::class);
         $this->call(SocieteTypeSeeder::class);
         $this->call(ConditionPaiementSeeder::class);
-        // SocieteContact::factory()->times(100)->create();
-        // $this->call(SocieteProductionSeeder::class);
+        $this->call(SocieteProductionSeeder::class);
         $this->call(PredefinedShortcutsSeeder::class);
         foreach (PredefinedShortcut::all() as $shortcut) {
             UserShortcut::create([
@@ -186,16 +184,14 @@ class DatabaseSeeder extends Seeder
         $this->call(FamilleSeeder::class);
         $this->call(SousFamilleSeeder::class);
         $this->call(StandardSeeder::class);
-        // $this->call(MaterialSeeder::class);
-        // $this->call(MatiereSeeder::class);
+        $this->call(MaterialSeeder::class);
+        $this->call(MatiereSeeder::class);
         $this->call(DdpCdeStatutSeeder::class);
-        // $this->call(DdpSeeder::class);
         $this->call(MailTemplateSeeder::class);
         $this->call(TypeExpeditionSeeder::class);
-        // $this->call(CdeSeeder::class);
-        // $this->call([
-        //     ProductionSeeder::class,
-        //     PersonnelSeeder::class,
-        // ]);
+        $this->call(DdpSeeder::class);
+        $this->call(CdeSeeder::class);
+        $this->call(PersonnelSeeder::class);
+        $this->call(ProductionSeeder::class);
     }
 }

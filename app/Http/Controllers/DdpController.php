@@ -678,10 +678,17 @@ class DdpController extends Controller
                 if (file_exists($pdfPath) && !in_array($contact->id, $contacts_Already_sent)) {
                     $signaturePath = storage_path('app/private/signature/signature.png'); // Assurez-vous que le chemin est correct
 
+                    // Sélectionner le mailer en fonction de l'email de l'utilisateur connecté
+                    $currentUser = Auth::user();
+                    $senderEmail = $currentUser->email;
+                    $senderName = $currentUser->getName();
+                    $mailer = \App\Services\MailerSelector::selectMailer($senderEmail);
+
                     try {
-                        Mail::send([], [], function ($message) use ($request, $contact, $pdfPath, $signaturePath, &$contenu) {
+                        Mail::mailer($mailer)->send([], [], function ($message) use ($request, $contact, $pdfPath, $signaturePath, &$contenu, $senderEmail, $senderName) {
                             $message->to($contact->email)
                                 ->subject($request->sujet)
+                                ->from($senderEmail, $senderName)
                                 ->attach($pdfPath);
 
                             if (file_exists($signaturePath) && is_readable($signaturePath)) {

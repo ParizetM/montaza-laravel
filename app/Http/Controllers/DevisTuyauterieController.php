@@ -136,8 +136,11 @@ class DevisTuyauterieController extends Controller
             $senderEmail = $currentUser->email;
             $senderName = $currentUser->getName();
 
-            // Envoyer l'email
-            Mail::to($request->email_destinataire)->send(
+            // Sélectionner le mailer en fonction de l'email de l'utilisateur
+            $mailer = \App\Services\MailerSelector::selectMailer($senderEmail);
+
+            // Envoyer l'email avec le mailer sélectionné
+            Mail::mailer($mailer)->to($request->email_destinataire)->send(
                 new DevisEmail(
                     $devis,
                     $request->email_sujet,

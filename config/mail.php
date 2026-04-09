@@ -49,6 +49,30 @@ return [
             'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
         ],
 
+        'secondary' => [
+            'transport' => 'smtp',
+            'url' => env('MAIL_URL_SECONDARY'),
+            'host' => env('MAIL_HOST_SECONDARY', '127.0.0.1'),
+            'port' => env('MAIL_PORT_SECONDARY', 2525),
+            'encryption' => env('MAIL_ENCRYPTION_SECONDARY', 'tls'),
+            'username' => env('MAIL_USERNAME_SECONDARY'),
+            'password' => env('MAIL_PASSWORD_SECONDARY'),
+            'timeout' => null,
+            'local_domain' => env('MAIL_EHLO_DOMAIN_SECONDARY', parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
+        ],
+
+        'tertiary' => [
+            'transport' => 'smtp',
+            'url' => env('MAIL_URL_TERTIARY'),
+            'host' => env('MAIL_HOST_TERTIARY', '127.0.0.1'),
+            'port' => env('MAIL_PORT_TERTIARY', 2525),
+            'encryption' => env('MAIL_ENCRYPTION_TERTIARY', 'tls'),
+            'username' => env('MAIL_USERNAME_TERTIARY'),
+            'password' => env('MAIL_PASSWORD_TERTIARY'),
+            'timeout' => null,
+            'local_domain' => env('MAIL_EHLO_DOMAIN_TERTIARY', parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
+        ],
+
         'ses' => [
             'transport' => 'ses',
         ],
