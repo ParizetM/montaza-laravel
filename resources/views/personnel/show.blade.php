@@ -253,7 +253,8 @@
 
                                             <div class="text-xs text-gray-500 dark:text-gray-400 mb-2">
                                                 📅 Du {{ $conge->date_debut->format('d/m/Y') }} au {{ $conge->date_fin->format('d/m/Y') }}
-                                                ({{ $conge->date_debut->diffInDays($conge->date_fin) + 1 }} jour{{ $conge->date_debut->diffInDays($conge->date_fin) > 0 ? 's' : '' }})
+                                                ({{ $conge->date_debut->diffInDays($conge->date_fin) + 1 }} jour{{ $conge->date_debut->diffInDays($conge->date_fin) > 0 ? 's' : '' }} calendaire{{ $conge->date_debut->diffInDays($conge->date_fin) > 0 ? 's' : '' }} —
+                                                <span class="font-medium text-blue-600 dark:text-blue-400">{{ $conge->nombreJoursOuvres() }} CP</span>)
                                             </div>
 
                                             @if($conge->motif)
@@ -276,6 +277,84 @@
                                     </div>
                                 </div>
                             @endforeach
+                        </div>
+                    @endif
+                </div>
+            </div>
+
+            <!-- Absences -->
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xs sm:rounded-lg mb-6">
+                <div class="p-6 bg-white dark:bg-gray-800">
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="text-lg font-medium text-gray-900 dark:text-gray-100">Absences & Retards</h4>
+                        <button onclick="openAddAbsenceModal()" class="inline-flex items-center px-4 py-2 bg-orange-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-orange-700 transition">
+                            + Ajouter une absence
+                        </button>
+                    </div>
+
+                    @if($personnel->absences->isEmpty())
+                        <p class="text-gray-500 dark:text-gray-400 text-sm">Aucune absence enregistrée pour le moment.</p>
+                    @else
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                <thead class="bg-gray-50 dark:bg-gray-900">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Type</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Durée</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Statut</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Motif</th>
+                                        <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                    @foreach($personnel->absences as $absence)
+                                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-750">
+                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                                {{ $absence->date->format('d/m/Y') }}
+                                            </td>
+                                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                                @if($absence->type === 'retard')
+                                                    <span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">Retard</span>
+                                                @elseif($absence->type === 'absence')
+                                                    <span class="px-2 py-1 text-xs rounded-full bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">Absence</span>
+                                                @elseif($absence->type === 'maladie')
+                                                    <span class="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">Maladie</span>
+                                                @else
+                                                    <span class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200">Autre</span>
+                                                @endif
+                                            </td>
+                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                                                {{ $absence->duree_libelle }}
+                                            </td>
+                                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                                @if($absence->statut === 'justifie')
+                                                    <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Justifiée</span>
+                                                @elseif($absence->statut === 'non_justifie')
+                                                    <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">Non justifiée</span>
+                                                @else
+                                                    <span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">En attente</span>
+                                                @endif
+                                            </td>
+                                            <td class="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
+                                                {{ $absence->motif ?? '-' }}
+                                            </td>
+                                            <td class="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
+                                                <div class="flex justify-end gap-2">
+                                                    <button onclick="openEditAbsenceModal({{ $absence->id }}, '{{ $absence->date->format('Y-m-d') }}', '{{ $absence->type }}', '{{ $absence->duree }}', {{ $absence->minutes_retard ?? 'null' }}, '{{ addslashes($absence->motif ?? '') }}', '{{ $absence->statut }}', '{{ $absence->periode }}')"
+                                                        class="text-blue-600 hover:text-blue-800 text-sm font-medium">Modifier</button>
+                                                    <form method="POST" action="{{ route('personnel.absences.delete', [$personnel, $absence]) }}" class="inline">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="text-red-600 hover:text-red-800 text-sm font-medium"
+                                                            onclick="return confirm('Supprimer cette absence ?')">Supprimer</button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
                     @endif
                 </div>
@@ -522,6 +601,152 @@
         </div>
     </div>
 
+    <!-- Modal Ajouter une absence -->
+    <div id="addAbsenceModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white dark:bg-gray-800">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Ajouter une absence / retard</h3>
+                <button onclick="closeAddAbsenceModal()" class="text-gray-400 hover:text-gray-600">✕</button>
+            </div>
+
+            @if ($errors->addAbsence->any())
+                <div class="mb-4 p-3 bg-red-50 dark:bg-red-900/30 border border-red-300 dark:border-red-700 rounded-md">
+                    <ul class="list-disc list-inside text-sm text-red-700 dark:text-red-300 space-y-1">
+                        @foreach ($errors->addAbsence->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <form method="POST" action="{{ route('personnel.absences.store', $personnel) }}">
+                @csrf
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date</label>
+                        <input type="date" name="date" value="{{ old('date') }}" required class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 @if($errors->addAbsence->has('date')) border-red-500 dark:border-red-500 @endif">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Type</label>
+                        <select name="type" id="add_absence_type" required onchange="toggleAbsenceDureeAdd(this.value)" class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                            <option value="absence" {{ old('type') == 'absence' ? 'selected' : '' }}>Absence</option>
+                            <option value="maladie" {{ old('type') == 'maladie' ? 'selected' : '' }}>Maladie</option>
+                            <option value="retard" {{ old('type') == 'retard' ? 'selected' : '' }}>Retard</option>
+                            <option value="autre" {{ old('type') == 'autre' ? 'selected' : '' }}>Autre</option>
+                        </select>
+                    </div>
+                    <div id="add_duree_block">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Durée</label>
+                        <select name="duree" id="add_duree" onchange="toggleAbsencePeriodeAdd(this.value)" class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                            <option value="journee_complete" {{ old('duree') == 'journee_complete' ? 'selected' : '' }}>Journée complète</option>
+                            <option value="demi_journee" {{ old('duree') == 'demi_journee' ? 'selected' : '' }}>Demi-journée</option>
+                        </select>
+                    </div>
+                    <div id="add_periode_block" class="{{ old('duree') == 'demi_journee' ? '' : 'hidden' }}">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Période</label>
+                        <select name="periode" id="add_periode" class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                            <option value="matin" {{ old('periode', 'matin') == 'matin' ? 'selected' : '' }}>Matin</option>
+                            <option value="apres_midi" {{ old('periode') == 'apres_midi' ? 'selected' : '' }}>Après-midi</option>
+                        </select>
+                    </div>
+                    <div id="add_retard_block" class="hidden">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Durée du retard (en minutes)</label>
+                        <input type="number" name="minutes_retard" id="add_minutes_retard" value="{{ old('minutes_retard') }}" min="1" max="480" placeholder="ex: 30" class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 @if($errors->addAbsence->has('minutes_retard')) border-red-500 dark:border-red-500 @endif">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Statut</label>
+                        <select name="statut" required class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                            <option value="en_attente" {{ old('statut', 'en_attente') == 'en_attente' ? 'selected' : '' }}>En attente</option>
+                            <option value="justifie" {{ old('statut') == 'justifie' ? 'selected' : '' }}>Justifiée</option>
+                            <option value="non_justifie" {{ old('statut') == 'non_justifie' ? 'selected' : '' }}>Non justifiée</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Motif (optionnel)</label>
+                        <textarea name="motif" rows="3" class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300">{{ old('motif') }}</textarea>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2 mt-6">
+                    <button type="button" onclick="closeAddAbsenceModal()" class="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-400">Annuler</button>
+                    <button type="submit" class="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700">Ajouter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Modifier une absence -->
+    <div id="editAbsenceModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white dark:bg-gray-800">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Modifier l'absence</h3>
+                <button onclick="closeEditAbsenceModal()" class="text-gray-400 hover:text-gray-600">✕</button>
+            </div>
+
+            @if ($errors->editAbsence->any())
+                <div class="mb-4 p-3 bg-red-50 dark:bg-red-900/30 border border-red-300 dark:border-red-700 rounded-md">
+                    <ul class="list-disc list-inside text-sm text-red-700 dark:text-red-300 space-y-1">
+                        @foreach ($errors->editAbsence->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+            <form method="POST" id="editAbsenceForm">
+                @csrf
+                @method('PATCH')
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date</label>
+                        <input type="date" name="date" id="edit_absence_date" required class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Type</label>
+                        <select name="type" id="edit_absence_type" required onchange="toggleAbsenceDureeEdit(this.value)" class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                            <option value="absence">Absence</option>
+                            <option value="maladie">Maladie</option>
+                            <option value="retard">Retard</option>
+                            <option value="autre">Autre</option>
+                        </select>
+                    </div>
+                    <div id="edit_duree_block">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Durée</label>
+                        <select name="duree" id="edit_absence_duree" onchange="toggleAbsencePeriodeEdit(this.value)" class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                            <option value="journee_complete">Journée complète</option>
+                            <option value="demi_journee">Demi-journée</option>
+                        </select>
+                    </div>
+                    <div id="edit_periode_block" class="hidden">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Période</label>
+                        <select name="periode" id="edit_absence_periode" class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                            <option value="matin">Matin</option>
+                            <option value="apres_midi">Après-midi</option>
+                        </select>
+                    </div>
+                    <div id="edit_retard_block" class="hidden">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Durée du retard (en minutes)</label>
+                        <input type="number" name="minutes_retard" id="edit_absence_minutes" min="1" max="480" class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Statut</label>
+                        <select name="statut" id="edit_absence_statut" required class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                            <option value="en_attente">En attente</option>
+                            <option value="justifie">Justifiée</option>
+                            <option value="non_justifie">Non justifiée</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Motif (optionnel)</label>
+                        <textarea name="motif" id="edit_absence_motif" rows="3" class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300"></textarea>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2 mt-6">
+                    <button type="button" onclick="closeEditAbsenceModal()" class="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-400">Annuler</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Modifier</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Modal Modifier le statut -->
     <div id="statutModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
         <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white dark:bg-gray-800">
@@ -551,29 +776,37 @@
                     </div>
 
                     <!-- Date de départ (affiché si statut = parti) -->
-                    <div id="statut_date_depart_container" style="display: {{ $personnel->statut == 'parti' ? 'block' : 'none' }};">
+                    <div id="statut_date_depart_container" style="display: {{ ($personnel->statut == 'parti' || $errors->has('date_depart') || $errors->has('motif_depart')) ? 'block' : 'none' }};">
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date de départ</label>
-                        <input type="date" name="date_depart" value="{{ $personnel->date_depart ? $personnel->date_depart->format('Y-m-d') : '' }}" class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                        <input type="date" id="date_depart_input" name="date_depart" value="{{ old('date_depart', $personnel->date_depart ? $personnel->date_depart->format('Y-m-d') : '') }}" class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 @error('date_depart') border-red-500 dark:border-red-500 @enderror">
+                        @error('date_depart')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                        <p id="date_depart_error" class="mt-1 text-sm text-red-600 dark:text-red-400 hidden">La date de départ est obligatoire.</p>
                     </div>
 
                     <!-- Raison du départ (affiché si statut = parti) -->
-                    <div id="statut_raison_depart_container" style="display: {{ $personnel->statut == 'parti' ? 'block' : 'none' }};">
+                    <div id="statut_raison_depart_container" style="display: {{ ($personnel->statut == 'parti' || $errors->has('date_depart') || $errors->has('motif_depart')) ? 'block' : 'none' }};">
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Raison du départ</label>
-                        <select name="raison_depart" class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                        <select name="raison_depart" id="raison_depart_select" class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300">
                             <option value="">Sélectionner...</option>
-                            <option value="demission" {{ $personnel->raison_depart == 'demission' ? 'selected' : '' }}>Démission</option>
-                            <option value="licenciement" {{ $personnel->raison_depart == 'licenciement' ? 'selected' : '' }}>Licenciement</option>
-                            <option value="retraite" {{ $personnel->raison_depart == 'retraite' ? 'selected' : '' }}>Retraite</option>
-                            <option value="fin_contrat" {{ $personnel->raison_depart == 'fin_contrat' ? 'selected' : '' }}>Fin de contrat</option>
-                            <option value="mutation" {{ $personnel->raison_depart == 'mutation' ? 'selected' : '' }}>Mutation</option>
-                            <option value="autre" {{ $personnel->raison_depart == 'autre' ? 'selected' : '' }}>Autre</option>
+                            <option value="demission" {{ old('raison_depart', $personnel->raison_depart) == 'demission' ? 'selected' : '' }}>Démission</option>
+                            <option value="licenciement" {{ old('raison_depart', $personnel->raison_depart) == 'licenciement' ? 'selected' : '' }}>Licenciement</option>
+                            <option value="retraite" {{ old('raison_depart', $personnel->raison_depart) == 'retraite' ? 'selected' : '' }}>Retraite</option>
+                            <option value="fin_contrat" {{ old('raison_depart', $personnel->raison_depart) == 'fin_contrat' ? 'selected' : '' }}>Fin de contrat</option>
+                            <option value="mutation" {{ old('raison_depart', $personnel->raison_depart) == 'mutation' ? 'selected' : '' }}>Mutation</option>
+                            <option value="autre" {{ old('raison_depart', $personnel->raison_depart) == 'autre' ? 'selected' : '' }}>Autre</option>
                         </select>
                     </div>
 
                     <!-- Motif du départ (affiché si statut = parti) -->
-                    <div id="statut_motif_depart_container" style="display: {{ $personnel->statut == 'parti' ? 'block' : 'none' }};">
+                    <div id="statut_motif_depart_container" style="display: {{ ($personnel->statut == 'parti' || $errors->has('date_depart') || $errors->has('motif_depart')) ? 'block' : 'none' }};">
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Motif du départ (détails)</label>
-                        <textarea name="motif_depart" rows="3" class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300" placeholder="Détails sur le départ (obligatoire en cas de licenciement)">{{ $personnel->motif_depart }}</textarea>
+                        <textarea name="motif_depart" id="motif_depart_textarea" rows="3" class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 @error('motif_depart') border-red-500 dark:border-red-500 @enderror" placeholder="Détails sur le départ (obligatoire en cas de licenciement)">{{ old('motif_depart', $personnel->motif_depart) }}</textarea>
+                        @error('motif_depart')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                        <p id="motif_depart_error" class="mt-1 text-sm text-red-600 dark:text-red-400 hidden">Le motif est obligatoire en cas de licenciement.</p>
                     </div>
                 </div>
 
@@ -617,6 +850,102 @@
             document.getElementById('editCongeModal').classList.add('hidden');
         }
 
+        // ---- Absences ----
+        function openAddAbsenceModal() {
+            document.getElementById('addAbsenceModal').classList.remove('hidden');
+        }
+
+        function closeAddAbsenceModal() {
+            document.getElementById('addAbsenceModal').classList.add('hidden');
+        }
+
+        function toggleAbsenceDureeAdd(type) {
+            const dureeBlock = document.getElementById('add_duree_block');
+            const retardBlock = document.getElementById('add_retard_block');
+            const periodeBlock = document.getElementById('add_periode_block');
+            if (type === 'retard') {
+                dureeBlock.classList.add('hidden');
+                retardBlock.classList.remove('hidden');
+                periodeBlock.classList.add('hidden');
+                document.getElementById('add_duree').removeAttribute('required');
+                document.getElementById('add_minutes_retard').setAttribute('required', 'required');
+            } else {
+                dureeBlock.classList.remove('hidden');
+                retardBlock.classList.add('hidden');
+                document.getElementById('add_duree').setAttribute('required', 'required');
+                document.getElementById('add_minutes_retard').removeAttribute('required');
+                toggleAbsencePeriodeAdd(document.getElementById('add_duree').value);
+            }
+        }
+
+        function toggleAbsencePeriodeAdd(duree) {
+            const periodeBlock = document.getElementById('add_periode_block');
+            if (duree === 'demi_journee') {
+                periodeBlock.classList.remove('hidden');
+            } else {
+                periodeBlock.classList.add('hidden');
+            }
+        }
+
+        function toggleAbsenceDureeEdit(type) {
+            const dureeBlock = document.getElementById('edit_duree_block');
+            const retardBlock = document.getElementById('edit_retard_block');
+            const periodeBlock = document.getElementById('edit_periode_block');
+            if (type === 'retard') {
+                dureeBlock.classList.add('hidden');
+                retardBlock.classList.remove('hidden');
+                periodeBlock.classList.add('hidden');
+                document.getElementById('edit_absence_duree').removeAttribute('required');
+                document.getElementById('edit_absence_minutes').setAttribute('required', 'required');
+            } else {
+                dureeBlock.classList.remove('hidden');
+                retardBlock.classList.add('hidden');
+                document.getElementById('edit_absence_duree').setAttribute('required', 'required');
+                document.getElementById('edit_absence_minutes').removeAttribute('required');
+                toggleAbsencePeriodeEdit(document.getElementById('edit_absence_duree').value);
+            }
+        }
+
+        function toggleAbsencePeriodeEdit(duree) {
+            const periodeBlock = document.getElementById('edit_periode_block');
+            if (duree === 'demi_journee') {
+                periodeBlock.classList.remove('hidden');
+            } else {
+                periodeBlock.classList.add('hidden');
+            }
+        }
+
+        function openEditAbsenceModal(id, date, type, duree, minutesRetard, motif, statut, periode) {
+            const modal = document.getElementById('editAbsenceModal');
+            const form = document.getElementById('editAbsenceForm');
+
+            form.action = '{{ route("personnel.absences.update", [$personnel, ":id"]) }}'.replace(':id', id);
+
+            document.getElementById('edit_absence_date').value = date;
+            document.getElementById('edit_absence_type').value = type;
+            document.getElementById('edit_absence_statut').value = statut;
+            document.getElementById('edit_absence_motif').value = motif;
+
+            toggleAbsenceDureeEdit(type);
+
+            if (type === 'retard') {
+                document.getElementById('edit_absence_minutes').value = minutesRetard ?? '';
+            } else {
+                document.getElementById('edit_absence_duree').value = duree ?? 'journee_complete';
+                toggleAbsencePeriodeEdit(duree);
+                if (duree === 'demi_journee' && periode) {
+                    document.getElementById('edit_absence_periode').value = periode;
+                }
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeEditAbsenceModal() {
+            document.getElementById('editAbsenceModal').classList.add('hidden');
+        }
+        // ---- Fin Absences ----
+
         function openStatutModal() {
             document.getElementById('statutModal').classList.remove('hidden');
         }
@@ -642,5 +971,74 @@
                 dateContainer.style.display = 'none';
             }
         });
+
+        // Masquer les erreurs client si l'utilisateur modifie les champs
+        document.getElementById('date_depart_input')?.addEventListener('change', function() {
+            document.getElementById('date_depart_error').classList.add('hidden');
+        });
+        document.getElementById('raison_depart_select')?.addEventListener('change', function() {
+            document.getElementById('motif_depart_error').classList.add('hidden');
+        });
+        document.getElementById('motif_depart_textarea')?.addEventListener('input', function() {
+            document.getElementById('motif_depart_error').classList.add('hidden');
+        });
+
+        // Validation côté client avant soumission
+        document.getElementById('statutModal')?.querySelector('form')?.addEventListener('submit', function(e) {
+            const statut = document.getElementById('statut_select')?.value;
+            const date = document.getElementById('date_depart_input')?.value?.trim();
+            const raison = document.getElementById('raison_depart_select')?.value;
+            const motif = document.getElementById('motif_depart_textarea')?.value?.trim();
+            const dateErrorEl = document.getElementById('date_depart_error');
+            const motifErrorEl = document.getElementById('motif_depart_error');
+            let hasError = false;
+
+            if (statut === 'parti' && !date) {
+                dateErrorEl.classList.remove('hidden');
+                document.getElementById('date_depart_input').focus();
+                hasError = true;
+            }
+
+            if (raison === 'licenciement' && !motif) {
+                motifErrorEl.classList.remove('hidden');
+                if (!hasError) document.getElementById('motif_depart_textarea').focus();
+                hasError = true;
+            }
+
+            if (hasError) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Rouvrir le modal si des erreurs de validation serveur existent
+        @if ($errors->has('date_depart') || $errors->has('motif_depart'))
+            document.addEventListener('DOMContentLoaded', function() {
+                document.getElementById('statutModal').classList.remove('hidden');
+                document.getElementById('statut_select').value = 'parti';
+            });
+        @endif
+
+        @if ($errors->addAbsence->any())
+            document.addEventListener('DOMContentLoaded', function() {
+                const modal = document.getElementById('addAbsenceModal');
+                modal.classList.remove('hidden');
+                const oldType = '{{ old('type', 'absence') }}';
+                document.getElementById('add_absence_type').value = oldType;
+                toggleAbsenceDureeAdd(oldType);
+                if (oldType === 'retard') {
+                    document.getElementById('add_minutes_retard').value = '{{ old('minutes_retard') }}';
+                } else {
+                    const oldDuree = '{{ old('duree', 'journee_complete') }}';
+                    document.getElementById('add_duree').value = oldDuree;
+                }
+            });
+        @endif
+
+        @if ($errors->editAbsence->any())
+            document.addEventListener('DOMContentLoaded', function() {
+                document.getElementById('editAbsenceModal').classList.remove('hidden');
+            });
+        @endif
     </script>
 </x-app-layout>

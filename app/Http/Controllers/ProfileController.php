@@ -110,6 +110,50 @@ class ProfileController extends Controller
         return Redirect::back()->with('status', 'Profil modifié');
     }
 
+    public function updateSmtp(Request $request): RedirectResponse
+    {
+        /** @var \App\Models\User $user */
+        $user = User::findOrFail($request->id);
+        $auth_user = Auth::user();
+        if (!$auth_user) {
+            return Redirect::route('login');
+        }
+        if ($auth_user->hasPermission('gerer_les_utilisateurs') === false && $auth_user->id !== $user->id) {
+            abort(403);
+        }
+
+        if ($request->boolean('clear_smtp')) {
+            $user->smtp_host = null;
+            $user->smtp_port = null;
+            $user->smtp_username = null;
+            $user->smtp_password = null;
+            $user->smtp_encryption = null;
+            $user->save();
+            return Redirect::route('profile.edit', ['id' => $user->id])->with('status', 'smtp-updated');
+        }
+
+        $validated = $request->validateWithBag('updateSmtp', [
+            'smtp_host'       => 'nullable|string|max:255',
+            'smtp_port'       => 'nullable|integer|between:1,65535',
+            'smtp_username'   => 'nullable|email|max:255',
+            'smtp_password'   => 'nullable|string|max:255',
+            'smtp_encryption' => 'nullable|in:tls,ssl,',
+        ]);
+
+        $user->smtp_host = $validated['smtp_host'] ?? null;
+        $user->smtp_port = $validated['smtp_port'] ?? null;
+        $user->smtp_username = $validated['smtp_username'] ?? null;
+        $user->smtp_encryption = $validated['smtp_encryption'] ?? 'tls';
+
+        if (!empty($validated['smtp_password'])) {
+            $user->smtp_password = $validated['smtp_password'];
+        }
+
+        $user->save();
+
+        return Redirect::route('profile.edit', ['id' => $user->id])->with('status', 'smtp-updated');
+    }
+
     /**
      * Summary of destroy
      */

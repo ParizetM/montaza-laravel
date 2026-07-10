@@ -90,7 +90,37 @@
                                             @endphp
                                             <td class="border-r-2 border-gray-400 dark:border-gray-600 last:border-r-0 p-1 {{ $isToday ? 'bg-blue-50 dark:bg-blue-950' : 'bg-white dark:bg-gray-800' }} min-h-[60px] align-top relative">
                                                 @foreach($events as $event)
-                                                    @if($event['type'] === 'conge')
+                                                    @if($event['type'] === 'absence')
+                                                        @php
+                                                            $absenceStyles = [
+                                                                'absence' => ['bg' => '#f97316', 'border' => '#ea580c'],
+                                                                'maladie' => ['bg' => '#a855f7', 'border' => '#9333ea'],
+                                                                'retard'  => ['bg' => '#eab308', 'border' => '#ca8a04'],
+                                                            ];
+                                                            $absStyle = $absenceStyles[$event['absence_type']] ?? $absenceStyles['absence'];
+                                                            $heightInPx = ($event['duree'] * 60) - 8;
+                                                            $statutIcon = match($event['statut']) {
+                                                                'justifie'     => '✓',
+                                                                'non_justifie' => '✗',
+                                                                default        => '?',
+                                                            };
+                                                            $tooltip = $event['titre'];
+                                                            if ($event['absence_type'] === 'retard' && isset($event['minutes_retard'])) {
+                                                                $h = intdiv((int)$event['minutes_retard'], 60);
+                                                                $m = (int)$event['minutes_retard'] % 60;
+                                                                $tooltip .= ' ' . ($h > 0 ? $h.'h' : '') . $m.'min';
+                                                            }
+                                                            if ($event['motif']) $tooltip .= ' - ' . $event['motif'];
+                                                        @endphp
+                                                        <div class="absolute left-1 right-1 text-white rounded p-1 text-xs shadow-lg z-10 cursor-default"
+                                                             style="background-color: {{ $absStyle['bg'] }}; border-left: 4px solid {{ $absStyle['border'] }}; height: {{ $heightInPx }}px; top: 4px;"
+                                                             title="{{ $tooltip }}">
+                                                            <div class="flex items-center justify-center h-full gap-1">
+                                                                <span class="font-bold">{{ $statutIcon }}</span>
+                                                                <span class="font-semibold truncate">{{ $event['titre'] }}</span>
+                                                            </div>
+                                                        </div>
+                                                    @elseif($event['type'] === 'conge')
                                                         @php
                                                             // Couleurs pour les congés selon le type
                                                             $congeColors = [
@@ -212,6 +242,24 @@
                                     <div class="text-xs text-gray-600 dark:text-gray-400 mt-3">
                                         Chaque affaire a sa propre couleur pour faciliter l'identification
                                     </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">Absences :</div>
+                                <div class="space-y-2">
+                                    <div class="flex items-center gap-2 text-xs">
+                                        <div class="w-4 h-4 rounded" style="background-color: #f97316; border-left: 4px solid #ea580c;"></div>
+                                        <span class="text-gray-700 dark:text-gray-300">Absence</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-xs">
+                                        <div class="w-4 h-4 rounded" style="background-color: #a855f7; border-left: 4px solid #9333ea;"></div>
+                                        <span class="text-gray-700 dark:text-gray-300">Maladie</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-xs">
+                                        <div class="w-4 h-4 rounded" style="background-color: #eab308; border-left: 4px solid #ca8a04;"></div>
+                                        <span class="text-gray-700 dark:text-gray-300">Retard</span>
+                                    </div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">✓ justifiée &nbsp; ✗ non justifiée &nbsp; ? en attente</div>
                                 </div>
                             </div>
                         </div>

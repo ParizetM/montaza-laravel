@@ -26,6 +26,10 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
                     Détails
                 </a>
+                <a href="{{ route('affaires.suivi_detail.export_excel', $affaire) }}" class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white border border-green-700 rounded-md font-semibold text-xs uppercase tracking-widest shadow-sm transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                    Export Excel
+                </a>
                 <a href="{{ route('affaires.suivi') }}" class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
                     Suivi Global
@@ -257,10 +261,10 @@
                             ['piking', 'date', '', 'whitespace-nowrap'],
                             ['fin_debit', 'date', '', 'whitespace-nowrap'],
                             ['debut_fabrication', 'date', '', 'whitespace-nowrap'],
-                            ['tuyauteur', 'text', '', ''],
+                            ['tuyauteur', 'personnel', '', ''],
                             ['fin_assemblage', 'date', '', 'whitespace-nowrap'],
                             ['nbr_soudure', 'number', 'step="1"', 'text-right'],
-                            ['soudeur', 'text', '', ''],
+                            ['soudeur', 'personnel', '', ''],
                             ['fin_soudage', 'date', '', 'whitespace-nowrap'],
                             ['fin_fabrication', 'date', '', 'whitespace-nowrap font-medium'],
                             ['depart_traitement', 'date', '', 'whitespace-nowrap'],
@@ -288,8 +292,30 @@
                                     <td class="{{ $cb }} text-center font-medium text-gray-500 bg-gray-50 dark:bg-gray-800 sticky left-0 z-10">{{ $index + 1 }}</td>
                                     @foreach($cellsA as [$field, $type, $step, $extra])
                                     <td class="{{ $cb }} {{ $ce }} {{ $extra }}" @click="startEdit({{ $rid }}, '{{ $field }}')">
-                                        <span x-show="editingCell !== '{{ $rid }}-{{ $field }}'" x-text="dv({{ $rid }}, '{{ $field }}')" :class="dvCls({{ $rid }}, '{{ $field }}')"></span>
+                                        <span x-show="editingCell !== '{{ $rid }}-{{ $field }}'" x-text="dv({{ $rid }}, '{{ $field }}')" :title="dv({{ $rid }}, '{{ $field }}')" :class="dvCls({{ $rid }}, '{{ $field }}')"></span>
+                                        @if($type === 'personnel')
+                                        @php $personnelList = $field === 'tuyauteur' ? $tuyauteurs : $soudeurs; @endphp
+                                        <select x-show="editingCell === '{{ $rid }}-{{ $field }}'" x-model="editValue" data-edit="{{ $rid }}-{{ $field }}" @change="saveCell({{ $rid }}, '{{ $field }}')" @blur="saveCell({{ $rid }}, '{{ $field }}')" @keydown.escape="cancelEdit()" class="{{ $ib }}">
+                                            <option value="">-- Choisir --</option>
+                                            @foreach($personnelList as $p)
+                                            <option value="{{ $p->prenom }} {{ $p->nom }}">{{ $p->prenom }} {{ $p->nom }}{{ $p->poste ? ' ('.$p->poste.')' : '' }}</option>
+                                            @endforeach
+                                        </select>
+                                        @elseif($field === 'matiere')
+                                        <div x-show="editingCell === '{{ $rid }}-{{ $field }}'" class="relative">
+                                            <input type="text" x-model="matiereSearch" data-edit="{{ $rid }}-{{ $field }}" @focus="matiereOpen = true" @blur="if (!matiereValid) cancelEdit(); matiereOpen = false" @keydown.escape.stop="cancelEdit()" class="{{ $ib }}" autocomplete="off" placeholder="Rechercher...">
+                                            <div x-show="matiereOpen && matieresFiltered().length > 0" class="absolute z-50 left-0 top-full mt-0.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-lg max-h-48 overflow-y-auto min-w-max text-xs">
+                                                <template x-for="mat in matieresFiltered()" :key="mat.ref_interne">
+                                                    <div @mousedown.prevent="pickMatiere({{ $rid }}, '{{ $field }}', mat.ref_interne)" class="px-2 py-1.5 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/40 text-gray-900 dark:text-gray-100 whitespace-nowrap">
+                                                        <span class="font-medium" x-text="mat.ref_interne"></span>
+                                                        <span x-show="mat.designation" class="text-gray-500 ml-1" x-text="mat.designation ? '\u2013 ' + mat.designation : ''"></span>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </div>
+                                        @else
                                         <input x-show="editingCell === '{{ $rid }}-{{ $field }}'" x-model="editValue" type="{{ $type }}" {!! $step !!} data-edit="{{ $rid }}-{{ $field }}" @blur="saveCell({{ $rid }}, '{{ $field }}')" @keydown.enter.prevent="$event.target.blur()" @keydown.escape="cancelEdit()" class="{{ $ib }} {{ str_contains($extra, 'text-right') ? 'text-right' : '' }}">
+                                        @endif
                                     </td>
                                     @endforeach
                                     {{-- Diff Montage (calculé) --}}
@@ -298,7 +324,7 @@
                                     <td class="{{ $cb }} text-right font-bold whitespace-nowrap" :class="diffCls({{ $rid }}, 'soudure')" x-text="diffVal({{ $rid }}, 'soudure')"></td>
                                     @foreach($cellsB as [$field, $type, $step, $extra])
                                     <td class="{{ $cb }} {{ $ce }} {{ $extra }}" @click="startEdit({{ $rid }}, '{{ $field }}')">
-                                        <span x-show="editingCell !== '{{ $rid }}-{{ $field }}'" x-text="dv({{ $rid }}, '{{ $field }}')" :class="dvCls({{ $rid }}, '{{ $field }}')"></span>
+                                        <span x-show="editingCell !== '{{ $rid }}-{{ $field }}'" x-text="dv({{ $rid }}, '{{ $field }}')" :title="dv({{ $rid }}, '{{ $field }}')" :class="dvCls({{ $rid }}, '{{ $field }}')"></span>
                                         <input x-show="editingCell === '{{ $rid }}-{{ $field }}'" x-model="editValue" type="{{ $type }}" {!! $step !!} data-edit="{{ $rid }}-{{ $field }}" @blur="saveCell({{ $rid }}, '{{ $field }}')" @keydown.enter.prevent="$event.target.blur()" @keydown.escape="cancelEdit()" class="{{ $ib }} {{ str_contains($extra, 'text-right') ? 'text-right' : '' }}">
                                     </td>
                                     @endforeach
@@ -330,45 +356,36 @@
                                 {{-- Technique: 7 cols vides --}}
                                 <td colspan="7" class="px-1 py-2 border border-gray-300 dark:border-gray-600"></td>
                                 {{-- Dimensions --}}
-                                <td class="px-1 py-2 border border-gray-300 dark:border-gray-600 text-right">{{ number_format($lignes->sum('longueur_poids'), 2) }}</td>
-                                <td class="px-1 py-2 border border-gray-300 dark:border-gray-600 text-right">{{ number_format($lignes->sum('pouces_total'), 2) }}</td>
-                                <td class="px-1 py-2 border border-gray-300 dark:border-gray-600 text-right">{{ $lignes->sum('qtt_cintrages') }}</td>
+                                <td class="px-1 py-2 border border-gray-300 dark:border-gray-600 text-right" x-text="totalFmtNum('longueur_poids', 2)"></td>
+                                <td class="px-1 py-2 border border-gray-300 dark:border-gray-600 text-right" x-text="totalFmtNum('pouces_total', 2)"></td>
+                                <td class="px-1 py-2 border border-gray-300 dark:border-gray-600 text-right" x-text="totalFmtInt('qtt_cintrages')"></td>
                                 <td colspan="5" class="px-1 py-2 border border-gray-300 dark:border-gray-600"></td>
                                 {{-- Temps estimés --}}
-                                <td class="px-1 py-2 border border-gray-300 dark:border-gray-600 text-right text-amber-700 dark:text-amber-300">{{ fmtH($lignes->sum('temps_fabrication')) }}</td>
-                                <td class="px-1 py-2 border border-gray-300 dark:border-gray-600 text-right text-amber-700 dark:text-amber-300">{{ fmtH($lignes->sum('temps_montage_total_estime')) }}</td>
-                                <td class="px-1 py-2 border border-gray-300 dark:border-gray-600 text-right text-amber-700 dark:text-amber-300">{{ fmtH($lignes->sum('temps_soudure_estime')) }}</td>
-                                <td class="px-1 py-2 border border-gray-300 dark:border-gray-600 text-right text-amber-700 dark:text-amber-300">{{ fmtH($lignes->sum('temps_montage_estime')) }}</td>
+                                <td class="px-1 py-2 border border-gray-300 dark:border-gray-600 text-right text-amber-700 dark:text-amber-300" x-text="totalFmtH('temps_fabrication')"></td>
+                                <td class="px-1 py-2 border border-gray-300 dark:border-gray-600 text-right text-amber-700 dark:text-amber-300" x-text="totalFmtH('temps_montage_total_estime')"></td>
+                                <td class="px-1 py-2 border border-gray-300 dark:border-gray-600 text-right text-amber-700 dark:text-amber-300" x-text="totalFmtH('temps_soudure_estime')"></td>
+                                <td class="px-1 py-2 border border-gray-300 dark:border-gray-600 text-right text-amber-700 dark:text-amber-300" x-text="totalFmtH('temps_montage_estime')"></td>
                                 {{-- Appro: 2 vides --}}
                                 <td colspan="2" class="px-1 py-2 border border-gray-300 dark:border-gray-600"></td>
                                 {{-- Fabrication --}}
                                 <td colspan="5" class="px-1 py-2 border border-gray-300 dark:border-gray-600"></td>
-                                <td class="px-1 py-2 border border-gray-300 dark:border-gray-600 text-right">{{ $lignes->sum('nbr_soudure') }}</td>
+                                <td class="px-1 py-2 border border-gray-300 dark:border-gray-600 text-right" x-text="totalFmtInt('nbr_soudure')"></td>
                                 <td colspan="3" class="px-1 py-2 border border-gray-300 dark:border-gray-600"></td>
                                 {{-- Traitement + Livraison: 3 vides --}}
                                 <td colspan="3" class="px-1 py-2 border border-gray-300 dark:border-gray-600"></td>
                                 {{-- Montage --}}
                                 <td colspan="4" class="px-1 py-2 border border-gray-300 dark:border-gray-600"></td>
-                                <td class="px-1 py-2 border border-gray-300 dark:border-gray-600 text-right text-green-700 dark:text-green-300">{{ fmtH($lignes->sum('nb_heures_montages')) }}</td>
+                                <td class="px-1 py-2 border border-gray-300 dark:border-gray-600 text-right text-green-700 dark:text-green-300" x-text="totalFmtH('nb_heures_montages')"></td>
                                 <td class="px-1 py-2 border border-gray-300 dark:border-gray-600"></td>
-                                <td class="px-1 py-2 border border-gray-300 dark:border-gray-600 text-right text-green-700 dark:text-green-300">{{ fmtH($lignes->sum('nb_heures_soudages')) }}</td>
+                                <td class="px-1 py-2 border border-gray-300 dark:border-gray-600 text-right text-green-700 dark:text-green-300" x-text="totalFmtH('nb_heures_soudages')"></td>
                                 <td class="px-1 py-2 border border-gray-300 dark:border-gray-600"></td>
                                 {{-- Réels --}}
-                                <td class="px-1 py-2 border border-gray-300 dark:border-gray-600 text-right text-indigo-700 dark:text-indigo-300">{{ fmtH($lignes->sum('temps_montage_total_reel')) }}</td>
-                                @php
-                                    $totalDiffMontage = $lignes->sum('temps_montage_total_reel') - $lignes->sum('temps_montage_total_estime');
-                                    $totalDiffSoudure = $lignes->sum('nb_heures_soudages') - $lignes->sum('temps_soudure_estime');
-                                    function fmtDiff($v) { if ($v == 0) return '-'; $sign = $v > 0 ? '+' : '-'; $abs = abs($v); $h = intval($abs); $m = round(($abs - $h) * 60); return $sign . $h . 'h' . ($m > 0 ? str_pad($m, 2, '0', STR_PAD_LEFT) : ''); }
-                                @endphp
-                                <td class="px-1 py-2 border border-gray-300 dark:border-gray-600 text-right {{ $totalDiffMontage > 0 ? 'text-red-600' : ($totalDiffMontage < 0 ? 'text-green-600' : '') }}">
-                                    {{ fmtDiff($totalDiffMontage) }}
-                                </td>
-                                <td class="px-1 py-2 border border-gray-300 dark:border-gray-600 text-right {{ $totalDiffSoudure > 0 ? 'text-red-600' : ($totalDiffSoudure < 0 ? 'text-green-600' : '') }}">
-                                    {{ fmtDiff($totalDiffSoudure) }}
-                                </td>
+                                <td class="px-1 py-2 border border-gray-300 dark:border-gray-600 text-right text-indigo-700 dark:text-indigo-300" x-text="totalFmtH('temps_montage_total_reel')"></td>
+                                <td class="px-1 py-2 border border-gray-300 dark:border-gray-600 text-right font-bold" :class="totalDiffCls('montage')" x-text="totalDiffVal('montage')"></td>
+                                <td class="px-1 py-2 border border-gray-300 dark:border-gray-600 text-right font-bold" :class="totalDiffCls('soudure')" x-text="totalDiffVal('soudure')"></td>
                                 {{-- Qualité --}}
-                                <td class="px-1 py-2 border border-gray-300 dark:border-gray-600 text-center">{{ $stats['eprouves'] }}</td>
-                                <td class="px-1 py-2 border border-gray-300 dark:border-gray-600 text-center {{ $stats['non_conformites'] > 0 ? 'text-red-600' : '' }}">{{ $stats['non_conformites'] }}</td>
+                                <td class="px-1 py-2 border border-gray-300 dark:border-gray-600 text-center" x-text="totalEprouves()"></td>
+                                <td class="px-1 py-2 border border-gray-300 dark:border-gray-600 text-center" :class="totalNonConformites() > 0 ? 'text-red-600' : ''" x-text="totalNonConformites()"></td>
                                 <td class="px-1 py-2 border border-gray-300 dark:border-gray-600 bg-gray-200 dark:bg-gray-900 sticky right-0 z-30"></td>
                             </tr>
                         </tfoot>
@@ -406,6 +423,50 @@
                 editingCell: null,
                 editValue: '',
                 affaireId: {{ $affaire->id }},
+                matieres: @json($matieres),
+                matiereSearch: '',
+                matiereValid: false,
+                matiereOpen: false,
+
+                matieresFiltered() {
+                    const q = (this.matiereSearch || '').toLowerCase();
+                    if (!q) return this.matieres.slice(0, 50);
+                    return this.matieres.filter(m =>
+                        m.ref_interne.toLowerCase().includes(q) ||
+                        (m.designation && m.designation.toLowerCase().includes(q))
+                    ).slice(0, 50);
+                },
+
+                pickMatiere(rowId, field, value) {
+                    this.matiereValid = true;
+                    this.matiereOpen = false;
+                    this.matiereSearch = value;
+                    this.editValue = value;
+                    this.saveCell(rowId, field);
+
+                    // Auto-remplir dn et ep depuis la matière sélectionnée
+                    const mat = this.matieres.find(m => m.ref_interne === value);
+                    if (mat) {
+                        if (mat.dn && (!this.rows[rowId]?.dn)) {
+                            this.rows[rowId].dn = mat.dn;
+                            const dataD = { dn: mat.dn };
+                            fetch('/affaires/' + this.affaireId + '/suivi-lignes/' + rowId, {
+                                method: 'PATCH',
+                                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content, 'Accept': 'application/json' },
+                                body: JSON.stringify(dataD)
+                            }).then(r => r.ok ? r.json() : null).then(res => { if (res) this.rows[rowId] = res.ligne; });
+                        }
+                        if (mat.epaisseur && (!this.rows[rowId]?.ep)) {
+                            this.rows[rowId].ep = mat.epaisseur;
+                            const dataE = { ep: mat.epaisseur };
+                            fetch('/affaires/' + this.affaireId + '/suivi-lignes/' + rowId, {
+                                method: 'PATCH',
+                                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content, 'Accept': 'application/json' },
+                                body: JSON.stringify(dataE)
+                            }).then(r => r.ok ? r.json() : null).then(res => { if (res) this.rows[rowId] = res.ligne; });
+                        }
+                    }
+                },
 
                 dateFields: [
                     'date_reception_iso', 'matiere_commande_le', 'appro_matiere', 'piking',
@@ -558,6 +619,11 @@
                     }
                     this.editingCell = rowId + '-' + field;
                     this.editValue = (val !== null && val !== undefined) ? val : '';
+                    if (field === 'matiere') {
+                        this.matiereSearch = this.editValue;
+                        this.matiereValid = false;
+                        this.matiereOpen = true;
+                    }
                     this.$nextTick(() => {
                         const input = document.querySelector('[data-edit="' + this.editingCell + '"]');
                         if (input) input.focus();
@@ -565,6 +631,7 @@
                 },
 
                 async saveCell(rowId, field) {
+                    if (!this.editingCell) return;
                     const cellKey = this.editingCell;
                     const value = this.editValue;
                     this.editingCell = null;
@@ -600,6 +667,57 @@
                 cancelEdit() {
                     this.editingCell = null;
                     this.editValue = '';
+                },
+
+                sumField(field) {
+                    return Object.values(this.rows).reduce((sum, row) => {
+                        const v = parseFloat(row[field]);
+                        return sum + (isNaN(v) ? 0 : v);
+                    }, 0);
+                },
+
+                totalFmtNum(field, dec) {
+                    return this.sumField(field).toFixed(dec);
+                },
+
+                totalFmtInt(field) {
+                    return Math.round(this.sumField(field));
+                },
+
+                totalFmtH(field) {
+                    return this.fmtHours(this.sumField(field));
+                },
+
+                totalDiffVal(type) {
+                    let diff;
+                    if (type === 'montage') {
+                        diff = this.sumField('temps_montage_total_reel') - this.sumField('temps_montage_total_estime');
+                    } else {
+                        diff = this.sumField('nb_heures_soudages') - this.sumField('temps_soudure_estime');
+                    }
+                    if (diff === 0) return '-';
+                    const sign = diff > 0 ? '+' : '';
+                    return sign + this.fmtHours(diff);
+                },
+
+                totalDiffCls(type) {
+                    let diff;
+                    if (type === 'montage') {
+                        diff = this.sumField('temps_montage_total_reel') - this.sumField('temps_montage_total_estime');
+                    } else {
+                        diff = this.sumField('nb_heures_soudages') - this.sumField('temps_soudure_estime');
+                    }
+                    if (diff > 0) return 'text-red-600 dark:text-red-400';
+                    if (diff < 0) return 'text-green-600 dark:text-green-400';
+                    return 'text-gray-500';
+                },
+
+                totalEprouves() {
+                    return Object.values(this.rows).filter(row => row.eprouve_le).length;
+                },
+
+                totalNonConformites() {
+                    return Object.values(this.rows).filter(row => row.non_conformite).length;
                 }
             };
         }

@@ -3,7 +3,12 @@
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
 
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            <h2 class="font-bold text-2xl text-gray-800 dark:text-gray-200 leading-tight flex items-center gap-3">
+                <span class="p-2 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-lg">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                    </svg>
+                </span>
                 {!! __('Matières') !!}
             </h2>
             <div class="mt-4 sm:mt-0 flex flex-col sm:flex-row items-start sm:items-center gap-2">
@@ -128,20 +133,19 @@
                 <div class="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                     <div class="">
                         <table class="min-w-full bg-white dark:bg-gray-800">
-                            <thead
-                                class="bg-linear-to-r from-gray-200 to-gray-50 dark:from-gray-700 dark:to-gray-800 text-gray-700 dark:text-gray-100">
-                                <tr c>
-                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Référence</th>
-                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Sous-famille</th>
-                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Matière</th>
-                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Désignation</th>
-                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Qté stock</th>
-                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Standard</th>
-                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">DN</th>
-                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">EP</th>
+                            <thead class="bg-gray-50 dark:bg-gray-750">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Référence</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Sous-famille</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Matière</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Désignation</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Qté stock</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Standard</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">DN</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">EP</th>
                                 </tr>
                             </thead>
-                            <tbody class="text-gray-700 dark:text-gray-100" id="body_table">
+                            <tbody class="divide-y divide-gray-200 dark:divide-gray-700 text-gray-700 dark:text-gray-100" id="body_table">
                             </tbody>
                         </table>
                     </div>
@@ -351,7 +355,7 @@
             tbody.innerHTML = ''; // Réinitialise le tableau
             if (matieres.length === 0) {
                 const row = document.createElement('tr');
-                row.innerHTML = '<td class="text-center py-3 px-4" colspan="100">Aucun résultat</td>';
+                row.innerHTML = '<td class="px-4 py-8 text-center text-sm text-gray-500 dark:text-gray-400" colspan="100">Aucun résultat</td>';
                 tbody.appendChild(row);
                 return;
             }
@@ -360,18 +364,18 @@
                 row.onclick = function() {
                     window.location.href = `/matieres/${matiere.id}`;
                 };
-                row.classList.add('cursor-pointer', 'hover:bg-gray-100', 'dark:hover:bg-gray-700');
+                row.classList.add('cursor-pointer', 'hover:bg-gray-50', 'dark:hover:bg-gray-700', 'transition-colors', 'duration-150');
                 row.innerHTML = `
-            <td class="text-left py-3 px-4">${matiere.refTooltip || '-'}</td>
-            <td class="text-left py-3 px-4">${matiere.sousFamille || '-'}</td>
-            <td class="text-left py-3 px-4">${matiere.material || '-'}</td>
-            <td class="text-left py-3 px-4">${matiere.designation || '-'}</td>
-            <td class="text-left py-3 px-4">${matiere.tooltip}</td>
-            <td class="text-left py-3 px-4 flex items-center whitespace-nowrap">
+            <td class="px-4 py-3 text-sm whitespace-nowrap font-mono text-gray-600 dark:text-gray-300">${matiere.refTooltip || '-'}</td>
+            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-200">${matiere.sousFamille || '-'}</td>
+            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-200">${matiere.material || '-'}</td>
+            <td class="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">${matiere.designation || '-'}</td>
+            <td class="px-4 py-3 text-sm">${matiere.tooltip}</td>
+            <td class="px-4 py-3 text-sm flex items-center whitespace-nowrap gap-1">
                 ${matiere.standard ? `<x-icons.pdf class="w-6 h-6" /><a href="/matieres/${matiere.standardPath}" class="lien" target="_blank">${matiere.standard} ${matiere.standardVersion || '-'}</a>` : 'Aucun standard'}
             </td>
-            <td class="text-left py-3 px-4">${matiere.dn || '-'}</td>
-            <td class="text-left py-3 px-4">${matiere.epaisseur || '-'}</td>
+            <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">${matiere.dn || '-'}</td>
+            <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">${matiere.epaisseur || '-'}</td>
         `;
                 tbody.appendChild(row);
             });

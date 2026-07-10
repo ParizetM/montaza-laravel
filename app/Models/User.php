@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Database\Eloquent\Model;
 
 class User extends Authenticatable
@@ -36,6 +37,11 @@ class User extends Authenticatable
         'email',
         'role_id',
         'password',
+        'smtp_host',
+        'smtp_port',
+        'smtp_username',
+        'smtp_password',
+        'smtp_encryption',
     ];
 
     /**
@@ -46,6 +52,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'smtp_password',
     ];
     protected static function booted(): void
     {
@@ -87,6 +94,21 @@ class User extends Authenticatable
     public function hasRole(int $role_id): bool
     {
         return $this->role_id === $role_id;
+    }
+
+    public function setSmtpPasswordAttribute($value): void
+    {
+        $this->attributes['smtp_password'] = $value ? Crypt::encryptString($value) : null;
+    }
+
+    public function getSmtpPasswordAttribute($value): ?string
+    {
+        return $value ? Crypt::decryptString($value) : null;
+    }
+
+    public function hasSmtpConfigured(): bool
+    {
+        return !empty($this->smtp_host) && !empty($this->smtp_username) && !empty($this->attributes['smtp_password']);
     }
 
     /**

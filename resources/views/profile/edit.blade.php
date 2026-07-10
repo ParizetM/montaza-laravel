@@ -34,6 +34,12 @@
                             @include('profile.partials.update-profile-information-form')
                         </div>
                     </div>
+
+                    <div class="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700">
+                        <div class="max-w-xl">
+                            @include('profile.partials.update-smtp-form')
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Right Column: Security & Danger Zone -->

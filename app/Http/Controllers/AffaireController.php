@@ -145,7 +145,7 @@ class AffaireController extends Controller
      */
     public function suiviDetail(Affaire $affaire): View
     {
-        $affaire->load(['suiviLignes']);
+        $affaire->load(['suiviLignes', 'personnels']);
 
         $lignes = $affaire->suiviLignes;
 
@@ -170,10 +170,23 @@ class AffaireController extends Controller
             ? round(($stats['montage_termines'] / $stats['total_lignes']) * 100)
             : 0;
 
+        // Seuls les personnels assignés à l'affaire et non partis/suspendus
+        $personnelsAffaire = $affaire->personnels
+            ->whereNotIn('statut', ['parti', 'suspendu'])
+            ->sortBy('nom');
+
+        $tuyauteurs = $personnelsAffaire->filter(fn($p) => str_contains(strtolower($p->poste ?? ''), 'tuyauteur'))->values();
+        $soudeurs   = $personnelsAffaire->filter(fn($p) => str_contains(strtolower($p->poste ?? ''), 'soudeur'))->values();
+
+        $matieres = \App\Models\Matiere::select('ref_interne', 'designation', 'dn', 'epaisseur')->orderBy('ref_interne')->get();
+
         return view('affaires.suivi-detail', compact(
             'affaire',
             'lignes',
-            'stats'
+            'stats',
+            'tuyauteurs',
+            'soudeurs',
+            'matieres'
         ));
     }
 
@@ -1333,6 +1346,259 @@ class AffaireController extends Controller
 
         return redirect()->route('affaires.suivi_detail', $affaire)
             ->with('success', "{$imported} ligne(s) importée(s) avec succès.");
+    }
+
+    /**
+     * Exporte le tableau de suivi d'une affaire au format Excel.
+     */
+    public function exportSuiviExcel(Affaire $affaire)
+    {
+        $affaire->load(['suiviLignes']);
+        $lignes = $affaire->suiviLignes;
+
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Suivi Tuyauterie');
+
+        // ── Couleurs des groupes ─────────────────────────────────────────────
+        $groupColors = [
+            'identification'  => ['bg' => '2563EB', 'sub' => 'DBEAFE'],
+            'technique'       => ['bg' => '0D9488', 'sub' => 'CCFBF1'],
+            'dimensions'      => ['bg' => '0891B2', 'sub' => 'CFFAFE'],
+            'temps'           => ['bg' => 'D97706', 'sub' => 'FEF3C7'],
+            'appro'           => ['bg' => '4D7C0F', 'sub' => 'ECFCCB'],
+            'fabrication'     => ['bg' => 'EA580C', 'sub' => 'FFEDD5'],
+            'traitement'      => ['bg' => 'DB2777', 'sub' => 'FCE7F3'],
+            'livraison'       => ['bg' => 'BE123C', 'sub' => 'FFE4E6'],
+            'montage'         => ['bg' => '16A34A', 'sub' => 'DCFCE7'],
+            'reels'           => ['bg' => '4F46E5', 'sub' => 'E0E7FF'],
+            'qualite'         => ['bg' => 'DC2626', 'sub' => 'FEE2E2'],
+        ];
+
+        // ── Définition des colonnes ──────────────────────────────────────────
+        $columns = [
+            // [label, champ, groupe]
+            ['#',                       'ordre',                      null],
+            // Identification
+            ['Projet',                  'projet',                     'identification'],
+            ['TM',                      'tm',                         'identification'],
+            ['Indice',                  'indice',                     'identification'],
+            ['Activité',                'activite',                   'identification'],
+            ['Stade Montage',           'stade_montage',              'identification'],
+            ['Lot',                     'lot',                        'identification'],
+            ['Bloc',                    'bloc',                       'identification'],
+            ['Panneau',                 'panneau',                    'identification'],
+            ['Repère',                  'repere',                     'identification'],
+            // Technique
+            ['Réception Iso',           'date_reception_iso',         'technique'],
+            ['Fournisseur Préfa',        'fournisseur_prefa',          'technique'],
+            ['Classe',                  'classe',                     'technique'],
+            ['Code TS',                 'code_ts',                    'technique'],
+            ['Traitement Surface',      'traitement_surface',         'technique'],
+            ['Schéma-Ligne',            'schema_ligne',               'technique'],
+            ['Trigramme',               'trigramme',                  'technique'],
+            // Dimensions & Matière
+            ['Lg/Poids',                'longueur_poids',             'dimensions'],
+            ['Pouces Total',            'pouces_total',               'dimensions'],
+            ['Cintrages',               'qtt_cintrages',              'dimensions'],
+            ['DN',                      'dn',                         'dimensions'],
+            ['Ep',                      'ep',                         'dimensions'],
+            ['Matière',                 'matiere',                    'dimensions'],
+            ['Catégorie',               'categorie',                  'dimensions'],
+            ['DP Armement',             'dp_armement',                'dimensions'],
+            // Temps Estimés
+            ['Tps Fab.',                'temps_fabrication',          'temps'],
+            ['Tps Mont. Estimé',        'temps_montage_total_estime', 'temps'],
+            ['Tps Soud. Estimé',        'temps_soudure_estime',       'temps'],
+            ['Tps Mont. E.',            'temps_montage_estime',       'temps'],
+            // Approvisionnement
+            ['Mat. Commandée le',       'matiere_commande_le',        'appro'],
+            ['Appro Matière',           'appro_matiere',              'appro'],
+            // Fabrication
+            ['Piking',                  'piking',                     'fabrication'],
+            ['Fin Débit',               'fin_debit',                  'fabrication'],
+            ['Déb. Fab.',               'debut_fabrication',          'fabrication'],
+            ['Tuyauteur',               'tuyauteur',                  'fabrication'],
+            ['Fin Assemblage',          'fin_assemblage',             'fabrication'],
+            ['Nb Soudures',             'nbr_soudure',                'fabrication'],
+            ['Soudeur',                 'soudeur',                    'fabrication'],
+            ['Fin Soudage',             'fin_soudage',                'fabrication'],
+            ['Fin Fabrication',         'fin_fabrication',            'fabrication'],
+            // Traitement
+            ['Départ Traitement',       'depart_traitement',          'traitement'],
+            ['Retour Traitement',       'retour_traitement',          'traitement'],
+            // Livraison
+            ['Livraison Bord',          'livraison_bord',             'livraison'],
+            // Montage
+            ['Déb. Montage',            'debut_montage',              'montage'],
+            ['Monté',                   'monte',                      'montage'],
+            ['Soudé',                   'soude',                      'montage'],
+            ['Supporté',                'supporte',                   'montage'],
+            ['H. Montage',              'nb_heures_montages',         'montage'],
+            ['Équipe Montage',          'equipe_montage',             'montage'],
+            ['H. Soudage',              'nb_heures_soudages',         'montage'],
+            ['Soudeurs',                'soudeurs',                   'montage'],
+            // Réels & Écarts
+            ['Tps Mont. Réel',          'temps_montage_total_reel',   'reels'],
+            ['Diff Mont.',              null,                         'reels'],
+            ['Diff Soud.',              null,                         'reels'],
+            // Qualité
+            ['Éprouvé le',              'eprouve_le',                 'qualite'],
+            ['Non-Conformité',          'non_conformite',             'qualite'],
+        ];
+
+        // ── Ligne 1 : groupes ────────────────────────────────────────────────
+        $groupRanges = [
+            'identification' => [2, 10],
+            'technique'      => [11, 17],
+            'dimensions'     => [18, 25],
+            'temps'          => [26, 29],
+            'appro'          => [30, 31],
+            'fabrication'    => [32, 40],
+            'traitement'     => [41, 42],
+            'livraison'      => [43, 43],
+            'montage'        => [44, 51],
+            'reels'          => [52, 54],
+            'qualite'        => [55, 56],
+        ];
+
+        $groupLabels = [
+            'identification' => 'Identification',
+            'technique'      => 'Technique',
+            'dimensions'     => 'Dimensions & Matière',
+            'temps'          => 'Temps Estimés',
+            'appro'          => 'Appro.',
+            'fabrication'    => 'Fabrication',
+            'traitement'     => 'Traitement',
+            'livraison'      => 'Livr.',
+            'montage'        => 'Montage',
+            'reels'          => 'Réels & Écarts',
+            'qualite'        => 'Qualité',
+        ];
+
+        // Colonne A row 1 : "#" (fusion ligne 1 & 2)
+        $sheet->mergeCells('A1:A2');
+        $sheet->setCellValue('A1', '#');
+        $this->styleHeaderCell($sheet, 'A1', 'CCCCCC', '000000', true);
+
+        foreach ($groupRanges as $group => $range) {
+            $colStart = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($range[0]);
+            $colEnd   = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($range[1]);
+            $sheet->mergeCells("{$colStart}1:{$colEnd}1");
+            $sheet->setCellValue("{$colStart}1", $groupLabels[$group]);
+            $this->styleHeaderCell($sheet, "{$colStart}1", $groupColors[$group]['bg'], 'FFFFFF', true);
+        }
+
+        // ── Ligne 2 : sous-entêtes colonnes ─────────────────────────────────
+        foreach ($columns as $i => $col) {
+            $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i + 1);
+            if ($i === 0) {
+                continue; // déjà fusionné
+            }
+            $group = $col[2];
+            $bgColor = $group ? $groupColors[$group]['sub'] : 'E5E7EB';
+            $sheet->setCellValue("{$colLetter}2", $col[0]);
+            $this->styleHeaderCell($sheet, "{$colLetter}2", $bgColor, '1F2937', false);
+        }
+
+        // ── Données ──────────────────────────────────────────────────────────
+        $dateFields = [
+            'date_reception_iso', 'matiere_commande_le', 'appro_matiere',
+            'piking', 'fin_debit', 'debut_fabrication', 'fin_assemblage',
+            'fin_soudage', 'fin_fabrication', 'depart_traitement',
+            'retour_traitement', 'livraison_bord', 'debut_montage',
+            'monte', 'soude', 'supporte', 'eprouve_le',
+        ];
+
+        foreach ($lignes as $rowIdx => $ligne) {
+            $row = $rowIdx + 3;
+            $fill = $rowIdx % 2 === 0 ? 'FFFFFF' : 'F9FAFB';
+
+            foreach ($columns as $i => $col) {
+                $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i + 1);
+                $field = $col[1];
+
+                if ($i === 0) {
+                    $value = $ligne->ordre ?? ($rowIdx + 1);
+                } elseif ($field === null) {
+                    // Calculs dérivés : diff montage / diff soudure
+                    if ($col[0] === 'Diff Mont.') {
+                        $reel = $ligne->temps_montage_total_reel;
+                        $est  = $ligne->temps_montage_total_estime;
+                        $value = ($reel !== null && $est !== null) ? round($reel - $est, 2) : null;
+                    } elseif ($col[0] === 'Diff Soud.') {
+                        $reel = $ligne->nb_heures_soudages;
+                        $est  = $ligne->temps_soudure_estime;
+                        $value = ($reel !== null && $est !== null) ? round($reel - $est, 2) : null;
+                    } else {
+                        $value = null;
+                    }
+                } elseif (in_array($field, $dateFields)) {
+                    $value = $ligne->$field ? $ligne->$field->format('d/m/Y') : null;
+                } else {
+                    $value = $ligne->$field;
+                }
+
+                $sheet->setCellValue("{$colLetter}{$row}", $value);
+
+                $cellStyle = $sheet->getStyle("{$colLetter}{$row}");
+                $cellStyle->getFill()
+                    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                    ->getStartColor()->setRGB($fill);
+                $cellStyle->getBorders()->getAllBorders()
+                    ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN)
+                    ->getColor()->setRGB('D1D5DB');
+                $cellStyle->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+            }
+        }
+
+        // ── Auto-width colonnes ──────────────────────────────────────────────
+        foreach (range(1, count($columns)) as $i) {
+            $col = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i);
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $sheet->getRowDimension(1)->setRowHeight(20);
+        $sheet->getRowDimension(2)->setRowHeight(18);
+
+        // ── Freeze panes ─────────────────────────────────────────────────────
+        $sheet->freezePane('B3');
+
+        // ── Réponse HTTP ─────────────────────────────────────────────────────
+        $filename = 'suivi_' . \Illuminate\Support\Str::slug($affaire->code) . '_' . now()->format('Ymd') . '.xlsx';
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+
+        return response()->streamDownload(function () use ($writer) {
+            $writer->save('php://output');
+        }, $filename, [
+            'Content-Type'        => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
+    }
+
+    /**
+     * Applique un style à une cellule d'en-tête.
+     */
+    private function styleHeaderCell(
+        \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet,
+        string $cell,
+        string $bgRgb,
+        string $fontRgb,
+        bool $bold
+    ): void {
+        $style = $sheet->getStyle($cell);
+        $style->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setRGB($bgRgb);
+        $style->getFont()->setBold($bold)->getColor()->setRGB($fontRgb);
+        $style->getAlignment()
+            ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER)
+            ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
+            ->setWrapText(false);
+        $style->getBorders()->getAllBorders()
+            ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN)
+            ->getColor()->setRGB('9CA3AF');
     }
 }
 

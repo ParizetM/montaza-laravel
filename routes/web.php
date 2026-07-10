@@ -36,10 +36,14 @@ use App\Http\Controllers\MaterielController;
 
 Route::get('/', function () {
     if (auth()->check()) {
-        return view('accueil');
+        return redirect()->route('accueil.page');
     }
     return view('welcome');
 })->middleware(['GetGlobalVariable'])->name('accueil');
+
+Route::get('/accueil', function () {
+    return view('accueil');
+})->middleware(['auth', 'GetGlobalVariable'])->name('accueil.page');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -72,6 +76,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
     Route::get('/profile/{id}', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::patch('/profile-admin', [ProfileController::class, 'updateAdmin'])->name('profile.update_admin');
+    Route::patch('/profile-smtp', [ProfileController::class, 'updateSmtp'])->name('profile.update_smtp');
     Route::delete('/profile/{user}/delete', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/profile/{user}/restore', [ProfileController::class, 'restore'])->name('profile.restore');
 
@@ -125,6 +130,11 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::post('/personnel/{personnel}/conges', [PersonnelController::class, 'storeConge'])->name('personnel.conges.store');
         Route::patch('/personnel/{personnel}/conges/{conge}', [PersonnelController::class, 'updateConge'])->name('personnel.conges.update');
         Route::delete('/personnel/{personnel}/conges/{conge}', [PersonnelController::class, 'deleteConge'])->name('personnel.conges.delete');
+
+        // Routes pour les absences
+        Route::post('/personnel/{personnel}/absences', [PersonnelController::class, 'storeAbsence'])->name('personnel.absences.store');
+        Route::patch('/personnel/{personnel}/absences/{absence}', [PersonnelController::class, 'updateAbsence'])->name('personnel.absences.update');
+        Route::delete('/personnel/{personnel}/absences/{absence}', [PersonnelController::class, 'deleteAbsence'])->name('personnel.absences.delete');
 
         // Route pour modifier le statut
         Route::patch('/personnel/{personnel}/update-statut', [PersonnelController::class, 'updateStatut'])->name('personnel.updateStatut');
@@ -376,6 +386,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::patch('/affaires/{affaire}/update', [AffaireController::class, 'update'])->name('affaires.update');
         Route::delete('/affaires/{affaire}/delete', [AffaireController::class, 'destroy'])->name('affaires.destroy');
         Route::get('/affaires/{affaire}/suivi', [AffaireController::class, 'suiviDetail'])->name('affaires.suivi_detail');
+        Route::get('/affaires/{affaire}/suivi/export-excel', [AffaireController::class, 'exportSuiviExcel'])->name('affaires.suivi_detail.export_excel');
         Route::post('/affaires/{affaire}/suivi-lignes', [AffaireController::class, 'storeSuiviLigne'])->name('affaires.suivi_lignes.store');
         Route::patch('/affaires/{affaire}/suivi-lignes/{ligne}', [AffaireController::class, 'updateSuiviLigne'])->name('affaires.suivi_lignes.update');
         Route::delete('/affaires/{affaire}/suivi-lignes/{ligne}', [AffaireController::class, 'deleteSuiviLigne'])->name('affaires.suivi_lignes.delete');

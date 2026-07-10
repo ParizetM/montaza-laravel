@@ -26,4 +26,17 @@ class PersonnelConge extends Model
     {
         return $this->belongsTo(Personnel::class);
     }
+
+    public function nombreJoursOuvres(): int
+    {
+        $current = $this->date_debut->copy();
+        $count = 0;
+        while ($current->lte($this->date_fin)) {
+            if (!$current->isWeekend()) {
+                $count++;
+            }
+            $current->addDay();
+        }
+        return $count;
+    }
 }

@@ -234,11 +234,9 @@
                     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
                             <h3 class="text-lg font-medium text-gray-900 dark:text-white">Personnel Assigné</h3>
-                            @if($affaire->statut !== \App\Models\Affaire::STATUT_TERMINE && $affaire->statut !== \App\Models\Affaire::STATUT_ARCHIVE)
-                                <button x-data="" x-on:click.prevent="$dispatch('open-modal', 'assign-personnel')" class="text-sm text-blue-600 hover:text-blue-500">
-                                    Assigner du personnel
-                                </button>
-                            @endif
+                            <button x-data="" x-on:click.prevent="$dispatch('open-modal', 'assign-personnel')" class="text-sm text-blue-600 hover:text-blue-500">
+                                Assigner du personnel
+                            </button>
                         </div>
                         <div class="p-6">
                             @if($affaire->personnels->isEmpty())

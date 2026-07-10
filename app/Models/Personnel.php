@@ -25,8 +25,10 @@ class Personnel extends Model
         'telephone',
         'telephone_mobile',
         'poste',
+        'type_contrat',
         'departement',
         'date_embauche',
+        'date_fin_contrat',
         'date_depart',
         'raison_depart',
         'motif_depart',
@@ -45,9 +47,10 @@ class Personnel extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'date_embauche' => 'date',
-        'date_depart' => 'date',
-        'salaire' => 'decimal:2',
+        'date_embauche'     => 'date',
+        'date_fin_contrat'  => 'date',
+        'date_depart'       => 'date',
+        'salaire'           => 'decimal:2',
     ];
 
     /**
@@ -67,6 +70,14 @@ class Personnel extends Model
     public function conges()
     {
         return $this->hasMany(PersonnelConge::class);
+    }
+
+    /**
+     * Relation avec les absences
+     */
+    public function absences()
+    {
+        return $this->hasMany(PersonnelAbsence::class);
     }
 
     /**

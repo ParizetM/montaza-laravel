@@ -68,8 +68,12 @@ class PredefinedShortcutsSeeder extends Seeder
                 'title' => 'Consulter les Données de référence',
                 'url' => "reference-data.index",
                 'icon' => 'database',
-            ]
-
+            ],
+            [
+                'title' => 'Consulter le personnel',
+                'url' => "personnel.index",
+                'icon' => 'group',
+            ],
         ];
 
         foreach ($shortcuts as $shortcut) {

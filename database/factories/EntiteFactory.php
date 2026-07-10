@@ -27,6 +27,7 @@ class EntiteFactory extends Factory
             'numero_tva' => $this->faker->regexify('FR[0-9]{2}[0-9]{9}'),
             'code_ape' => $this->faker->regexify('[0-9]{4}[A-Z]'),
             'logo' => $this->faker->optional()->imageUrl(),
+            'horaires' => '8h-12h / 14h-18h',
         ];
     }
 }

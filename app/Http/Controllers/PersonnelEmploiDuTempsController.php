@@ -6,6 +6,7 @@ use App\Models\Personnel;
 use App\Models\AffairePersonnel;
 use App\Models\AffairePersonnelTache;
 use App\Models\PersonnelConge;
+use App\Models\PersonnelAbsence;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -134,6 +135,67 @@ class PersonnelEmploiDuTempsController extends Controller
                             }
                         }
                     }
+                }
+            }
+        }
+
+        // Récupérer les absences pour la semaine
+        $absences = $personnel->absences()
+            ->whereBetween('date', [$startOfWeek, $endOfWeek])
+            ->get();
+
+        // Ajouter les absences dans l'emploi du temps
+        foreach ($absences as $absence) {
+            $dateKey = $absence->date->format('Y-m-d');
+
+            if ($absence->type === 'retard') {
+                $timeKey = $dateKey . '-8';
+                if (!isset($evenementsByDateTime[$timeKey])) {
+                    $evenementsByDateTime[$timeKey] = [];
+                }
+                $evenementsByDateTime[$timeKey][] = [
+                    'type'           => 'absence',
+                    'titre'          => 'Retard',
+                    'absence_type'   => 'retard',
+                    'duree_type'     => 'retard',
+                    'minutes_retard' => $absence->minutes_retard,
+                    'statut'         => $absence->statut,
+                    'motif'          => $absence->motif,
+                    'heure_debut'    => 8,
+                    'heure_fin'      => 9,
+                    'duree'          => 1,
+                ];
+            } else {
+                // Déterminer les créneaux selon duree + periode
+                if ($absence->duree === 'demi_journee') {
+                    $heures = $absence->periode === 'apres_midi' ? [13] : [8];
+                } else {
+                    $heures = [8, 13];
+                }
+                foreach ($heures as $heure) {
+                    $timeKey = $dateKey . '-' . $heure;
+                    if (!isset($evenementsByDateTime[$timeKey])) {
+                        $evenementsByDateTime[$timeKey] = [];
+                    }
+                    $typeLabel = match($absence->type) {
+                        'absence' => 'Absence',
+                        'maladie' => 'Maladie',
+                        default   => 'Absence',
+                    };
+                    if ($absence->duree === 'demi_journee') {
+                        $typeLabel .= $absence->periode === 'apres_midi' ? ' (AM)' : ' (M)';
+                    }
+                    $evenementsByDateTime[$timeKey][] = [
+                        'type'         => 'absence',
+                        'titre'        => $typeLabel,
+                        'absence_type' => $absence->type,
+                        'duree_type'   => $absence->duree,
+                        'statut'       => $absence->statut,
+                        'motif'        => $absence->motif,
+                        'heure_debut'  => $heure,
+                        'heure_fin'    => $heure === 8 ? 11 : 16,
+                        'duree'        => 3,
+                    ];
                 }
             }
         }

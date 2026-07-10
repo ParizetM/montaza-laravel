@@ -31,7 +31,8 @@
                                 <div>
                                     <x-input-label for="matricule" :value="__('Matricule')" />
                                     <x-text-input id="matricule" class="block mt-1 w-full" type="text" name="matricule"
-                                        :value="old('matricule')" required autofocus />
+                                        :value="old('matricule', $nextMatricule)" required autofocus />
+                                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Généré automatiquement — modifiable</p>
                                     <x-input-error :messages="$errors->get('matricule')" class="mt-2" />
                                 </div>
 
@@ -70,23 +71,28 @@
                                 <div>
                                     <x-input-label for="email" :value="__('Email')" />
                                     <x-text-input id="email" class="block mt-1 w-full" type="email" name="email"
-                                        :value="old('email')" required />
+                                        :value="old('email')" required
+                                        pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}"
+                                        placeholder="nom@exemple.com" />
+                                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Format attendu : nom@domaine.fr</p>
                                     <x-input-error :messages="$errors->get('email')" class="mt-2" />
                                 </div>
 
                                 <!-- Téléphone -->
                                 <div>
                                     <x-input-label for="telephone" :value="__('Téléphone')" />
-                                    <x-text-input id="telephone" class="block mt-1 w-full" type="text" name="telephone"
-                                        :value="old('telephone')" />
+                                    <x-text-input id="telephone" class="block mt-1 w-full" type="tel" name="telephone"
+                                        :value="old('telephone')" required pattern="[0-9]{10}" maxlength="10" placeholder="0600000000" />
+                                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">10 chiffres sans espaces ni tirets</p>
                                     <x-input-error :messages="$errors->get('telephone')" class="mt-2" />
                                 </div>
 
                                 <!-- Téléphone mobile -->
                                 <div>
                                     <x-input-label for="telephone_mobile" :value="__('Téléphone mobile')" />
-                                    <x-text-input id="telephone_mobile" class="block mt-1 w-full" type="text"
-                                        name="telephone_mobile" :value="old('telephone_mobile')" />
+                                    <x-text-input id="telephone_mobile" class="block mt-1 w-full" type="tel"
+                                        name="telephone_mobile" :value="old('telephone_mobile')" pattern="[0-9]{10}" maxlength="10" placeholder="0600000000" />
+                                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">10 chiffres sans espaces ni tirets</p>
                                     <x-input-error :messages="$errors->get('telephone_mobile')" class="mt-2" />
                                 </div>
                             </div>
@@ -101,8 +107,24 @@
                                 <div>
                                     <x-input-label for="poste" :value="__('Poste')" />
                                     <x-text-input id="poste" class="block mt-1 w-full" type="text" name="poste"
-                                        :value="old('poste')" />
+                                        :value="old('poste')" required />
                                     <x-input-error :messages="$errors->get('poste')" class="mt-2" />
+                                </div>
+
+                                <!-- Type de contrat -->
+                                <div>
+                                    <x-input-label for="type_contrat" :value="__('Type de contrat')" />
+                                    <select id="type_contrat" name="type_contrat"
+                                        class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-xs"
+                                        required>
+                                        <option value="">Sélectionner...</option>
+                                        <option value="cdi" {{ old('type_contrat') == 'cdi' ? 'selected' : '' }}>CDI</option>
+                                        <option value="cdd" {{ old('type_contrat') == 'cdd' ? 'selected' : '' }}>CDD</option>
+                                        <option value="interim" {{ old('type_contrat') == 'interim' ? 'selected' : '' }}>Intérim</option>
+                                        <option value="stage" {{ old('type_contrat') == 'stage' ? 'selected' : '' }}>Stage</option>
+                                        <option value="apprentissage" {{ old('type_contrat') == 'apprentissage' ? 'selected' : '' }}>Apprentissage</option>
+                                    </select>
+                                    <x-input-error :messages="$errors->get('type_contrat')" class="mt-2" />
                                 </div>
 
                                 <!-- Département -->
@@ -117,8 +139,16 @@
                                 <div>
                                     <x-input-label for="date_embauche" :value="__('Date d\'embauche')" />
                                     <x-text-input id="date_embauche" class="block mt-1 w-full" type="date"
-                                        name="date_embauche" :value="old('date_embauche')" />
+                                        name="date_embauche" :value="old('date_embauche')" required />
                                     <x-input-error :messages="$errors->get('date_embauche')" class="mt-2" />
+                                </div>
+
+                                <!-- Date de fin de contrat (affiché si contrat à durée limitée) -->
+                                <div id="date_fin_contrat_container" style="display: {{ in_array(old('type_contrat'), ['cdd','interim','stage','apprentissage']) ? 'block' : 'none' }}">
+                                    <x-input-label for="date_fin_contrat" :value="__('Date de fin de contrat')" />
+                                    <x-text-input id="date_fin_contrat" class="block mt-1 w-full" type="date"
+                                        name="date_fin_contrat" :value="old('date_fin_contrat')" />
+                                    <x-input-error :messages="$errors->get('date_fin_contrat')" class="mt-2" />
                                 </div>
 
                                 <!-- Date de départ -->
@@ -158,7 +188,7 @@
                                 <div>
                                     <x-input-label for="salaire" :value="__('Salaire (€)')" />
                                     <x-text-input id="salaire" class="block mt-1 w-full" type="number" step="0.01"
-                                        name="salaire" :value="old('salaire')" />
+                                        name="salaire" :value="old('salaire')" required />
                                     <x-input-error :messages="$errors->get('salaire')" class="mt-2" />
                                 </div>
 
@@ -228,6 +258,20 @@
     </div>
 
     <script>
+        const contratsAvecFin = ['cdd', 'interim', 'stage', 'apprentissage'];
+
+        // Afficher/masquer date de fin de contrat selon le type de contrat
+        document.getElementById('type_contrat').addEventListener('change', function () {
+            const container = document.getElementById('date_fin_contrat_container');
+            const input = document.getElementById('date_fin_contrat');
+            const show = contratsAvecFin.includes(this.value);
+            container.style.display = show ? 'block' : 'none';
+            input.required = show;
+        });
+
+        // Déclencher au chargement si old() a une valeur
+        document.getElementById('type_contrat').dispatchEvent(new Event('change'));
+
         // Afficher/masquer les champs de départ selon le statut
         document.getElementById('statut').addEventListener('change', function() {
             const statutValue = this.value;
