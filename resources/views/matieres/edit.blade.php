@@ -305,6 +305,27 @@
                             </div>
                         </div>
 
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <x-input-label for="longueur" :value="__('Longueur')" optionnel class="mb-1" />
+                                <x-text-input type="number" name="longueur" id="longueur" class="block w-full"
+                                    step="0.01" min="0"
+                                    value="{{ old('longueur', $matiere->longueur) }}" />
+                                @error('longueur')
+                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            <div>
+                                <x-input-label for="prix" :value="__('Prix (€)')" optionnel class="mb-1" />
+                                <x-text-input type="number" name="prix" id="prix" class="block w-full"
+                                    step="0.01" min="0"
+                                    value="{{ old('prix', $matiere->prix) }}" />
+                                @error('prix')
+                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+
                         <div class="flex justify-between mt-6">
                             <a href="{{ route('matieres.show', $matiere->id) }}"
                                 class="px-4 py-2 bg-gray-600 hover:bg-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 text-white rounded-md transition-colors duration-200">

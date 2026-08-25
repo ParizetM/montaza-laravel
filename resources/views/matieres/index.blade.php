@@ -72,7 +72,13 @@
                     </button>
                 </form>
                 <x-quick-matiere class="mb-1" />
-                <!-- Nouveau bouton d'import Excel -->
+                <a href="{{ route('matieres.export') }}{{ request()->getQueryString() ? '?' . request()->getQueryString() : '' }}"
+                   class="mb-1 inline-flex items-center px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-md shadow-sm transition">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    Export XLSX
+                </a>
 
             </div>
         </div>
@@ -94,6 +100,10 @@
                 <a href="{{ route('matieres.import.form') }}" class="btn ml-2 flex items-center">
                     <x-icon type="upload" class="mr-1" size="1" />
                     Importer CSV
+                </a>
+                <a href="{{ route('matieres.import.database.form') }}" class="btn ml-2 flex items-center">
+                    <x-icon type="upload" class="mr-1" size="1" />
+                    Importer XLSX
                 </a>
 
             </div>
@@ -143,6 +153,10 @@
                                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Standard</th>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">DN</th>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">EP</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Fournisseur</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Unité</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Longueur</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Prix</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-200 dark:divide-gray-700 text-gray-700 dark:text-gray-100" id="body_table">
@@ -365,6 +379,9 @@
                     window.location.href = `/matieres/${matiere.id}`;
                 };
                 row.classList.add('cursor-pointer', 'hover:bg-gray-50', 'dark:hover:bg-gray-700', 'transition-colors', 'duration-150');
+                const fournisseurHtml = matiere.fournisseur
+                    ? `${matiere.fournisseur}${matiere.fournisseurs_count > 1 ? ` <span class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">+${matiere.fournisseurs_count - 1}</span>` : ''}`
+                    : '-';
                 row.innerHTML = `
             <td class="px-4 py-3 text-sm whitespace-nowrap font-mono text-gray-600 dark:text-gray-300">${matiere.refTooltip || '-'}</td>
             <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-200">${matiere.sousFamille || '-'}</td>
@@ -376,6 +393,10 @@
             </td>
             <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">${matiere.dn || '-'}</td>
             <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">${matiere.epaisseur || '-'}</td>
+            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-200">${fournisseurHtml}</td>
+            <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">${matiere.Unite || '-'}</td>
+            <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400 text-right">${matiere.longueur !== null && matiere.longueur !== undefined ? matiere.longueur : '-'}</td>
+            <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400 text-right whitespace-nowrap">${matiere.prix_formated || '-'}</td>
         `;
                 tbody.appendChild(row);
             });

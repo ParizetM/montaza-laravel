@@ -261,6 +261,7 @@ Route::middleware(['GetGlobalVariable', 'XSSProtection', 'auth'])->group(functio
         Route::get('/matieres/{matiere}/fournisseurs/json', [MatiereController::class, 'fournisseursJson'])->name('matieres.fournisseurs.json');
         Route::get('/matieres/{id}/json', [MatiereController::class, 'getMatiereJson'])->name('matieres.get_json');
         Route::get('/matieres/standards', [StandardController::class, 'index'])->name('standards.index');
+        Route::get('/matieres/export', [MatiereController::class, 'exportExcel'])->name('matieres.export');
         Route::get('/matieres/{matiere}', [MatiereController::class, 'show'])->name('matieres.show');
 
         // Routes pour la gestion des prix (utilise le nouveau contrôleur)

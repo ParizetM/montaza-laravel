@@ -17,6 +17,8 @@ class Matiere extends Model
         'ref_valeur_unitaire',
         'standard_version_id',
         'stock_min',
+        'longueur',
+        'prix',
     ];
 
     protected $fillable = [
@@ -27,6 +29,8 @@ class Matiere extends Model
         'sous_famille_id',
         'dn',
         'epaisseur',
+        'longueur',
+        'prix',
         'standard_version_id',
         'stock_min',
         'ref_valeur_unitaire',

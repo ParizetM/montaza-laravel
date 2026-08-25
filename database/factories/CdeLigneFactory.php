@@ -19,22 +19,23 @@ class CdeLigneFactory extends Factory
      */
     public function definition(): array
     {
-        $random_cde_id = Cde::all()->random()->id;
-        $random_matiere_id = Matiere::all()->random()->id;
+        $cdes     = Cde::all();
+        $matieres = Matiere::all();
+
         return [
-            'cde_id' => $random_cde_id,
-            'poste' => $this->faker->numberBetween(1, 100),
-            'matiere_id' => $random_matiere_id,
-            'ref_interne' => $this->faker->optional()->word(),
-            'ref_fournisseur' => $this->faker->optional()->word(),
-            'designation' => $this->faker->sentence(),
-            'prix_unitaire' => $this->faker->randomFloat(2, 0.01, 1000),
-            'quantite' => $this->faker->numberBetween(1, 1000),
-            'date_livraison' => $this->faker->optional()->date(),
+            'cde_id'              => $cdes->isNotEmpty() ? $cdes->random()->id : Cde::factory(),
+            'poste'               => $this->faker->numberBetween(1, 100),
+            'matiere_id'          => $matieres->isNotEmpty() ? $matieres->random()->id : null,
+            'ref_interne'         => $this->faker->optional()->word(),
+            'ref_fournisseur'     => $this->faker->optional()->word(),
+            'designation'         => $this->faker->sentence(),
+            'prix_unitaire'       => $this->faker->randomFloat(2, 0.01, 1000),
+            'quantite'            => $this->faker->numberBetween(1, 1000),
+            'date_livraison'      => $this->faker->optional()->date(),
             'date_livraison_reelle' => null,
-            'is_stocke' => false,
-            'non_livre' => false,
-            'sous_ligne' => false,
+            'is_stocke'           => false,
+            'non_livre'           => false,
+            'sous_ligne'          => false,
         ];
     }
 }

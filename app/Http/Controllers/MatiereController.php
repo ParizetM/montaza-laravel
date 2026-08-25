@@ -38,7 +38,7 @@ class MatiereController extends Controller
      */
     private function buildMatiereQuery(Request $request, $second_search = false)
     {
-        $query = Matiere::with(['sousFamille', 'societe', 'standardVersion']);
+        $query = Matiere::with(['sousFamille', 'societe', 'standardVersion', 'unite', 'fournisseurs']);
 
         // Filtrer par famille
         if ($request->filled('famille')) {
@@ -1057,6 +1057,8 @@ class MatiereController extends Controller
                 'ref_valeur_unitaire' => 'nullable',
                 'dn' => 'nullable|string|max:255',
                 'epaisseur' => 'nullable|string|max:255',
+                'longueur' => 'nullable|numeric|min:0',
+                'prix' => 'nullable|numeric|min:0',
                 'standard_id' => 'nullable|exists:standards,nom',
                 'standard_version' => 'nullable|exists:standard_versions,version',
                 'stock_min' => 'required|numeric|min:0',
@@ -1472,6 +1474,24 @@ class MatiereController extends Controller
     }
 
     /**
+     * Exporte le catalogue des matières (filtre courant) en XLSX.
+     */
+    public function exportExcel(Request $request)
+    {
+        $request->validate([
+            'search'       => 'nullable|string|max:255',
+            'famille'      => 'nullable|integer|exists:familles,id',
+            'sous_famille' => 'nullable|integer|exists:sous_familles,id',
+            'societe'      => 'nullable|integer|exists:societes,id',
+        ]);
+
+        $query    = $this->buildMatiereQuery($request);
+        $filename = 'matieres_' . now()->format('Y-m-d') . '.xlsx';
+
+        return Excel::download(new \App\Exports\MatieresExport($query), $filename);
+    }
+
+    /**
      * Affiche le formulaire d'import de matières par Excel
      */
     public function importForm()
@@ -1520,14 +1540,15 @@ class MatiereController extends Controller
             'file' => 'required|file',
             'fournisseur_id' => 'nullable|integer|exists:societes,id',
         ]);
-        // Vérifier que le fichier est un CSV
-        if (!$request->file('file')->isValid() || $request->file('file')->getClientOriginalExtension() !== 'csv') {
-            return back()->withErrors(['file' => 'Le fichier doit être un CSV valide.']);
+        if (!$request->file('file')->isValid()) {
+            return back()->withErrors(['file' => 'Le fichier est invalide.']);
         }
-        $path = $request->file('file')->getRealPath();
+        $ext = strtolower($request->file('file')->getClientOriginalExtension());
+        if (!in_array($ext, ['csv', 'xlsx', 'xls'])) {
+            return back()->withErrors(['file' => 'Le fichier doit être un CSV ou XLSX valide.']);
+        }
         $rows = [];
-        $handle = fopen($path, 'r');
-        // Colonnes attendues dans l'ordre strict
+        // Colonnes attendues dans l'ordre strict (CSV et XLSX)
         $expectedHeaders = [
             'ref_interne',
             'designation',
@@ -1535,36 +1556,61 @@ class MatiereController extends Controller
             'sous_famille',
             'dn',
             'epaisseur',
+            'longueur',
             'standard',
             'ref_valeur_unitaire',
             'materiau',
             'prix'
         ];
-        $firstLine = fgetcsv($handle, 0, ';');
-        // On ignore la première ligne si c'est sep=;
-        if ($firstLine && stripos($firstLine[0], 'sep=') === 0) {
+
+        if ($ext === 'xlsx' || $ext === 'xls') {
+            // Lecture XLSX via Maatwebsite\Excel
+            $data = Excel::toArray([], $request->file('file'));
+            $sheetRows = $data[0] ?? [];
+            // Détecter et sauter la ligne d'en-têtes si présente
+            $startIndex = 0;
+            if (!empty($sheetRows[0]) && preg_match('/ref|desig|unite|famille/i', implode(' ', array_filter($sheetRows[0], fn($v) => is_string($v))))) {
+                $startIndex = 1;
+            }
+            for ($r = $startIndex; $r < count($sheetRows); $r++) {
+                $rowData = $sheetRows[$r];
+                if (empty(array_filter($rowData, fn($v) => $v !== null && $v !== ''))) continue;
+                $row = [];
+                foreach ($expectedHeaders as $k => $col) {
+                    $row[$col] = isset($rowData[$k]) ? trim((string) ($rowData[$k])) : '';
+                }
+                $rows[] = $row;
+            }
+        } else {
+            // Lecture CSV (séparateur ;)
+            $path = $request->file('file')->getRealPath();
+            $handle = fopen($path, 'r');
             $firstLine = fgetcsv($handle, 0, ';');
-        }
-        // Si la première ligne ressemble à des headers utilisateur, on l'ignore
-        if ($firstLine && preg_match('/réf|ref|désignation|designation|unité|unite|famille|prix/i', implode(' ', $firstLine))) {
-            // On saute la ligne
-        } else if ($firstLine) {
-            // Sinon, c'est une vraie donnée
-            $data = $firstLine;
-            $row = [];
-            foreach ($expectedHeaders as $k => $col) {
-                $row[$col] = $data[$k] ?? '';
+            // On ignore la première ligne si c'est sep=;
+            if ($firstLine && stripos($firstLine[0], 'sep=') === 0) {
+                $firstLine = fgetcsv($handle, 0, ';');
             }
-            $rows[] = $row;
-        }
-        while (($data = fgetcsv($handle, 0, ';')) !== false) {
-            $row = [];
-            foreach ($expectedHeaders as $k => $col) {
-                $row[$col] = $data[$k] ?? '';
+            // Si la première ligne ressemble à des headers utilisateur, on l'ignore
+            if ($firstLine && preg_match('/réf|ref|désignation|designation|unité|unite|famille|prix/i', implode(' ', $firstLine))) {
+                // On saute la ligne
+            } else if ($firstLine) {
+                // Sinon, c'est une vraie donnée
+                $data = $firstLine;
+                $row = [];
+                foreach ($expectedHeaders as $k => $col) {
+                    $row[$col] = $data[$k] ?? '';
+                }
+                $rows[] = $row;
             }
-            $rows[] = $row;
+            while (($data = fgetcsv($handle, 0, ';')) !== false) {
+                $row = [];
+                foreach ($expectedHeaders as $k => $col) {
+                    $row[$col] = $data[$k] ?? '';
+                }
+                $rows[] = $row;
+            }
+            fclose($handle);
         }
-        fclose($handle);
 
         // Récupérer les ref_interne et designation déjà existants en base
         $existingRefs = \App\Models\Matiere::pluck('ref_interne')->map(function ($v) {
@@ -1727,7 +1773,18 @@ class MatiereController extends Controller
                           ->orWhere('full', 'ILIKE', "{$term}");
                 })->first();
             }
-            $sous_famille = !empty($row['sous_famille']) ? \App\Models\SousFamille::where('nom', 'ILIKE', '%' . $row['sous_famille'] . '%')->first() : null;
+            $sous_famille = null;
+            if (!empty($row['sous_famille'])) {
+                $sous_famille = \App\Models\SousFamille::where('nom', 'ILIKE', '%' . $row['sous_famille'] . '%')->first();
+                if (!$sous_famille) {
+                    // Auto-créer la famille et la sous-famille
+                    $famille = \App\Models\Famille::firstOrCreate(['nom' => $row['sous_famille']]);
+                    $sous_famille = \App\Models\SousFamille::firstOrCreate(
+                        ['nom' => $row['sous_famille']],
+                        ['famille_id' => $famille->id, 'type_affichage_stock' => 1]
+                    );
+                }
+            }
             if ($sous_famille == null) {
                 continue;
             }
@@ -1746,7 +1803,8 @@ class MatiereController extends Controller
                     'sous_famille_id' => $sous_famille ? $sous_famille->id : null,
                     'dn' => $row['dn'],
                     'epaisseur' => $row['epaisseur'],
-                    'standard_id' => $standard ? $standard->getLatestVersion()->id : null,
+                    'longueur' => !empty($row['longueur']) ? (float) str_replace(',', '.', $row['longueur']) : null,
+                    'standard_version_id' => $standard ? $standard->getLatestVersion()?->id : null,
                     'ref_valeur_unitaire' => $row['ref_valeur_unitaire'],
                     'material_id' => $material ? $material->id : null,
                     'prix_moyen' => null,
@@ -1891,7 +1949,7 @@ class MatiereController extends Controller
             ]);
 
             // Définir les colonnes pour la prévisualisation
-            $columns = ['ref_interne', 'famille', 'materiau', 'fournisseur', 'designation', 'standard', 'dn', 'epaisseur', 'unite', 'ref_valeur_unitaire', 'prix'];
+            $columns = ['ref_interne', 'famille', 'materiau', 'fournisseur', 'designation', 'standard', 'dn', 'epaisseur', 'longueur', 'unite', 'ref_valeur_unitaire', 'prix'];
 
             // Préparer les données pour la prévisualisation
             $rows = [];
@@ -1943,9 +2001,9 @@ class MatiereController extends Controller
                     $previewRow['designation'] = ['id' => true];
                 }
 
-                // Vérifier unité
+                // Vérifier unité (optionnel)
                 if (empty($row['unite'])) {
-                    $previewRow['unite'] = ['error' => 'Unité obligatoire'];
+                    $previewRow['unite'] = ['id' => null];
                 } else {
                     $val = $normalize($row['unite']);
                     if ($val === 'pce') $val = 'u';
@@ -1953,7 +2011,7 @@ class MatiereController extends Controller
                     if ($unite) {
                         $previewRow['unite'] = ['id' => $unite->id, 'label' => $unite->short];
                     } else {
-                        $previewRow['unite'] = ['error' => 'Unité non trouvée'];
+                        $previewRow['unite'] = ['warning' => 'Unité non trouvée (sera ignorée)'];
                     }
                 }
 
@@ -1968,13 +2026,13 @@ class MatiereController extends Controller
                         if ($sous_famille) {
                             $previewRow['famille'] = ['id' => $sous_famille->id, 'label' => $famille->nom . ' → ' . $sous_famille->nom];
                         } else {
-                            $previewRow['famille'] = ['error' => 'Aucune sous-famille trouvée pour cette famille'];
+                            $previewRow['famille'] = ['warning' => 'Famille trouvée – sous-famille par défaut sera créée'];
                         }
                     } else {
-                        $previewRow['famille'] = ['error' => 'Famille non trouvée'];
+                        $previewRow['famille'] = ['warning' => 'Sera créée automatiquement (famille + sous-famille)'];
                     }
                 } else {
-                    $previewRow['famille'] = ['error' => 'Famille obligatoire'];
+                    $previewRow['famille'] = ['id' => null];
                 }
 
                 // Vérifier matériau (optionnel)
@@ -1984,7 +2042,7 @@ class MatiereController extends Controller
                     if ($material) {
                         $previewRow['materiau'] = ['id' => $material->id, 'label' => $material->nom];
                     } else {
-                        $previewRow['materiau'] = ['error' => 'Matériau non trouvé (sera ignoré)'];
+                        $previewRow['materiau'] = ['warning' => 'Matériau non trouvé (sera ignoré)'];
                     }
                 } else {
                     $previewRow['materiau'] = ['id' => null];
@@ -2010,15 +2068,16 @@ class MatiereController extends Controller
                     if ($fournisseur) {
                         $previewRow['fournisseur'] = ['id' => $fournisseur->id, 'label' => $fournisseur->raison_sociale];
                     } else {
-                        $previewRow['fournisseur'] = ['error' => 'Fournisseur non trouvé (sera ignoré)'];
+                        $previewRow['fournisseur'] = ['warning' => 'Sera créé automatiquement'];
                     }
                 } else {
                     $previewRow['fournisseur'] = ['id' => null];
                 }
 
-                // DN et épaisseur (optionnels)
+                // DN, épaisseur, longueur (optionnels)
                 $previewRow['dn'] = ['id' => !empty($row['dn'])];
                 $previewRow['epaisseur'] = ['id' => !empty($row['epaisseur'])];
+                $previewRow['longueur'] = ['id' => !empty($row['longueur'])];
                 $previewRow['ref_valeur_unitaire'] = ['id' => !empty($row['ref_valeur_unitaire'])];
 
                 // Prix (optionnel)
@@ -2134,8 +2193,8 @@ class MatiereController extends Controller
 
         // Traiter chaque ligne
         foreach ($rows as $i => $row) {
-            // Vérifier les champs obligatoires
-            if (empty($row['ref_interne']) || empty($row['designation']) || empty($row['unite'])) {
+            // Vérifier les champs obligatoires (ref_interne et designation uniquement)
+            if (empty($row['ref_interne']) || empty($row['designation'])) {
                 $errors++;
                 continue;
             }
@@ -2148,31 +2207,40 @@ class MatiereController extends Controller
             }
             $existingRefs[$refNormalized] = true;
 
-            // Trouver l'unité
-            $val = $normalize($row['unite']);
-            if ($val === 'pce') $val = 'u';
-            $unite = $unitesIndex[$val] ?? null;
-            if (!$unite) {
-                $errors++;
-                continue;
+            // Trouver l'unité (optionnel)
+            $unite = null;
+            if (!empty($row['unite'])) {
+                $val = $normalize($row['unite']);
+                if ($val === 'pce') $val = 'u';
+                $unite = $unitesIndex[$val] ?? null;
             }
 
-            // Trouver la sous-famille
+            // Trouver ou créer la famille et sous-famille
             $sous_famille = null;
             if (!empty($row['famille'])) {
                 $val = $normalize($row['famille']);
                 $famille = $famillesIndex[$val] ?? null;
-                if ($famille) {
-                    $sous_famille = $sousFamillesByFamille[$famille->id] ?? null;
+
+                if (!$famille) {
+                    // Auto-créer la famille
+                    $famille = \App\Models\Famille::firstOrCreate(['nom' => $row['famille']]);
+                    $famillesIndex[$normalize($famille->nom)] = $famille;
+                }
+
+                $sous_famille = $sousFamillesByFamille[$famille->id] ?? null;
+                if (!$sous_famille) {
+                    // Auto-créer une sous-famille par défaut
+                    $sous_famille = \App\Models\SousFamille::firstOrCreate(
+                        ['nom' => $famille->nom],
+                        ['famille_id' => $famille->id, 'type_affichage_stock' => 1]
+                    );
+                    $sousFamillesByFamille[$famille->id] = $sous_famille;
                 }
             }
 
             if (!$sous_famille) {
-                $errors++;
-                continue;
+                // famille vide ou non reconnue : on continue sans sous-famille
             }
-
-            // Trouver le standard
             $standard = null;
             if (!empty($row['standard'])) {
                 $val = $normalize($row['standard']);
@@ -2186,11 +2254,26 @@ class MatiereController extends Controller
                 $material = $materialsIndex[$val] ?? null;
             }
 
-            // Trouver le fournisseur
+            // Trouver ou créer le fournisseur
             $fournisseur = null;
             if (!empty($row['fournisseur'])) {
                 $val = $normalize($row['fournisseur']);
                 $fournisseur = $fournisseursIndex[$val] ?? null;
+                if (!$fournisseur) {
+                    // Auto-créer le fournisseur (type 2 = fournisseur)
+                    $defaultFormeJuridiqueId    = \App\Models\FormeJuridique::first()?->id;
+                    $defaultConditionPaiementId = \App\Models\ConditionPaiement::first()?->id;
+                    $fournisseur = \App\Models\Societe::firstOrCreate(
+                        ['raison_sociale' => $row['fournisseur']],
+                        [
+                            'societe_type_id'       => 2,
+                            'forme_juridique_id'    => $defaultFormeJuridiqueId,
+                            'condition_paiement_id' => $defaultConditionPaiementId,
+                            'commentaire_id'        => null,
+                        ]
+                    );
+                    $fournisseursIndex[$normalize($row['fournisseur'])] = $fournisseur;
+                }
             }
 
             // Créer la matière
@@ -2198,11 +2281,12 @@ class MatiereController extends Controller
                 $matiere = \App\Models\Matiere::create([
                     'ref_interne' => $row['ref_interne'],
                     'designation' => $row['designation'],
-                    'unite_id' => $unite->id,
-                    'sous_famille_id' => $sous_famille->id,
+                    'unite_id' => $unite?->id ?? null,
+                    'sous_famille_id' => $sous_famille?->id ?? null,
                     'dn' => $row['dn'] ?? null,
                     'epaisseur' => $row['epaisseur'] ?? null,
-                    'standard_id' => $standard ? $standard->getLatestVersion()->id : null,
+                    'longueur' => !empty($row['longueur']) ? (float) str_replace(',', '.', $row['longueur']) : null,
+                    'standard_version_id' => $standard ? $standard->getLatestVersion()?->id : null,
                     'ref_valeur_unitaire' => $row['ref_valeur_unitaire'] ?? null,
                     'material_id' => $material ? $material->id : null,
                     'prix_moyen' => null,
@@ -2253,7 +2337,14 @@ class MatiereController extends Controller
     {
         $mapping = [];
         $normalize = function ($str) {
-            return mb_strtolower(trim(preg_replace('/[^a-zA-Z0-9\s]/', '', $str)));
+            if (!is_string($str)) return '';
+            // Décompose les caractères accentués (é → e + combining accent mark)
+            $str = \Normalizer::normalize($str, \Normalizer::FORM_D);
+            // Supprime les diacritiques (Mn = Mark, Nonspacing)
+            $str = preg_replace('/[\p{Mn}]/u', '', $str);
+            // Supprime les caractères non-alphanumériques restants (parenthèses, tirets, etc.)
+            $str = preg_replace('/[^a-zA-Z0-9\s]/u', '', $str);
+            return mb_strtolower(trim($str));
         };
 
         foreach ($headers as $index => $header) {
@@ -2293,7 +2384,10 @@ class MatiereController extends Controller
             } elseif (preg_match('/unite/i', $normalized)) {
                 $mapping[$index] = 'unite';
                 $found = true;
-            } elseif (preg_match('/longueur|ref.*valeur.*unitaire/i', $normalized)) {
+            } elseif (preg_match('/\blongueur\b/i', $normalized)) {
+                $mapping[$index] = 'longueur';
+                $found = true;
+            } elseif (preg_match('/ref.*valeur.*unitaire/i', $normalized)) {
                 $mapping[$index] = 'ref_valeur_unitaire';
                 $found = true;
             } elseif (preg_match('/prix/i', $normalized)) {

@@ -10,7 +10,7 @@
         $incorrect = 0;
         $correct = 0;
         $rowStates = [];
-        
+
         if ($total === 0) {
             // Aucune donnée à afficher
             $sortedIndexes = collect([]);
@@ -18,7 +18,7 @@
             foreach ($rows as $i => $row) {
                 $isValid = true;
                 // Les colonnes critiques bloquent la validité
-                $critCols = ['ref_interne', 'designation', 'unite', 'famille'];
+                $critCols = ['ref_interne', 'designation'];
                 foreach ($critCols as $col) {
                     if (isset($preview[$i][$col]['error']) && $preview[$i][$col]['error']) {
                         $isValid = false;
@@ -68,6 +68,7 @@
             <div class="text-sm text-blue-700 dark:text-blue-300 space-y-1">
                 <div><span class="text-green-600 text-lg">&#10003;</span> Champ valide et trouvé dans la base</div>
                 <div><span class="text-red-600 text-lg">&#10060;</span> Erreur bloquante (la ligne ne sera pas importée)</div>
+                <div><span class="text-orange-500 text-lg">&#9888;</span> Sera créé automatiquement lors de l'import (famille ou fournisseur)</div>
                 <div class="mt-2 font-semibold">Champs obligatoires : Référence interne, Désignation, Unité, Famille</div>
                 <div class="text-xs">Champs optionnels : Matériau, Standard, Fournisseur, DN, Épaisseur, Longueur, Prix</div>
             </div>
@@ -110,7 +111,25 @@
             @method('POST')
             @csrf
             <input type="hidden" name="rows" value='@json($rows)'>
-            
+
+            {{-- Bouton d'import en haut --}}
+            <div class="flex items-center gap-4 mb-6">
+                @if ($incorrect > 0)
+                    <x-modals.attention-modal
+                        buttonText="Importer uniquement les lignes correctes ({{ $correct }})"
+                        title="Des erreurs sont présentes dans le fichier"
+                        message="Certaines lignes comportent des erreurs et ne seront pas importées. Voulez-vous importer uniquement les {{ $correct }} lignes valides ?"
+                        confirmText="Oui, importer les lignes valides"
+                        cancelText="Annuler"
+                        confirmAction="submit" />
+                @else
+                    <button type="submit" class="btn bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded">
+                        Importer {{ $total }} matière(s) en base
+                    </button>
+                @endif
+                <a href="{{ route('matieres.import.database.form') }}" class="btn btn-secondary">Annuler</a>
+            </div>
+
             @if ($total === 0)
                 <div class="mb-6 p-6 bg-yellow-50 dark:bg-yellow-900 border-l-4 border-yellow-500 rounded">
                     <div class="flex items-start">
@@ -127,7 +146,7 @@
                     </div>
                 </div>
             @endif
-            
+
             <div class="overflow-x-auto">
                 <table class="min-w-full bg-white dark:bg-gray-800 mb-6">
                     <thead>
@@ -162,6 +181,10 @@
                                                 <span class="text-xs text-red-600 dark:text-red-400 mt-1">
                                                     &#10060; {{ $preview[$i][$col]['error'] }}
                                                 </span>
+                                            @elseif(isset($preview[$i][$col]['warning']) && $preview[$i][$col]['warning'])
+                                                <span class="text-xs text-orange-600 dark:text-orange-400 mt-1">
+                                                    &#9888; {{ $preview[$i][$col]['warning'] }}
+                                                </span>
                                             @elseif(isset($preview[$i][$col]['label']) && $preview[$i][$col]['label'])
                                                 <span class="text-xs text-green-700 dark:text-green-400 mt-1">
                                                     &#10003; {{ $preview[$i][$col]['label'] }}
@@ -186,32 +209,16 @@
                     </tbody>
                 </table>
             </div>
-            
-            <div class="flex items-center gap-4">
-                @if ($incorrect > 0)
-                    <x-modals.attention-modal 
-                        buttonText="Importer uniquement les lignes correctes ({{ $correct }})"
-                        title="Des erreurs sont présentes dans le fichier"
-                        message="Certaines lignes comportent des erreurs et ne seront pas importées. Voulez-vous importer uniquement les {{ $correct }} lignes valides ?"
-                        confirmText="Oui, importer les lignes valides" 
-                        cancelText="Annuler" 
-                        confirmAction="submit" />
-                @else
-                    <button type="submit" class="btn bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded">
-                        Importer {{ $total }} matière(s) en base
-                    </button>
-                @endif
-                <a href="{{ route('matieres.import.database.form') }}" class="btn btn-secondary">Annuler</a>
-            </div>
+
         </form>
     </div>
-    
+
     <button id="back-to-top" class="fixed bottom-4 right-4 bg-gray-700 hover:bg-gray-900 dark:bg-gray-600 dark:hover:bg-gray-800 text-white p-3 rounded-full shadow-lg z-30 hidden" title="Retour en haut">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
         </svg>
     </button>
-    
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const backToTop = document.getElementById('back-to-top');

@@ -18,12 +18,13 @@ class DdpLigneFactory extends Factory
      */
     public function definition(): array
     {
-        $random_ddp = Ddp::all()->random();
-        $random_matiere = Matiere::all()->random();
+        $ddps = Ddp::all();
+        $matieres = Matiere::all();
+
         return [
-            'ddp_id' => $random_ddp->id,
-            'matiere_id' => $random_matiere->id,
-            'quantite' => $this->faker->numberBetween(1, 100),
+            'ddp_id'      => $ddps->isNotEmpty() ? $ddps->random()->id : Ddp::factory(),
+            'matiere_id'  => $matieres->isNotEmpty() ? $matieres->random()->id : null,
+            'quantite'    => $this->faker->numberBetween(1, 100),
         ];
     }
 }
