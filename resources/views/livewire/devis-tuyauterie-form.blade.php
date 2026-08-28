@@ -104,7 +104,8 @@
                                 <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase w-20">Qté</th>
                                 <th class="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase w-24">Unité</th>
                                 <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase w-24" title="Prix de revient interne (visible seulement par vous)">Prix Achat (Caché) <sup class="text-blue-500 cursor-help">?</sup></th>
-                                <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase w-24" title="Prix vendu au client">P.U. Vente</th>
+                                <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase w-24" title="Marge souhaitée par rapport au prix d'achat">Marge % <sup class="text-blue-500 cursor-help">?</sup></th>
+                                <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase w-24" title="Prix de vente calculé">P.U. Vente</th>
                                 <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase w-24">Total HT</th>
                                 <th class="px-3 py-2"></th>
                             </tr>
@@ -249,7 +250,13 @@
                                         <input type="number" step="0.01" wire:model.live.debounce.500ms="sections.{{ $index }}.lignes.{{ $lineIndex }}.prix_achat" class="block w-full text-sm rounded-md border-gray-300 dark:bg-gray-700 dark:text-white text-right" placeholder="0.00">
                                     </td>
                                     <td class="px-2 py-2">
-                                        <input type="number" step="0.01" wire:model.live.debounce.500ms="sections.{{ $index }}.lignes.{{ $lineIndex }}.prix_unitaire" class="block w-full text-sm rounded-md border-gray-300 dark:bg-gray-700 dark:text-white text-right font-bold">
+                                        <div class="relative">
+                                            <input type="number" step="0.1" min="0" wire:model.live.debounce.500ms="sections.{{ $index }}.lignes.{{ $lineIndex }}.marge" class="block w-full text-sm rounded-md border-gray-300 dark:bg-gray-700 dark:text-white text-right pr-8" placeholder="0">
+                                            <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-gray-400 text-sm">%</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-2 py-2 text-right font-mono text-sm text-gray-700 dark:text-gray-300">
+                                        {{ number_format($line['prix_unitaire'] ?? 0, 2) }} €
                                     </td>
                                     <td class="px-2 py-2 text-right font-mono text-sm text-gray-900 dark:text-white">
                                         {{ number_format($line['total_ht'], 2) }} €
@@ -367,10 +374,23 @@
 
             <!-- Indicateur Marge (Interne) -->
             <div class="mb-6 p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded border border-yellow-200 dark:border-yellow-700">
-                <p class="text-xs text-yellow-800 dark:text-yellow-200 font-bold uppercase">Indicateur Marge (Invisible Client)</p>
-                <div class="flex justify-between items-end mt-1">
-                    <span class="text-sm text-yellow-700 dark:text-yellow-300">{{ number_format($marge_pourcent, 1) }} %</span>
-                    <span class="text-lg font-mono font-bold text-yellow-800 dark:text-yellow-100">{{ number_format($marge_globale, 2) }} €</span>
+                <p class="text-xs text-yellow-800 dark:text-yellow-200 font-bold uppercase">Coûts internes (Invisible Client)</p>
+                <div class="flex justify-between text-xs text-yellow-700 dark:text-yellow-300 mt-2">
+                    <span>Prix d'achat total</span>
+                    <span class="font-mono font-semibold">{{ number_format($total_cout, 2) }} €</span>
+                </div>
+                <div class="flex justify-between text-xs text-yellow-700 dark:text-yellow-300 mt-1">
+                    <span>Prix de vente total HT</span>
+                    <span class="font-mono font-semibold">{{ number_format($total_ht, 2) }} €</span>
+                </div>
+                <div class="flex justify-between text-sm text-yellow-800 dark:text-yellow-100 font-bold mt-2 pt-2 border-t border-yellow-300 dark:border-yellow-600">
+                    <span>Marge globale</span>
+                    <span class="font-mono">
+                        {{ number_format($marge_globale, 2) }} €
+                        @if($total_cout > 0)
+                            <span class="text-xs font-normal">({{ number_format($total_cout > 0 ? ($marge_globale / $total_cout) * 100 : 0, 1) }} % sur achat)</span>
+                        @endif
+                    </span>
                 </div>
             </div>
 

@@ -37,8 +37,9 @@ class DevisTuyauterieForm extends Component
                     'matiere' => '',
                     'quantite' => 1,
                     'unite' => 'u',
-                    'prix_achat' => 0, // Pour calcul marge
-                    'prix_unitaire' => 0,
+                    'prix_achat' => 0,
+                    'marge' => 0, // Marge en %
+                    'prix_unitaire' => 0, // Calculé automatiquement
                     'total_ht' => 0
                 ]
             ]
@@ -67,6 +68,7 @@ class DevisTuyauterieForm extends Component
     public $total_ht = 0;
     public $total_tva = 0;
     public $total_ttc = 0;
+    public $total_cout = 0;
     public $marge_globale = 0;
     public $marge_pourcent = 0;
 
@@ -110,6 +112,9 @@ class DevisTuyauterieForm extends Component
                         'quantite' => $ligne->quantite + 0, // Force number
                         'unite' => $ligne->unite,
                         'prix_achat' => $ligne->prix_achat + 0,
+                        'marge' => $ligne->prix_achat > 0
+                            ? round(($ligne->prix_unitaire - $ligne->prix_achat) / $ligne->prix_achat * 100, 2)
+                            : 0,
                         'prix_unitaire' => $ligne->prix_unitaire + 0,
                         'total_ht' => $ligne->total_ht + 0,
                     ];
@@ -155,6 +160,7 @@ class DevisTuyauterieForm extends Component
                     'quantite' => 1,
                     'unite' => 'u',
                     'prix_achat' => 0,
+                    'marge' => 0,
                     'prix_unitaire' => 0,
                     'total_ht' => 0
                 ]
@@ -182,6 +188,7 @@ class DevisTuyauterieForm extends Component
             'quantite' => 1,
             'unite' => 'u',
             'prix_achat' => 0,
+            'marge' => 0,
             'prix_unitaire' => 0,
             'total_ht' => 0
         ];
@@ -261,8 +268,11 @@ class DevisTuyauterieForm extends Component
 
         foreach ($this->sections as $sKey => $section) {
             foreach ($section['lignes'] as $lKey => $ligne) {
-                // Calcul ligne
-                $lineTotal = (float)$ligne['quantite'] * (float)$ligne['prix_unitaire'];
+                // Prix unitaire calculé depuis prix achat + marge
+                $prixUnitaire = (float)$ligne['prix_achat'] * (1 + (float)($ligne['marge'] ?? 0) / 100);
+                $this->sections[$sKey]['lignes'][$lKey]['prix_unitaire'] = $prixUnitaire;
+
+                $lineTotal = (float)$ligne['quantite'] * $prixUnitaire;
                 $lineCost = (float)$ligne['quantite'] * (float)$ligne['prix_achat'];
 
                 $this->sections[$sKey]['lignes'][$lKey]['total_ht'] = $lineTotal;
@@ -276,6 +286,7 @@ class DevisTuyauterieForm extends Component
         $totalHt += (float)$this->options['frais_consommables_forfait'];
 
         $this->total_ht = $totalHt;
+        $this->total_cout = $totalCout;
         $this->total_tva = $totalHt * 0.20; // 20% par défaut
         $this->total_ttc = $this->total_ht + $this->total_tva;
 

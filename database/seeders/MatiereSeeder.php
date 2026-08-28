@@ -17,6 +17,7 @@ class MatiereSeeder extends Seeder
 
     //     if ($societes->isEmpty()) {
     //         return;
+
     //     }
 
     //     // Créer des matières et lier les sociétés via la table intermédiaire
